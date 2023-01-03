@@ -1,0 +1,82 @@
+{
+  "project_info": {
+    "project_number": "375720547393",
+    "project_id": "jusmobileorderapp",
+    "storage_bucket": "jusmobileorderapp.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:375720547393:android:71ea7ff8be967e8fd562c0",
+        "android_client_info": {
+          "package_name": "com.jusreno.jusMobileOrderApp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "375720547393-dog5idmngbimccq0d6nbnfb3neka0qe7.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCfA_ghFLu1Ke5T7R9OxzdfyuypS4OWyaI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "375720547393-dog5idmngbimccq0d6nbnfb3neka0qe7.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "375720547393-oi3l9cfkgkn9rjid3aodh5raig5n2e8b.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.jusreno.jusMobileOrderApp"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:375720547393:android:1621a6ac079acc19d562c0",
+        "android_client_info": {
+          "package_name": "com.jusreno.jus_mobile_order_app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "375720547393-dog5idmngbimccq0d6nbnfb3neka0qe7.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCfA_ghFLu1Ke5T7R9OxzdfyuypS4OWyaI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "375720547393-dog5idmngbimccq0d6nbnfb3neka0qe7.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "375720547393-oi3l9cfkgkn9rjid3aodh5raig5n2e8b.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.jusreno.jusMobileOrderApp"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
