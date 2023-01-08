@@ -14,11 +14,11 @@ class MultiUseIngredientText extends ConsumerWidget {
       children: [
         Text(
           'Blended: ${determineBlendedText(ref)}',
-          style: const TextStyle(fontSize: 12),
+          style: const TextStyle(fontSize: 10),
         ),
         Text(
           'Topping: ${determineToppingText(ref)}',
-          style: const TextStyle(fontSize: 12),
+          style: const TextStyle(fontSize: 10),
         ),
       ],
     );

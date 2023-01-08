@@ -56,6 +56,8 @@ class IngredientServices {
         isExtraCharge: data['isExtraCharge'],
         isBlended: data['isBlended'],
         isTopping: data['isTopping'],
+        containsDairy: data['containsDairy'],
+        containsGluten: data['containsGluten'],
       );
     }).toList();
   }

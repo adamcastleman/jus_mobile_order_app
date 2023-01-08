@@ -13,7 +13,7 @@ class ModifyIngredientsList extends ConsumerWidget {
     final hasToppings = ref.watch(productHasToppingsProvider);
     final key = ref.watch(animatedListKeyProvider);
     return SizedBox(
-      height: hasToppings ? 190 : 180,
+      height: 160,
       child: AnimatedList(
         key: key,
         padding: const EdgeInsets.symmetric(horizontal: 8.0),

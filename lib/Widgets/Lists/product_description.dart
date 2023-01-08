@@ -19,7 +19,7 @@ class ProductDescription extends StatelessWidget {
         products[itemIndex].description,
         style: TextStyle(fontSize: fontSize),
         textAlign: TextAlign.center,
-        maxLines: 3,
+        maxLines: 2,
       ),
     );
   }

@@ -20,7 +20,14 @@ class DisplayPremiumIngredientPrices extends ConsumerWidget {
               error: e.toString(),
             ),
         data: (user) {
-          if (currentUser.value?.uid == null) {
+          if (currentUser.value?.uid == null &&
+              selectedIngredients[index]['price'] != 0.toStringAsFixed(2)) {
+            return Text(
+              '\$${selectedIngredients[index]['price']}',
+              style: const TextStyle(fontSize: 11),
+            );
+          } else if (currentUser.value?.uid == null &&
+              selectedIngredients[index]['price'] == 0.toStringAsFixed(2)) {
             return const SizedBox();
           } else if (user.isActiveMember!) {
             return const SizedBox();
@@ -28,7 +35,10 @@ class DisplayPremiumIngredientPrices extends ConsumerWidget {
               0.toStringAsFixed(2)) {
             return const SizedBox();
           } else {
-            return Text('\$${selectedIngredients[index]['price']}');
+            return Text(
+              '\$${selectedIngredients[index]['price']}',
+              style: const TextStyle(fontSize: 11),
+            );
           }
         });
   }

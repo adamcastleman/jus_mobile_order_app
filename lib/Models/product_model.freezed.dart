@@ -34,6 +34,10 @@ mixin _$ProductModel {
   bool get isModifiable => throw _privateConstructorUsedError;
   bool get isScheduled => throw _privateConstructorUsedError;
   bool get hasToppings => throw _privateConstructorUsedError;
+  List<dynamic> get nutrition => throw _privateConstructorUsedError;
+  String get perks => throw _privateConstructorUsedError;
+  int get servingsFruit => throw _privateConstructorUsedError;
+  int get servingsVeggie => throw _privateConstructorUsedError;
 
   @JsonKey(ignore: true)
   $ProductModelCopyWith<ProductModel> get copyWith =>
@@ -64,7 +68,11 @@ abstract class $ProductModelCopyWith<$Res> {
       bool isFeatured,
       bool isModifiable,
       bool isScheduled,
-      bool hasToppings});
+      bool hasToppings,
+      List<dynamic> nutrition,
+      String perks,
+      int servingsFruit,
+      int servingsVeggie});
 }
 
 /// @nodoc
@@ -98,6 +106,10 @@ class _$ProductModelCopyWithImpl<$Res, $Val extends ProductModel>
     Object? isModifiable = null,
     Object? isScheduled = null,
     Object? hasToppings = null,
+    Object? nutrition = null,
+    Object? perks = null,
+    Object? servingsFruit = null,
+    Object? servingsVeggie = null,
   }) {
     return _then(_value.copyWith(
       uid: null == uid
@@ -172,6 +184,22 @@ class _$ProductModelCopyWithImpl<$Res, $Val extends ProductModel>
           ? _value.hasToppings
           : hasToppings // ignore: cast_nullable_to_non_nullable
               as bool,
+      nutrition: null == nutrition
+          ? _value.nutrition
+          : nutrition // ignore: cast_nullable_to_non_nullable
+              as List<dynamic>,
+      perks: null == perks
+          ? _value.perks
+          : perks // ignore: cast_nullable_to_non_nullable
+              as String,
+      servingsFruit: null == servingsFruit
+          ? _value.servingsFruit
+          : servingsFruit // ignore: cast_nullable_to_non_nullable
+              as int,
+      servingsVeggie: null == servingsVeggie
+          ? _value.servingsVeggie
+          : servingsVeggie // ignore: cast_nullable_to_non_nullable
+              as int,
     ) as $Val);
   }
 }
@@ -202,7 +230,11 @@ abstract class _$$_ProductModelCopyWith<$Res>
       bool isFeatured,
       bool isModifiable,
       bool isScheduled,
-      bool hasToppings});
+      bool hasToppings,
+      List<dynamic> nutrition,
+      String perks,
+      int servingsFruit,
+      int servingsVeggie});
 }
 
 /// @nodoc
@@ -234,6 +266,10 @@ class __$$_ProductModelCopyWithImpl<$Res>
     Object? isModifiable = null,
     Object? isScheduled = null,
     Object? hasToppings = null,
+    Object? nutrition = null,
+    Object? perks = null,
+    Object? servingsFruit = null,
+    Object? servingsVeggie = null,
   }) {
     return _then(_$_ProductModel(
       uid: null == uid
@@ -308,6 +344,22 @@ class __$$_ProductModelCopyWithImpl<$Res>
           ? _value.hasToppings
           : hasToppings // ignore: cast_nullable_to_non_nullable
               as bool,
+      nutrition: null == nutrition
+          ? _value._nutrition
+          : nutrition // ignore: cast_nullable_to_non_nullable
+              as List<dynamic>,
+      perks: null == perks
+          ? _value.perks
+          : perks // ignore: cast_nullable_to_non_nullable
+              as String,
+      servingsFruit: null == servingsFruit
+          ? _value.servingsFruit
+          : servingsFruit // ignore: cast_nullable_to_non_nullable
+              as int,
+      servingsVeggie: null == servingsVeggie
+          ? _value.servingsVeggie
+          : servingsVeggie // ignore: cast_nullable_to_non_nullable
+              as int,
     ));
   }
 }
@@ -333,10 +385,15 @@ class _$_ProductModel implements _ProductModel {
       required this.isFeatured,
       required this.isModifiable,
       required this.isScheduled,
-      required this.hasToppings})
+      required this.hasToppings,
+      required final List<dynamic> nutrition,
+      required this.perks,
+      required this.servingsFruit,
+      required this.servingsVeggie})
       : _ingredients = ingredients,
         _memberPrice = memberPrice,
-        _price = price;
+        _price = price,
+        _nutrition = nutrition;
 
   @override
   final String uid;
@@ -392,10 +449,24 @@ class _$_ProductModel implements _ProductModel {
   final bool isScheduled;
   @override
   final bool hasToppings;
+  final List<dynamic> _nutrition;
+  @override
+  List<dynamic> get nutrition {
+    if (_nutrition is EqualUnmodifiableListView) return _nutrition;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_nutrition);
+  }
+
+  @override
+  final String perks;
+  @override
+  final int servingsFruit;
+  @override
+  final int servingsVeggie;
 
   @override
   String toString() {
-    return 'ProductModel(uid: $uid, name: $name, category: $category, categoryOrder: $categoryOrder, productID: $productID, description: $description, ingredients: $ingredients, image: $image, isActive: $isActive, memberPrice: $memberPrice, price: $price, taxable: $taxable, isNew: $isNew, isRecommended: $isRecommended, isFeatured: $isFeatured, isModifiable: $isModifiable, isScheduled: $isScheduled, hasToppings: $hasToppings)';
+    return 'ProductModel(uid: $uid, name: $name, category: $category, categoryOrder: $categoryOrder, productID: $productID, description: $description, ingredients: $ingredients, image: $image, isActive: $isActive, memberPrice: $memberPrice, price: $price, taxable: $taxable, isNew: $isNew, isRecommended: $isRecommended, isFeatured: $isFeatured, isModifiable: $isModifiable, isScheduled: $isScheduled, hasToppings: $hasToppings, nutrition: $nutrition, perks: $perks, servingsFruit: $servingsFruit, servingsVeggie: $servingsVeggie)';
   }
 
   @override
@@ -432,30 +503,42 @@ class _$_ProductModel implements _ProductModel {
             (identical(other.isScheduled, isScheduled) ||
                 other.isScheduled == isScheduled) &&
             (identical(other.hasToppings, hasToppings) ||
-                other.hasToppings == hasToppings));
+                other.hasToppings == hasToppings) &&
+            const DeepCollectionEquality()
+                .equals(other._nutrition, _nutrition) &&
+            (identical(other.perks, perks) || other.perks == perks) &&
+            (identical(other.servingsFruit, servingsFruit) ||
+                other.servingsFruit == servingsFruit) &&
+            (identical(other.servingsVeggie, servingsVeggie) ||
+                other.servingsVeggie == servingsVeggie));
   }
 
   @override
-  int get hashCode => Object.hash(
-      runtimeType,
-      uid,
-      name,
-      category,
-      categoryOrder,
-      productID,
-      description,
-      const DeepCollectionEquality().hash(_ingredients),
-      image,
-      isActive,
-      const DeepCollectionEquality().hash(_memberPrice),
-      const DeepCollectionEquality().hash(_price),
-      taxable,
-      isNew,
-      isRecommended,
-      isFeatured,
-      isModifiable,
-      isScheduled,
-      hasToppings);
+  int get hashCode => Object.hashAll([
+        runtimeType,
+        uid,
+        name,
+        category,
+        categoryOrder,
+        productID,
+        description,
+        const DeepCollectionEquality().hash(_ingredients),
+        image,
+        isActive,
+        const DeepCollectionEquality().hash(_memberPrice),
+        const DeepCollectionEquality().hash(_price),
+        taxable,
+        isNew,
+        isRecommended,
+        isFeatured,
+        isModifiable,
+        isScheduled,
+        hasToppings,
+        const DeepCollectionEquality().hash(_nutrition),
+        perks,
+        servingsFruit,
+        servingsVeggie
+      ]);
 
   @JsonKey(ignore: true)
   @override
@@ -483,7 +566,11 @@ abstract class _ProductModel implements ProductModel {
       required final bool isFeatured,
       required final bool isModifiable,
       required final bool isScheduled,
-      required final bool hasToppings}) = _$_ProductModel;
+      required final bool hasToppings,
+      required final List<dynamic> nutrition,
+      required final String perks,
+      required final int servingsFruit,
+      required final int servingsVeggie}) = _$_ProductModel;
 
   @override
   String get uid;
@@ -521,6 +608,14 @@ abstract class _ProductModel implements ProductModel {
   bool get isScheduled;
   @override
   bool get hasToppings;
+  @override
+  List<dynamic> get nutrition;
+  @override
+  String get perks;
+  @override
+  int get servingsFruit;
+  @override
+  int get servingsVeggie;
   @override
   @JsonKey(ignore: true)
   _$$_ProductModelCopyWith<_$_ProductModel> get copyWith =>

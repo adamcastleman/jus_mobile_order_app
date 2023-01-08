@@ -60,6 +60,10 @@ final selectedIngredientsProvider =
     StateNotifierProvider<ListOfIngredients, List<dynamic>>(
         (ref) => ListOfIngredients());
 
+final selectedAllergiesProvider =
+    StateNotifierProvider.autoDispose<SelectedAllergies, List<int>>(
+        (ref) => SelectedAllergies());
+
 final selectedToppingsProvider =
     StateNotifierProvider.autoDispose<SelectedToppings, List<int>>(
         (ref) => SelectedToppings());
@@ -73,6 +77,20 @@ class SelectedToppings extends StateNotifier<List<int>> {
     } else {
       state = [...state, ingredient];
     }
+  }
+
+  remove(int ingredient) {
+    List<int> newList = [...state];
+    newList.removeWhere((element) => element == ingredient);
+    state = newList;
+  }
+}
+
+class SelectedAllergies extends StateNotifier<List<int>> {
+  SelectedAllergies() : super([]);
+
+  add(int ingredient) {
+    state = [...state, ingredient];
   }
 
   remove(int ingredient) {

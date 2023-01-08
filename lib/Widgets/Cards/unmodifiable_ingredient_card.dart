@@ -108,7 +108,7 @@ class UnmodifiableIngredientCard extends ConsumerWidget {
             style: amountStyle,
           ),
           Text(
-            'Topping ${determineToppingAmountDisplay(data, ref)}',
+            'Topping: ${determineToppingAmountDisplay(data, ref)}',
             style: amountStyle,
           ),
         ],

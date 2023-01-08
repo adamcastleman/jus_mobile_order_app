@@ -54,6 +54,10 @@ class ProductServices {
           isModifiable: data['isModifiable'],
           isScheduled: data['isScheduled'],
           hasToppings: data['hasToppings'],
+          nutrition: data['nutrition'],
+          perks: data['perks'],
+          servingsFruit: data['servingsFruit'],
+          servingsVeggie: data['servingsVeggie'],
         );
       },
     ).toList();

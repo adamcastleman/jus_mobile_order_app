@@ -4,9 +4,11 @@ import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:jus_mobile_order_app/Models/product_model.dart';
 import 'package:jus_mobile_order_app/Providers/product_providers.dart';
+import 'package:jus_mobile_order_app/Providers/theme_providers.dart';
 import 'package:jus_mobile_order_app/Views/cleanse_detail_page.dart';
 import 'package:jus_mobile_order_app/Views/product_detail_page.dart';
-import 'package:jus_mobile_order_app/Widgets/General/item_card_button_options.dart';
+import 'package:jus_mobile_order_app/Widgets/Helpers/set_standard_ingredients.dart';
+import 'package:jus_mobile_order_app/Widgets/Helpers/spacing_widgets.dart';
 import 'package:jus_mobile_order_app/Widgets/Icons/new_icon.dart';
 import 'package:jus_mobile_order_app/Widgets/Lists/product_description.dart';
 
@@ -20,6 +22,7 @@ class ItemCardLarge extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final products = ref.watch(taxableProductsProvider);
+    final backgroundColor = ref.watch(themeColorProvider);
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 12.0, horizontal: 24.0),
       child: products.when(
@@ -30,6 +33,7 @@ class ItemCardLarge extends HookConsumerWidget {
         data: (product) => OpenContainer(
           closedElevation: 2,
           openElevation: 2,
+          openColor: backgroundColor!,
           tappable: false,
           transitionType: ContainerTransitionType.fadeThrough,
           transitionDuration: const Duration(milliseconds: 600),
@@ -38,48 +42,61 @@ class ItemCardLarge extends HookConsumerWidget {
           ),
           openBuilder: (context, open) =>
               determineProductDetailPage(product[index]),
-          closedBuilder: (context, close) => SizedBox(
-            height: 400,
-            child: Stack(
-              children: [
-                NewIcon(
-                  product: product[index],
-                ),
-                Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: [
-                    SizedBox(
-                      height: 200,
-                      child: CachedNetworkImage(
-                        imageUrl: product[index].image,
-                        progressIndicatorBuilder:
-                            (context, url, downloadProgress) => const Loading(),
-                        errorWidget: (context, url, error) =>
-                            const Icon(Icons.error),
-                      ),
+          closedBuilder: (context, close) => InkWell(
+            onTap: () {
+              product[index].isScheduled
+                  ? null
+                  : StandardIngredients(ref: ref).set(product[index]);
+              close();
+            },
+            child: Padding(
+              padding: const EdgeInsets.symmetric(vertical: 15.0),
+              child: Stack(
+                children: [
+                  NewIcon(
+                    product: product[index],
+                  ),
+                  Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      // crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        SizedBox(
+                          height: 200,
+                          child: CachedNetworkImage(
+                            imageUrl: product[index].image,
+                            progressIndicatorBuilder:
+                                (context, url, downloadProgress) =>
+                                    const Loading(),
+                            errorWidget: (context, url, error) =>
+                                const Icon(Icons.error),
+                          ),
+                        ),
+                        Padding(
+                          padding:
+                              const EdgeInsets.only(top: 15.0, bottom: 5.0),
+                          child: Text(
+                            product[index].name,
+                            style: const TextStyle(
+                                fontSize: 20, fontWeight: FontWeight.bold),
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 12.0,
+                          ),
+                          child: ProductDescription(
+                            products: product,
+                            itemIndex: index,
+                            fontSize: 14,
+                          ),
+                        ),
+                        Spacing().vertical(10),
+                      ],
                     ),
-                    Text(
-                      product[index].name,
-                      style: const TextStyle(
-                          fontSize: 20, fontWeight: FontWeight.bold),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                      child: ProductDescription(
-                        products: product,
-                        itemIndex: index,
-                        fontSize: 14,
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(
-                          vertical: 8.0, horizontal: 22.0),
-                      child: LargeItemCardActionsRow(
-                          product: product[index], close: close),
-                    ),
-                  ],
-                ),
-              ],
+                  ),
+                ],
+              ),
             ),
           ),
         ),

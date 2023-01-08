@@ -4,8 +4,7 @@ import 'package:jus_mobile_order_app/Widgets/Cards/favorites_guest.dart';
 import 'package:jus_mobile_order_app/Widgets/Cards/loyalty_guest.dart';
 import 'package:jus_mobile_order_app/Widgets/General/home_greeting.dart';
 import 'package:jus_mobile_order_app/Widgets/Helpers/spacing_widgets.dart';
-
-import '../Widgets/Lists/recommended_items.dart';
+import 'package:jus_mobile_order_app/Widgets/Lists/recommended_items.dart';
 
 class HomePage extends ConsumerWidget {
   const HomePage({super.key});

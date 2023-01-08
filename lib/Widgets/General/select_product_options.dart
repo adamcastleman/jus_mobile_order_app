@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:jus_mobile_order_app/Models/product_model.dart';
 import 'package:jus_mobile_order_app/Providers/product_providers.dart';
 import 'package:jus_mobile_order_app/Widgets/Buttons/elevated_button_large.dart';
 import 'package:jus_mobile_order_app/Widgets/Buttons/elevated_button_medium.dart';
@@ -9,8 +10,10 @@ import 'package:jus_mobile_order_app/Widgets/Buttons/quantity_picker_button.dart
 import '../Helpers/set_standard_ingredients.dart';
 
 class SelectProductOptions extends ConsumerWidget {
+  final ProductModel product;
   final Function close;
-  const SelectProductOptions({required this.close, super.key});
+  const SelectProductOptions(
+      {required this.close, required this.product, super.key});
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return Material(
@@ -54,7 +57,7 @@ class SelectProductOptions extends ConsumerWidget {
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
           MediumOutlineButton(
-            buttonText: 'Modify',
+            buttonText: 'Customize',
             buttonColor: Colors.white,
             onPressed: () {
               StandardIngredients(ref: ref).add();

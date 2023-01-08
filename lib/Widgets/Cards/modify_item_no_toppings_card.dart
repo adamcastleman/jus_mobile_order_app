@@ -44,66 +44,63 @@ class ModifyItemNoToppingsCard extends HookConsumerWidget {
           width: 125,
           child: RotationTransition(
             turns: Tween(begin: 0.0, end: 1.0).animate(controller),
-            child: Padding(
-              padding: const EdgeInsets.only(bottom: 5.0),
-              child: Card(
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(4.0),
-                ),
-                child: Stack(
-                  children: [
-                    Align(
-                      alignment: Alignment.topLeft,
-                      child: JusCloseButton(
-                        removePadding: true,
-                        iconSize: 18,
-                        onPressed: () {
-                          HapticFeedback.lightImpact();
-                          ref
-                              .read(selectedIngredientsProvider.notifier)
-                              .removeIngredient(currentIngredient.id, ref,
-                                  selectedIngredients);
-                        },
+            child: Card(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(4.0),
+              ),
+              child: Stack(
+                children: [
+                  Align(
+                    alignment: Alignment.topLeft,
+                    child: JusCloseButton(
+                      removePadding: true,
+                      iconSize: 18,
+                      onPressed: () {
+                        HapticFeedback.lightImpact();
+                        ref
+                            .read(selectedIngredientsProvider.notifier)
+                            .removeIngredient(
+                                currentIngredient.id, ref, selectedIngredients);
+                      },
+                    ),
+                  ),
+                  Center(
+                    child: Padding(
+                      padding: const EdgeInsets.only(bottom: 8.0),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Column(
+                            children: [
+                              SizedBox(
+                                height: 70,
+                                width: 70,
+                                child: CachedNetworkImage(
+                                    imageUrl: currentIngredient.image),
+                              ),
+                              Column(
+                                children: [
+                                  AutoSizeText(
+                                    currentIngredient.name,
+                                    maxLines: 2,
+                                    textAlign: TextAlign.center,
+                                    style: const TextStyle(fontSize: 12),
+                                  ),
+                                  IngredientAmountDescriptiveText(
+                                    index: index,
+                                    currentIngredient: currentIngredient,
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                          DisplayPremiumIngredientPrices(index: index),
+                          ModifyIngredientQuantityRow(index: index),
+                        ],
                       ),
                     ),
-                    Center(
-                      child: Padding(
-                        padding: const EdgeInsets.only(bottom: 8.0),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Column(
-                              children: [
-                                SizedBox(
-                                  height: 70,
-                                  width: 70,
-                                  child: CachedNetworkImage(
-                                      imageUrl: currentIngredient.image),
-                                ),
-                                Column(
-                                  children: [
-                                    AutoSizeText(
-                                      currentIngredient.name,
-                                      maxLines: 2,
-                                      textAlign: TextAlign.center,
-                                      style: const TextStyle(fontSize: 12),
-                                    ),
-                                    IngredientAmountDescriptiveText(
-                                      index: index,
-                                      currentIngredient: currentIngredient,
-                                    ),
-                                  ],
-                                ),
-                              ],
-                            ),
-                            DisplayPremiumIngredientPrices(index: index),
-                            ModifyIngredientQuantityRow(index: index),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
+                  ),
+                ],
               ),
             ),
           ),

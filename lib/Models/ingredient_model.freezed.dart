@@ -28,6 +28,8 @@ mixin _$IngredientModel {
   bool get isBlended => throw _privateConstructorUsedError;
   bool get isTopping => throw _privateConstructorUsedError;
   bool get isExtraCharge => throw _privateConstructorUsedError;
+  bool get containsDairy => throw _privateConstructorUsedError;
+  bool get containsGluten => throw _privateConstructorUsedError;
 
   @JsonKey(ignore: true)
   $IngredientModelCopyWith<IngredientModel> get copyWith =>
@@ -52,7 +54,9 @@ abstract class $IngredientModelCopyWith<$Res> {
       bool isStandardTopping,
       bool isBlended,
       bool isTopping,
-      bool isExtraCharge});
+      bool isExtraCharge,
+      bool containsDairy,
+      bool containsGluten});
 }
 
 /// @nodoc
@@ -80,6 +84,8 @@ class _$IngredientModelCopyWithImpl<$Res, $Val extends IngredientModel>
     Object? isBlended = null,
     Object? isTopping = null,
     Object? isExtraCharge = null,
+    Object? containsDairy = null,
+    Object? containsGluten = null,
   }) {
     return _then(_value.copyWith(
       uid: null == uid
@@ -130,6 +136,14 @@ class _$IngredientModelCopyWithImpl<$Res, $Val extends IngredientModel>
           ? _value.isExtraCharge
           : isExtraCharge // ignore: cast_nullable_to_non_nullable
               as bool,
+      containsDairy: null == containsDairy
+          ? _value.containsDairy
+          : containsDairy // ignore: cast_nullable_to_non_nullable
+              as bool,
+      containsGluten: null == containsGluten
+          ? _value.containsGluten
+          : containsGluten // ignore: cast_nullable_to_non_nullable
+              as bool,
     ) as $Val);
   }
 }
@@ -154,7 +168,9 @@ abstract class _$$_IngredientModelCopyWith<$Res>
       bool isStandardTopping,
       bool isBlended,
       bool isTopping,
-      bool isExtraCharge});
+      bool isExtraCharge,
+      bool containsDairy,
+      bool containsGluten});
 }
 
 /// @nodoc
@@ -180,6 +196,8 @@ class __$$_IngredientModelCopyWithImpl<$Res>
     Object? isBlended = null,
     Object? isTopping = null,
     Object? isExtraCharge = null,
+    Object? containsDairy = null,
+    Object? containsGluten = null,
   }) {
     return _then(_$_IngredientModel(
       uid: null == uid
@@ -230,6 +248,14 @@ class __$$_IngredientModelCopyWithImpl<$Res>
           ? _value.isExtraCharge
           : isExtraCharge // ignore: cast_nullable_to_non_nullable
               as bool,
+      containsDairy: null == containsDairy
+          ? _value.containsDairy
+          : containsDairy // ignore: cast_nullable_to_non_nullable
+              as bool,
+      containsGluten: null == containsGluten
+          ? _value.containsGluten
+          : containsGluten // ignore: cast_nullable_to_non_nullable
+              as bool,
     ));
   }
 }
@@ -249,7 +275,9 @@ class _$_IngredientModel implements _IngredientModel {
       required this.isStandardTopping,
       required this.isBlended,
       required this.isTopping,
-      required this.isExtraCharge});
+      required this.isExtraCharge,
+      required this.containsDairy,
+      required this.containsGluten});
 
   @override
   final String uid;
@@ -275,10 +303,14 @@ class _$_IngredientModel implements _IngredientModel {
   final bool isTopping;
   @override
   final bool isExtraCharge;
+  @override
+  final bool containsDairy;
+  @override
+  final bool containsGluten;
 
   @override
   String toString() {
-    return 'IngredientModel(uid: $uid, name: $name, image: $image, category: $category, id: $id, price: $price, memberPrice: $memberPrice, isModifiable: $isModifiable, isStandardTopping: $isStandardTopping, isBlended: $isBlended, isTopping: $isTopping, isExtraCharge: $isExtraCharge)';
+    return 'IngredientModel(uid: $uid, name: $name, image: $image, category: $category, id: $id, price: $price, memberPrice: $memberPrice, isModifiable: $isModifiable, isStandardTopping: $isStandardTopping, isBlended: $isBlended, isTopping: $isTopping, isExtraCharge: $isExtraCharge, containsDairy: $containsDairy, containsGluten: $containsGluten)';
   }
 
   @override
@@ -304,7 +336,11 @@ class _$_IngredientModel implements _IngredientModel {
             (identical(other.isTopping, isTopping) ||
                 other.isTopping == isTopping) &&
             (identical(other.isExtraCharge, isExtraCharge) ||
-                other.isExtraCharge == isExtraCharge));
+                other.isExtraCharge == isExtraCharge) &&
+            (identical(other.containsDairy, containsDairy) ||
+                other.containsDairy == containsDairy) &&
+            (identical(other.containsGluten, containsGluten) ||
+                other.containsGluten == containsGluten));
   }
 
   @override
@@ -321,7 +357,9 @@ class _$_IngredientModel implements _IngredientModel {
       isStandardTopping,
       isBlended,
       isTopping,
-      isExtraCharge);
+      isExtraCharge,
+      containsDairy,
+      containsGluten);
 
   @JsonKey(ignore: true)
   @override
@@ -343,7 +381,9 @@ abstract class _IngredientModel implements IngredientModel {
       required final bool isStandardTopping,
       required final bool isBlended,
       required final bool isTopping,
-      required final bool isExtraCharge}) = _$_IngredientModel;
+      required final bool isExtraCharge,
+      required final bool containsDairy,
+      required final bool containsGluten}) = _$_IngredientModel;
 
   @override
   String get uid;
@@ -369,6 +409,10 @@ abstract class _IngredientModel implements IngredientModel {
   bool get isTopping;
   @override
   bool get isExtraCharge;
+  @override
+  bool get containsDairy;
+  @override
+  bool get containsGluten;
   @override
   @JsonKey(ignore: true)
   _$$_IngredientModelCopyWith<_$_IngredientModel> get copyWith =>

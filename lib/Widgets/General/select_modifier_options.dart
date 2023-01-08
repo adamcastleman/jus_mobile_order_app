@@ -21,15 +21,10 @@ class SelectModifierOptions extends ConsumerWidget {
     return ingredients.when(
         data: (data) => Material(
               color: Colors.white,
-              shape: const RoundedRectangleBorder(
-                borderRadius: BorderRadius.vertical(
-                  top: Radius.circular(20),
-                ),
-              ),
-              elevation: 30,
+              elevation: 50,
               child: Padding(
                 padding: const EdgeInsets.only(
-                    top: 10.0, left: 20, right: 20, bottom: 40.0),
+                    top: 20.0, left: 20, right: 20, bottom: 40.0),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [

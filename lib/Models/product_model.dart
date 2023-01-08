@@ -23,5 +23,9 @@ class ProductModel with _$ProductModel {
     required bool isModifiable,
     required bool isScheduled,
     required bool hasToppings,
+    required List nutrition,
+    required String perks,
+    required int servingsFruit,
+    required int servingsVeggie,
   }) = _ProductModel;
 }

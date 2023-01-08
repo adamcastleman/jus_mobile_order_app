@@ -8,12 +8,18 @@ import 'package:jus_mobile_order_app/Providers/theme_providers.dart';
 import 'package:jus_mobile_order_app/Views/product_modifier_page.dart';
 import 'package:jus_mobile_order_app/Widgets/Buttons/close_button.dart';
 import 'package:jus_mobile_order_app/Widgets/Buttons/favorite_button.dart';
+import 'package:jus_mobile_order_app/Widgets/General/allergy_info.dart';
+import 'package:jus_mobile_order_app/Widgets/General/perks_info.dart';
+import 'package:jus_mobile_order_app/Widgets/General/price_display.dart';
 import 'package:jus_mobile_order_app/Widgets/General/select_product_options.dart';
-import 'package:jus_mobile_order_app/Widgets/General/size_selector_price_display.dart';
+import 'package:jus_mobile_order_app/Widgets/General/size_selector.dart';
 import 'package:jus_mobile_order_app/Widgets/Helpers/loading.dart';
+import 'package:jus_mobile_order_app/Widgets/Helpers/set_standard_ingredients.dart';
 import 'package:jus_mobile_order_app/Widgets/Helpers/spacing_widgets.dart';
 import 'package:jus_mobile_order_app/Widgets/Lists/select_toppings_grid_view.dart';
 import 'package:jus_mobile_order_app/Widgets/Lists/unmodifiable_ingredient_grid.dart';
+
+import '../Widgets/General/nutrition_facts.dart';
 
 class ProductDetailPage extends ConsumerWidget {
   final ProductModel product;
@@ -75,14 +81,32 @@ class ProductDetailPage extends ConsumerWidget {
                     style: Theme.of(context).textTheme.headline5,
                   ),
                   Spacing().vertical(20),
-                  SizeAndPriceSelector(
-                    product: product,
+                  (product.isModifiable == false &&
+                          product.hasToppings == false)
+                      ? const SizedBox()
+                      : SizeSelector(
+                          product: product,
+                        ),
+                  PriceDisplay(product: product),
+                  determineIngredientGrid(context, ref, close),
+                  PerksInfo(product: product),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 20.0),
+                    child: NutritionFacts(
+                      product: product,
+                    ),
                   ),
-                  determineIngredientGrid(close),
+                  product.isModifiable
+                      ? const Padding(
+                          padding: EdgeInsets.only(bottom: 20.0),
+                          child: AllergyInfo(),
+                        )
+                      : const SizedBox(),
                 ],
               ),
             ),
             SelectProductOptions(
+              product: product,
               close: close,
             ),
           ],
@@ -91,14 +115,29 @@ class ProductDetailPage extends ConsumerWidget {
     );
   }
 
-  determineIngredientGrid(Function close) {
+  determineIngredientGrid(BuildContext context, WidgetRef ref, Function close) {
     return Padding(
       padding: const EdgeInsets.only(top: 25.0, bottom: 10.0),
-      child: product.isModifiable == false && product.hasToppings == true
-          ? const SelectToppingsGridView(
-              isQuickAdd: false,
-            )
-          : UnmodifiableIngredientGridView(close: close),
+      child: !product.isModifiable && product.hasToppings
+          ? const SelectToppingsGridView()
+          : Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  '${product.isModifiable ? 'Current ' : ''}Ingredients',
+                  style: Theme.of(context).textTheme.headline6,
+                ),
+                Spacing().vertical(15),
+                InkWell(
+                    onTap: () {
+                      if (product.isModifiable) {
+                        StandardIngredients(ref: ref).add();
+                        close();
+                      }
+                    },
+                    child: UnmodifiableIngredientGridView(close: close)),
+              ],
+            ),
     );
   }
 }

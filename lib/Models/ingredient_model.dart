@@ -17,5 +17,7 @@ class IngredientModel with _$IngredientModel {
     required bool isBlended,
     required bool isTopping,
     required bool isExtraCharge,
+    required bool containsDairy,
+    required bool containsGluten,
   }) = _IngredientModel;
 }

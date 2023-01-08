@@ -30,7 +30,7 @@ class ModifyItemWithToppingsCard extends HookConsumerWidget {
     final controller = useAnimationController();
     controller.repeat(
       min: 0.0,
-      max: 0.006,
+      max: 0.007,
       period: const Duration(milliseconds: 1200),
       reverse: true,
     );
@@ -48,78 +48,73 @@ class ModifyItemWithToppingsCard extends HookConsumerWidget {
           width: 125,
           child: RotationTransition(
             turns: Tween(begin: 0.0, end: 1.0).animate(controller),
-            child: Padding(
-              padding: const EdgeInsets.only(bottom: 5.0),
-              child: Card(
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(4.0),
-                ),
-                child: Stack(
-                  children: [
-                    Align(
-                      alignment: Alignment.topLeft,
-                      child: JusCloseButton(
-                        removePadding: true,
-                        iconSize: 18,
-                        onPressed: () {
-                          HapticFeedback.lightImpact();
-                          ref
-                              .read(selectedIngredientsProvider.notifier)
-                              .removeIngredient(currentIngredient.id, ref,
-                                  selectedIngredients);
-                        },
-                      ),
+            child: Card(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(4.0),
+              ),
+              child: Stack(
+                children: [
+                  Align(
+                    alignment: Alignment.topLeft,
+                    child: JusCloseButton(
+                      removePadding: true,
+                      iconSize: 18,
+                      onPressed: () {
+                        HapticFeedback.lightImpact();
+                        ref
+                            .read(selectedIngredientsProvider.notifier)
+                            .removeIngredient(
+                                currentIngredient.id, ref, selectedIngredients);
+                      },
                     ),
-                    Center(
-                      child: Padding(
-                        padding: const EdgeInsets.only(bottom: 8.0),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  ),
+                  Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Column(
                           children: [
+                            SizedBox(
+                              height: 60,
+                              width: 60,
+                              child: CachedNetworkImage(
+                                  imageUrl: currentIngredient.image),
+                            ),
                             Column(
                               children: [
-                                SizedBox(
-                                  height: 70,
-                                  width: 70,
-                                  child: CachedNetworkImage(
-                                      imageUrl: currentIngredient.image),
+                                AutoSizeText(
+                                  currentIngredient.name,
+                                  maxLines: 1,
+                                  textAlign: TextAlign.center,
+                                  style: const TextStyle(
+                                    fontSize: 10,
+                                  ),
                                 ),
-                                Column(
-                                  children: [
-                                    AutoSizeText(
-                                      currentIngredient.name,
-                                      maxLines: 2,
-                                      textAlign: TextAlign.center,
-                                      style: const TextStyle(fontSize: 12),
-                                    ),
-                                    currentIngredient.isTopping &&
-                                            currentIngredient.isBlended
-                                        ? const SizedBox()
-                                        : IngredientAmountDescriptiveText(
-                                            index: index,
-                                            currentIngredient:
-                                                currentIngredient,
-                                          ),
-                                  ],
-                                ),
+                                currentIngredient.isTopping &&
+                                        currentIngredient.isBlended
+                                    ? const SizedBox()
+                                    : IngredientAmountDescriptiveText(
+                                        index: index,
+                                        currentIngredient: currentIngredient,
+                                      ),
                               ],
                             ),
-                            currentIngredient.isBlended &&
-                                    currentIngredient.isTopping
-                                ? MultiUseIngredientText(index: index)
-                                : DisplayPremiumIngredientPrices(index: index),
-                            currentIngredient.isTopping &&
-                                    currentIngredient.isBlended
-                                ? MultiUseIngredientEditRow(
-                                    index: index,
-                                    currentIngredient: currentIngredient)
-                                : ModifyIngredientQuantityRow(index: index),
                           ],
                         ),
-                      ),
+                        currentIngredient.isBlended &&
+                                currentIngredient.isTopping
+                            ? MultiUseIngredientText(index: index)
+                            : DisplayPremiumIngredientPrices(index: index),
+                        currentIngredient.isTopping &&
+                                currentIngredient.isBlended
+                            ? MultiUseIngredientEditRow(
+                                index: index,
+                                currentIngredient: currentIngredient)
+                            : ModifyIngredientQuantityRow(index: index),
+                      ],
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
             ),
           ),
