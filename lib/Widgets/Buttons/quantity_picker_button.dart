@@ -4,23 +4,27 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:jus_mobile_order_app/Providers/product_providers.dart';
 
 class QuantityPickerButton extends ConsumerWidget {
-  const QuantityPickerButton({super.key});
+  final bool daysPicker;
+  const QuantityPickerButton({required this.daysPicker, super.key});
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final quantity = ref.watch(itemQuantityProvider);
+    final days = ref.watch(daysQuantityProvider);
     return Row(
       children: [
         IconButton(
           icon: const Icon(CupertinoIcons.minus_circled),
           iconSize: 26,
           onPressed: () {
-            ref.read(itemQuantityProvider.notifier).decrement();
+            daysPicker
+                ? ref.read(daysQuantityProvider.notifier).decrement()
+                : ref.read(itemQuantityProvider.notifier).decrement();
           },
         ),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 8.0),
           child: Text(
-            '$quantity',
+            '${daysPicker ? days : quantity}',
             style: Theme.of(context).textTheme.headline5,
           ),
         ),
@@ -28,7 +32,9 @@ class QuantityPickerButton extends ConsumerWidget {
           icon: const Icon(CupertinoIcons.plus_circle),
           iconSize: 26,
           onPressed: () {
-            ref.read(itemQuantityProvider.notifier).increment();
+            daysPicker
+                ? ref.read(daysQuantityProvider.notifier).increment()
+                : ref.read(itemQuantityProvider.notifier).increment();
           },
         ),
       ],

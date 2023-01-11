@@ -1,11 +1,13 @@
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:jus_mobile_order_app/Models/ingredient_model.dart';
 import 'package:jus_mobile_order_app/Models/location_model.dart';
+import 'package:jus_mobile_order_app/Models/membership_details_model.dart';
 import 'package:jus_mobile_order_app/Models/product_model.dart';
 import 'package:jus_mobile_order_app/Models/user_model.dart';
 import 'package:jus_mobile_order_app/Services/auth_services.dart';
 import 'package:jus_mobile_order_app/Services/ingredient_services.dart';
 import 'package:jus_mobile_order_app/Services/location_services.dart';
+import 'package:jus_mobile_order_app/Services/membership_details_services.dart';
 import 'package:jus_mobile_order_app/Services/product_services.dart';
 import 'package:jus_mobile_order_app/Services/user_services.dart';
 
@@ -36,3 +38,12 @@ final blendOnlyIngredientsProvider = StreamProvider<List<IngredientModel>>(
 
 final toppingsOnlyIngredientsProvider = StreamProvider<List<IngredientModel>>(
     (ref) => IngredientServices().toppingsOnlyIngredients);
+
+final taxableProductsProvider = StreamProvider<List<ProductModel>>(
+    (ref) => ProductServices().taxableProducts);
+
+final recommendedProductsProvider = StreamProvider<List<ProductModel>>(
+    (ref) => ProductServices().recommendedProducts);
+
+final membershipDetailsProvider = StreamProvider<MembershipDetailsModel>(
+    (ref) => MembershipDetailsServices().membershipDetails);

@@ -3,6 +3,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:jus_mobile_order_app/Models/ingredient_model.dart';
+import 'package:jus_mobile_order_app/Models/product_model.dart';
 import 'package:jus_mobile_order_app/Providers/product_providers.dart';
 import 'package:jus_mobile_order_app/Providers/stream_providers.dart';
 import 'package:jus_mobile_order_app/Widgets/Helpers/error.dart';
@@ -10,73 +11,132 @@ import 'package:jus_mobile_order_app/Widgets/Helpers/loading.dart';
 import 'package:jus_mobile_order_app/Widgets/Helpers/spacing_widgets.dart';
 
 class UnmodifiableIngredientCard extends ConsumerWidget {
+  final ProductModel product;
   final int index;
-  const UnmodifiableIngredientCard({required this.index, super.key});
+  const UnmodifiableIngredientCard(
+      {required this.product, required this.index, super.key});
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final ingredients = ref.watch(ingredientsProvider);
+    final products = ref.watch(productsProvider);
     return ingredients.when(
       loading: () => const Loading(),
       error: (e, _) => ShowError(
         error: e.toString(),
       ),
-      data: (data) => Card(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(4),
+      data: (ingredients) => products.when(
+        loading: () => const Loading(),
+        error: (e, _) => ShowError(
+          error: e.toString(),
         ),
-        child: Column(
-          children: [
-            SizedBox(
-              height: 70,
-              width: 70,
-              child: CachedNetworkImage(
-                imageUrl: determineIngredientImage(data, ref),
-              ),
+        data: (products) => Card(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(4),
+          ),
+          child: Padding(
+            padding: product.isScheduled
+                ? const EdgeInsets.only(bottom: 15.0)
+                : EdgeInsets.zero,
+            child: Column(
+              children: [
+                SizedBox(
+                  height: product.isScheduled ? 50 : 70,
+                  width: product.isScheduled ? 50 : 70,
+                  child: product.isScheduled
+                      ? Center(
+                          child: Text(
+                            '${index + 1}',
+                            style: const TextStyle(fontSize: 35),
+                          ),
+                        )
+                      : CachedNetworkImage(
+                          imageUrl: determineIngredientImage(ingredients, ref),
+                        ),
+                ),
+                Padding(
+                  padding: product.isScheduled
+                      ? const EdgeInsets.symmetric(vertical: 4.0)
+                      : EdgeInsets.zero,
+                  child: AutoSizeText(
+                    product.isScheduled
+                        ? determineItemName(products, ref)
+                        : determineIngredientName(ingredients, ref),
+                    style: const TextStyle(
+                      fontSize: 12,
+                    ),
+                    textAlign: TextAlign.center,
+                    maxLines: 2,
+                  ),
+                ),
+                Spacing().vertical(5),
+                product.isScheduled
+                    ? determineItemDescription(products, ref)
+                    : determineIngredientAmountDescription(ingredients, ref),
+              ],
             ),
-            AutoSizeText(
-              determineIngredientName(data, ref),
-              style: const TextStyle(fontSize: 12),
-              textAlign: TextAlign.center,
-              maxLines: 2,
-            ),
-            Spacing().vertical(5),
-            determineIngredientAmountDescription(data, ref),
-          ],
+          ),
         ),
       ),
+    );
+  }
+
+  determineItemName(List<ProductModel> data, ref) {
+    final standardItems = ref.watch(standardItemsProvider);
+    return data
+        .where((element) => element.productID == standardItems[index]['id'])
+        .first
+        .name;
+  }
+
+  determineItemImage(List<ProductModel> data, ref) {
+    final standardItems = ref.watch(standardItemsProvider);
+    return data
+        .where((element) => element.productID == standardItems[index]['id'])
+        .first
+        .name;
+  }
+
+  determineItemDescription(List<ProductModel> data, ref) {
+    final standardItems = ref.watch(standardItemsProvider);
+
+    return AutoSizeText(
+      data
+          .where((element) => element.productID == (standardItems)[index]['id'])
+          .first
+          .description,
+      maxLines: 3,
+      maxFontSize: 10,
+      minFontSize: 10,
+      // overflow: TextOverflow.ellipsis,
+      textAlign: TextAlign.center,
     );
   }
 
   determineIngredientImage(List<IngredientModel> data, ref) {
     final standardIngredients = ref.watch(standardIngredientsProvider);
     final selectedIngredients = ref.watch(selectedIngredientsProvider);
-    if (selectedIngredients.isEmpty) {
-      return data
-          .where((element) => element.id == standardIngredients[index]['id'])
-          .first
-          .image;
-    } else {
-      return data
-          .where((element) => element.id == selectedIngredients[index]['id'])
-          .first
-          .image;
-    }
+
+    return data
+        .where((element) =>
+            element.id ==
+            (selectedIngredients.isEmpty
+                ? standardIngredients
+                : selectedIngredients)[index]['id'])
+        .first
+        .image;
   }
 
   determineIngredientName(List<IngredientModel> data, ref) {
     final standardIngredients = ref.watch(standardIngredientsProvider);
     final selectedIngredients = ref.watch(selectedIngredientsProvider);
-    if (selectedIngredients.isEmpty) {
-      return data
-          .where((element) => element.id == standardIngredients[index]['id'])
-          .first
-          .name;
-    } else {
-      return data
-          .where((element) => element.id == selectedIngredients[index]['id'])
-          .first
-          .name;
-    }
+    return data
+        .where((element) =>
+            element.id ==
+            (selectedIngredients.isEmpty
+                ? standardIngredients
+                : selectedIngredients)[index]['id'])
+        .first
+        .name;
   }
 
   determineIngredientAmountDescription(List<IngredientModel> data, ref) {

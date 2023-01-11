@@ -2,16 +2,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:jus_mobile_order_app/Models/ingredient_model.dart';
-import 'package:jus_mobile_order_app/Models/product_model.dart';
 import 'package:jus_mobile_order_app/Models/user_model.dart';
-import 'package:jus_mobile_order_app/Services/product_services.dart';
 import 'package:jus_mobile_order_app/Widgets/Cards/animated_list_card.dart';
-
-final taxableProductsProvider = StreamProvider<List<ProductModel>>(
-    (ref) => ProductServices().taxableProducts);
-
-final recommendedProductsProvider = StreamProvider<List<ProductModel>>(
-    (ref) => ProductServices().recommendedProducts);
 
 final categoryOrderProvider = StateProvider<int>((ref) => 0);
 
@@ -27,6 +19,10 @@ final selectedSizeProvider = StateProvider.autoDispose<int>((ref) => 0);
 final itemQuantityProvider =
     StateNotifierProvider.autoDispose<SelectItemQuantity, int>(
         (ref) => SelectItemQuantity());
+
+final daysQuantityProvider =
+    StateNotifierProvider.autoDispose<SelectDaysQuantity, int>(
+        (ref) => SelectDaysQuantity());
 
 final animatedListKeyProvider =
     Provider.autoDispose<GlobalKey<AnimatedListState>>(
@@ -60,8 +56,11 @@ final selectedIngredientsProvider =
     StateNotifierProvider<ListOfIngredients, List<dynamic>>(
         (ref) => ListOfIngredients());
 
+final standardItemsProvider =
+    StateProvider<List<Map<String, dynamic>>>((ref) => [{}]);
+
 final selectedAllergiesProvider =
-    StateNotifierProvider.autoDispose<SelectedAllergies, List<int>>(
+    StateNotifierProvider<SelectedAllergies, List<int>>(
         (ref) => SelectedAllergies());
 
 final selectedToppingsProvider =
@@ -116,6 +115,26 @@ class SelectItemQuantity extends StateNotifier<int> {
   }
 }
 
+class SelectDaysQuantity extends StateNotifier<int> {
+  SelectDaysQuantity() : super(1);
+
+  increment() {
+    if (state == 5) {
+      state = state;
+    } else {
+      state = state + 1;
+    }
+  }
+
+  decrement() {
+    if (state < 2) {
+      return state = 1;
+    } else {
+      return state = state - 1;
+    }
+  }
+}
+
 class SelectExtraChargeIngredientQuantity extends StateNotifier<int> {
   SelectExtraChargeIngredientQuantity() : super(0);
 
@@ -142,7 +161,7 @@ class ListOfIngredients extends StateNotifier<List<dynamic>> {
   }
 
   addIngredient(
-      {required List<IngredientModel> ingredients,
+      {required List<dynamic> ingredients,
       required int index,
       required bool isExtraCharge,
       required WidgetRef ref,

@@ -17,7 +17,7 @@ class PerksInfo extends ConsumerWidget {
                 padding: const EdgeInsets.symmetric(vertical: 12.0),
                 child: Text(
                   product.perks,
-                  style: const TextStyle(fontSize: 18),
+                  style: const TextStyle(fontSize: 17),
                 ),
               )
       ],

@@ -2,12 +2,11 @@ import 'package:animations/animations.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:jus_mobile_order_app/Models/product_model.dart';
-import 'package:jus_mobile_order_app/Providers/product_providers.dart';
+import 'package:jus_mobile_order_app/Providers/stream_providers.dart';
 import 'package:jus_mobile_order_app/Providers/theme_providers.dart';
-import 'package:jus_mobile_order_app/Views/cleanse_detail_page.dart';
 import 'package:jus_mobile_order_app/Views/product_detail_page.dart';
 import 'package:jus_mobile_order_app/Widgets/Helpers/set_standard_ingredients.dart';
+import 'package:jus_mobile_order_app/Widgets/Helpers/set_standard_items.dart';
 import 'package:jus_mobile_order_app/Widgets/Helpers/spacing_widgets.dart';
 import 'package:jus_mobile_order_app/Widgets/Icons/new_icon.dart';
 import 'package:jus_mobile_order_app/Widgets/Lists/product_description.dart';
@@ -41,11 +40,11 @@ class ItemCardLarge extends HookConsumerWidget {
             borderRadius: BorderRadius.circular(8.0),
           ),
           openBuilder: (context, open) =>
-              determineProductDetailPage(product[index]),
+              ProductDetailPage(product: product[index]),
           closedBuilder: (context, close) => InkWell(
             onTap: () {
               product[index].isScheduled
-                  ? null
+                  ? StandardItems(ref: ref).set(product[index])
                   : StandardIngredients(ref: ref).set(product[index]);
               close();
             },
@@ -102,13 +101,5 @@ class ItemCardLarge extends HookConsumerWidget {
         ),
       ),
     );
-  }
-
-  determineProductDetailPage(ProductModel product) {
-    if (product.isScheduled) {
-      return const CleanseDetailPage();
-    } else {
-      return ProductDetailPage(product: product);
-    }
   }
 }

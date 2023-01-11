@@ -37,10 +37,29 @@ class SelectProductOptions extends ConsumerWidget {
                         'Quantity',
                         style: Theme.of(context).textTheme.headline6,
                       ),
-                      const QuantityPickerButton(),
+                      const QuantityPickerButton(
+                        daysPicker: false,
+                      ),
                     ],
                   ),
                 ),
+                product.isScheduled
+                    ? Padding(
+                        padding: const EdgeInsets.only(bottom: 18.0),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              'Number of Days',
+                              style: Theme.of(context).textTheme.headline6,
+                            ),
+                            const QuantityPickerButton(
+                              daysPicker: true,
+                            ),
+                          ],
+                        ),
+                      )
+                    : const SizedBox(),
                 determineAddToCartRow(ref),
               ],
             ),

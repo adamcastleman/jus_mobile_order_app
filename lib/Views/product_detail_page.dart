@@ -35,6 +35,7 @@ class ProductDetailPage extends ConsumerWidget {
           onPressed: () {
             Navigator.pop(context);
             ref.invalidate(selectedIngredientsProvider);
+            ref.invalidate(selectedAllergiesProvider);
           },
         ),
         actions: const [
@@ -81,12 +82,7 @@ class ProductDetailPage extends ConsumerWidget {
                     style: Theme.of(context).textTheme.headline5,
                   ),
                   Spacing().vertical(20),
-                  (product.isModifiable == false &&
-                          product.hasToppings == false)
-                      ? const SizedBox()
-                      : SizeSelector(
-                          product: product,
-                        ),
+                  determineSizeSelector(),
                   PriceDisplay(product: product),
                   determineIngredientGrid(context, ref, close),
                   PerksInfo(product: product),
@@ -96,12 +92,12 @@ class ProductDetailPage extends ConsumerWidget {
                       product: product,
                     ),
                   ),
-                  product.isModifiable
-                      ? const Padding(
-                          padding: EdgeInsets.only(bottom: 20.0),
-                          child: AllergyInfo(),
-                        )
-                      : const SizedBox(),
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 20.0),
+                    child: AllergyInfo(
+                      product: product,
+                    ),
+                  ),
                 ],
               ),
             ),
@@ -124,20 +120,40 @@ class ProductDetailPage extends ConsumerWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  '${product.isModifiable ? 'Current ' : ''}Ingredients',
+                  '${product.isModifiable ? 'Current ' : ''}${product.isScheduled ? 'Items' : 'Ingredients'}',
                   style: Theme.of(context).textTheme.headline6,
                 ),
                 Spacing().vertical(15),
                 InkWell(
-                    onTap: () {
-                      if (product.isModifiable) {
-                        StandardIngredients(ref: ref).add();
-                        close();
-                      }
-                    },
-                    child: UnmodifiableIngredientGridView(close: close)),
+                  onTap: () {
+                    determineModificationPageNavigation(ref, close);
+                  },
+                  child: UnmodifiableIngredientGridView(
+                      product: product, close: close),
+                ),
               ],
             ),
     );
+  }
+
+  determineSizeSelector() {
+    if (product.isScheduled) {
+      return const SizedBox();
+    } else if (product.isModifiable == false && product.hasToppings == false) {
+      return const SizedBox();
+    } else {
+      return SizeSelector(
+        product: product,
+      );
+    }
+  }
+
+  determineModificationPageNavigation(WidgetRef ref, Function close) {
+    if (product.isModifiable) {
+      StandardIngredients(ref: ref).add();
+      close();
+    } else {
+      return null;
+    }
   }
 }

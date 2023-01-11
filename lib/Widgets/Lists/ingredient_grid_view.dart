@@ -19,14 +19,14 @@ class IngredientGridView extends ConsumerWidget {
     return ingredients.when(
       loading: () => const Loading(),
       error: (e, _) => ShowError(error: e.toString()),
-      data: (data) => Padding(
+      data: (ingredients) => Padding(
         padding: const EdgeInsets.only(top: 8.0, left: 10, right: 10),
         child: GroupedListView.grid(
           crossAxisCount: 3,
           mainAxisSpacing: 6,
           crossAxisSpacing: 6,
           itemsAspectRatio: 1 / 1.14,
-          items: data,
+          items: ingredients,
           itemGrouper: (IngredientModel ingredient) => ingredient.category,
           headerBuilder: (context, String category) => Align(
             alignment: Alignment.centerLeft,
@@ -42,7 +42,7 @@ class IngredientGridView extends ConsumerWidget {
           gridItemBuilder: (context, int countInGroup, int itemIndexInGroup,
                   IngredientModel ingredient, int itemIndexInOriginalList) =>
               SelectIngredientCard(
-            ingredients: data,
+            ingredients: ingredients,
             index: itemIndexInOriginalList,
           ),
         ),

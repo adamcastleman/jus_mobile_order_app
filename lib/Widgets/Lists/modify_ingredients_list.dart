@@ -10,7 +10,7 @@ class ModifyIngredientsList extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final selectedIngredients = ref.watch(selectedIngredientsProvider);
-    final hasToppings = ref.watch(productHasToppingsProvider);
+
     final key = ref.watch(animatedListKeyProvider);
     return SizedBox(
       height: 160,
@@ -25,14 +25,21 @@ class ModifyIngredientsList extends ConsumerWidget {
             axis: Axis.horizontal,
             axisAlignment: 0.5,
             sizeFactor: animation,
-            child: hasToppings
-                ? ModifyItemWithToppingsCard(index: index)
-                : ModifyItemNoToppingsCard(
-                    index: index,
-                  ),
+            child: determineRecipeCard(ref, index),
           ),
         ),
       ),
     );
+  }
+
+  determineRecipeCard(WidgetRef ref, int index) {
+    final hasToppings = ref.watch(productHasToppingsProvider);
+    if (hasToppings) {
+      return ModifyItemWithToppingsCard(index: index);
+    } else {
+      return ModifyItemNoToppingsCard(
+        index: index,
+      );
+    }
   }
 }

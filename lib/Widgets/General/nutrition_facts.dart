@@ -24,13 +24,8 @@ class NutritionFacts extends ConsumerWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              product.isModifiable
-                  ? const Text(
-                      'Based on standard recipe with no modifications',
-                      style: TextStyle(fontSize: 12),
-                    )
-                  : const SizedBox(),
-              !product.isModifiable
+              determineStandardRecipeText(),
+              !product.isModifiable && !product.isScheduled
                   ? const Text(
                       'Percentages are based on a 2,000 calorie diet.',
                       style: TextStyle(fontSize: 12),
@@ -75,12 +70,26 @@ class NutritionFacts extends ConsumerWidget {
           ),
         ),
         Spacing().vertical(5),
-        AutoSizeText(
-          'Servings of fruit: ${product.servingsFruit} | Servings of veggies: ${product.servingsVeggie}',
-          style: const TextStyle(fontSize: 15),
-          maxLines: 1,
-        )
+        !product.isScheduled
+            ? AutoSizeText(
+                'Servings of fruit: ${product.servingsFruit} | Servings of veggies: ${product.servingsVeggie}',
+                style: const TextStyle(fontSize: 15),
+                maxLines: 1,
+              )
+            : const SizedBox(),
       ],
     );
+  }
+
+  determineStandardRecipeText() {
+    TextStyle textStyle = const TextStyle(fontSize: 12);
+    if (product.isModifiable) {
+      return Text(
+        'Based on standard recipe with no modifications',
+        style: textStyle,
+      );
+    } else {
+      return const SizedBox();
+    }
   }
 }
