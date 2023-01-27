@@ -176,6 +176,17 @@ class SelectDaysQuantity extends StateNotifier<int> {
 class SelectExtraChargeIngredientQuantity extends StateNotifier<int> {
   SelectExtraChargeIngredientQuantity() : super(0);
 
+  addBlended(int blended) {
+    print('hi');
+    HapticFeedback.lightImpact();
+    state = blended;
+  }
+
+  addTopping(int topping) {
+    HapticFeedback.lightImpact();
+    state = topping;
+  }
+
   increment() {
     HapticFeedback.lightImpact();
     state = state + 1;

@@ -175,15 +175,16 @@ class OrderTileDisplayModifications extends ConsumerWidget {
   blendedOrToppingDescription(WidgetRef ref, List<dynamic> added,
       IngredientModel ingredient, int index) {
     final currentOrder = ref.watch(currentOrderItemsProvider);
-    if (!currentOrder[orderIndex]['hasToppings']) {
-      return '';
-    } else if (ingredient.isTopping == false) {
+    if (!currentOrder[orderIndex]['hasToppings'] ||
+        ingredient.isTopping == false) {
       return '+';
     } else if (ingredient.isTopping &&
+        added[index]['isExtraCharge'] != true &&
         added[index]['blended'] == 0 &&
         added[index]['topping'] == 1) {
       return '+ Blended';
     } else if (ingredient.isTopping &&
+        added[index]['isExtraCharge'] != true &&
         added[index]['blended'] == 1 &&
         added[index]['topping'] == 0) {
       return '+ Topped';
@@ -204,32 +205,36 @@ class OrderTileDisplayModifications extends ConsumerWidget {
 
   String modifiedIngredientAmount(WidgetRef ref, List<dynamic> added,
       IngredientModel ingredient, int index) {
-    final currentOrder = ref.watch(currentOrderItemsProvider);
-    if (currentOrder[orderIndex]['hasToppings']) {
-      return '';
+    String description = '';
+    final amount = added[index]['amount'];
+    final blended = added[index]['blended'];
+    final topping = added[index]['topping'];
+
+    if ((blended == 0 && topping == 0) ||
+        (blended == null && topping == null)) {
+      if (amount == 0.5) {
+        description = ' Light';
+      } else if (amount == 2) {
+        description = ' Extra';
+      }
     }
-    if (ingredient.isExtraCharge) {
-      return '+';
-    }
-    if (added[index]['amount'] == 2) {
-      return '+ Extra';
-    }
-    if (added[index]['amount'] == 0.5) {
-      return '+ Light';
-    }
-    return '+';
+    return description;
   }
 
   extraChargeQuantity(
       List<dynamic> added, IngredientModel ingredient, int index) {
-    if (ingredient.isExtraCharge == false || added[index]['amount'] < 2) {
+    if (added[index]['isExtraCharge'] != true &&
+        (added[index]['blended'] != 0 && added[index]['topping'] != 0)) {
       return '';
-    } else if ((added[index]['blended'] != null &&
-            added[index]['blended'] > 0) &&
-        (added[index]['topping'] != null && added[index]['topping'] > 0)) {
-      return '';
-    } else {
+    } else if (added[index]['isExtraCharge'] == true &&
+        added[index]['amount'] > 1) {
       return ' x${added[index]['amount']}';
+    } else if (added[index]['blended'] > 1) {
+      return ' x${added[index]['blended']}';
+    } else if (added[index]['topping'] > 1) {
+      return ' x${added[index]['topping']}';
+    } else {
+      return '';
     }
   }
 
