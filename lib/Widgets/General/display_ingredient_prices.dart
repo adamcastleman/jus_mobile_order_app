@@ -20,25 +20,14 @@ class DisplayPremiumIngredientPrices extends ConsumerWidget {
               error: e.toString(),
             ),
         data: (user) {
-          if (currentUser.value?.uid == null &&
+          if ((user.uid == null || !user.isActiveMember!) &&
               selectedIngredients[index]['price'] != 0.toStringAsFixed(2)) {
             return Text(
-              '\$${selectedIngredients[index]['price']}',
+              '\$${(double.parse(selectedIngredients[index]['price']) / 100).toStringAsFixed(2)}',
               style: const TextStyle(fontSize: 11),
             );
-          } else if (currentUser.value?.uid == null &&
-              selectedIngredients[index]['price'] == 0.toStringAsFixed(2)) {
-            return const SizedBox();
-          } else if (user.isActiveMember!) {
-            return const SizedBox();
-          } else if (selectedIngredients[index]['price'] ==
-              0.toStringAsFixed(2)) {
-            return const SizedBox();
           } else {
-            return Text(
-              '\$${selectedIngredients[index]['price']}',
-              style: const TextStyle(fontSize: 11),
-            );
+            return const SizedBox();
           }
         });
   }

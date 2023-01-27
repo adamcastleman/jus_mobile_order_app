@@ -6,6 +6,7 @@ import 'package:jus_mobile_order_app/Widgets/Buttons/elevated_button_large.dart'
 import 'package:jus_mobile_order_app/Widgets/Buttons/elevated_button_medium.dart';
 import 'package:jus_mobile_order_app/Widgets/Buttons/outline_button_medium.dart';
 import 'package:jus_mobile_order_app/Widgets/Buttons/quantity_picker_button.dart';
+import 'package:jus_mobile_order_app/Widgets/Helpers/pricing.dart';
 
 import '../Helpers/set_standard_ingredients.dart';
 
@@ -60,7 +61,7 @@ class SelectProductOptions extends ConsumerWidget {
                         ),
                       )
                     : const SizedBox(),
-                determineAddToCartRow(ref),
+                determineAddToCartRow(context, ref),
               ],
             ),
           ),
@@ -69,8 +70,30 @@ class SelectProductOptions extends ConsumerWidget {
     );
   }
 
-  determineAddToCartRow(WidgetRef ref) {
+  determineAddToCartRow(BuildContext context, WidgetRef ref) {
     final isModifiable = ref.watch(isModifiableProductProvider);
+    final editOrder = ref.watch(editOrderProvider);
+    final standardIngredients = ref.watch(standardIngredientsProvider);
+    final selectedIngredients = ref.watch(selectedIngredientsProvider);
+    final itemQuantity = ref.watch(itemQuantityProvider);
+    final daysQuantity = ref.watch(daysQuantityProvider);
+    final itemSize = ref.watch(selectedSizeProvider);
+    final hasToppings = ref.watch(productHasToppingsProvider);
+    final selectedToppings = ref.watch(selectedToppingsProvider);
+    final allergies = ref.watch(selectedAllergiesProvider);
+    Map<String, dynamic> currentItem = {
+      'productID': product.productID,
+      'isScheduled': product.isScheduled,
+      'isModifiable': product.isModifiable,
+      'itemQuantity': itemQuantity,
+      'daysQuantity': daysQuantity,
+      'itemSize': itemSize,
+      'hasToppings': hasToppings,
+      'selectedIngredients': selectedIngredients,
+      'standardIngredients': standardIngredients,
+      'selectedToppings': selectedToppings,
+      'allergies': allergies,
+    };
     if (isModifiable == true) {
       return Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -84,16 +107,58 @@ class SelectProductOptions extends ConsumerWidget {
             },
           ),
           MediumElevatedButton(
-            buttonText: 'Add to cart',
-            onPressed: () {},
+            buttonText: editOrder ? 'Update' : 'Add to cart',
+            onPressed: () {
+              editOrder
+                  ? editItemInCart(ref, currentItem)
+                  : addToCart(ref, currentItem);
+              addCost(ref);
+              Navigator.pop(context);
+            },
           ),
         ],
       );
     } else {
       return LargeElevatedButton(
-        buttonText: 'Add to cart',
-        onPressed: () {},
+        buttonText: editOrder ? 'Update' : 'Add to cart',
+        onPressed: () {
+          editOrder
+              ? editItemInCart(ref, currentItem)
+              : addToCart(ref, currentItem);
+          addCost(ref);
+          Navigator.pop(context);
+        },
       );
     }
+  }
+
+  addToCart(WidgetRef ref, Map<String, dynamic> currentItem) {
+    ref.read(currentOrderItemsProvider.notifier).addItem(currentItem);
+  }
+
+  editItemInCart(WidgetRef ref, Map<String, dynamic> currentItem) {
+    ref.read(currentOrderItemsProvider.notifier).editItem(ref, currentItem);
+  }
+
+  addCost(WidgetRef ref) {
+    final itemQuantity = ref.watch(itemQuantityProvider);
+    final daysQuantity = ref.watch(daysQuantityProvider);
+    final itemSize = ref.watch(selectedSizeProvider);
+    ref.read(currentOrderCostProvider.notifier).addCost({
+      'price': product.price[itemSize]['amount'] +
+          (Pricing(ref: ref).totalExtraChargeItems() * 100),
+      'memberPrice': product.memberPrice[itemSize]['amount'] +
+          Pricing(ref: ref).totalExtraChargeItemsMembers(),
+      'itemQuantity': itemQuantity,
+      'daysQuantity': daysQuantity,
+    });
+    ref.invalidate(itemQuantityProvider);
+    ref.invalidate(selectedIngredientsProvider);
+    ref.invalidate(daysQuantityProvider);
+    ref.invalidate(selectedSizeProvider);
+    ref.invalidate(editOrderProvider);
+    ref.invalidate(productHasToppingsProvider);
+    ref.invalidate(selectedToppingsProvider);
+    ref.invalidate(selectedAllergiesProvider);
   }
 }

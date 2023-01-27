@@ -5,6 +5,7 @@ import 'package:jus_mobile_order_app/Models/membership_details_model.dart';
 import 'package:jus_mobile_order_app/Models/product_model.dart';
 import 'package:jus_mobile_order_app/Models/user_model.dart';
 import 'package:jus_mobile_order_app/Services/auth_services.dart';
+import 'package:jus_mobile_order_app/Services/image_services.dart';
 import 'package:jus_mobile_order_app/Services/ingredient_services.dart';
 import 'package:jus_mobile_order_app/Services/location_services.dart';
 import 'package:jus_mobile_order_app/Services/membership_details_services.dart';
@@ -47,3 +48,6 @@ final recommendedProductsProvider = StreamProvider<List<ProductModel>>(
 
 final membershipDetailsProvider = StreamProvider<MembershipDetailsModel>(
     (ref) => MembershipDetailsServices().membershipDetails);
+
+final emptyCartImageProvider =
+    StreamProvider((ref) => ImageServices().emptyCartImage);

@@ -25,6 +25,7 @@ class LocationServices {
           longitude: data['longitude'],
           isActive: data['isActive'],
           isAcceptingOrders: data['isAcceptingOrders'],
+          salesTaxRate: data['salesTaxRate'],
         );
       },
     ).toList();

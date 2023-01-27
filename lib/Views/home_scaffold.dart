@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:jus_mobile_order_app/Providers/navigation_providers.dart';
+import 'package:jus_mobile_order_app/Views/cart_page.dart';
 import 'package:jus_mobile_order_app/Views/home_page.dart';
 import 'package:jus_mobile_order_app/Views/order_page.dart';
 import 'package:jus_mobile_order_app/Views/profile_page.dart';
@@ -20,7 +21,7 @@ class HomeScaffold extends ConsumerWidget {
             HomePage(),
             Center(child: Text('Page 2')),
             OrderPage(),
-            Center(child: Text('Page 4')),
+            CartPage(),
             ProfilePage(),
           ],
         ),

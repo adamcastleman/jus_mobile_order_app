@@ -1,8 +1,10 @@
+import 'package:badges/badges.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:jus_mobile_order_app/Providers/location_providers.dart';
 import 'package:jus_mobile_order_app/Providers/navigation_providers.dart';
+import 'package:jus_mobile_order_app/Providers/product_providers.dart';
 import 'package:jus_mobile_order_app/Views/choose_location_page.dart';
 import 'package:jus_mobile_order_app/Widgets/Helpers/modal_bottom_sheets.dart';
 import 'package:jus_mobile_order_app/Widgets/Helpers/permission_handler.dart';
@@ -11,6 +13,11 @@ class BottomNavBar extends ConsumerWidget {
   const BottomNavBar({super.key});
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final currentOrder = ref.watch(currentOrderItemsProvider);
+    num totalItemAmount = 0;
+    for (var item in currentOrder) {
+      totalItemAmount = totalItemAmount + item['itemQuantity'];
+    }
     return BottomNavigationBar(
       type: BottomNavigationBarType.fixed,
       selectedFontSize: 14,
@@ -25,13 +32,13 @@ class BottomNavBar extends ConsumerWidget {
         }
         ref.read(bottomNavigationProvider.notifier).state = selected;
       },
-      items: const [
-        BottomNavigationBarItem(
+      items: [
+        const BottomNavigationBarItem(
             icon: Padding(
                 padding: EdgeInsets.symmetric(vertical: 6.0),
                 child: Icon(FontAwesomeIcons.house)),
             label: 'Home'),
-        BottomNavigationBarItem(
+        const BottomNavigationBarItem(
             icon: Padding(
               padding: EdgeInsets.symmetric(vertical: 6.0),
               child: Icon(
@@ -39,19 +46,37 @@ class BottomNavBar extends ConsumerWidget {
               ),
             ),
             label: 'Scan'),
-        BottomNavigationBarItem(
+        const BottomNavigationBarItem(
             icon: Padding(
               padding: EdgeInsets.symmetric(vertical: 6.0),
               child: Icon(FontAwesomeIcons.bagShopping),
             ),
             label: 'Order'),
         BottomNavigationBarItem(
-            icon: Padding(
-              padding: EdgeInsets.symmetric(vertical: 6.0),
-              child: Icon(FontAwesomeIcons.cartShopping),
+          icon: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 6.0),
+            child: Badge(
+              key: const ValueKey(1),
+              position: BadgePosition.topEnd(),
+              padding: const EdgeInsets.all(6),
+              showBadge: totalItemAmount == 0 ? false : true,
+              badgeColor: Colors.white,
+              borderSide: const BorderSide(color: Colors.black, width: 1),
+              badgeContent: Text(
+                '$totalItemAmount',
+                style: TextStyle(
+                    fontSize: totalItemAmount > 9
+                        ? 10
+                        : totalItemAmount > 99
+                            ? 8
+                            : 12),
+              ),
+              child: const Icon(FontAwesomeIcons.cartShopping),
             ),
-            label: 'Cart'),
-        BottomNavigationBarItem(
+          ),
+          label: 'Cart',
+        ),
+        const BottomNavigationBarItem(
           icon: Padding(
             padding: EdgeInsets.symmetric(vertical: 6.0),
             child: Icon(FontAwesomeIcons.user),

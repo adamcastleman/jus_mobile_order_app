@@ -62,10 +62,39 @@ class MembershipDetailPage extends ConsumerWidget {
                         textAlign: TextAlign.center,
                       ),
                       Spacing().vertical(30),
-                      Text(
-                        '\$${(data.subscriptionPrice[0]['amount'] / 100).toStringAsFixed(2)}${data.subscriptionPrice[0]['name']} | \$${(data.subscriptionPrice[1]['amount'] / 100).toStringAsFixed(2)}${data.subscriptionPrice[1]['name']}',
-                        style: const TextStyle(
-                            fontSize: 20, fontWeight: FontWeight.bold),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              const Text(
+                                'Monthly',
+                                style: TextStyle(
+                                    fontSize: 15, fontWeight: FontWeight.bold),
+                              ),
+                              Text(
+                                '\$${(data.subscriptionPrice[0]['amount'] / 100).toStringAsFixed(2)}${data.subscriptionPrice[0]['name']}',
+                                style: const TextStyle(
+                                    fontSize: 20, fontWeight: FontWeight.bold),
+                              ),
+                            ],
+                          ),
+                          Column(
+                            children: [
+                              const Text(
+                                'Annually',
+                                style: TextStyle(
+                                    fontSize: 15, fontWeight: FontWeight.bold),
+                              ),
+                              Text(
+                                '\$${(data.subscriptionPrice[1]['amount'] / 100).toStringAsFixed(2)}${data.subscriptionPrice[1]['name']}',
+                                style: const TextStyle(
+                                    fontSize: 20, fontWeight: FontWeight.bold),
+                              ),
+                            ],
+                          ),
+                        ],
                       ),
                       Spacing().vertical(10),
                     ],
@@ -131,9 +160,13 @@ class MembershipDetailPage extends ConsumerWidget {
         Align(
           alignment: Alignment.topRight,
           child: SizedBox(
-              height: 225,
-              width: 225,
-              child: CachedNetworkImage(imageUrl: data.perks[index]['image'])),
+            height: 225,
+            width: 225,
+            child: CachedNetworkImage(
+              imageUrl: data.perks[index]['image'],
+              placeholder: (context, loading) => const Loading(),
+            ),
+          ),
         ),
       ],
     );
@@ -169,9 +202,13 @@ class MembershipDetailPage extends ConsumerWidget {
         Align(
           alignment: Alignment.topLeft,
           child: SizedBox(
-              height: 225,
-              width: 225,
-              child: CachedNetworkImage(imageUrl: data.perks[index]['image'])),
+            height: 225,
+            width: 225,
+            child: CachedNetworkImage(
+              imageUrl: data.perks[index]['image'],
+              placeholder: (context, loading) => const Loading(),
+            ),
+          ),
         ),
       ],
     );

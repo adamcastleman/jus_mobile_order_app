@@ -14,3 +14,5 @@ final currentMapBoundsProvider = StateProvider<LatLngBounds>((ref) =>
         northeast: const LatLng(0.0, 0.0), southwest: const LatLng(0.0, 0.0)));
 
 final selectedLocationID = StateProvider<int>((ref) => 0);
+
+final locationSalesTaxRate = StateProvider<double>((ref) => 0.0);

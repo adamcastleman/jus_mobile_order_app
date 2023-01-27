@@ -9,8 +9,8 @@ import 'package:jus_mobile_order_app/Views/product_modifier_page.dart';
 import 'package:jus_mobile_order_app/Widgets/Buttons/close_button.dart';
 import 'package:jus_mobile_order_app/Widgets/Buttons/favorite_button.dart';
 import 'package:jus_mobile_order_app/Widgets/General/allergy_info.dart';
+import 'package:jus_mobile_order_app/Widgets/General/item_price_display.dart';
 import 'package:jus_mobile_order_app/Widgets/General/perks_info.dart';
-import 'package:jus_mobile_order_app/Widgets/General/price_display.dart';
 import 'package:jus_mobile_order_app/Widgets/General/select_product_options.dart';
 import 'package:jus_mobile_order_app/Widgets/General/size_selector.dart';
 import 'package:jus_mobile_order_app/Widgets/Helpers/loading.dart';
@@ -23,23 +23,30 @@ import '../Widgets/General/nutrition_facts.dart';
 
 class ProductDetailPage extends ConsumerWidget {
   final ProductModel product;
+
   const ProductDetailPage({required this.product, super.key});
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final backgroundColor = ref.watch(themeColorProvider);
+    final editOrder = ref.watch(editOrderProvider);
     return Scaffold(
       extendBodyBehindAppBar: true,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
-        leading: JusCloseButton(
-          onPressed: () {
-            Navigator.pop(context);
-            ref.invalidate(selectedIngredientsProvider);
-            ref.invalidate(selectedAllergiesProvider);
-          },
-        ),
-        actions: const [
-          FavoriteButton(),
+        leading: editOrder != true
+            ? JusCloseButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                  ref.invalidate(selectedIngredientsProvider);
+                  ref.invalidate(selectedAllergiesProvider);
+                  ref.invalidate(itemQuantityProvider);
+                  ref.invalidate(daysQuantityProvider);
+                  ref.invalidate(selectedSizeProvider);
+                },
+              )
+            : const SizedBox(),
+        actions: [
+          editOrder != true ? const FavoriteButton() : const SizedBox(),
         ],
       ),
       body: OpenContainer(
@@ -139,7 +146,7 @@ class ProductDetailPage extends ConsumerWidget {
   determineSizeSelector() {
     if (product.isScheduled) {
       return const SizedBox();
-    } else if (product.isModifiable == false && product.hasToppings == false) {
+    } else if (!product.isModifiable && !product.hasToppings) {
       return const SizedBox();
     } else {
       return SizeSelector(

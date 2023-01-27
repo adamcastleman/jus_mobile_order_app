@@ -32,7 +32,8 @@ class MultiUseIngredientEditRow extends ConsumerWidget {
             Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
           (currentUser.value?.uid == null || !user.isActiveMember!) &&
                   selectedIngredients[index]['isExtraCharge']
-              ? Text('\$${selectedIngredients[index]['price']}')
+              ? Text(
+                  '\$${(double.parse(selectedIngredients[index]['price']) / 100).toStringAsFixed(2)}')
               : const SizedBox(),
           InkWell(
             child: const CircleAvatar(

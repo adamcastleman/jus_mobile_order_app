@@ -27,6 +27,7 @@ mixin _$LocationModel {
   double get longitude => throw _privateConstructorUsedError;
   bool get isActive => throw _privateConstructorUsedError;
   bool get isAcceptingOrders => throw _privateConstructorUsedError;
+  double get salesTaxRate => throw _privateConstructorUsedError;
 
   @JsonKey(ignore: true)
   $LocationModelCopyWith<LocationModel> get copyWith =>
@@ -50,7 +51,8 @@ abstract class $LocationModelCopyWith<$Res> {
       double latitude,
       double longitude,
       bool isActive,
-      bool isAcceptingOrders});
+      bool isAcceptingOrders,
+      double salesTaxRate});
 }
 
 /// @nodoc
@@ -77,6 +79,7 @@ class _$LocationModelCopyWithImpl<$Res, $Val extends LocationModel>
     Object? longitude = null,
     Object? isActive = null,
     Object? isAcceptingOrders = null,
+    Object? salesTaxRate = null,
   }) {
     return _then(_value.copyWith(
       uid: null == uid
@@ -123,6 +126,10 @@ class _$LocationModelCopyWithImpl<$Res, $Val extends LocationModel>
           ? _value.isAcceptingOrders
           : isAcceptingOrders // ignore: cast_nullable_to_non_nullable
               as bool,
+      salesTaxRate: null == salesTaxRate
+          ? _value.salesTaxRate
+          : salesTaxRate // ignore: cast_nullable_to_non_nullable
+              as double,
     ) as $Val);
   }
 }
@@ -146,7 +153,8 @@ abstract class _$$_LocationModelCopyWith<$Res>
       double latitude,
       double longitude,
       bool isActive,
-      bool isAcceptingOrders});
+      bool isAcceptingOrders,
+      double salesTaxRate});
 }
 
 /// @nodoc
@@ -171,6 +179,7 @@ class __$$_LocationModelCopyWithImpl<$Res>
     Object? longitude = null,
     Object? isActive = null,
     Object? isAcceptingOrders = null,
+    Object? salesTaxRate = null,
   }) {
     return _then(_$_LocationModel(
       uid: null == uid
@@ -217,6 +226,10 @@ class __$$_LocationModelCopyWithImpl<$Res>
           ? _value.isAcceptingOrders
           : isAcceptingOrders // ignore: cast_nullable_to_non_nullable
               as bool,
+      salesTaxRate: null == salesTaxRate
+          ? _value.salesTaxRate
+          : salesTaxRate // ignore: cast_nullable_to_non_nullable
+              as double,
     ));
   }
 }
@@ -235,7 +248,8 @@ class _$_LocationModel implements _LocationModel {
       required this.latitude,
       required this.longitude,
       required this.isActive,
-      required this.isAcceptingOrders})
+      required this.isAcceptingOrders,
+      required this.salesTaxRate})
       : _address = address,
         _hours = hours;
 
@@ -273,10 +287,12 @@ class _$_LocationModel implements _LocationModel {
   final bool isActive;
   @override
   final bool isAcceptingOrders;
+  @override
+  final double salesTaxRate;
 
   @override
   String toString() {
-    return 'LocationModel(uid: $uid, name: $name, locationID: $locationID, phone: $phone, address: $address, hours: $hours, timezone: $timezone, latitude: $latitude, longitude: $longitude, isActive: $isActive, isAcceptingOrders: $isAcceptingOrders)';
+    return 'LocationModel(uid: $uid, name: $name, locationID: $locationID, phone: $phone, address: $address, hours: $hours, timezone: $timezone, latitude: $latitude, longitude: $longitude, isActive: $isActive, isAcceptingOrders: $isAcceptingOrders, salesTaxRate: $salesTaxRate)';
   }
 
   @override
@@ -300,7 +316,9 @@ class _$_LocationModel implements _LocationModel {
             (identical(other.isActive, isActive) ||
                 other.isActive == isActive) &&
             (identical(other.isAcceptingOrders, isAcceptingOrders) ||
-                other.isAcceptingOrders == isAcceptingOrders));
+                other.isAcceptingOrders == isAcceptingOrders) &&
+            (identical(other.salesTaxRate, salesTaxRate) ||
+                other.salesTaxRate == salesTaxRate));
   }
 
   @override
@@ -316,7 +334,8 @@ class _$_LocationModel implements _LocationModel {
       latitude,
       longitude,
       isActive,
-      isAcceptingOrders);
+      isAcceptingOrders,
+      salesTaxRate);
 
   @JsonKey(ignore: true)
   @override
@@ -337,7 +356,8 @@ abstract class _LocationModel implements LocationModel {
       required final double latitude,
       required final double longitude,
       required final bool isActive,
-      required final bool isAcceptingOrders}) = _$_LocationModel;
+      required final bool isAcceptingOrders,
+      required final double salesTaxRate}) = _$_LocationModel;
 
   @override
   String get uid;
@@ -361,6 +381,8 @@ abstract class _LocationModel implements LocationModel {
   bool get isActive;
   @override
   bool get isAcceptingOrders;
+  @override
+  double get salesTaxRate;
   @override
   @JsonKey(ignore: true)
   _$$_LocationModelCopyWith<_$_LocationModel> get copyWith =>

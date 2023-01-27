@@ -31,7 +31,7 @@ class GroupedOrderList extends HookConsumerWidget {
       data: (data) {
         return StickyGroupedListView(
           itemScrollController: controller,
-          elements: mapItems(products),
+          elements: mapItems(data),
           groupBy: (dynamic element) => element['categoryOrder'],
           groupSeparatorBuilder: (dynamic element) =>
               groupSeparator(context, element),
@@ -56,10 +56,10 @@ class GroupedOrderList extends HookConsumerWidget {
     );
   }
 
-  mapItems(AsyncValue<List<ProductModel>> products) {
+  mapItems(List<ProductModel> products) {
     List newList = [];
 
-    for (var product in products.value!) {
+    for (var product in products) {
       Map newMap = {
         'uid': product.uid,
         'name': product.name,

@@ -1,7 +1,9 @@
+import 'package:collection/collection.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:jus_mobile_order_app/Models/ingredient_model.dart';
+import 'package:jus_mobile_order_app/Models/product_model.dart';
 import 'package:jus_mobile_order_app/Models/user_model.dart';
 import 'package:jus_mobile_order_app/Widgets/Cards/animated_list_card.dart';
 
@@ -14,15 +16,15 @@ final isModifiableProductProvider = StateProvider<bool>((ref) => false);
 
 final productHasToppingsProvider = StateProvider<bool>((ref) => false);
 
-final selectedSizeProvider = StateProvider.autoDispose<int>((ref) => 0);
+final selectedSizeProvider = StateProvider<int>((ref) => 0);
 
-final itemQuantityProvider =
-    StateNotifierProvider.autoDispose<SelectItemQuantity, int>(
-        (ref) => SelectItemQuantity());
+final editOrderProvider = StateProvider<bool>((ref) => false);
 
-final daysQuantityProvider =
-    StateNotifierProvider.autoDispose<SelectDaysQuantity, int>(
-        (ref) => SelectDaysQuantity());
+final itemQuantityProvider = StateNotifierProvider<SelectItemQuantity, int>(
+    (ref) => SelectItemQuantity());
+
+final daysQuantityProvider = StateNotifierProvider<SelectDaysQuantity, int>(
+    (ref) => SelectDaysQuantity());
 
 final animatedListKeyProvider =
     Provider.autoDispose<GlobalKey<AnimatedListState>>(
@@ -31,6 +33,8 @@ final animatedListKeyProvider =
 final currentIngredientIDProvider = StateProvider<int?>((ref) => null);
 
 final currentIngredientIndexProvider = StateProvider<int?>((ref) => null);
+
+final isScheduledProvider = StateProvider<bool>((ref) => false);
 
 final currentIngredientExtraChargeProvider =
     StateProvider<bool>((ref) => false);
@@ -64,8 +68,18 @@ final selectedAllergiesProvider =
         (ref) => SelectedAllergies());
 
 final selectedToppingsProvider =
-    StateNotifierProvider.autoDispose<SelectedToppings, List<int>>(
+    StateNotifierProvider<SelectedToppings, List<int>>(
         (ref) => SelectedToppings());
+
+final currentOrderItemsProvider =
+    StateNotifierProvider<CurrentOrderItems, List<Map<String, dynamic>>>(
+        (ref) => CurrentOrderItems());
+
+final currentOrderCostProvider =
+    StateNotifierProvider<CurrentOrderCost, Map<String, dynamic>>(
+        (ref) => CurrentOrderCost());
+
+final currentOrderItemsIndexProvider = StateProvider<int>((ref) => 0);
 
 class SelectedToppings extends StateNotifier<List<int>> {
   SelectedToppings() : super([]);
@@ -74,11 +88,17 @@ class SelectedToppings extends StateNotifier<List<int>> {
     if (state.length == 3) {
       state = state;
     } else {
+      HapticFeedback.lightImpact();
       state = [...state, ingredient];
     }
   }
 
+  addMultipleToppings(List<int> ingredients) {
+    state = [...state, ...ingredients];
+  }
+
   remove(int ingredient) {
+    HapticFeedback.lightImpact();
     List<int> newList = [...state];
     newList.removeWhere((element) => element == ingredient);
     state = newList;
@@ -89,10 +109,16 @@ class SelectedAllergies extends StateNotifier<List<int>> {
   SelectedAllergies() : super([]);
 
   add(int ingredient) {
+    HapticFeedback.lightImpact();
     state = [...state, ingredient];
   }
 
+  addListOfAllergies(List<int> ingredients) {
+    state = [...state, ...ingredients];
+  }
+
   remove(int ingredient) {
+    HapticFeedback.lightImpact();
     List<int> newList = [...state];
     newList.removeWhere((element) => element == ingredient);
     state = newList;
@@ -103,6 +129,7 @@ class SelectItemQuantity extends StateNotifier<int> {
   SelectItemQuantity() : super(1);
 
   increment() {
+    HapticFeedback.lightImpact();
     state = state + 1;
   }
 
@@ -110,8 +137,13 @@ class SelectItemQuantity extends StateNotifier<int> {
     if (state < 2) {
       return state = 1;
     } else {
+      HapticFeedback.lightImpact();
       return state = state - 1;
     }
+  }
+
+  set(int amount) {
+    state = amount;
   }
 }
 
@@ -119,6 +151,7 @@ class SelectDaysQuantity extends StateNotifier<int> {
   SelectDaysQuantity() : super(1);
 
   increment() {
+    HapticFeedback.lightImpact();
     if (state == 5) {
       state = state;
     } else {
@@ -130,8 +163,13 @@ class SelectDaysQuantity extends StateNotifier<int> {
     if (state < 2) {
       return state = 1;
     } else {
+      HapticFeedback.lightImpact();
       return state = state - 1;
     }
+  }
+
+  set(int amount) {
+    state = amount;
   }
 }
 
@@ -139,6 +177,7 @@ class SelectExtraChargeIngredientQuantity extends StateNotifier<int> {
   SelectExtraChargeIngredientQuantity() : super(0);
 
   increment() {
+    HapticFeedback.lightImpact();
     state = state + 1;
   }
 
@@ -146,6 +185,7 @@ class SelectExtraChargeIngredientQuantity extends StateNotifier<int> {
     if (state < 1) {
       return state = 0;
     } else {
+      HapticFeedback.lightImpact();
       return state = state - 1;
     }
   }
@@ -154,7 +194,7 @@ class SelectExtraChargeIngredientQuantity extends StateNotifier<int> {
 class ListOfIngredients extends StateNotifier<List<dynamic>> {
   ListOfIngredients() : super([]);
 
-  addIngredients(List<Map<String, dynamic>> ingredients) {
+  addIngredients(List<dynamic> ingredients) {
     ingredients.sort((a, b) => a['id'].compareTo(b['id']));
 
     state = ingredients;
@@ -174,15 +214,12 @@ class ListOfIngredients extends StateNotifier<List<dynamic>> {
       ...state,
       {
         'id': ingredients[index].id,
-        'amount': 1 + (blended ?? 0) + (topping ?? 0),
+        'amount': 1,
         'isExtraCharge': isExtraCharge,
-        'price': ((ingredients[index].price *
-                ((blended ?? 1) + (topping ?? 0)) /
-                100)
+        'price': ((ingredients[index].price * ((blended ?? 1) + (topping ?? 0)))
             .toStringAsFixed(2)),
         'memberPrice': ((ingredients[index].memberPrice *
-                ((blended ?? 1) + (topping ?? 0)) /
-                100)
+                ((blended ?? 1) + (topping ?? 0)))
             .toStringAsFixed(2)),
         'blended': blended ?? 0,
         'topping': topping ?? 0,
@@ -193,6 +230,7 @@ class ListOfIngredients extends StateNotifier<List<dynamic>> {
       newList.indexWhere((element) => element['id'] == ingredients[index].id),
       duration: const Duration(milliseconds: 500),
     );
+
     state = newList;
   }
 
@@ -266,7 +304,6 @@ class ListOfIngredients extends StateNotifier<List<dynamic>> {
     int? blended,
     int? topping,
   }) {
-    HapticFeedback.lightImpact();
     final selectedIngredients = ref.watch(selectedIngredientsProvider);
     IngredientModel currentIngredient = ingredients
         .where((element) => element.id == selectedIngredients[index]['id'])
@@ -288,23 +325,28 @@ class ListOfIngredients extends StateNotifier<List<dynamic>> {
     };
 
     calculateExtraChargeAmount() {
+      HapticFeedback.lightImpact();
       if (blended != null && topping != null) {
         return blended + topping;
+      } else if (selectedIngredients[index]['amount'] < 1) {
+        return 1;
+      } else if (selectedIngredients[index]['amount'] == 1) {
+        return 2;
       } else {
-        return selectedIngredients[index]['amount'] < 1
-            ? 1
-            : selectedIngredients[index]['amount'] == 1
-                ? 2
-                : selectedIngredients[index]['amount'] + 1;
+        return selectedIngredients[index]['amount'] + 1;
       }
     }
 
     calculateNonChargedAmount() {
-      return selectedIngredients[index]['amount'] < 1
-          ? 1
-          : selectedIngredients[index]['amount'] == 1
-              ? 2
-              : selectedIngredients[index]['amount'];
+      if (selectedIngredients[index]['amount'] < 1) {
+        HapticFeedback.lightImpact();
+        return 1;
+      } else if (selectedIngredients[index]['amount'] == 1) {
+        HapticFeedback.lightImpact();
+        return 2;
+      } else {
+        return selectedIngredients[index]['amount'];
+      }
     }
 
     if (isExtraCharge) {
@@ -312,10 +354,9 @@ class ListOfIngredients extends StateNotifier<List<dynamic>> {
         'id': selectedIngredients[index]['id'],
         'isExtraCharge': isExtraCharge,
         'amount': calculateExtraChargeAmount(),
-        'price':
-            ((price * calculateExtraChargeAmount()) / 100).toStringAsFixed(2),
-        'memberPrice': ((memberPrice * calculateExtraChargeAmount()) / 100)
-            .toStringAsFixed(2),
+        'price': ((price * calculateExtraChargeAmount())).toStringAsFixed(2),
+        'memberPrice':
+            ((memberPrice * calculateExtraChargeAmount())).toStringAsFixed(2),
         'blended': blended,
         'topping': topping,
       };
@@ -337,7 +378,6 @@ class ListOfIngredients extends StateNotifier<List<dynamic>> {
 
   removeQuantityAmount(int index, WidgetRef ref,
       List<IngredientModel> ingredients, UserModel user) {
-    HapticFeedback.lightImpact();
     final selectedIngredients = ref.watch(selectedIngredientsProvider);
     IngredientModel currentIngredient = ingredients
         .where((element) => element.id == selectedIngredients[index]['id'])
@@ -347,15 +387,28 @@ class ListOfIngredients extends StateNotifier<List<dynamic>> {
     int memberPrice = currentIngredient.memberPrice;
     int price = currentIngredient.price;
     calculateChargedAmount() {
-      return selectedIngredients[index]['amount'] <= 2
-          ? 1
-          : selectedIngredients[index]['amount'] - 1;
+      if (selectedIngredients[index]['amount'] == 1) {
+        return 1;
+      }
+      if (selectedIngredients[index]['amount'] <= 2) {
+        HapticFeedback.lightImpact();
+        return 1;
+      } else {
+        HapticFeedback.lightImpact();
+        return selectedIngredients[index]['amount'] - 1;
+      }
     }
 
     calculateNonChargedAmount() {
-      return selectedIngredients[index]['amount'] <= 1
-          ? 0.5
-          : selectedIngredients[index]['amount'] - 1;
+      if (selectedIngredients[index]['amount'] == 0.5) {
+        return 0.5;
+      } else if (selectedIngredients[index]['amount'] <= 1) {
+        HapticFeedback.lightImpact();
+        return 0.5;
+      } else {
+        HapticFeedback.lightImpact();
+        return selectedIngredients[index]['amount'] - 1;
+      }
     }
 
     newList.removeWhere((element) => element['id'] == newList[index]['id']);
@@ -369,9 +422,9 @@ class ListOfIngredients extends StateNotifier<List<dynamic>> {
       newElement = {
         'id': selectedIngredients[index]['id'],
         'amount': calculateChargedAmount(),
-        'price': ((price * calculateChargedAmount()) / 100).toStringAsFixed(2),
+        'price': ((price * calculateChargedAmount())).toStringAsFixed(2),
         'memberPrice':
-            ((memberPrice * calculateChargedAmount()) / 100).toStringAsFixed(2),
+            ((memberPrice * calculateChargedAmount())).toStringAsFixed(2),
       };
     } else {
       newElement = {
@@ -381,8 +434,147 @@ class ListOfIngredients extends StateNotifier<List<dynamic>> {
         'memberPrice': 0.toStringAsFixed(2),
       };
     }
+
     newList.add(newElement);
     newList.sort((a, b) => a['id'].compareTo(b['id']));
     state = newList.toList();
+  }
+}
+
+class CurrentOrderItems extends StateNotifier<List<Map<String, dynamic>>> {
+  CurrentOrderItems() : super([]);
+
+  addItem(Map<String, dynamic> item) {
+    HapticFeedback.mediumImpact();
+    var product = state.where((element) {
+      final selectedIngredientsEqual = const DeepCollectionEquality.unordered()
+          .equals(element['selectedIngredients'], item['selectedIngredients']);
+      final selectedToppingsEqual = const DeepCollectionEquality.unordered()
+          .equals(element['selectedToppings'], item['selectedToppings']);
+      final selectedAllergiesEqual = const DeepCollectionEquality.unordered()
+          .equals(element['allergies'], item['allergies']);
+
+      return element['productID'] == item['productID'] &&
+          element['itemSize'] == item['itemSize'] &&
+          element['daysQuantity'] == item['daysQuantity'] &&
+          (item['selectedIngredients'].isEmpty || selectedIngredientsEqual) &&
+          (item['selectedToppings'].isEmpty || selectedToppingsEqual) &&
+          selectedAllergiesEqual;
+    });
+
+    if (state.isEmpty || product.isEmpty) {
+      state = [...state, item];
+    } else {
+      product.first['itemQuantity'] =
+          product.first['itemQuantity'] + item['itemQuantity'];
+      product.first['daysQuantity'] =
+          product.first['isScheduled'] ? item['daysQuantity'] : 1;
+      product.first['itemSize'] = item['itemSize'];
+      state = [...state];
+    }
+  }
+
+  editItem(WidgetRef ref, Map<String, dynamic> item) {
+    HapticFeedback.lightImpact();
+    final currentOrder = ref.watch(currentOrderItemsProvider);
+    final currentOrderIndex = ref.watch(currentOrderItemsIndexProvider);
+    currentOrder[currentOrderIndex]['itemQuantity'] = item['itemQuantity'];
+    currentOrder[currentOrderIndex]['daysQuantity'] =
+        currentOrder[currentOrderIndex]['isScheduled']
+            ? item['daysQuantity']
+            : 1;
+    currentOrder[currentOrderIndex]['itemSize'] = item['itemSize'];
+    currentOrder[currentOrderIndex]['selectedIngredients'] =
+        item['selectedIngredients'];
+    currentOrder[currentOrderIndex]['standardIngredients'] =
+        item['standardIngredients'];
+    currentOrder[currentOrderIndex]['selectedToppings'] =
+        item['selectedToppings'];
+    currentOrder[currentOrderIndex]['allergies'] = item['allergies'];
+    state = [...state];
+  }
+
+  removeItem(WidgetRef ref) {
+    final currentOrderIndex = ref.watch(currentOrderItemsIndexProvider);
+    HapticFeedback.lightImpact();
+    List<Map<String, dynamic>> newList = [...state];
+    newList.removeAt(currentOrderIndex);
+    state = newList;
+  }
+
+  addItemQuantity(ProductModel currentProduct, int index) {
+    HapticFeedback.lightImpact();
+    List<Map<String, dynamic>> newList = [...state];
+    Map<String, dynamic> newElement = {
+      'productID': newList[index]['productID'],
+      'itemQuantity': newList[index]['itemQuantity'] + 1,
+      'daysQuantity': 1,
+      'itemSize': newList[index]['itemSize'],
+      'isScheduled': currentProduct.isScheduled,
+      'isModifiable': currentProduct.isModifiable,
+      'hasToppings': currentProduct.hasToppings,
+      'selectedIngredients': newList[index]['selectedIngredients'],
+      'standardIngredients': newList[index]['standardIngredients'],
+      'selectedToppings': newList[index]['selectedToppings'],
+      'allergies': newList[index]['allergies'],
+    };
+    newList.removeAt(index);
+    newList.insert(index, newElement);
+    state = newList.toList();
+  }
+
+  removeItemQuantity(ProductModel currentProduct, int index) {
+    List<Map<String, dynamic>> newList = [...state];
+    Map<String, dynamic> newElement = {
+      'productID': newList[index]['productID'],
+      'itemQuantity': newList[index]['itemQuantity'] < 2
+          ? 1
+          : newList[index]['itemQuantity'] - 1,
+      'daysQuantity': newList[index]['daysQuantity'],
+      'itemSize': newList[index]['itemSize'],
+      'isScheduled': currentProduct.isScheduled,
+      'isModifiable': currentProduct.isModifiable,
+      'hasToppings': currentProduct.hasToppings,
+      'selectedIngredients': newList[index]['selectedIngredients'],
+      'standardIngredients': newList[index]['standardIngredients'],
+      'selectedToppings': newList[index]['selectedToppings'],
+      'allergies': newList[index]['allergies'],
+    };
+    newList[index]['itemQuantity'] == 1 ? null : HapticFeedback.lightImpact();
+    newList.removeAt(index);
+    newList.insert(index, newElement);
+    state = newList.toList();
+  }
+}
+
+class CurrentOrderCost extends StateNotifier<Map<String, dynamic>> {
+  CurrentOrderCost() : super({});
+
+  addCost(Map<String, dynamic> item) {
+    final nonMemberTotal =
+        (item['price'] * item['itemQuantity'] * item['daysQuantity']);
+    final memberTotal =
+        (item['memberPrice'] * item['itemQuantity'] * item['daysQuantity']);
+    if (state.isEmpty) {
+      state = {
+        'nonMember': nonMemberTotal,
+        'member': memberTotal,
+      };
+    } else {
+      state = {
+        'nonMember': state['nonMember'] + nonMemberTotal,
+        'member': state['member'] + memberTotal,
+      };
+    }
+  }
+
+  removeCost({
+    required nonMemberTotal,
+    required memberTotal,
+  }) {
+    state = {
+      'nonMember': state['nonMember'] - nonMemberTotal,
+      'member': state['member'] - memberTotal,
+    };
   }
 }

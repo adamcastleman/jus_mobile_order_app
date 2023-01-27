@@ -38,8 +38,8 @@ class SelectedLocationTile extends ConsumerWidget {
         data: (data) => Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            locationName(selectedLocation, locations),
-            locationAddress(selectedLocation, locations),
+            locationName(selectedLocation, data),
+            locationAddress(selectedLocation, data),
           ],
         ),
       ),
@@ -57,15 +57,14 @@ class SelectedLocationTile extends ConsumerWidget {
     );
   }
 
-  locationName(
-      int selectedLocation, AsyncValue<List<LocationModel>> locations) {
+  locationName(int selectedLocation, List<LocationModel> locations) {
     if (selectedLocation == 0) {
       return const Text(
         'Choose Location',
         style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
       );
     } else {
-      var name = locations.value!
+      var name = locations
           .where((element) => element.locationID == selectedLocation)
           .first
           .name;
@@ -76,23 +75,22 @@ class SelectedLocationTile extends ConsumerWidget {
     }
   }
 
-  locationAddress(
-      int selectedLocation, AsyncValue<List<LocationModel>> locations) {
+  locationAddress(int selectedLocation, List<LocationModel> locations) {
     if (selectedLocation == 0) {
       return const SizedBox(
         height: 0,
         width: 0,
       );
     } else {
-      var streetNumber = locations.value!
+      var streetNumber = locations
           .where((element) => element.locationID == selectedLocation)
           .first
           .address['streetNumber'];
-      var streetName = locations.value!
+      var streetName = locations
           .where((element) => element.locationID == selectedLocation)
           .first
           .address['streetName'];
-      var city = locations.value!
+      var city = locations
           .where((element) => element.locationID == selectedLocation)
           .first
           .address['city'];

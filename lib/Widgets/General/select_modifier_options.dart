@@ -1,5 +1,6 @@
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:jus_mobile_order_app/Models/ingredient_model.dart';
 import 'package:jus_mobile_order_app/Models/product_model.dart';
@@ -33,6 +34,7 @@ class SelectModifierOptions extends ConsumerWidget {
                       buttonText: 'Confirm',
                       onPressed: () {
                         checkForRequiredIngredients(context, ref, data);
+                        HapticFeedback.mediumImpact();
                       },
                     ),
                   ],
@@ -71,10 +73,13 @@ class SelectModifierOptions extends ConsumerWidget {
   checkForRequiredIngredients(
       BuildContext context, WidgetRef ref, List<IngredientModel> data) {
     final selectedIngredients = ref.watch(selectedIngredientsProvider);
+
     List ingredientObjectsFromListOfSelectedIngredients = List.generate(
         selectedIngredients.length,
-        (index) => data.where(
-            (element) => element.id == selectedIngredients[index]['id']));
+        (index) => data.where((element) =>
+            element.id == selectedIngredients[index]['id'] &&
+            (selectedIngredients[index]['blended'] == 0 ||
+                selectedIngredients[index]['blended'] == null)));
     if (!ingredientObjectsFromListOfSelectedIngredients
         .join('')
         .contains('Fruits')) {
@@ -83,7 +88,8 @@ class SelectModifierOptions extends ConsumerWidget {
         isDismissible: true,
         enableDrag: true,
         context: context,
-        builder: (context) => const InvalidModificationSheet(category: 'fruit'),
+        builder: (context) => InvalidModificationSheet(
+            category: '${product.hasToppings ? 'blended ' : ''}fruit'),
       );
     } else if (!ingredientObjectsFromListOfSelectedIngredients
         .join('')

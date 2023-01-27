@@ -2,6 +2,7 @@ import 'package:animations/animations.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:jus_mobile_order_app/Providers/product_providers.dart';
 import 'package:jus_mobile_order_app/Providers/stream_providers.dart';
 import 'package:jus_mobile_order_app/Providers/theme_providers.dart';
 import 'package:jus_mobile_order_app/Views/product_detail_page.dart';
@@ -39,10 +40,13 @@ class ItemCardLarge extends HookConsumerWidget {
           closedShape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(8.0),
           ),
-          openBuilder: (context, open) =>
-              ProductDetailPage(product: product[index]),
+          openBuilder: (context, open) => ProductDetailPage(
+            product: product[index],
+          ),
           closedBuilder: (context, close) => InkWell(
             onTap: () {
+              ref.read(isScheduledProvider.notifier).state =
+                  product[index].isScheduled;
               product[index].isScheduled
                   ? StandardItems(ref: ref).set(product[index])
                   : StandardIngredients(ref: ref).set(product[index]);

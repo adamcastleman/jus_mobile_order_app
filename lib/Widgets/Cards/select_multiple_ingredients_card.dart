@@ -95,6 +95,7 @@ class SelectMultipleIngredientsCard extends ConsumerWidget {
   determineBorderColor(WidgetRef ref) {
     final selectedToppings = ref.watch(selectedToppingsProvider);
     final selectedAllergies = ref.watch(selectedAllergiesProvider);
+
     if (isAllergy) {
       if (selectedAllergies.contains(ingredient.id)) {
         return Colors.blueGrey;

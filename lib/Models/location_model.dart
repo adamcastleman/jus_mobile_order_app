@@ -16,5 +16,6 @@ class LocationModel with _$LocationModel {
     required double longitude,
     required bool isActive,
     required bool isAcceptingOrders,
+    required double salesTaxRate,
   }) = _LocationModel;
 }

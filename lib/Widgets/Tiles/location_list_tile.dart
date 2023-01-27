@@ -83,6 +83,8 @@ class LocationListTile extends ConsumerWidget {
         );
         ref.read(selectedLocationID.notifier).state =
             visibleLocations[index].locationID;
+        ref.read(locationSalesTaxRate.notifier).state =
+            visibleLocations[index].salesTaxRate;
       },
     );
   }

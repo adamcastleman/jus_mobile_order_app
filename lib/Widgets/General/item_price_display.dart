@@ -9,6 +9,7 @@ import 'package:jus_mobile_order_app/Views/membership_detail_page.dart';
 import 'package:jus_mobile_order_app/Widgets/Helpers/error.dart';
 import 'package:jus_mobile_order_app/Widgets/Helpers/loading.dart';
 import 'package:jus_mobile_order_app/Widgets/Helpers/modal_bottom_sheets.dart';
+import 'package:jus_mobile_order_app/Widgets/Helpers/pricing.dart';
 import 'package:jus_mobile_order_app/Widgets/Helpers/spacing_widgets.dart';
 
 import '../../Providers/stream_providers.dart';
@@ -36,18 +37,21 @@ class PriceDisplay extends ConsumerWidget {
                 children: [
                   determineSavedAmount(ref, user),
                   Spacing().horizontal(5),
-                  InkWell(
-                    child: const Icon(
-                      CupertinoIcons.info,
-                      size: 15,
-                    ),
-                    onTap: () {
-                      ModalBottomSheet().fullScreen(
-                        context: context,
-                        builder: (context) => const MembershipDetailPage(),
-                      );
-                    },
-                  ),
+                  user.uid == null || !user.isActiveMember!
+                      ? InkWell(
+                          child: const Icon(
+                            CupertinoIcons.info,
+                            size: 15,
+                          ),
+                          onTap: () {
+                            ModalBottomSheet().fullScreen(
+                              context: context,
+                              builder: (context) =>
+                                  const MembershipDetailPage(),
+                            );
+                          },
+                        )
+                      : const SizedBox(),
                 ],
               ),
             ],
@@ -63,7 +67,7 @@ class PriceDisplay extends ConsumerWidget {
     return Row(
       children: [
         AutoSizeText(
-          'Non-Member: \$${((((product.price[selectedSize]['amount']) / 100) * daysQuantity) + totalExtraChargeItems(ref)).toStringAsFixed(2)}${quantity == 1 ? '' : '/ea'}',
+          'Non-Member: \$${((product.price[selectedSize]['amount'] / 100 + Pricing(ref: ref).totalExtraChargeItems()) * daysQuantity).toStringAsFixed(2)}${quantity == 1 ? '' : '/ea'}',
           style: TextStyle(
               fontSize: 14,
               fontWeight:
@@ -75,7 +79,7 @@ class PriceDisplay extends ConsumerWidget {
         const Text('|'),
         Spacing().horizontal(5),
         AutoSizeText(
-          'Members: \$${(((product.memberPrice[selectedSize]['amount'] / 100) * daysQuantity) + totalExtraChargeItemsMembers(ref)).toStringAsFixed(2)}${quantity == 1 ? '' : '/ea'}',
+          'Members: \$${((product.memberPrice[selectedSize]['amount'] / 100 + Pricing(ref: ref).totalExtraChargeItemsMembers()) * daysQuantity).toStringAsFixed(2)}${quantity == 1 ? '' : '/ea'}',
           maxLines: 1,
           style: TextStyle(
               fontSize: 14,
@@ -90,42 +94,8 @@ class PriceDisplay extends ConsumerWidget {
   }
 
   determineSavedAmount(WidgetRef ref, UserModel user) {
-    final quantity = ref.watch(itemQuantityProvider);
-    final daysQuantity = ref.watch(daysQuantityProvider);
-    final selectedSize = ref.watch(selectedSizeProvider);
-    final currentUser = ref.watch(currentUserProvider);
-    final totalSaved = ((((product.price[selectedSize]['amount'] / 100) +
-                    totalExtraChargeItems(ref)) -
-                ((product.memberPrice[selectedSize]['amount'] / 100) +
-                    totalExtraChargeItemsMembers(ref))) *
-            quantity *
-            daysQuantity)
-        .toStringAsFixed(2);
-    if (currentUser.value?.uid == null || !user.isActiveMember!) {
-      return Text('You could have saved \$$totalSaved',
-          style: const TextStyle(fontWeight: FontWeight.bold));
-    } else {
-      return Text('You saved \$$totalSaved',
-          style: const TextStyle(fontWeight: FontWeight.bold));
-    }
-  }
-
-  totalExtraChargeItems(WidgetRef ref) {
-    final selectedIngredients = ref.watch(selectedIngredientsProvider);
-    double total = 0;
-    for (var item in selectedIngredients) {
-      total = total + double.parse((item['price']).toString());
-    }
-
-    return total;
-  }
-
-  totalExtraChargeItemsMembers(WidgetRef ref) {
-    final selectedIngredients = ref.watch(selectedIngredientsProvider);
-    double total = 0;
-    for (var item in selectedIngredients) {
-      total = total + double.parse((item['memberPrice']).toString());
-    }
-    return total;
+    return Text(
+        'You${(user.uid == null || !user.isActiveMember!) ? ' could have' : ''} saved \$${Pricing(ref: ref).productSavings(product)}',
+        style: const TextStyle(fontWeight: FontWeight.bold));
   }
 }

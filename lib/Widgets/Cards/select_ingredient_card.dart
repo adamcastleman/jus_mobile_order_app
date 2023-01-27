@@ -127,13 +127,16 @@ class SelectIngredientCard extends ConsumerWidget {
       );
       //Adds ingredient to list that cannot be both blended and topped
     } else {
+      ref.read(currentIngredientExtraChargeProvider.notifier).state =
+          currentIngredient.isExtraCharge;
       HapticFeedback.lightImpact();
       ref.read(selectedIngredientsProvider.notifier).addIngredient(
-          ingredients: ingredients,
-          index: index,
-          isExtraCharge: ref.read(currentIngredientExtraChargeProvider),
-          ref: ref,
-          user: user);
+            ingredients: ingredients,
+            index: index,
+            isExtraCharge: ref.watch(currentIngredientExtraChargeProvider),
+            ref: ref,
+            user: user,
+          );
     }
   }
 }

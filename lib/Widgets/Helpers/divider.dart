@@ -4,7 +4,7 @@ class JusDivider {
   thick() {
     return const Divider(
       color: Colors.black,
-      thickness: 1.0,
+      thickness: 0.5,
     );
   }
 

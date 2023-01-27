@@ -10,7 +10,7 @@ class ThemeManager {
       backgroundColor: Colors.brown[50],
       elevation: 0,
       actionsIconTheme: const IconThemeData(color: Colors.black, size: 20),
-      titleTextStyle: GoogleFonts.raleway(
+      titleTextStyle: GoogleFonts.montserrat(
         fontSize: 30,
         color: Colors.black,
       ),
@@ -32,9 +32,11 @@ class ThemeManager {
     unselectedWidgetColor: Colors.grey,
     splashColor: Colors.transparent,
     highlightColor: Colors.transparent,
-    textTheme: GoogleFonts.ralewayTextTheme(),
+    textTheme: GoogleFonts.quicksandTextTheme(),
     cardTheme: CardTheme(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(8),
+      ),
       elevation: 2,
       color: Colors.white,
     ),
