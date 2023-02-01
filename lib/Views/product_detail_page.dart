@@ -86,7 +86,7 @@ class ProductDetailPage extends ConsumerWidget {
                   Spacing().vertical(40),
                   Text(
                     product.name,
-                    style: Theme.of(context).textTheme.headline5,
+                    style: Theme.of(context).textTheme.headlineSmall,
                   ),
                   Spacing().vertical(20),
                   determineSizeSelector(),
@@ -128,7 +128,7 @@ class ProductDetailPage extends ConsumerWidget {
               children: [
                 Text(
                   '${product.isModifiable ? 'Current ' : ''}${product.isScheduled ? 'Items' : 'Ingredients'}',
-                  style: Theme.of(context).textTheme.headline6,
+                  style: Theme.of(context).textTheme.titleLarge,
                 ),
                 Spacing().vertical(15),
                 InkWell(

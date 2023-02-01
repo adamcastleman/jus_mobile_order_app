@@ -22,20 +22,20 @@ class LoyaltyCardGuest extends ConsumerWidget {
               children: [
                 Text(
                   'Join Rewards.',
-                  style: Theme.of(context).textTheme.headline5,
+                  style: Theme.of(context).textTheme.headlineSmall,
                 ),
                 Text(
                   'Get Free Stuff.',
-                  style: Theme.of(context).textTheme.headline5,
+                  style: Theme.of(context).textTheme.headlineSmall,
                 ),
                 Spacing().vertical(25),
                 Text(
                   'Collect points',
-                  style: Theme.of(context).textTheme.bodyText2,
+                  style: Theme.of(context).textTheme.bodyMedium,
                 ),
                 Text(
                   'and redeem for free items.',
-                  style: Theme.of(context).textTheme.bodyText2,
+                  style: Theme.of(context).textTheme.bodyMedium,
                 ),
                 Spacing().vertical(25),
                 SmallElevatedButton(

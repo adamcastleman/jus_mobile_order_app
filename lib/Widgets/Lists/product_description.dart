@@ -19,6 +19,7 @@ class ProductDescription extends StatelessWidget {
         products[itemIndex].description,
         style: TextStyle(fontSize: fontSize),
         textAlign: TextAlign.center,
+        overflow: TextOverflow.visible,
         maxLines: 3,
       ),
     );

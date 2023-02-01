@@ -5,12 +5,10 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:jus_mobile_order_app/Providers/location_providers.dart';
 import 'package:jus_mobile_order_app/Providers/navigation_providers.dart';
 import 'package:jus_mobile_order_app/Providers/stream_providers.dart';
-import 'package:jus_mobile_order_app/Views/choose_location_page.dart';
 import 'package:jus_mobile_order_app/Widgets/Buttons/elevated_button_medium.dart';
 import 'package:jus_mobile_order_app/Widgets/Helpers/error.dart';
 import 'package:jus_mobile_order_app/Widgets/Helpers/loading.dart';
-import 'package:jus_mobile_order_app/Widgets/Helpers/modal_bottom_sheets.dart';
-import 'package:jus_mobile_order_app/Widgets/Helpers/permission_handler.dart';
+import 'package:jus_mobile_order_app/Widgets/Helpers/locations.dart';
 import 'package:jus_mobile_order_app/Widgets/Helpers/spacing_widgets.dart';
 
 class EmptyCartPage extends ConsumerWidget {
@@ -59,14 +57,9 @@ class EmptyCartPage extends ConsumerWidget {
             Center(
               child: MediumElevatedButton(
                 buttonText: 'Order Now',
-                onPressed: () async {
-                  if (ref.read(selectedLocationID) == 0) {
-                    await HandlePermissions(context, ref).locationPermission();
-                    ModalBottomSheet().fullScreen(
-                      context: context,
-                      builder: (BuildContext context) =>
-                          const ChooseLocationPage(),
-                    );
+                onPressed: () {
+                  if (ref.read(selectedLocationProvider) == null) {
+                    LocationHelper().chooseLocation(context, ref);
                   }
                   ref.read(bottomNavigationProvider.notifier).state = 2;
                 },

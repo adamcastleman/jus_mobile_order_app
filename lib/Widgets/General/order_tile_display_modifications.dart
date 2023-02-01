@@ -71,7 +71,7 @@ class OrderTileDisplayModifications extends ConsumerWidget {
                 child: ListView.builder(
                   shrinkWrap: true,
                   primary: false,
-                  itemCount: removed.length,
+                  itemCount: removed.isEmpty ? 0 : removed.length,
                   itemBuilder: (context, removedIngredientIndex) {
                     final ingredient = item.firstWhere((element) =>
                         element.id == removed[removedIngredientIndex]);
@@ -83,7 +83,9 @@ class OrderTileDisplayModifications extends ConsumerWidget {
                 child: ListView.builder(
                   shrinkWrap: true,
                   primary: false,
-                  itemCount: adjusted == null ? 0 : adjusted.length,
+                  itemCount: (adjusted.isEmpty || adjusted.first.isEmpty)
+                      ? 0
+                      : adjusted.length,
                   itemBuilder: (context, adjustedIndex) {
                     var ingredient = item.firstWhere(
                       (element) => element.id == adjusted[adjustedIndex]['id'],
@@ -104,10 +106,12 @@ class OrderTileDisplayModifications extends ConsumerWidget {
                 child: ListView.builder(
                   shrinkWrap: true,
                   primary: false,
-                  itemCount: added.length,
+                  itemCount:
+                      added.isEmpty || added.first.isEmpty ? 0 : added.length,
                   itemBuilder: (context, addedIngredientIndex) {
                     final ingredient = item.firstWhere((element) =>
                         element.id == added[addedIngredientIndex]['id']);
+
                     return Row(
                       children: [
                         Flexible(
@@ -115,7 +119,7 @@ class OrderTileDisplayModifications extends ConsumerWidget {
                             '${blendedOrToppingDescription(ref, added, ingredient, addedIngredientIndex)}'
                             '${modifiedIngredientAmount(ref, added, ingredient, addedIngredientIndex)}'
                             ' ${ingredient.name}'
-                            '${extraChargeQuantity(added, ingredient, addedIngredientIndex)}',
+                            '${extraChargeQuantity(added, addedIngredientIndex)}',
                             style: style,
                           ),
                         ),
@@ -221,21 +225,20 @@ class OrderTileDisplayModifications extends ConsumerWidget {
     return description;
   }
 
-  extraChargeQuantity(
-      List<dynamic> added, IngredientModel ingredient, int index) {
-    if (added[index]['isExtraCharge'] != true &&
-        (added[index]['blended'] != 0 && added[index]['topping'] != 0)) {
-      return '';
-    } else if (added[index]['isExtraCharge'] == true &&
-        added[index]['amount'] > 1) {
-      return ' x${added[index]['amount']}';
-    } else if (added[index]['blended'] > 1) {
-      return ' x${added[index]['blended']}';
-    } else if (added[index]['topping'] > 1) {
-      return ' x${added[index]['topping']}';
-    } else {
+  String extraChargeQuantity(List<dynamic> added, int index) {
+    var item = added[index];
+    if (item['isExtraCharge'] != true) return '';
+    if (item['blended'] == null && item['topping'] == null) {
+      return ' x${item['amount']}';
+    }
+    if (item['blended'] != null && item['topping'] != null) {
+      int blended = item['blended'];
+      int topping = item['topping'];
+      if (blended > 1 && topping < 1) return ' x$blended';
+      if (blended < 1 && topping > 1) return ' x$topping';
       return '';
     }
+    return '';
   }
 
   determineModifierPriceText(UserModel user, List<dynamic> added, int index) {

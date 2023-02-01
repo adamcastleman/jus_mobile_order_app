@@ -14,16 +14,18 @@ class HandlePermissions {
     if (await Permission.location.isDenied) {
       return Permission.location.request();
     } else if (await Permission.location.isPermanentlyDenied) {
-      showDialog(
-          context: context,
-          builder: (context) => const LocationPermissionAlertDialog());
+      if (context.mounted) {
+        showDialog(
+            context: context,
+            builder: (context) => const LocationPermissionAlertDialog());
+      }
     } else if (await Permission.location.status.isGranted ||
         await Permission.location.status.isLimited) {
       Position position = await Geolocator.getCurrentPosition(
           desiredAccuracy: LocationAccuracy.high);
-      ref.read(currentLocationProvider.notifier).state =
+      ref.read(currentLocationLatLongProvider.notifier).state =
           LatLng(position.latitude, position.longitude);
-      ref.read(selectedLocationLatLongProvider.notifier).state =
+      ref.read(currentLocationLatLongProvider.notifier).state =
           LatLng(position.latitude, position.longitude);
     } else {}
   }

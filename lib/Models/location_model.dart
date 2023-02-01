@@ -17,5 +17,9 @@ class LocationModel with _$LocationModel {
     required bool isActive,
     required bool isAcceptingOrders,
     required double salesTaxRate,
+    required bool acceptingOrders,
+    required List unavailableProducts,
+    required List unavailableIngredients,
+    required bool comingSoon,
   }) = _LocationModel;
 }

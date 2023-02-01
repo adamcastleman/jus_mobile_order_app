@@ -5,19 +5,17 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:jus_mobile_order_app/Models/location_model.dart';
 import 'package:jus_mobile_order_app/Providers/location_providers.dart';
 import 'package:jus_mobile_order_app/Providers/stream_providers.dart';
-import 'package:jus_mobile_order_app/Views/choose_location_page.dart';
 import 'package:jus_mobile_order_app/Widgets/Helpers/error.dart';
-import 'package:jus_mobile_order_app/Widgets/Helpers/modal_bottom_sheets.dart';
-import 'package:jus_mobile_order_app/Widgets/Helpers/permission_handler.dart';
+import 'package:jus_mobile_order_app/Widgets/Helpers/locations.dart';
 
 class SelectedLocationTile extends ConsumerWidget {
   const SelectedLocationTile({super.key});
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final selectedLocation = ref.watch(selectedLocationID);
+    final selectedLocation = ref.watch(selectedLocationProvider);
     final locations = ref.watch(locationsProvider);
     return ListTile(
-      contentPadding: selectedLocation == 0
+      contentPadding: selectedLocation == null
           ? const EdgeInsets.symmetric(horizontal: 15.0)
           : const EdgeInsets.symmetric(vertical: 8.0, horizontal: 15.0),
       leading: const Icon(
@@ -47,55 +45,35 @@ class SelectedLocationTile extends ConsumerWidget {
         CupertinoIcons.chevron_down,
         size: 20,
       ),
-      onTap: () async {
-        await HandlePermissions(context, ref).locationPermission();
-        ModalBottomSheet().fullScreen(
-          context: context,
-          builder: (BuildContext context) => const ChooseLocationPage(),
-        );
+      onTap: () {
+        LocationHelper().chooseLocation(context, ref);
       },
     );
   }
 
-  locationName(int selectedLocation, List<LocationModel> locations) {
-    if (selectedLocation == 0) {
+  locationName(dynamic selectedLocation, List<LocationModel> locations) {
+    if (selectedLocation == null) {
       return const Text(
         'Choose Location',
         style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
       );
     } else {
-      var name = locations
-          .where((element) => element.locationID == selectedLocation)
-          .first
-          .name;
       return Text(
-        name,
+        '${selectedLocation.name}',
         style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
       );
     }
   }
 
-  locationAddress(int selectedLocation, List<LocationModel> locations) {
-    if (selectedLocation == 0) {
+  locationAddress(dynamic selectedLocation, List<LocationModel> locations) {
+    if (selectedLocation == null) {
       return const SizedBox(
         height: 0,
         width: 0,
       );
     } else {
-      var streetNumber = locations
-          .where((element) => element.locationID == selectedLocation)
-          .first
-          .address['streetNumber'];
-      var streetName = locations
-          .where((element) => element.locationID == selectedLocation)
-          .first
-          .address['streetName'];
-      var city = locations
-          .where((element) => element.locationID == selectedLocation)
-          .first
-          .address['city'];
       return Text(
-        '$streetNumber $streetName, $city',
+        '${selectedLocation.address['streetNumber']} ${selectedLocation.address['streetName']}, ${selectedLocation.address['city']}',
         style: const TextStyle(fontSize: 14),
       );
     }

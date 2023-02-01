@@ -19,20 +19,30 @@ class LocationListTile extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final visibleLocations = ref.watch(locationsWithinMapBoundsProvider);
-    final selectedLocationId = ref.watch(selectedLocationID);
-    final currentLocation = ref.watch(currentLocationProvider);
+    final currentLocation = ref.watch(currentLocationLatLongProvider);
+    final selectedLocation = ref.watch(selectedLocationProvider);
 
     return ListTile(
       shape: OutlineInputBorder(
         borderSide: BorderSide(
-            color: determineBorderColor(selectedLocationId, visibleLocations),
+            color: determineBorderColor(selectedLocation, visibleLocations),
             width: 0.5),
       ),
-      tileColor: determineTileColor(selectedLocationId, visibleLocations),
+      tileColor: determineTileColor(selectedLocation, visibleLocations),
       isThreeLine: true,
-      title: Text(
-        visibleLocations[index].name,
-        style: Theme.of(context).textTheme.headline6,
+      title: Row(
+        children: [
+          Text(
+            visibleLocations[index].name,
+            style: Theme.of(context).textTheme.titleLarge,
+          ),
+          visibleLocations[index].comingSoon
+              ? Text(
+                  ' - Coming Soon',
+                  style: Theme.of(context).textTheme.titleLarge,
+                )
+              : const SizedBox(),
+        ],
       ),
       subtitle: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -50,6 +60,8 @@ class LocationListTile extends ConsumerWidget {
               openOrClosedText(visibleLocations),
             ],
           ),
+          Spacing().vertical(10),
+          acceptingOrdersText(visibleLocations, context, ref),
         ],
       ),
       trailing: Row(
@@ -61,52 +73,52 @@ class LocationListTile extends ConsumerWidget {
             ),
             onPressed: () {},
           ),
-          IconButton(
-            icon: const Icon(
-              FontAwesomeIcons.ellipsisVertical,
-            ),
-            onPressed: () {
-              ModalBottomSheet().partScreen(
-                  context: context,
-                  enableDrag: true,
-                  isDismissible: true,
-                  builder: (context) =>
-                      StoreDetailsPage(location: visibleLocations[index]));
-            },
-          ),
+          visibleLocations[index].comingSoon
+              ? const SizedBox()
+              : IconButton(
+                  icon: const Icon(
+                    FontAwesomeIcons.ellipsisVertical,
+                  ),
+                  onPressed: () {
+                    var location = visibleLocations[index];
+                    setLocationData(ref, location);
+                    ModalBottomSheet().partScreen(
+                      context: context,
+                      enableDrag: true,
+                      isDismissible: true,
+                      builder: (context) => const StoreDetailsPage(),
+                    );
+                  },
+                ),
         ],
       ),
       onTap: () {
-        ref.read(selectedLocationLatLongProvider.notifier).state = LatLng(
-          visibleLocations[index].latitude,
-          visibleLocations[index].longitude,
-        );
-        ref.read(selectedLocationID.notifier).state =
-            visibleLocations[index].locationID;
-        ref.read(locationSalesTaxRate.notifier).state =
-            visibleLocations[index].salesTaxRate;
+        var location = visibleLocations[index];
+        setLocationData(ref, location);
       },
     );
   }
 
-  determineTileColor(int selectedLocation, List visibleLocations) {
-    if (selectedLocation == visibleLocations[index].locationID) {
-      return Colors.grey[100];
-    } else {
+  determineTileColor(dynamic selectedLocation, List visibleLocations) {
+    if (selectedLocation == null) {
       return Colors.white;
     }
+    return selectedLocation.locationID == visibleLocations[index].locationID
+        ? Colors.grey[100]
+        : Colors.white;
   }
 
-  determineBorderColor(int selectedLocation, List visibleLocations) {
-    if (selectedLocation == visibleLocations[index].locationID) {
-      return Colors.grey;
-    } else {
+  determineBorderColor(dynamic selectedLocation, List visibleLocations) {
+    if (selectedLocation == null) {
       return Colors.white;
     }
+    return selectedLocation.locationID == visibleLocations[index].locationID
+        ? Colors.grey
+        : Colors.white;
   }
 
   openOrClosedText(List visibleLocations) {
-    if (Time().locationOpenStatus(location: visibleLocations[index]) == true) {
+    if (Time().locationOpenStatus(location: visibleLocations[index])) {
       return const Text(
         'Open',
         style: TextStyle(color: Colors.green),
@@ -119,6 +131,19 @@ class LocationListTile extends ConsumerWidget {
     }
   }
 
+  acceptingOrdersText(
+      List visibleLocations, BuildContext context, WidgetRef ref) {
+    if (visibleLocations[index].acceptingOrders ||
+        !Time().locationOpenStatus(location: visibleLocations[index])) {
+      return const SizedBox();
+    } else {
+      return const Text(
+        'This location is currently not accepting pickup orders',
+        style: TextStyle(fontSize: 10, color: Colors.red),
+      );
+    }
+  }
+
   getDistanceFromCurrentLocation(
       LocationModel visibleLocation, LatLng currentLocation) {
     var distance = Geolocator.distanceBetween(
@@ -127,5 +152,37 @@ class LocationListTile extends ConsumerWidget {
         currentLocation.latitude,
         currentLocation.longitude);
     return Formulas().metersToMiles(meters: distance);
+  }
+
+  setLocationData(WidgetRef ref, LocationModel location) {
+    if (location.comingSoon) {
+      return null;
+    } else {
+      setSelectedLocation(ref, location);
+      setLatAndLongOfLocation(ref, location);
+      setOpenAndCloseTime(ref, location);
+    }
+  }
+
+  setLatAndLongOfLocation(WidgetRef ref, location) {
+    ref.read(currentLocationLatLongProvider.notifier).state =
+        LatLng(location.latitude, location.longitude);
+  }
+
+  setOpenAndCloseTime(WidgetRef ref, location) {
+    var openTime = location.hours[DateTime.now().weekday - 1]['open'];
+    ref.read(selectedLocationOpenTime.notifier).state = TimeOfDay(
+      hour: int.parse(openTime.substring(0, openTime.indexOf(':'))),
+      minute: int.parse(openTime.substring(openTime.indexOf(':') + 1)),
+    );
+    var closeTime = location.hours[DateTime.now().weekday - 1]['close'];
+    ref.read(selectedLocationCloseTime.notifier).state = TimeOfDay(
+      hour: int.parse(closeTime.substring(0, 2)),
+      minute: int.parse(closeTime.substring(3)),
+    );
+  }
+
+  setSelectedLocation(WidgetRef ref, location) {
+    ref.read(selectedLocationProvider.notifier).state = location;
   }
 }

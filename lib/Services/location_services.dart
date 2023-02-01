@@ -26,6 +26,10 @@ class LocationServices {
           isActive: data['isActive'],
           isAcceptingOrders: data['isAcceptingOrders'],
           salesTaxRate: data['salesTaxRate'],
+          acceptingOrders: data['acceptingOrders'],
+          unavailableProducts: data['unavailableProducts'],
+          unavailableIngredients: data['unavailableIngredients'],
+          comingSoon: data['comingSoon'],
         );
       },
     ).toList();

@@ -2,6 +2,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:jus_mobile_order_app/Models/ingredient_model.dart';
 import 'package:jus_mobile_order_app/Models/location_model.dart';
 import 'package:jus_mobile_order_app/Models/membership_details_model.dart';
+import 'package:jus_mobile_order_app/Models/points_details_model.dart';
 import 'package:jus_mobile_order_app/Models/product_model.dart';
 import 'package:jus_mobile_order_app/Models/user_model.dart';
 import 'package:jus_mobile_order_app/Services/auth_services.dart';
@@ -9,6 +10,7 @@ import 'package:jus_mobile_order_app/Services/image_services.dart';
 import 'package:jus_mobile_order_app/Services/ingredient_services.dart';
 import 'package:jus_mobile_order_app/Services/location_services.dart';
 import 'package:jus_mobile_order_app/Services/membership_details_services.dart';
+import 'package:jus_mobile_order_app/Services/points_details_services.dart';
 import 'package:jus_mobile_order_app/Services/product_services.dart';
 import 'package:jus_mobile_order_app/Services/user_services.dart';
 
@@ -48,6 +50,9 @@ final recommendedProductsProvider = StreamProvider<List<ProductModel>>(
 
 final membershipDetailsProvider = StreamProvider<MembershipDetailsModel>(
     (ref) => MembershipDetailsServices().membershipDetails);
+
+final pointsDetailsProvider = StreamProvider<PointsDetailsModel>(
+    (ref) => PointsDetailsServices().pointsDetails);
 
 final emptyCartImageProvider =
     StreamProvider((ref) => ImageServices().emptyCartImage);

@@ -13,7 +13,7 @@ import firebase_messaging
 import flutter_native_timezone
 import geolocator_apple
 import maps_launcher
-import path_provider_macos
+import path_provider_foundation
 import sqflite
 import url_launcher_macos
 

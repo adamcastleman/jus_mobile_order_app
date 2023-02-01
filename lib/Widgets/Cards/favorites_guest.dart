@@ -19,14 +19,14 @@ class FavoritesCardGuest extends ConsumerWidget {
               children: [
                 Text(
                   'Your favorites are waiting.',
-                  style: Theme.of(context).textTheme.headline5,
+                  style: Theme.of(context).textTheme.headlineSmall,
                 ),
                 Spacing().vertical(25),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 22.0),
                   child: Text(
                     'If you order the same things every time, create an account to save your favorites so it\'s faster and easier to order next time.',
-                    style: Theme.of(context).textTheme.bodyText2,
+                    style: Theme.of(context).textTheme.bodyMedium,
                     textAlign: TextAlign.center,
                   ),
                 ),

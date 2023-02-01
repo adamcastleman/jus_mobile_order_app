@@ -1,7 +1,7 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:jus_mobile_order_app/Views/membership_detail_page.dart';
+import 'package:jus_mobile_order_app/Widgets/Buttons/info_button.dart';
 import 'package:jus_mobile_order_app/Widgets/Helpers/error.dart';
 import 'package:jus_mobile_order_app/Widgets/Helpers/loading.dart';
 import 'package:jus_mobile_order_app/Widgets/Helpers/modal_bottom_sheets.dart';
@@ -130,17 +130,15 @@ class TotalPrice extends ConsumerWidget {
                   user.uid == null || !user.isActiveMember!
                       ? Padding(
                           padding: const EdgeInsets.only(left: 4.0),
-                          child: InkWell(
+                          child: InfoButton(
+                            size: 18,
+                            color: Colors.black,
                             onTap: () {
                               ModalBottomSheet().fullScreen(
                                   context: context,
                                   builder: (context) =>
                                       const MembershipDetailPage());
                             },
-                            child: const Icon(
-                              CupertinoIcons.info,
-                              size: 18,
-                            ),
                           ),
                         )
                       : const SizedBox(),

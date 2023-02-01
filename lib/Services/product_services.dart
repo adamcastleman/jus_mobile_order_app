@@ -53,6 +53,7 @@ class ProductServices {
           isNew: data['isNew'],
           isModifiable: data['isModifiable'],
           isScheduled: data['isScheduled'],
+          hoursNotice: data['hoursNotice'],
           hasToppings: data['hasToppings'],
           nutrition: data['nutrition'],
           perks: data['perks'],

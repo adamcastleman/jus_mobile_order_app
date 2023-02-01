@@ -28,6 +28,11 @@ mixin _$LocationModel {
   bool get isActive => throw _privateConstructorUsedError;
   bool get isAcceptingOrders => throw _privateConstructorUsedError;
   double get salesTaxRate => throw _privateConstructorUsedError;
+  bool get acceptingOrders => throw _privateConstructorUsedError;
+  List<dynamic> get unavailableProducts => throw _privateConstructorUsedError;
+  List<dynamic> get unavailableIngredients =>
+      throw _privateConstructorUsedError;
+  bool get comingSoon => throw _privateConstructorUsedError;
 
   @JsonKey(ignore: true)
   $LocationModelCopyWith<LocationModel> get copyWith =>
@@ -52,7 +57,11 @@ abstract class $LocationModelCopyWith<$Res> {
       double longitude,
       bool isActive,
       bool isAcceptingOrders,
-      double salesTaxRate});
+      double salesTaxRate,
+      bool acceptingOrders,
+      List<dynamic> unavailableProducts,
+      List<dynamic> unavailableIngredients,
+      bool comingSoon});
 }
 
 /// @nodoc
@@ -80,6 +89,10 @@ class _$LocationModelCopyWithImpl<$Res, $Val extends LocationModel>
     Object? isActive = null,
     Object? isAcceptingOrders = null,
     Object? salesTaxRate = null,
+    Object? acceptingOrders = null,
+    Object? unavailableProducts = null,
+    Object? unavailableIngredients = null,
+    Object? comingSoon = null,
   }) {
     return _then(_value.copyWith(
       uid: null == uid
@@ -130,6 +143,22 @@ class _$LocationModelCopyWithImpl<$Res, $Val extends LocationModel>
           ? _value.salesTaxRate
           : salesTaxRate // ignore: cast_nullable_to_non_nullable
               as double,
+      acceptingOrders: null == acceptingOrders
+          ? _value.acceptingOrders
+          : acceptingOrders // ignore: cast_nullable_to_non_nullable
+              as bool,
+      unavailableProducts: null == unavailableProducts
+          ? _value.unavailableProducts
+          : unavailableProducts // ignore: cast_nullable_to_non_nullable
+              as List<dynamic>,
+      unavailableIngredients: null == unavailableIngredients
+          ? _value.unavailableIngredients
+          : unavailableIngredients // ignore: cast_nullable_to_non_nullable
+              as List<dynamic>,
+      comingSoon: null == comingSoon
+          ? _value.comingSoon
+          : comingSoon // ignore: cast_nullable_to_non_nullable
+              as bool,
     ) as $Val);
   }
 }
@@ -154,7 +183,11 @@ abstract class _$$_LocationModelCopyWith<$Res>
       double longitude,
       bool isActive,
       bool isAcceptingOrders,
-      double salesTaxRate});
+      double salesTaxRate,
+      bool acceptingOrders,
+      List<dynamic> unavailableProducts,
+      List<dynamic> unavailableIngredients,
+      bool comingSoon});
 }
 
 /// @nodoc
@@ -180,6 +213,10 @@ class __$$_LocationModelCopyWithImpl<$Res>
     Object? isActive = null,
     Object? isAcceptingOrders = null,
     Object? salesTaxRate = null,
+    Object? acceptingOrders = null,
+    Object? unavailableProducts = null,
+    Object? unavailableIngredients = null,
+    Object? comingSoon = null,
   }) {
     return _then(_$_LocationModel(
       uid: null == uid
@@ -230,6 +267,22 @@ class __$$_LocationModelCopyWithImpl<$Res>
           ? _value.salesTaxRate
           : salesTaxRate // ignore: cast_nullable_to_non_nullable
               as double,
+      acceptingOrders: null == acceptingOrders
+          ? _value.acceptingOrders
+          : acceptingOrders // ignore: cast_nullable_to_non_nullable
+              as bool,
+      unavailableProducts: null == unavailableProducts
+          ? _value._unavailableProducts
+          : unavailableProducts // ignore: cast_nullable_to_non_nullable
+              as List<dynamic>,
+      unavailableIngredients: null == unavailableIngredients
+          ? _value._unavailableIngredients
+          : unavailableIngredients // ignore: cast_nullable_to_non_nullable
+              as List<dynamic>,
+      comingSoon: null == comingSoon
+          ? _value.comingSoon
+          : comingSoon // ignore: cast_nullable_to_non_nullable
+              as bool,
     ));
   }
 }
@@ -249,9 +302,15 @@ class _$_LocationModel implements _LocationModel {
       required this.longitude,
       required this.isActive,
       required this.isAcceptingOrders,
-      required this.salesTaxRate})
+      required this.salesTaxRate,
+      required this.acceptingOrders,
+      required final List<dynamic> unavailableProducts,
+      required final List<dynamic> unavailableIngredients,
+      required this.comingSoon})
       : _address = address,
-        _hours = hours;
+        _hours = hours,
+        _unavailableProducts = unavailableProducts,
+        _unavailableIngredients = unavailableIngredients;
 
   @override
   final String uid;
@@ -289,10 +348,32 @@ class _$_LocationModel implements _LocationModel {
   final bool isAcceptingOrders;
   @override
   final double salesTaxRate;
+  @override
+  final bool acceptingOrders;
+  final List<dynamic> _unavailableProducts;
+  @override
+  List<dynamic> get unavailableProducts {
+    if (_unavailableProducts is EqualUnmodifiableListView)
+      return _unavailableProducts;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_unavailableProducts);
+  }
+
+  final List<dynamic> _unavailableIngredients;
+  @override
+  List<dynamic> get unavailableIngredients {
+    if (_unavailableIngredients is EqualUnmodifiableListView)
+      return _unavailableIngredients;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_unavailableIngredients);
+  }
+
+  @override
+  final bool comingSoon;
 
   @override
   String toString() {
-    return 'LocationModel(uid: $uid, name: $name, locationID: $locationID, phone: $phone, address: $address, hours: $hours, timezone: $timezone, latitude: $latitude, longitude: $longitude, isActive: $isActive, isAcceptingOrders: $isAcceptingOrders, salesTaxRate: $salesTaxRate)';
+    return 'LocationModel(uid: $uid, name: $name, locationID: $locationID, phone: $phone, address: $address, hours: $hours, timezone: $timezone, latitude: $latitude, longitude: $longitude, isActive: $isActive, isAcceptingOrders: $isAcceptingOrders, salesTaxRate: $salesTaxRate, acceptingOrders: $acceptingOrders, unavailableProducts: $unavailableProducts, unavailableIngredients: $unavailableIngredients, comingSoon: $comingSoon)';
   }
 
   @override
@@ -318,7 +399,15 @@ class _$_LocationModel implements _LocationModel {
             (identical(other.isAcceptingOrders, isAcceptingOrders) ||
                 other.isAcceptingOrders == isAcceptingOrders) &&
             (identical(other.salesTaxRate, salesTaxRate) ||
-                other.salesTaxRate == salesTaxRate));
+                other.salesTaxRate == salesTaxRate) &&
+            (identical(other.acceptingOrders, acceptingOrders) ||
+                other.acceptingOrders == acceptingOrders) &&
+            const DeepCollectionEquality()
+                .equals(other._unavailableProducts, _unavailableProducts) &&
+            const DeepCollectionEquality().equals(
+                other._unavailableIngredients, _unavailableIngredients) &&
+            (identical(other.comingSoon, comingSoon) ||
+                other.comingSoon == comingSoon));
   }
 
   @override
@@ -335,7 +424,11 @@ class _$_LocationModel implements _LocationModel {
       longitude,
       isActive,
       isAcceptingOrders,
-      salesTaxRate);
+      salesTaxRate,
+      acceptingOrders,
+      const DeepCollectionEquality().hash(_unavailableProducts),
+      const DeepCollectionEquality().hash(_unavailableIngredients),
+      comingSoon);
 
   @JsonKey(ignore: true)
   @override
@@ -357,7 +450,11 @@ abstract class _LocationModel implements LocationModel {
       required final double longitude,
       required final bool isActive,
       required final bool isAcceptingOrders,
-      required final double salesTaxRate}) = _$_LocationModel;
+      required final double salesTaxRate,
+      required final bool acceptingOrders,
+      required final List<dynamic> unavailableProducts,
+      required final List<dynamic> unavailableIngredients,
+      required final bool comingSoon}) = _$_LocationModel;
 
   @override
   String get uid;
@@ -383,6 +480,14 @@ abstract class _LocationModel implements LocationModel {
   bool get isAcceptingOrders;
   @override
   double get salesTaxRate;
+  @override
+  bool get acceptingOrders;
+  @override
+  List<dynamic> get unavailableProducts;
+  @override
+  List<dynamic> get unavailableIngredients;
+  @override
+  bool get comingSoon;
   @override
   @JsonKey(ignore: true)
   _$$_LocationModelCopyWith<_$_LocationModel> get copyWith =>

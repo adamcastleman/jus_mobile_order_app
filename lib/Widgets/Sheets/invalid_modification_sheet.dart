@@ -15,11 +15,11 @@ class InvalidModificationSheet extends StatelessWidget {
           children: [
             Text(
               'Whoops...',
-              style: Theme.of(context).textTheme.headline5,
+              style: Theme.of(context).textTheme.headlineSmall,
             ),
             Text(
               'You must include at least one $category.',
-              style: Theme.of(context).textTheme.subtitle1,
+              style: Theme.of(context).textTheme.titleMedium,
             ),
             LargeElevatedButton(
                 buttonText: 'Close',

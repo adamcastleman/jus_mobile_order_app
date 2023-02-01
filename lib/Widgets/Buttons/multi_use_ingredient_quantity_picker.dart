@@ -30,7 +30,7 @@ class MultiUseIngredientQuantityPicker extends ConsumerWidget {
           padding: const EdgeInsets.symmetric(horizontal: 4.0),
           child: Text(
             '${index == 0 ? blendedQuantity : toppedQuantity}',
-            style: Theme.of(context).textTheme.headline5,
+            style: Theme.of(context).textTheme.headlineSmall,
           ),
         ),
         IconButton(

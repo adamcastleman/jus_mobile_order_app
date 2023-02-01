@@ -32,6 +32,7 @@ class ThemeManager {
     unselectedWidgetColor: Colors.grey,
     splashColor: Colors.transparent,
     highlightColor: Colors.transparent,
+    splashFactory: NoSplash.splashFactory,
     textTheme: GoogleFonts.quicksandTextTheme(),
     cardTheme: CardTheme(
       shape: RoundedRectangleBorder(

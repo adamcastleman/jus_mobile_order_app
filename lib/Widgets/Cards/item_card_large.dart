@@ -1,11 +1,14 @@
 import 'package:animations/animations.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:jus_mobile_order_app/Models/product_model.dart';
 import 'package:jus_mobile_order_app/Providers/product_providers.dart';
 import 'package:jus_mobile_order_app/Providers/stream_providers.dart';
 import 'package:jus_mobile_order_app/Providers/theme_providers.dart';
 import 'package:jus_mobile_order_app/Views/product_detail_page.dart';
+import 'package:jus_mobile_order_app/Widgets/Helpers/locations.dart';
 import 'package:jus_mobile_order_app/Widgets/Helpers/set_standard_ingredients.dart';
 import 'package:jus_mobile_order_app/Widgets/Helpers/set_standard_items.dart';
 import 'package:jus_mobile_order_app/Widgets/Helpers/spacing_widgets.dart';
@@ -56,9 +59,7 @@ class ItemCardLarge extends HookConsumerWidget {
               padding: const EdgeInsets.symmetric(vertical: 15.0),
               child: Stack(
                 children: [
-                  NewIcon(
-                    product: product[index],
-                  ),
+                  determineDescriptorIcon(ref, product[index]),
                   Center(
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -105,5 +106,26 @@ class ItemCardLarge extends HookConsumerWidget {
         ),
       ),
     );
+  }
+
+  Widget determineDescriptorIcon(WidgetRef ref, ProductModel product) {
+    if (LocationHelper().selectedLocation(ref) == null) {
+      return product.isNew ? NewIcon(product: product) : const SizedBox();
+    } else if (!LocationHelper().acceptingOrders(ref) && !product.isScheduled) {
+      return const Padding(
+        padding: EdgeInsets.only(left: 8.0),
+        child: Icon(
+          CupertinoIcons.nosign,
+          size: 30,
+        ),
+      );
+    } else if (!LocationHelper().productInStock(ref, product)) {
+      return Padding(
+        padding: const EdgeInsets.only(left: 8.0),
+        child: Image.asset('assets/sold_out.png', height: 75, width: 75),
+      );
+    } else {
+      return product.isNew ? NewIcon(product: product) : const SizedBox();
+    }
   }
 }

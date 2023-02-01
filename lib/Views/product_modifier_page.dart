@@ -24,7 +24,7 @@ class ProductModifierPage extends StatelessWidget {
                   padding: const EdgeInsets.only(top: 10.0, left: 12.0),
                   child: Text(
                     product.name,
-                    style: Theme.of(context).textTheme.headline5,
+                    style: Theme.of(context).textTheme.headlineSmall,
                   ),
                 ),
                 Padding(

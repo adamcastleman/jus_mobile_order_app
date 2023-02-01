@@ -10,6 +10,7 @@ import 'package:jus_mobile_order_app/Providers/theme_providers.dart';
 import 'package:jus_mobile_order_app/Views/product_detail_page.dart';
 import 'package:jus_mobile_order_app/Widgets/General/order_tile_display_modifications.dart';
 import 'package:jus_mobile_order_app/Widgets/General/order_tile_edit_row.dart';
+import 'package:jus_mobile_order_app/Widgets/General/points_amount_display.dart';
 import 'package:jus_mobile_order_app/Widgets/Helpers/error.dart';
 import 'package:jus_mobile_order_app/Widgets/Helpers/loading.dart';
 import 'package:jus_mobile_order_app/Widgets/Helpers/pricing.dart';
@@ -89,7 +90,9 @@ class OrderTile extends ConsumerWidget {
                                     currentProduct: currentProduct,
                                     orderIndex: orderIndex,
                                   ),
-                                  Spacing().vertical(10),
+                                  Spacing().vertical(5),
+                                  determineItemPointsDisplay(currentProduct),
+                                  Spacing().vertical(2),
                                   Consumer(
                                     builder: (context, ref, child) {
                                       final currentUser =
@@ -168,6 +171,15 @@ class OrderTile extends ConsumerWidget {
           );
         }
       },
+    );
+  }
+
+  determineItemPointsDisplay(ProductModel currentProduct) {
+    return PointsAmountDisplay(
+      product: currentProduct,
+      padding: 4.0,
+      fontSize: 12,
+      hasBorder: false,
     );
   }
 

@@ -33,6 +33,7 @@ mixin _$ProductModel {
   bool get isFeatured => throw _privateConstructorUsedError;
   bool get isModifiable => throw _privateConstructorUsedError;
   bool get isScheduled => throw _privateConstructorUsedError;
+  int get hoursNotice => throw _privateConstructorUsedError;
   bool get hasToppings => throw _privateConstructorUsedError;
   List<dynamic> get nutrition => throw _privateConstructorUsedError;
   String get perks => throw _privateConstructorUsedError;
@@ -68,6 +69,7 @@ abstract class $ProductModelCopyWith<$Res> {
       bool isFeatured,
       bool isModifiable,
       bool isScheduled,
+      int hoursNotice,
       bool hasToppings,
       List<dynamic> nutrition,
       String perks,
@@ -105,6 +107,7 @@ class _$ProductModelCopyWithImpl<$Res, $Val extends ProductModel>
     Object? isFeatured = null,
     Object? isModifiable = null,
     Object? isScheduled = null,
+    Object? hoursNotice = null,
     Object? hasToppings = null,
     Object? nutrition = null,
     Object? perks = null,
@@ -180,6 +183,10 @@ class _$ProductModelCopyWithImpl<$Res, $Val extends ProductModel>
           ? _value.isScheduled
           : isScheduled // ignore: cast_nullable_to_non_nullable
               as bool,
+      hoursNotice: null == hoursNotice
+          ? _value.hoursNotice
+          : hoursNotice // ignore: cast_nullable_to_non_nullable
+              as int,
       hasToppings: null == hasToppings
           ? _value.hasToppings
           : hasToppings // ignore: cast_nullable_to_non_nullable
@@ -230,6 +237,7 @@ abstract class _$$_ProductModelCopyWith<$Res>
       bool isFeatured,
       bool isModifiable,
       bool isScheduled,
+      int hoursNotice,
       bool hasToppings,
       List<dynamic> nutrition,
       String perks,
@@ -265,6 +273,7 @@ class __$$_ProductModelCopyWithImpl<$Res>
     Object? isFeatured = null,
     Object? isModifiable = null,
     Object? isScheduled = null,
+    Object? hoursNotice = null,
     Object? hasToppings = null,
     Object? nutrition = null,
     Object? perks = null,
@@ -340,6 +349,10 @@ class __$$_ProductModelCopyWithImpl<$Res>
           ? _value.isScheduled
           : isScheduled // ignore: cast_nullable_to_non_nullable
               as bool,
+      hoursNotice: null == hoursNotice
+          ? _value.hoursNotice
+          : hoursNotice // ignore: cast_nullable_to_non_nullable
+              as int,
       hasToppings: null == hasToppings
           ? _value.hasToppings
           : hasToppings // ignore: cast_nullable_to_non_nullable
@@ -385,6 +398,7 @@ class _$_ProductModel implements _ProductModel {
       required this.isFeatured,
       required this.isModifiable,
       required this.isScheduled,
+      required this.hoursNotice,
       required this.hasToppings,
       required final List<dynamic> nutrition,
       required this.perks,
@@ -448,6 +462,8 @@ class _$_ProductModel implements _ProductModel {
   @override
   final bool isScheduled;
   @override
+  final int hoursNotice;
+  @override
   final bool hasToppings;
   final List<dynamic> _nutrition;
   @override
@@ -466,7 +482,7 @@ class _$_ProductModel implements _ProductModel {
 
   @override
   String toString() {
-    return 'ProductModel(uid: $uid, name: $name, category: $category, categoryOrder: $categoryOrder, productID: $productID, description: $description, ingredients: $ingredients, image: $image, isActive: $isActive, memberPrice: $memberPrice, price: $price, taxable: $taxable, isNew: $isNew, isRecommended: $isRecommended, isFeatured: $isFeatured, isModifiable: $isModifiable, isScheduled: $isScheduled, hasToppings: $hasToppings, nutrition: $nutrition, perks: $perks, servingsFruit: $servingsFruit, servingsVeggie: $servingsVeggie)';
+    return 'ProductModel(uid: $uid, name: $name, category: $category, categoryOrder: $categoryOrder, productID: $productID, description: $description, ingredients: $ingredients, image: $image, isActive: $isActive, memberPrice: $memberPrice, price: $price, taxable: $taxable, isNew: $isNew, isRecommended: $isRecommended, isFeatured: $isFeatured, isModifiable: $isModifiable, isScheduled: $isScheduled, hoursNotice: $hoursNotice, hasToppings: $hasToppings, nutrition: $nutrition, perks: $perks, servingsFruit: $servingsFruit, servingsVeggie: $servingsVeggie)';
   }
 
   @override
@@ -502,6 +518,8 @@ class _$_ProductModel implements _ProductModel {
                 other.isModifiable == isModifiable) &&
             (identical(other.isScheduled, isScheduled) ||
                 other.isScheduled == isScheduled) &&
+            (identical(other.hoursNotice, hoursNotice) ||
+                other.hoursNotice == hoursNotice) &&
             (identical(other.hasToppings, hasToppings) ||
                 other.hasToppings == hasToppings) &&
             const DeepCollectionEquality()
@@ -533,6 +551,7 @@ class _$_ProductModel implements _ProductModel {
         isFeatured,
         isModifiable,
         isScheduled,
+        hoursNotice,
         hasToppings,
         const DeepCollectionEquality().hash(_nutrition),
         perks,
@@ -566,6 +585,7 @@ abstract class _ProductModel implements ProductModel {
       required final bool isFeatured,
       required final bool isModifiable,
       required final bool isScheduled,
+      required final int hoursNotice,
       required final bool hasToppings,
       required final List<dynamic> nutrition,
       required final String perks,
@@ -606,6 +626,8 @@ abstract class _ProductModel implements ProductModel {
   bool get isModifiable;
   @override
   bool get isScheduled;
+  @override
+  int get hoursNotice;
   @override
   bool get hasToppings;
   @override

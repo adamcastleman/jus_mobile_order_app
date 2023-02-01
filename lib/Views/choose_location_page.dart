@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:jus_mobile_order_app/Providers/location_providers.dart';
 import 'package:jus_mobile_order_app/Widgets/Buttons/close_button.dart';
+import 'package:jus_mobile_order_app/Widgets/Buttons/order_here_button.dart';
 import 'package:jus_mobile_order_app/Widgets/General/google_map.dart';
 import 'package:jus_mobile_order_app/Widgets/Lists/locations_list.dart';
 
@@ -9,7 +10,7 @@ class ChooseLocationPage extends ConsumerWidget {
   const ChooseLocationPage({super.key});
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    var selectedLocation = ref.watch(selectedLocationID);
+    var selectedLocation = ref.watch(selectedLocationProvider);
     return Stack(
       children: [
         Column(
@@ -22,7 +23,7 @@ class ChooseLocationPage extends ConsumerWidget {
                   alignment: Alignment.bottomLeft,
                   child: JusCloseButton(
                     onPressed: () {
-                      ref.invalidate(selectedLocationID);
+                      ref.invalidate(selectedLocationProvider);
                       Navigator.pop(context);
                     },
                   )),
@@ -40,19 +41,9 @@ class ChooseLocationPage extends ConsumerWidget {
           padding: const EdgeInsets.symmetric(horizontal: 18.0, vertical: 28.0),
           child: Align(
             alignment: Alignment.bottomRight,
-            child: selectedLocation == 0
+            child: selectedLocation == null
                 ? const SizedBox()
-                : FloatingActionButton.extended(
-                    onPressed: () {
-                      Navigator.pop(context);
-                    },
-                    label: const Padding(
-                      padding: EdgeInsets.all(8.0),
-                      child: Text(
-                        'Order Here',
-                      ),
-                    ),
-                  ),
+                : const OrderHereButton(),
           ),
         ),
       ],

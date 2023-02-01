@@ -177,7 +177,6 @@ class SelectExtraChargeIngredientQuantity extends StateNotifier<int> {
   SelectExtraChargeIngredientQuantity() : super(0);
 
   addBlended(int blended) {
-    print('hi');
     HapticFeedback.lightImpact();
     state = blended;
   }

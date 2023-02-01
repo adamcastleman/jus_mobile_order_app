@@ -10,7 +10,7 @@ class EmptyLocationTile extends StatelessWidget {
       contentPadding: const EdgeInsets.all(15.0),
       title: Text(
         'No nearby stores',
-        style: Theme.of(context).textTheme.headline5,
+        style: Theme.of(context).textTheme.headlineSmall,
       ),
       subtitle: Padding(
         padding: const EdgeInsets.symmetric(vertical: 12.0, horizontal: 12.0),

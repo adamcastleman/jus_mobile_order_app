@@ -17,7 +17,7 @@ class NutritionFacts extends ConsumerWidget {
       children: [
         Text(
           'Nutrition',
-          style: Theme.of(context).textTheme.headline6,
+          style: Theme.of(context).textTheme.titleLarge,
         ),
         Padding(
           padding: const EdgeInsets.symmetric(vertical: 4.0),

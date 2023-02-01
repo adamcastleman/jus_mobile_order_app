@@ -6,7 +6,10 @@ import 'package:jus_mobile_order_app/Widgets/Buttons/elevated_button_large.dart'
 import 'package:jus_mobile_order_app/Widgets/Buttons/elevated_button_medium.dart';
 import 'package:jus_mobile_order_app/Widgets/Buttons/outline_button_medium.dart';
 import 'package:jus_mobile_order_app/Widgets/Buttons/quantity_picker_button.dart';
+import 'package:jus_mobile_order_app/Widgets/Buttons/untappable_elevated_button_large.dart';
+import 'package:jus_mobile_order_app/Widgets/Helpers/locations.dart';
 import 'package:jus_mobile_order_app/Widgets/Helpers/pricing.dart';
+import 'package:jus_mobile_order_app/Widgets/Helpers/time.dart';
 
 import '../Helpers/set_standard_ingredients.dart';
 
@@ -36,7 +39,7 @@ class SelectProductOptions extends ConsumerWidget {
                     children: [
                       Text(
                         'Quantity',
-                        style: Theme.of(context).textTheme.headline6,
+                        style: Theme.of(context).textTheme.titleLarge,
                       ),
                       const QuantityPickerButton(
                         daysPicker: false,
@@ -52,7 +55,7 @@ class SelectProductOptions extends ConsumerWidget {
                           children: [
                             Text(
                               'Number of Days',
-                              style: Theme.of(context).textTheme.headline6,
+                              style: Theme.of(context).textTheme.titleLarge,
                             ),
                             const QuantityPickerButton(
                               daysPicker: true,
@@ -81,6 +84,7 @@ class SelectProductOptions extends ConsumerWidget {
     final hasToppings = ref.watch(productHasToppingsProvider);
     final selectedToppings = ref.watch(selectedToppingsProvider);
     final allergies = ref.watch(selectedAllergiesProvider);
+
     Map<String, dynamic> currentItem = {
       'productID': product.productID,
       'isScheduled': product.isScheduled,
@@ -94,41 +98,51 @@ class SelectProductOptions extends ConsumerWidget {
       'selectedToppings': selectedToppings,
       'allergies': allergies,
     };
-    if (isModifiable == true) {
-      return Row(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
-        children: [
-          MediumOutlineButton(
-            buttonText: 'Customize',
-            buttonColor: Colors.white,
-            onPressed: () {
-              StandardIngredients(ref: ref).add();
-              close();
-            },
-          ),
-          MediumElevatedButton(
-            buttonText: editOrder ? 'Update' : 'Add to cart',
-            onPressed: () {
-              editOrder
-                  ? editItemInCart(ref, currentItem)
-                  : addToCart(ref, currentItem);
-              addCost(ref);
-              Navigator.pop(context);
-            },
-          ),
-        ],
-      );
+
+    if (LocationHelper().selectedLocation(ref) == null ||
+        product.isScheduled ||
+        (LocationHelper().productInStock(ref, product) &&
+            LocationHelper().acceptingOrders(ref) &&
+            Time().acceptingOrders(context, ref))) {
+      return isModifiable
+          ? Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                MediumOutlineButton(
+                  buttonText: 'Customize',
+                  buttonColor: Colors.white,
+                  onPressed: () {
+                    StandardIngredients(ref: ref).add();
+                    close();
+                  },
+                ),
+                MediumElevatedButton(
+                  buttonText: editOrder ? 'Update' : 'Add to cart',
+                  onPressed: () {
+                    editOrder
+                        ? editItemInCart(ref, currentItem)
+                        : addToCart(ref, currentItem);
+                    addCost(ref);
+                    Navigator.pop(context);
+                  },
+                ),
+              ],
+            )
+          : LargeElevatedButton(
+              buttonText: editOrder ? 'Update' : 'Add to cart',
+              onPressed: () {
+                editOrder
+                    ? editItemInCart(ref, currentItem)
+                    : addToCart(ref, currentItem);
+                addCost(ref);
+                Navigator.pop(context);
+              },
+            );
     } else {
-      return LargeElevatedButton(
-        buttonText: editOrder ? 'Update' : 'Add to cart',
-        onPressed: () {
-          editOrder
-              ? editItemInCart(ref, currentItem)
-              : addToCart(ref, currentItem);
-          addCost(ref);
-          Navigator.pop(context);
-        },
-      );
+      return LargeUntappableButton(
+          buttonText: (!Time().acceptingOrders(context, ref))
+              ? '${LocationHelper().name(ref)} is not accepting pickup orders'
+              : 'Out of stock');
     }
   }
 

@@ -1,3 +1,4 @@
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_emoji/flutter_emoji.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -20,11 +21,16 @@ class HomeGreeting extends ConsumerWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
+                AutoSizeText(
                   '${dayPartGreeting()},',
-                  style: Theme.of(context).textTheme.headline4,
+                  style: const TextStyle(fontSize: 38, letterSpacing: -2),
+                  maxLines: 1,
                 ),
-                determineNameForGreeting(user, context),
+                AutoSizeText(
+                  determineNameForGreeting(user, context),
+                  style: const TextStyle(fontSize: 38, letterSpacing: -2),
+                  maxLines: 1,
+                ),
               ],
             ),
           );
@@ -65,15 +71,9 @@ class HomeGreeting extends ConsumerWidget {
 
   determineNameForGreeting(user, context) {
     if (user.value?.uid == null) {
-      return Text(
-        'Guest ${dayPartEmoji()}',
-        style: Theme.of(context).textTheme.headline4,
-      );
+      return 'Friend ${dayPartEmoji()}';
     } else {
-      return Text(
-        '${user.value?.firstName} ${dayPartEmoji()}',
-        style: Theme.of(context).textTheme.headline4,
-      );
+      return '${user.value?.firstName} ${dayPartEmoji()}';
     }
   }
 }

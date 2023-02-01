@@ -177,9 +177,17 @@ class OrderTileEditRow extends ConsumerWidget {
 
   setItemVariation(WidgetRef ref) {
     final currentOrder = ref.watch(currentOrderItemsProvider);
-    var ingredients = currentOrder[index]['selectedIngredients'].isEmpty
-        ? currentOrder[index]['standardIngredients']
-        : currentOrder[index]['selectedIngredients'];
+    var ingredients = [];
+    if (currentOrder[index]['isModifiable'] != true ||
+        currentOrder[index]['isScheduled'] == true) {
+      ingredients = [];
+    } else {
+      ingredients = currentOrder[index]['selectedIngredients'].isEmpty
+          ? currentOrder[index]['standardIngredients']
+          : currentOrder[index]['selectedIngredients'];
+    }
+
+    ref.read(selectedIngredientsProvider.notifier).addIngredients(ingredients);
     ref
         .read(itemQuantityProvider.notifier)
         .set(currentOrder[index]['itemQuantity']);
@@ -197,7 +205,6 @@ class OrderTileEditRow extends ConsumerWidget {
         .read(selectedAllergiesProvider.notifier)
         .addListOfAllergies(currentOrder[index]['allergies']);
     ref.read(editOrderProvider.notifier).state = true;
-    ref.read(selectedIngredientsProvider.notifier).addIngredients(ingredients);
   }
 
   setItemIndex(WidgetRef ref) {
@@ -218,7 +225,9 @@ class OrderTileEditRow extends ConsumerWidget {
     final currentOrderItem = ref.watch(currentOrderItemsProvider);
     double extraCharge = 0.0;
     for (var item in currentOrderItem[index]['selectedIngredients']) {
-      extraCharge = extraCharge + double.parse(item['price']);
+      item.isEmpty
+          ? extraCharge = extraCharge
+          : extraCharge = extraCharge + double.parse(item['price']);
     }
     final price =
         currentProduct.price[currentOrderItem[index]['itemSize']]['amount'];
@@ -231,7 +240,9 @@ class OrderTileEditRow extends ConsumerWidget {
     final currentOrderItem = ref.watch(currentOrderItemsProvider);
     double extraCharge = 0.0;
     for (var item in currentOrderItem[index]['selectedIngredients']) {
-      extraCharge = extraCharge + double.parse(item['memberPrice']);
+      item.isEmpty
+          ? extraCharge = extraCharge
+          : extraCharge = extraCharge + double.parse(item['memberPrice']);
     }
     final price = currentProduct
         .memberPrice[currentOrderItem[index]['itemSize']]['amount'];

@@ -22,6 +22,7 @@ class ProductModel with _$ProductModel {
     required bool isFeatured,
     required bool isModifiable,
     required bool isScheduled,
+    required int hoursNotice,
     required bool hasToppings,
     required List nutrition,
     required String perks,

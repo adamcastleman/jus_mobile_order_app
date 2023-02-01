@@ -5,6 +5,8 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:jus_mobile_order_app/Providers/location_providers.dart';
 import 'package:jus_mobile_order_app/Providers/stream_providers.dart';
 import 'package:jus_mobile_order_app/Widgets/Buttons/outline_button_medium.dart';
+import 'package:jus_mobile_order_app/Widgets/Helpers/error.dart';
+import 'package:jus_mobile_order_app/Widgets/Helpers/loading.dart';
 
 import '../../Models/location_model.dart';
 
@@ -38,50 +40,59 @@ class DisplayGoogleMapState extends ConsumerState<DisplayGoogleMap> {
 
   @override
   Widget build(BuildContext context) {
-    final selectedLocationLatLong = ref.watch(selectedLocationLatLongProvider);
+    final selectedLocationLatLong = ref.watch(currentLocationLatLongProvider);
     final locations = ref.watch(locationsProvider);
-    _mapController?.animateCamera(CameraUpdate.newLatLng(
-      LatLng(
-          selectedLocationLatLong.latitude, selectedLocationLatLong.longitude),
-    ));
-    handleLocationMarkers(locations);
-    getCurrentBounds(locations);
 
-    return Stack(
-      children: [
-        GoogleMap(
-          zoomControlsEnabled: true,
-          tiltGesturesEnabled: false,
-          initialCameraPosition: CameraPosition(
-            bearing: 10.0,
-            zoom: 11.0,
-            target: LatLng(selectedLocationLatLong.latitude,
-                selectedLocationLatLong.longitude),
-          ),
-          myLocationEnabled: true,
-          myLocationButtonEnabled: true,
-          mapToolbarEnabled: false,
-          markers: Set<Marker>.of(_markers),
-          onMapCreated: _onMapCreated,
-        ),
-        Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Align(
-            alignment: Alignment.topLeft,
-            child: MediumOutlineButton(
-              onPressed: () {
-                getCurrentBounds(locations);
-                ref.invalidate(selectedLocationID);
-              },
-              buttonText: 'Search this area',
+    return locations.when(
+      data: (data) {
+        _mapController?.animateCamera(CameraUpdate.newLatLng(
+          LatLng(selectedLocationLatLong.latitude,
+              selectedLocationLatLong.longitude),
+        ));
+        handleLocationMarkers(data);
+        getCurrentBounds(data);
+
+        return Stack(
+          children: [
+            GoogleMap(
+              zoomControlsEnabled: true,
+              tiltGesturesEnabled: false,
+              initialCameraPosition: CameraPosition(
+                bearing: 10.0,
+                zoom: 11.0,
+                target: LatLng(selectedLocationLatLong.latitude,
+                    selectedLocationLatLong.longitude),
+              ),
+              myLocationEnabled: true,
+              myLocationButtonEnabled: true,
+              mapToolbarEnabled: false,
+              markers: Set<Marker>.of(_markers),
+              onMapCreated: _onMapCreated,
             ),
-          ),
-        ),
-      ],
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Align(
+                alignment: Alignment.topLeft,
+                child: MediumOutlineButton(
+                  onPressed: () {
+                    getCurrentBounds(data);
+                    ref.invalidate(selectedLocationProvider);
+                  },
+                  buttonText: 'Search this area',
+                ),
+              ),
+            ),
+          ],
+        );
+      },
+      error: (e, _) => ShowError(
+        error: e.toString(),
+      ),
+      loading: () => const Loading(),
     );
   }
 
-  getCurrentBounds(AsyncValue<List<LocationModel>> locations) async {
+  getCurrentBounds(List<LocationModel> locations) async {
     var mapBounds = LatLngBounds(
         southwest: const LatLng(0.0, 0.0), northeast: const LatLng(0.0, 0.0));
     if (_mapController == null) {
@@ -91,7 +102,8 @@ class DisplayGoogleMapState extends ConsumerState<DisplayGoogleMap> {
       mapBounds = await _mapController!.getVisibleRegion();
       ref.read(currentMapBoundsProvider.notifier).state = mapBounds;
     }
-    var listOfVisibleLocations = locations.value!
+
+    var listOfVisibleLocations = locations
         .where((element) =>
             mapBounds.contains(LatLng(element.latitude, element.longitude)))
         .toList();
@@ -104,8 +116,13 @@ class DisplayGoogleMapState extends ConsumerState<DisplayGoogleMap> {
         const ImageConfiguration(), 'assets/location_marker.png');
   }
 
-  handleLocationMarkers(AsyncValue<List<LocationModel>> locations) async {
-    for (var location in locations.value == null ? [] : locations.value!) {
+  handleLocationMarkers(List<LocationModel> locations) async {
+    for (var location in locations) {
+      var selectedLocation = locations
+          .where((element) =>
+              element.latitude == location.latitude &&
+              element.longitude == location.longitude)
+          .first;
       _markers.add(
         Marker(
             icon: customIcon ?? BitmapDescriptor.defaultMarker,
@@ -115,8 +132,11 @@ class DisplayGoogleMapState extends ConsumerState<DisplayGoogleMap> {
               location.longitude,
             ),
             onTap: () {
+              selectedLocation.comingSoon
+                  ? null
+                  : ref.read(selectedLocationProvider.notifier).state =
+                      selectedLocation;
               getCurrentBounds(locations);
-              ref.read(selectedLocationID.notifier).state = location.locationID;
             }),
       );
     }

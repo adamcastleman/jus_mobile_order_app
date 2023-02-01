@@ -1,9 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:jus_mobile_order_app/Providers/order_providers.dart';
 import 'package:jus_mobile_order_app/Providers/product_providers.dart';
+import 'package:jus_mobile_order_app/Views/checkout_page.dart';
 import 'package:jus_mobile_order_app/Views/empty_cart_page.dart';
+import 'package:jus_mobile_order_app/Widgets/Buttons/elevated_button_large.dart';
+import 'package:jus_mobile_order_app/Widgets/General/cart_category_descriptor.dart';
 import 'package:jus_mobile_order_app/Widgets/General/total_price.dart';
 import 'package:jus_mobile_order_app/Widgets/Helpers/divider.dart';
+import 'package:jus_mobile_order_app/Widgets/Helpers/modal_bottom_sheets.dart';
+import 'package:jus_mobile_order_app/Widgets/Helpers/spacing_widgets.dart';
 import 'package:jus_mobile_order_app/Widgets/Lists/display_order_list.dart';
 import 'package:jus_mobile_order_app/Widgets/Tiles/selected_location_tile.dart';
 
@@ -24,7 +30,7 @@ class CartPage extends ConsumerWidget {
             children: [
               Text(
                 'Review order',
-                style: Theme.of(context).textTheme.headline5,
+                style: Theme.of(context).textTheme.headlineSmall,
               ),
               Padding(
                 padding: const EdgeInsets.symmetric(vertical: 22.0),
@@ -32,23 +38,38 @@ class CartPage extends ConsumerWidget {
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text(
-                      'Location',
-                      style: TextStyle(fontSize: 16),
+                    const CartCategory(
+                      text: 'Location',
                     ),
-                    JusDivider().thick(),
                     const Padding(
                       padding: EdgeInsets.only(bottom: 30.0),
                       child: SelectedLocationTile(),
                     ),
-                    const Text(
-                      'Your order',
-                      style: TextStyle(fontSize: 16),
+                    const CartCategory(
+                      text: 'Your order',
                     ),
-                    JusDivider().thick(),
                     const DisplayOrderList(),
                     JusDivider().thick(),
                     const TotalPrice(),
+                    Spacing().vertical(40),
+                    LargeElevatedButton(
+                      buttonText: 'Check out',
+                      onPressed: () {
+                        determineScheduledAndNowItemsInCartProvider(ref);
+
+                        // determineEarliestPickupTime(ref);
+                        ModalBottomSheet().partScreen(
+                          context: context,
+                          enableDrag: false,
+                          isDismissible: false,
+                          isScrollControlled: true,
+                          builder: (context) => SizedBox(
+                            height: MediaQuery.of(context).size.height * 0.92,
+                            child: const CheckoutPage(),
+                          ),
+                        );
+                      },
+                    ),
                   ],
                 ),
               ),
@@ -57,5 +78,20 @@ class CartPage extends ConsumerWidget {
         ),
       );
     }
+  }
+
+  void determineScheduledAndNowItemsInCartProvider(WidgetRef ref) {
+    final currentOrder = ref.watch(currentOrderItemsProvider);
+    final scheduledItems =
+        currentOrder.where((element) => element['isScheduled']);
+    final nowItems = currentOrder.where((element) => !element['isScheduled']);
+
+    ref.read(scheduledAndNowItemsInCartProvider.notifier).state =
+        scheduledItems.isNotEmpty && nowItems.isNotEmpty;
+  }
+
+  determineEarliestPickupTime(WidgetRef ref) {
+    // ref.read(earliestPickupTimeProvider.notifier).state =
+    //     DateTime.now().earliestTime;
   }
 }
