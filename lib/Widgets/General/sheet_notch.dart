@@ -6,7 +6,7 @@ class SheetNotch extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       margin: const EdgeInsets.only(top: 8),
-      height: 5,
+      height: 3,
       width: 60,
       decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(100), color: Colors.black),

@@ -1,15 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:jus_mobile_order_app/Helpers/formulas.dart';
+import 'package:jus_mobile_order_app/Helpers/modal_bottom_sheets.dart';
+import 'package:jus_mobile_order_app/Helpers/spacing_widgets.dart';
+import 'package:jus_mobile_order_app/Helpers/time.dart';
 import 'package:jus_mobile_order_app/Models/location_model.dart';
 import 'package:jus_mobile_order_app/Providers/location_providers.dart';
-import 'package:jus_mobile_order_app/Views/store_details_page.dart';
-import 'package:jus_mobile_order_app/Widgets/Helpers/formulas.dart';
-import 'package:jus_mobile_order_app/Widgets/Helpers/modal_bottom_sheets.dart';
-import 'package:jus_mobile_order_app/Widgets/Helpers/spacing_widgets.dart';
-import 'package:jus_mobile_order_app/Widgets/Helpers/time.dart';
+import 'package:jus_mobile_order_app/Providers/theme_providers.dart';
+import 'package:jus_mobile_order_app/Sheets/store_details_sheet.dart';
 
 class LocationListTile extends ConsumerWidget {
   final int index;
@@ -25,10 +27,11 @@ class LocationListTile extends ConsumerWidget {
     return ListTile(
       shape: OutlineInputBorder(
         borderSide: BorderSide(
-            color: determineBorderColor(selectedLocation, visibleLocations),
+            color:
+                determineBorderColor(ref, selectedLocation, visibleLocations),
             width: 0.5),
       ),
-      tileColor: determineTileColor(selectedLocation, visibleLocations),
+      tileColor: determineTileColor(ref, selectedLocation, visibleLocations),
       isThreeLine: true,
       title: Row(
         children: [
@@ -57,7 +60,7 @@ class LocationListTile extends ConsumerWidget {
               Text(
                   '${getDistanceFromCurrentLocation(visibleLocations[index], currentLocation)} mi. away'),
               Spacing().horizontal(10),
-              openOrClosedText(visibleLocations),
+              openOrClosedText(ref, visibleLocations),
             ],
           ),
           Spacing().vertical(10),
@@ -67,12 +70,6 @@ class LocationListTile extends ConsumerWidget {
       trailing: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          IconButton(
-            icon: const Icon(
-              FontAwesomeIcons.heart,
-            ),
-            onPressed: () {},
-          ),
           visibleLocations[index].comingSoon
               ? const SizedBox()
               : IconButton(
@@ -86,39 +83,50 @@ class LocationListTile extends ConsumerWidget {
                       context: context,
                       enableDrag: true,
                       isDismissible: true,
-                      builder: (context) => const StoreDetailsPage(),
+                      builder: (context) => const StoreDetailsSheet(),
                     );
                   },
                 ),
         ],
       ),
       onTap: () {
+        HapticFeedback.lightImpact();
         var location = visibleLocations[index];
         setLocationData(ref, location);
       },
     );
   }
 
-  determineTileColor(dynamic selectedLocation, List visibleLocations) {
+  determineTileColor(
+      WidgetRef ref, dynamic selectedLocation, List visibleLocations) {
+    final selectedCardColor = ref.watch(selectedCardColorProvider);
     if (selectedLocation == null) {
       return Colors.white;
     }
     return selectedLocation.locationID == visibleLocations[index].locationID
-        ? Colors.grey[100]
+        ? selectedCardColor
         : Colors.white;
   }
 
-  determineBorderColor(dynamic selectedLocation, List visibleLocations) {
+  determineBorderColor(
+      WidgetRef ref, dynamic selectedLocation, List visibleLocations) {
+    final selectedCardBorderColor = ref.watch(selectedCardBorderColorProvider);
     if (selectedLocation == null) {
       return Colors.white;
     }
     return selectedLocation.locationID == visibleLocations[index].locationID
-        ? Colors.grey
+        ? selectedCardBorderColor
         : Colors.white;
   }
 
-  openOrClosedText(List visibleLocations) {
-    if (Time().locationOpenStatus(location: visibleLocations[index])) {
+  openOrClosedText(WidgetRef ref, List visibleLocations) {
+    if (Time().isLocationClosingSoon(visibleLocations[index])) {
+      return const Text(
+        'Closing Soon',
+        style: TextStyle(color: Colors.deepOrangeAccent),
+      );
+    }
+    if (Time().isLocationOpen(location: visibleLocations[index])) {
       return const Text(
         'Open',
         style: TextStyle(color: Colors.green),
@@ -134,7 +142,7 @@ class LocationListTile extends ConsumerWidget {
   acceptingOrdersText(
       List visibleLocations, BuildContext context, WidgetRef ref) {
     if (visibleLocations[index].acceptingOrders ||
-        !Time().locationOpenStatus(location: visibleLocations[index])) {
+        !Time().isLocationOpen(location: visibleLocations[index])) {
       return const SizedBox();
     } else {
       return const Text(

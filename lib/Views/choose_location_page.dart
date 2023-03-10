@@ -20,7 +20,7 @@ class ChooseLocationPage extends ConsumerWidget {
               color: Colors.grey[100],
               height: MediaQuery.of(context).size.height * 0.1,
               child: Align(
-                  alignment: Alignment.bottomLeft,
+                  alignment: Alignment.bottomRight,
                   child: JusCloseButton(
                     onPressed: () {
                       ref.invalidate(selectedLocationProvider);

@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:jus_mobile_order_app/Helpers/modal_bottom_sheets.dart';
+import 'package:jus_mobile_order_app/Helpers/spacing_widgets.dart';
+import 'package:jus_mobile_order_app/Views/register_page.dart';
 import 'package:jus_mobile_order_app/Widgets/Buttons/elevated_button_small.dart';
-import 'package:jus_mobile_order_app/Widgets/Helpers/spacing_widgets.dart';
 
 class FavoritesCardGuest extends ConsumerWidget {
   const FavoritesCardGuest({super.key});
@@ -16,6 +18,7 @@ class FavoritesCardGuest extends ConsumerWidget {
             padding: const EdgeInsets.symmetric(vertical: 15.0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 Text(
                   'Your favorites are waiting.',
@@ -33,7 +36,12 @@ class FavoritesCardGuest extends ConsumerWidget {
                 Spacing().vertical(25),
                 SmallElevatedButton(
                   buttonText: 'Create Account',
-                  onPressed: () {},
+                  onPressed: () {
+                    ModalBottomSheet().fullScreen(
+                      context: context,
+                      builder: (context) => const RegisterPage(),
+                    );
+                  },
                 ),
               ],
             ),

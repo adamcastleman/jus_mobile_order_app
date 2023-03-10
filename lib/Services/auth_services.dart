@@ -85,6 +85,14 @@ class AuthServices {
     }
   }
 
+  Future<void> updatePassword(String password) async {
+    try {
+      return await _auth.currentUser!.updatePassword(password);
+    } on auth.FirebaseAuthException catch (e) {
+      throw e.message.toString();
+    }
+  }
+
   Future<void> signOut() async {
     try {
       return _auth.signOut();

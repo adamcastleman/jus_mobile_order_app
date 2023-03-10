@@ -10,6 +10,7 @@ class SmallElevatedButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return ElevatedButton(
       style: ButtonStyle(
+        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
         minimumSize: MaterialStateProperty.all(
           Size(MediaQuery.of(context).size.width * 0.4, 35.0),
         ),

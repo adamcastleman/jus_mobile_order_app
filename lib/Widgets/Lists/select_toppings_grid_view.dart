@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:jus_mobile_order_app/Widgets/Helpers/error.dart';
-import 'package:jus_mobile_order_app/Widgets/Helpers/loading.dart';
-import 'package:jus_mobile_order_app/Widgets/Helpers/spacing_widgets.dart';
+import 'package:jus_mobile_order_app/Helpers/error.dart';
+import 'package:jus_mobile_order_app/Helpers/loading.dart';
+import 'package:jus_mobile_order_app/Helpers/spacing_widgets.dart';
 
 import '../../Providers/stream_providers.dart';
 import '../Cards/select_multiple_ingredients_card.dart';

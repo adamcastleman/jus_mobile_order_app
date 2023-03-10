@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:jus_mobile_order_app/Widgets/Helpers/divider.dart';
+import 'package:jus_mobile_order_app/Helpers/divider.dart';
 
 class CartCategory extends StatelessWidget {
   final String text;

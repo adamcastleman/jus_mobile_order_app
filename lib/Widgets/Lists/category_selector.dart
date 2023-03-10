@@ -1,34 +1,35 @@
-import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:jus_mobile_order_app/Helpers/error.dart';
+import 'package:jus_mobile_order_app/Helpers/loading.dart';
 import 'package:jus_mobile_order_app/Models/product_model.dart';
 import 'package:jus_mobile_order_app/Providers/product_providers.dart';
 import 'package:jus_mobile_order_app/Providers/stream_providers.dart';
 import 'package:jus_mobile_order_app/Providers/theme_providers.dart';
-import 'package:jus_mobile_order_app/Widgets/Helpers/error.dart';
-import 'package:jus_mobile_order_app/Widgets/Helpers/loading.dart';
 
 class CategorySelector extends HookConsumerWidget {
   const CategorySelector({super.key});
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final backgroundColor = ref.watch(themeColorProvider);
+    final backgroundColor = ref.watch(backgroundColorProvider);
     final products = Platform.isIOS || Platform.isAndroid
         ? ref.watch(taxableProductsProvider)
         : ref.watch(productsProvider);
     final currentCategory = ref.watch(selectedCategoryFromScrollProvider);
     final controller = useScrollController();
-    List filteredList = filterCategoryDuplicates(products);
+
     double itemWidth = 80;
     return SizedBox(
       height: 40,
       child: products.when(
         loading: () => const Loading(),
-        error: (Object e, _) => ShowError(error: e.toString()),
-        data: (data) => ListView.builder(
+        error: (e, _) => ShowError(error: e.toString()),
+        data: (product) {
+          List filteredList = filterCategoryDuplicates(product);
+          return ListView.builder(
             physics: const ClampingScrollPhysics(),
             controller: controller,
             scrollDirection: Axis.horizontal,
@@ -42,7 +43,7 @@ class CategorySelector extends HookConsumerWidget {
                   : null;
               return InkWell(
                 onTap: () {
-                  ref.watch(categoryOrderProvider.notifier).state =
+                  ref.read(categoryOrderProvider.notifier).state =
                       filteredList[index]['order'];
                 },
                 child: Container(
@@ -52,7 +53,7 @@ class CategorySelector extends HookConsumerWidget {
                       bottom: BorderSide(
                           color: currentCategory == filteredList[index]['order']
                               ? Colors.black
-                              : backgroundColor!),
+                              : backgroundColor),
                     ),
                   ),
                   child: Center(
@@ -67,27 +68,26 @@ class CategorySelector extends HookConsumerWidget {
                   ),
                 ),
               );
-            }),
+            },
+          );
+        },
       ),
     );
   }
 
-  filterCategoryDuplicates(AsyncValue<List<ProductModel>> products) {
-    List categoryList = [];
-    List filteredList = [];
-    for (var product in products.value!) {
-      Map newMap = {
-        'category': product.category,
-        'order': product.categoryOrder,
-      };
-      categoryList.add(newMap);
+  List<Map<String, dynamic>> filterCategoryDuplicates(
+      List<ProductModel> products) {
+    Set<String> categorySet = {};
+    List<Map<String, dynamic>> filteredList = [];
+
+    for (var product in products) {
+      if (!categorySet.contains(product.category)) {
+        categorySet.add(product.category);
+        filteredList.add(
+            {'category': product.category, 'order': product.categoryOrder});
+      }
     }
-    final flattenList = categoryList.map((item) => jsonEncode(item)).toList();
-    final removeDuplicatesFromCategoryList = flattenList.toSet().toList();
-    final filteredCategoryList = removeDuplicatesFromCategoryList
-        .map((item) => jsonDecode(item))
-        .toList();
-    filteredList = filteredCategoryList;
+
     return filteredList;
   }
 }

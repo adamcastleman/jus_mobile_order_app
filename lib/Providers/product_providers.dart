@@ -7,7 +7,7 @@ import 'package:jus_mobile_order_app/Models/product_model.dart';
 import 'package:jus_mobile_order_app/Models/user_model.dart';
 import 'package:jus_mobile_order_app/Widgets/Cards/animated_list_card.dart';
 
-final categoryOrderProvider = StateProvider<int>((ref) => 0);
+final categoryOrderProvider = StateProvider.autoDispose<int>((ref) => 0);
 
 final selectedCategoryFromScrollProvider =
     StateProvider.autoDispose<dynamic>((ref) => 0);
@@ -16,9 +16,13 @@ final isModifiableProductProvider = StateProvider<bool>((ref) => false);
 
 final productHasToppingsProvider = StateProvider<bool>((ref) => false);
 
-final selectedSizeProvider = StateProvider<int>((ref) => 0);
+final selectedProductIDProvider = StateProvider<int?>((ref) => null);
+
+final itemSizeProvider = StateProvider<int>((ref) => 0);
 
 final editOrderProvider = StateProvider<bool>((ref) => false);
+
+final itemKeyProvider = StateProvider<String>((ref) => '');
 
 final itemQuantityProvider = StateNotifierProvider<SelectItemQuantity, int>(
     (ref) => SelectItemQuantity());
@@ -35,6 +39,8 @@ final currentIngredientIDProvider = StateProvider<int?>((ref) => null);
 final currentIngredientIndexProvider = StateProvider<int?>((ref) => null);
 
 final isScheduledProvider = StateProvider<bool>((ref) => false);
+
+final favoriteItemNameProvider = StateProvider<String>((ref) => '');
 
 final currentIngredientExtraChargeProvider =
     StateProvider<bool>((ref) => false);
@@ -76,7 +82,7 @@ final currentOrderItemsProvider =
         (ref) => CurrentOrderItems());
 
 final currentOrderCostProvider =
-    StateNotifierProvider<CurrentOrderCost, Map<String, dynamic>>(
+    StateNotifierProvider<CurrentOrderCost, List<Map<String, dynamic>>>(
         (ref) => CurrentOrderCost());
 
 final currentOrderItemsIndexProvider = StateProvider<int>((ref) => 0);
@@ -93,7 +99,7 @@ class SelectedToppings extends StateNotifier<List<int>> {
     }
   }
 
-  addMultipleToppings(List<int> ingredients) {
+  addMultipleToppings(List<dynamic> ingredients) {
     state = [...state, ...ingredients];
   }
 
@@ -113,7 +119,7 @@ class SelectedAllergies extends StateNotifier<List<int>> {
     state = [...state, ingredient];
   }
 
-  addListOfAllergies(List<int> ingredients) {
+  addListOfAllergies(List<dynamic> ingredients) {
     state = [...state, ...ingredients];
   }
 
@@ -205,9 +211,10 @@ class ListOfIngredients extends StateNotifier<List<dynamic>> {
   ListOfIngredients() : super([]);
 
   addIngredients(List<dynamic> ingredients) {
-    ingredients.sort((a, b) => a['id'].compareTo(b['id']));
+    List newList = [...ingredients];
+    newList.sort((a, b) => a['id'].compareTo(b['id']));
 
-    state = ingredients;
+    state = newList;
   }
 
   addIngredient(
@@ -494,6 +501,7 @@ class CurrentOrderItems extends StateNotifier<List<Map<String, dynamic>>> {
             ? item['daysQuantity']
             : 1;
     currentOrder[currentOrderIndex]['itemSize'] = item['itemSize'];
+    currentOrder[currentOrderIndex]['itemKey'] = item['itemKey'];
     currentOrder[currentOrderIndex]['selectedIngredients'] =
         item['selectedIngredients'];
     currentOrder[currentOrderIndex]['standardIngredients'] =
@@ -515,76 +523,67 @@ class CurrentOrderItems extends StateNotifier<List<Map<String, dynamic>>> {
   addItemQuantity(ProductModel currentProduct, int index) {
     HapticFeedback.lightImpact();
     List<Map<String, dynamic>> newList = [...state];
-    Map<String, dynamic> newElement = {
-      'productID': newList[index]['productID'],
-      'itemQuantity': newList[index]['itemQuantity'] + 1,
-      'daysQuantity': 1,
-      'itemSize': newList[index]['itemSize'],
-      'isScheduled': currentProduct.isScheduled,
-      'isModifiable': currentProduct.isModifiable,
-      'hasToppings': currentProduct.hasToppings,
-      'selectedIngredients': newList[index]['selectedIngredients'],
-      'standardIngredients': newList[index]['standardIngredients'],
-      'selectedToppings': newList[index]['selectedToppings'],
-      'allergies': newList[index]['allergies'],
-    };
-    newList.removeAt(index);
-    newList.insert(index, newElement);
-    state = newList.toList();
+    Map<String, dynamic> item = newList[index];
+
+    item['itemQuantity'] += 1;
+    item['isScheduled'] = currentProduct.isScheduled;
+    item['isModifiable'] = currentProduct.isModifiable;
+    item['hasToppings'] = currentProduct.hasToppings;
+    newList[index] = item;
+    state = newList;
   }
 
   removeItemQuantity(ProductModel currentProduct, int index) {
     List<Map<String, dynamic>> newList = [...state];
-    Map<String, dynamic> newElement = {
-      'productID': newList[index]['productID'],
-      'itemQuantity': newList[index]['itemQuantity'] < 2
-          ? 1
-          : newList[index]['itemQuantity'] - 1,
-      'daysQuantity': newList[index]['daysQuantity'],
-      'itemSize': newList[index]['itemSize'],
-      'isScheduled': currentProduct.isScheduled,
-      'isModifiable': currentProduct.isModifiable,
-      'hasToppings': currentProduct.hasToppings,
-      'selectedIngredients': newList[index]['selectedIngredients'],
-      'standardIngredients': newList[index]['standardIngredients'],
-      'selectedToppings': newList[index]['selectedToppings'],
-      'allergies': newList[index]['allergies'],
-    };
-    newList[index]['itemQuantity'] == 1 ? null : HapticFeedback.lightImpact();
-    newList.removeAt(index);
-    newList.insert(index, newElement);
-    state = newList.toList();
+    Map<String, dynamic> item = newList[index];
+    if (item['itemQuantity'] > 1) {
+      item['itemQuantity'] -= 1;
+      HapticFeedback.lightImpact();
+    }
+    item['isScheduled'] = currentProduct.isScheduled;
+    item['isModifiable'] = currentProduct.isModifiable;
+    item['hasToppings'] = currentProduct.hasToppings;
+    newList[index] = item;
+    state = newList;
   }
 }
 
-class CurrentOrderCost extends StateNotifier<Map<String, dynamic>> {
-  CurrentOrderCost() : super({});
+class CurrentOrderCost extends StateNotifier<List<Map<String, dynamic>>> {
+  CurrentOrderCost() : super([]);
 
   addCost(Map<String, dynamic> item) {
-    final nonMemberTotal =
-        (item['price'] * item['itemQuantity'] * item['daysQuantity']);
-    final memberTotal =
-        (item['memberPrice'] * item['itemQuantity'] * item['daysQuantity']);
-    if (state.isEmpty) {
-      state = {
-        'nonMember': nonMemberTotal,
-        'member': memberTotal,
-      };
-    } else {
-      state = {
-        'nonMember': state['nonMember'] + nonMemberTotal,
-        'member': state['member'] + memberTotal,
-      };
-    }
+    int itemQuantity = item['itemQuantity'];
+    int daysQuantity = item['daysQuantity'];
+    int totalMaps = itemQuantity * daysQuantity;
+
+    List<Map<String, dynamic>> maps = List.generate(
+        totalMaps,
+        (_) => {
+              'price': item['price'],
+              'memberPrice': item['memberPrice'],
+              'points': item['points'],
+              'itemKey': item['itemKey'],
+              'productID': item['productID'],
+              'itemQuantity': 1,
+              'daysQuantity': 1
+            });
+
+    state = [...state, ...maps];
   }
 
-  removeCost({
-    required nonMemberTotal,
-    required memberTotal,
-  }) {
-    state = {
-      'nonMember': state['nonMember'] - nonMemberTotal,
-      'member': state['member'] - memberTotal,
-    };
+  removeSingleCost(String itemKey) {
+    List newList = state;
+    var firstItemToRemove =
+        newList.firstWhere((element) => element['itemKey'] == itemKey);
+    if (firstItemToRemove != null) {
+      newList.remove(firstItemToRemove);
+    }
+    state = [...newList];
+  }
+
+  removeMultipleCost(String itemKey) {
+    List newList = state;
+    newList.removeWhere((element) => element['itemKey'] == itemKey);
+    state = [...newList];
   }
 }

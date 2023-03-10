@@ -3,14 +3,14 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:jus_mobile_order_app/Helpers/error.dart';
+import 'package:jus_mobile_order_app/Helpers/modal_bottom_sheets.dart';
+import 'package:jus_mobile_order_app/Helpers/spacing_widgets.dart';
+import 'package:jus_mobile_order_app/Helpers/validators.dart';
 import 'package:jus_mobile_order_app/Providers/auth_providers.dart';
 import 'package:jus_mobile_order_app/Services/auth_services.dart';
 import 'package:jus_mobile_order_app/Widgets/Buttons/elevated_button_large.dart';
 import 'package:jus_mobile_order_app/Widgets/Buttons/elevated_button_large_loading.dart';
-import 'package:jus_mobile_order_app/Widgets/Helpers/error.dart';
-import 'package:jus_mobile_order_app/Widgets/Helpers/modal_bottom_sheets.dart';
-import 'package:jus_mobile_order_app/Widgets/Helpers/spacing_widgets.dart';
-import 'package:jus_mobile_order_app/Widgets/Helpers/validators.dart';
 
 import 'login_page.dart';
 
@@ -21,7 +21,7 @@ class ForgotPasswordPage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final email = ref.watch(emailProvider);
     final emailError = ref.watch(emailErrorProvider);
-    final loading = ref.watch(authLoadingProvider);
+    final loading = ref.watch(loadingProvider);
     final firebaseError = ref.watch(firebaseLoginError);
     return Scaffold(
       backgroundColor: Colors.transparent,
@@ -96,8 +96,7 @@ class ForgotPasswordPage extends ConsumerWidget {
                         : LargeElevatedButton(
                             buttonText: 'Reset Password',
                             onPressed: () {
-                              ref.read(authLoadingProvider.notifier).state =
-                                  true;
+                              ref.read(loadingProvider.notifier).state = true;
                               validateForm(ref: ref, email: email);
                               sendForgotPasswordLink(
                                   context: context, ref: ref);
@@ -161,7 +160,7 @@ class ForgotPasswordPage extends ConsumerWidget {
         await AuthServices().forgotPassword(email: ref.read(emailProvider));
         navigator.pop();
       } catch (e) {
-        ref.read(authLoadingProvider.notifier).state = false;
+        ref.read(loadingProvider.notifier).state = false;
         ref.read(firebaseLoginError.notifier).state = e.toString();
       }
     }

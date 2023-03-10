@@ -1,12 +1,16 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:jus_mobile_order_app/Helpers/error.dart';
+import 'package:jus_mobile_order_app/Helpers/modal_bottom_sheets.dart';
 import 'package:jus_mobile_order_app/Models/location_model.dart';
 import 'package:jus_mobile_order_app/Providers/location_providers.dart';
 import 'package:jus_mobile_order_app/Providers/stream_providers.dart';
-import 'package:jus_mobile_order_app/Widgets/Helpers/error.dart';
-import 'package:jus_mobile_order_app/Widgets/Helpers/locations.dart';
+import 'package:jus_mobile_order_app/Views/choose_location_page.dart';
+
+import '../../Providers/order_providers.dart';
 
 class SelectedLocationTile extends ConsumerWidget {
   const SelectedLocationTile({super.key});
@@ -14,6 +18,7 @@ class SelectedLocationTile extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final selectedLocation = ref.watch(selectedLocationProvider);
     final locations = ref.watch(locationsProvider);
+    final isCheckoutPage = ref.watch(checkOutPageProvider);
     return ListTile(
       contentPadding: selectedLocation == null
           ? const EdgeInsets.symmetric(horizontal: 15.0)
@@ -41,12 +46,23 @@ class SelectedLocationTile extends ConsumerWidget {
           ],
         ),
       ),
-      trailing: const Icon(
-        CupertinoIcons.chevron_down,
-        size: 20,
-      ),
+      trailing: isCheckoutPage
+          ? const SizedBox()
+          : const Icon(
+              CupertinoIcons.chevron_down,
+              size: 20,
+            ),
       onTap: () {
-        LocationHelper().chooseLocation(context, ref);
+        if (isCheckoutPage) {
+          return;
+        } else {
+          HapticFeedback.lightImpact();
+          ref.invalidate(selectedLocationProvider);
+          ModalTopSheet().fullScreen(
+            context: context,
+            child: const ChooseLocationPage(),
+          );
+        }
       },
     );
   }

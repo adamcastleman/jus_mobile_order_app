@@ -19,6 +19,8 @@ class PointsDetailsServices {
         rewardsAmounts: data['rewardsAmounts'],
         pointsPerDollar: data['pointsPerDollar'],
         memberPointsPerDollar: data['memberPointsPerDollar'],
+        jusCardPointsPerDollar: data['jusCardPointsPerDollar'],
+        jusCardPointsPerDollarMember: data['jusCardPointsPerDollarMember'],
         pointsStatus: data['pointsStatus'],
         memberPointsStatus: data['memberPointsStatus'],
       );

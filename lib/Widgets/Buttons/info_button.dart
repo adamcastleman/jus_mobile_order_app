@@ -14,7 +14,7 @@ class InfoButton extends StatelessWidget {
     return InkWell(
       onTap: onTap,
       child: Icon(
-        CupertinoIcons.info,
+        CupertinoIcons.info_circle_fill,
         size: size,
         color: color,
       ),

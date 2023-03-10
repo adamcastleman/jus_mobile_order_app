@@ -22,6 +22,7 @@ mixin _$UserModel {
   String? get email => throw _privateConstructorUsedError;
   String? get phone => throw _privateConstructorUsedError;
   bool? get isActiveMember => throw _privateConstructorUsedError;
+  int? get totalPoints => throw _privateConstructorUsedError;
 
   @JsonKey(ignore: true)
   $UserModelCopyWith<UserModel> get copyWith =>
@@ -39,7 +40,8 @@ abstract class $UserModelCopyWith<$Res> {
       String? lastName,
       String? email,
       String? phone,
-      bool? isActiveMember});
+      bool? isActiveMember,
+      int? totalPoints});
 }
 
 /// @nodoc
@@ -61,6 +63,7 @@ class _$UserModelCopyWithImpl<$Res, $Val extends UserModel>
     Object? email = freezed,
     Object? phone = freezed,
     Object? isActiveMember = freezed,
+    Object? totalPoints = freezed,
   }) {
     return _then(_value.copyWith(
       uid: freezed == uid
@@ -87,6 +90,10 @@ class _$UserModelCopyWithImpl<$Res, $Val extends UserModel>
           ? _value.isActiveMember
           : isActiveMember // ignore: cast_nullable_to_non_nullable
               as bool?,
+      totalPoints: freezed == totalPoints
+          ? _value.totalPoints
+          : totalPoints // ignore: cast_nullable_to_non_nullable
+              as int?,
     ) as $Val);
   }
 }
@@ -104,7 +111,8 @@ abstract class _$$_UserModelCopyWith<$Res> implements $UserModelCopyWith<$Res> {
       String? lastName,
       String? email,
       String? phone,
-      bool? isActiveMember});
+      bool? isActiveMember,
+      int? totalPoints});
 }
 
 /// @nodoc
@@ -124,6 +132,7 @@ class __$$_UserModelCopyWithImpl<$Res>
     Object? email = freezed,
     Object? phone = freezed,
     Object? isActiveMember = freezed,
+    Object? totalPoints = freezed,
   }) {
     return _then(_$_UserModel(
       uid: freezed == uid
@@ -150,6 +159,10 @@ class __$$_UserModelCopyWithImpl<$Res>
           ? _value.isActiveMember
           : isActiveMember // ignore: cast_nullable_to_non_nullable
               as bool?,
+      totalPoints: freezed == totalPoints
+          ? _value.totalPoints
+          : totalPoints // ignore: cast_nullable_to_non_nullable
+              as int?,
     ));
   }
 }
@@ -163,7 +176,8 @@ class _$_UserModel implements _UserModel {
       this.lastName,
       this.email,
       this.phone,
-      this.isActiveMember});
+      this.isActiveMember,
+      this.totalPoints});
 
   @override
   final String? uid;
@@ -177,10 +191,12 @@ class _$_UserModel implements _UserModel {
   final String? phone;
   @override
   final bool? isActiveMember;
+  @override
+  final int? totalPoints;
 
   @override
   String toString() {
-    return 'UserModel(uid: $uid, firstName: $firstName, lastName: $lastName, email: $email, phone: $phone, isActiveMember: $isActiveMember)';
+    return 'UserModel(uid: $uid, firstName: $firstName, lastName: $lastName, email: $email, phone: $phone, isActiveMember: $isActiveMember, totalPoints: $totalPoints)';
   }
 
   @override
@@ -196,12 +212,14 @@ class _$_UserModel implements _UserModel {
             (identical(other.email, email) || other.email == email) &&
             (identical(other.phone, phone) || other.phone == phone) &&
             (identical(other.isActiveMember, isActiveMember) ||
-                other.isActiveMember == isActiveMember));
+                other.isActiveMember == isActiveMember) &&
+            (identical(other.totalPoints, totalPoints) ||
+                other.totalPoints == totalPoints));
   }
 
   @override
-  int get hashCode => Object.hash(
-      runtimeType, uid, firstName, lastName, email, phone, isActiveMember);
+  int get hashCode => Object.hash(runtimeType, uid, firstName, lastName, email,
+      phone, isActiveMember, totalPoints);
 
   @JsonKey(ignore: true)
   @override
@@ -217,7 +235,8 @@ abstract class _UserModel implements UserModel {
       final String? lastName,
       final String? email,
       final String? phone,
-      final bool? isActiveMember}) = _$_UserModel;
+      final bool? isActiveMember,
+      final int? totalPoints}) = _$_UserModel;
 
   @override
   String? get uid;
@@ -231,6 +250,8 @@ abstract class _UserModel implements UserModel {
   String? get phone;
   @override
   bool? get isActiveMember;
+  @override
+  int? get totalPoints;
   @override
   @JsonKey(ignore: true)
   _$$_UserModelCopyWith<_$_UserModel> get copyWith =>

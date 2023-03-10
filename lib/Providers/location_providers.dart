@@ -7,9 +7,12 @@ final currentLocationLatLongProvider =
 
 final locationsWithinMapBoundsProvider = StateProvider<List>((ref) => []);
 
-final currentMapBoundsProvider = StateProvider<LatLngBounds>((ref) =>
-    LatLngBounds(
-        northeast: const LatLng(0.0, 0.0), southwest: const LatLng(0.0, 0.0)));
+final currentMapBoundsProvider = StateProvider<LatLngBounds>(
+  (ref) => LatLngBounds(
+    northeast: const LatLng(0.0, 0.0),
+    southwest: const LatLng(0.0, 0.0),
+  ),
+);
 
 final selectedLocationProvider = StateProvider<dynamic>((ref) => null);
 

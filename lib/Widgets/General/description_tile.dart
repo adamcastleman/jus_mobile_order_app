@@ -1,7 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:jus_mobile_order_app/Widgets/Helpers/loading.dart';
-import 'package:jus_mobile_order_app/Widgets/Helpers/spacing_widgets.dart';
+import 'package:jus_mobile_order_app/Helpers/loading.dart';
+import 'package:jus_mobile_order_app/Helpers/spacing_widgets.dart';
 
 class DescriptionTile {
   final dynamic data;
@@ -9,11 +9,11 @@ class DescriptionTile {
 
   DescriptionTile({required this.data, required this.index});
 
-  right() {
+  imageRight() {
     return Stack(
       children: [
         Positioned(
-          top: 25.0,
+          top: 5.0,
           left: 20.0,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -37,11 +37,12 @@ class DescriptionTile {
           ),
         ),
         Align(
-          alignment: Alignment.topRight,
+          alignment: Alignment.bottomRight,
           child: SizedBox(
-            height: 225,
-            width: 225,
+            height: 200,
+            width: 200,
             child: CachedNetworkImage(
+              fit: BoxFit.fitHeight,
               imageUrl: data.perks[index]['image'],
               placeholder: (context, loading) => const Loading(),
             ),
@@ -51,12 +52,12 @@ class DescriptionTile {
     );
   }
 
-  left() {
+  imageLeft({bool? largeImage}) {
     return Stack(
       children: [
         Positioned(
-          top: 45.0,
-          right: 20.0,
+          top: 5.0,
+          right: 30.0,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
@@ -77,12 +78,13 @@ class DescriptionTile {
           ),
         ),
         Align(
-          alignment: Alignment.topLeft,
+          alignment: Alignment.bottomLeft,
           child: SizedBox(
-            height: 225,
-            width: 225,
+            height: 200,
+            width: 200,
             child: CachedNetworkImage(
               imageUrl: data.perks[index]['image'],
+              fit: BoxFit.fitHeight,
               placeholder: (context, loading) => const Loading(),
             ),
           ),

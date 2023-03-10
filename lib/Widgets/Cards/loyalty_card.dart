@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:intl/intl.dart';
+import 'package:jus_mobile_order_app/Helpers/error.dart';
+import 'package:jus_mobile_order_app/Helpers/loading.dart';
+import 'package:jus_mobile_order_app/Helpers/modal_bottom_sheets.dart';
 import 'package:jus_mobile_order_app/Models/points_details_model.dart';
 import 'package:jus_mobile_order_app/Models/user_model.dart';
 import 'package:jus_mobile_order_app/Providers/stream_providers.dart';
 import 'package:jus_mobile_order_app/Views/points_detail_page.dart';
-import 'package:jus_mobile_order_app/Widgets/Helpers/error.dart';
-import 'package:jus_mobile_order_app/Widgets/Helpers/loading.dart';
-import 'package:jus_mobile_order_app/Widgets/Helpers/modal_bottom_sheets.dart';
 
 class LoyaltyCard extends ConsumerWidget {
   const LoyaltyCard({Key? key}) : super(key: key);
@@ -28,15 +29,19 @@ class LoyaltyCard extends ConsumerWidget {
         ),
         data: (points) => UnconstrainedBox(
           child: SizedBox(
-            height: 170,
-            width: MediaQuery.of(context).size.width * 0.9,
+            height: 200,
+            width: MediaQuery.of(context).size.width * 0.95,
             child: Card(
-              color: Colors.grey[700],
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(8.0),
-              ),
-              child: Padding(
+              elevation: 12.0,
+              color: Colors.transparent,
+              child: Container(
                 padding: const EdgeInsets.all(12.0),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(4.0),
+                  gradient: LinearGradient(
+                    colors: [Colors.grey[700]!, Colors.black],
+                  ),
+                ),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -61,9 +66,9 @@ class LoyaltyCard extends ConsumerWidget {
                             ),
                           ],
                         ),
-                        const Text(
-                          '246',
-                          style: TextStyle(
+                        Text(
+                          NumberFormat('#,###').format(user.totalPoints),
+                          style: const TextStyle(
                               fontSize: 50,
                               fontWeight: FontWeight.bold,
                               color: Colors.white),
@@ -80,7 +85,8 @@ class LoyaltyCard extends ConsumerWidget {
                             onTap: () {
                               ModalBottomSheet().fullScreen(
                                 context: context,
-                                builder: (context) => const PointsDetailPage(),
+                                builder: (context) =>
+                                    const PointsDetailPage(isScanPage: false),
                               );
                             },
                             child: Text(

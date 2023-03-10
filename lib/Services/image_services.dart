@@ -6,4 +6,8 @@ class ImageServices {
   Stream<dynamic> get emptyCartImage {
     return collectionReference.doc('emptyCart').snapshots();
   }
+
+  Stream<dynamic> get signInImage {
+    return collectionReference.doc('signIn').snapshots();
+  }
 }

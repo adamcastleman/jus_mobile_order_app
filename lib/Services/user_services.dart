@@ -13,6 +13,31 @@ class UserServices {
     return userCollection.doc(uid).snapshots().map(getCurrentUserFromDatabase);
   }
 
+  UserModel getCurrentUserFromDatabase(DocumentSnapshot snapshot) {
+    if (snapshot.exists) {
+      Map<String, dynamic> data = snapshot.data() as Map<String, dynamic>;
+      return UserModel(
+        uid: data['uid'],
+        firstName: data['firstName'],
+        lastName: data['lastName'],
+        email: data['email'],
+        phone: data['phone'],
+        isActiveMember: data['isActiveMember'],
+        totalPoints: data['totalPoints'],
+      );
+    } else {
+      return const UserModel(
+        uid: null,
+        firstName: null,
+        lastName: null,
+        email: null,
+        phone: null,
+        isActiveMember: null,
+        totalPoints: null,
+      );
+    }
+  }
+
   Future<void> createUser(
       {required uid,
       required String firstName,
@@ -29,26 +54,15 @@ class UserServices {
     });
   }
 
-  UserModel getCurrentUserFromDatabase(DocumentSnapshot snapshot) {
-    if (snapshot.exists) {
-      Map<String, dynamic> data = snapshot.data() as Map<String, dynamic>;
-      return UserModel(
-        uid: data['uid'],
-        firstName: data['firstName'],
-        lastName: data['lastName'],
-        email: data['email'],
-        phone: data['phone'],
-        isActiveMember: data['isActiveMember'],
-      );
-    } else {
-      return const UserModel(
-        uid: null,
-        firstName: null,
-        lastName: null,
-        email: null,
-        phone: null,
-        isActiveMember: null,
-      );
-    }
+  Future<void> updateUser({
+    required String firstName,
+    required String lastName,
+    required String phone,
+  }) async {
+    await userCollection.doc(uid).update({
+      'firstName': firstName,
+      'lastName': lastName,
+      'phone': phone,
+    });
   }
 }

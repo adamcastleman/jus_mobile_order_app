@@ -2,6 +2,9 @@ import 'package:animations/animations.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:jus_mobile_order_app/Helpers/loading.dart';
+import 'package:jus_mobile_order_app/Helpers/set_standard_ingredients.dart';
+import 'package:jus_mobile_order_app/Helpers/spacing_widgets.dart';
 import 'package:jus_mobile_order_app/Models/product_model.dart';
 import 'package:jus_mobile_order_app/Providers/product_providers.dart';
 import 'package:jus_mobile_order_app/Providers/theme_providers.dart';
@@ -13,9 +16,6 @@ import 'package:jus_mobile_order_app/Widgets/General/item_price_display.dart';
 import 'package:jus_mobile_order_app/Widgets/General/perks_info.dart';
 import 'package:jus_mobile_order_app/Widgets/General/select_product_options.dart';
 import 'package:jus_mobile_order_app/Widgets/General/size_selector.dart';
-import 'package:jus_mobile_order_app/Widgets/Helpers/loading.dart';
-import 'package:jus_mobile_order_app/Widgets/Helpers/set_standard_ingredients.dart';
-import 'package:jus_mobile_order_app/Widgets/Helpers/spacing_widgets.dart';
 import 'package:jus_mobile_order_app/Widgets/Lists/select_toppings_grid_view.dart';
 import 'package:jus_mobile_order_app/Widgets/Lists/unmodifiable_ingredient_grid.dart';
 
@@ -25,33 +25,38 @@ class ProductDetailPage extends ConsumerWidget {
   final ProductModel product;
 
   const ProductDetailPage({required this.product, super.key});
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final backgroundColor = ref.watch(themeColorProvider);
+    final backgroundColor = ref.watch(backgroundColorProvider);
     final editOrder = ref.watch(editOrderProvider);
     return Scaffold(
       extendBodyBehindAppBar: true,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         leading: editOrder != true
-            ? JusCloseButton(
-                onPressed: () {
-                  Navigator.pop(context);
-                  ref.invalidate(selectedIngredientsProvider);
-                  ref.invalidate(selectedAllergiesProvider);
-                  ref.invalidate(itemQuantityProvider);
-                  ref.invalidate(daysQuantityProvider);
-                  ref.invalidate(selectedSizeProvider);
-                },
-              )
+            ? FavoriteButton(product: product)
             : const SizedBox(),
         actions: [
-          editOrder != true ? const FavoriteButton() : const SizedBox(),
+          editOrder != true
+              ? JusCloseButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                    ref.invalidate(selectedIngredientsProvider);
+                    ref.invalidate(selectedAllergiesProvider);
+                    ref.invalidate(itemQuantityProvider);
+                    ref.invalidate(daysQuantityProvider);
+                    ref.invalidate(itemSizeProvider);
+                    ref.invalidate(selectedProductIDProvider);
+                    ref.invalidate(favoriteItemNameProvider);
+                  },
+                )
+              : const SizedBox(),
         ],
       ),
       body: OpenContainer(
         tappable: false,
-        openColor: backgroundColor!,
+        openColor: backgroundColor,
         closedColor: backgroundColor,
         closedElevation: 2,
         openElevation: 2,

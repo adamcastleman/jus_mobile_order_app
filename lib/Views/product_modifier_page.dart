@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:jus_mobile_order_app/Helpers/spacing_widgets.dart';
 import 'package:jus_mobile_order_app/Models/product_model.dart';
 import 'package:jus_mobile_order_app/Widgets/General/item_price_display.dart';
 import 'package:jus_mobile_order_app/Widgets/General/select_modifier_options.dart';
-import 'package:jus_mobile_order_app/Widgets/Helpers/spacing_widgets.dart';
 import 'package:jus_mobile_order_app/Widgets/Lists/ingredient_grid_view.dart';
 import 'package:jus_mobile_order_app/Widgets/Lists/modify_ingredients_list.dart';
 

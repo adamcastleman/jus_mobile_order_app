@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:jus_mobile_order_app/Helpers/error.dart';
+import 'package:jus_mobile_order_app/Helpers/loading.dart';
+import 'package:jus_mobile_order_app/Helpers/spacing_widgets.dart';
 import 'package:jus_mobile_order_app/Models/ingredient_model.dart';
 import 'package:jus_mobile_order_app/Models/user_model.dart';
 import 'package:jus_mobile_order_app/Providers/product_providers.dart';
 import 'package:jus_mobile_order_app/Providers/stream_providers.dart';
-import 'package:jus_mobile_order_app/Widgets/Helpers/error.dart';
-import 'package:jus_mobile_order_app/Widgets/Helpers/loading.dart';
-import 'package:jus_mobile_order_app/Widgets/Helpers/spacing_widgets.dart';
 
 import '../../Models/product_model.dart';
 
@@ -22,8 +23,12 @@ class OrderTileDisplayModifications extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final currentOrder = ref.watch(currentOrderItemsProvider);
     final currentUser = ref.watch(currentUserProvider);
-    TextStyle style =
-        const TextStyle(fontSize: 12, overflow: TextOverflow.visible);
+    TextStyle style = TextStyle(
+      fontSize: 12,
+      overflow: TextOverflow.visible,
+      color: Colors.grey,
+      fontFamily: GoogleFonts.quicksand().fontFamily,
+    );
     final selectedIngredients = currentOrder[orderIndex]['selectedIngredients'];
     final selectedToppings = currentOrder[orderIndex]['selectedToppings'];
     final allergies = currentOrder[orderIndex]['allergies'];
@@ -115,17 +120,30 @@ class OrderTileDisplayModifications extends ConsumerWidget {
                     return Row(
                       children: [
                         Flexible(
-                          child: Text(
-                            '${blendedOrToppingDescription(ref, added, ingredient, addedIngredientIndex)}'
-                            '${modifiedIngredientAmount(ref, added, ingredient, addedIngredientIndex)}'
-                            ' ${ingredient.name}'
-                            '${extraChargeQuantity(added, addedIngredientIndex)}',
-                            style: style,
+                          child: RichText(
+                            text: TextSpan(style: style, children: [
+                              TextSpan(
+                                  text:
+                                      '${blendedOrToppingDescription(ref, added, ingredient, addedIngredientIndex)}'),
+                              TextSpan(
+                                  text: modifiedIngredientAmount(ref, added,
+                                      ingredient, addedIngredientIndex)),
+                              TextSpan(text: ' ${ingredient.name}'),
+                              TextSpan(
+                                text: extraChargeQuantity(
+                                    added, addedIngredientIndex),
+                              ),
+                              TextSpan(
+                                text:
+                                    ' ${determineModifierPriceText(user, added, addedIngredientIndex)}',
+                                style: const TextStyle(
+                                  color: Colors.black,
+                                  fontSize: 12,
+                                ),
+                              ),
+                            ]),
                           ),
                         ),
-                        Spacing().horizontal(5),
-                        determineModifierPriceText(
-                            user, added, addedIngredientIndex),
                       ],
                     );
                   },
@@ -213,6 +231,11 @@ class OrderTileDisplayModifications extends ConsumerWidget {
     final amount = added[index]['amount'];
     final blended = added[index]['blended'];
     final topping = added[index]['topping'];
+    final isExtraCharge = added[index]['isExtraCharge'];
+
+    if (isExtraCharge == true) {
+      return '';
+    }
 
     if ((blended == 0 && topping == 0) ||
         (blended == null && topping == null)) {
@@ -242,21 +265,14 @@ class OrderTileDisplayModifications extends ConsumerWidget {
   }
 
   determineModifierPriceText(UserModel user, List<dynamic> added, int index) {
-    TextStyle textStyle =
-        const TextStyle(fontSize: 11, fontWeight: FontWeight.bold);
-    if (added[index]['isExtraCharge'] != true) {
-      return const SizedBox();
-    } else if (user.uid == null || !user.isActiveMember!) {
-      return Text(
-        '+\$${(num.tryParse(added[index]['price'])! / 100).toStringAsFixed(2)}',
-        style: textStyle,
-      );
-    } else {
-      return Text(
-        '- Free',
-        style: textStyle,
-      );
-    }
+    final isExtraCharge = added[index]['isExtraCharge'] == true;
+    final price = num.tryParse(added[index]['price'])! / 100;
+    final isActiveMember = user.uid != null && user.isActiveMember!;
+    return isExtraCharge
+        ? isActiveMember
+            ? '-\u00A0Free'
+            : '+\u2060\$${price.toStringAsFixed(2)}'
+        : '';
   }
 
   List<dynamic> removedItems(WidgetRef ref) {

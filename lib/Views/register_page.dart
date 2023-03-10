@@ -3,15 +3,15 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:jus_mobile_order_app/Helpers/error.dart';
+import 'package:jus_mobile_order_app/Helpers/modal_bottom_sheets.dart';
+import 'package:jus_mobile_order_app/Helpers/spacing_widgets.dart';
+import 'package:jus_mobile_order_app/Helpers/validators.dart';
 import 'package:jus_mobile_order_app/Providers/auth_providers.dart';
 import 'package:jus_mobile_order_app/Services/auth_services.dart';
 import 'package:jus_mobile_order_app/Views/login_page.dart';
 import 'package:jus_mobile_order_app/Widgets/Buttons/elevated_button_large.dart';
 import 'package:jus_mobile_order_app/Widgets/Buttons/elevated_button_large_loading.dart';
-import 'package:jus_mobile_order_app/Widgets/Helpers/error.dart';
-import 'package:jus_mobile_order_app/Widgets/Helpers/modal_bottom_sheets.dart';
-import 'package:jus_mobile_order_app/Widgets/Helpers/spacing_widgets.dart';
-import 'package:jus_mobile_order_app/Widgets/Helpers/validators.dart';
 
 class RegisterPage extends ConsumerWidget {
   const RegisterPage({super.key});
@@ -29,8 +29,8 @@ class RegisterPage extends ConsumerWidget {
     final firstNameError = ref.watch(firstNameErrorProvider);
     final lastNameError = ref.watch(lastNameErrorProvider);
     final phoneError = ref.watch(phoneErrorProvider);
-    final firebaseError = ref.watch(firebaseRegistrationError);
-    final loading = ref.watch(authLoadingProvider);
+    final firebaseError = ref.watch(firebaseErrorProvider);
+    final loading = ref.watch(loadingProvider);
     return Container(
       padding: EdgeInsets.only(
         top: MediaQueryData.fromWindow(WidgetsBinding.instance.window)
@@ -65,7 +65,12 @@ class RegisterPage extends ConsumerWidget {
                 const Text(
                   'Join now to collect points to redeem for free items, save favorite items, and more.',
                 ),
-                Spacing().vertical(40),
+                Spacing().vertical(5),
+                const Text(
+                  'To transfer your points from our legacy points program, use the same phone number. You can change this later, if necessary.',
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
+                Spacing().vertical(25),
                 TextFormField(
                   initialValue: firstName,
                   onChanged: (value) =>
@@ -194,7 +199,7 @@ class RegisterPage extends ConsumerWidget {
                     : LargeElevatedButton(
                         buttonText: 'Sign Up',
                         onPressed: () {
-                          ref.read(authLoadingProvider.notifier).state = true;
+                          ref.read(loadingProvider.notifier).state = true;
                           validateForm(
                             ref: ref,
                             firstName: firstName,
@@ -279,7 +284,7 @@ class RegisterPage extends ConsumerWidget {
       ref.read(emailErrorProvider.notifier).state = null;
     }
     if (password.isEmpty) {
-      Validator().password(ref);
+      Validator().passwordRegister(ref);
     } else {
       ref.read(passwordErrorProvider.notifier).state = null;
     }
@@ -295,7 +300,7 @@ class RegisterPage extends ConsumerWidget {
         ref.read(firstNameErrorProvider.notifier).state == null &&
         ref.read(lastNameErrorProvider.notifier).state == null &&
         ref.read(phoneErrorProvider.notifier).state == null) {
-      ref.read(registrationValidatedProvider.notifier).state = true;
+      ref.read(formValidatedProvider.notifier).state = true;
     }
   }
 
@@ -308,7 +313,7 @@ class RegisterPage extends ConsumerWidget {
     required lastName,
     required phone,
   }) async {
-    if (ref.read(registrationValidatedProvider.notifier).state == true) {
+    if (ref.read(formValidatedProvider.notifier).state == true) {
       try {
         final navigator = Navigator.of(context);
         await AuthServices().registerWithEmailAndPassword(
@@ -318,9 +323,14 @@ class RegisterPage extends ConsumerWidget {
             lastName: ref.read(lastNameProvider),
             phone: ref.read(phoneProvider));
         navigator.pop();
+        ref.invalidate(firstNameProvider);
+        ref.invalidate(lastNameProvider);
+        ref.invalidate(phoneProvider);
+        ref.invalidate(passwordProvider);
+        ref.invalidate(confirmPasswordProvider);
       } catch (e) {
-        ref.read(authLoadingProvider.notifier).state = false;
-        ref.read(firebaseRegistrationError.notifier).state = e.toString();
+        ref.read(loadingProvider.notifier).state = false;
+        ref.read(firebaseErrorProvider.notifier).state = e.toString();
       }
     } else {}
   }

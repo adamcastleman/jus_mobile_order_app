@@ -3,14 +3,15 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:jus_mobile_order_app/Helpers/error.dart';
+import 'package:jus_mobile_order_app/Helpers/loading.dart';
+import 'package:jus_mobile_order_app/Helpers/modal_bottom_sheets.dart';
+import 'package:jus_mobile_order_app/Helpers/spacing_widgets.dart';
 import 'package:jus_mobile_order_app/Models/ingredient_model.dart';
 import 'package:jus_mobile_order_app/Models/user_model.dart';
 import 'package:jus_mobile_order_app/Providers/product_providers.dart';
-import 'package:jus_mobile_order_app/Widgets/Helpers/error.dart';
-import 'package:jus_mobile_order_app/Widgets/Helpers/loading.dart';
-import 'package:jus_mobile_order_app/Widgets/Helpers/modal_bottom_sheets.dart';
-import 'package:jus_mobile_order_app/Widgets/Helpers/spacing_widgets.dart';
-import 'package:jus_mobile_order_app/Widgets/Sheets/multi_use_ingredient_selection_sheet.dart';
+import 'package:jus_mobile_order_app/Providers/theme_providers.dart';
+import 'package:jus_mobile_order_app/Sheets/multi_use_ingredient_selection_sheet.dart';
 
 import '../../Providers/stream_providers.dart';
 
@@ -23,6 +24,8 @@ class SelectIngredientCard extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final selectedIngredients = ref.watch(selectedIngredientsProvider);
     final currentUser = ref.watch(currentUserProvider);
+    final selectedCardColor = ref.watch(selectedCardColorProvider);
+    final selectedCardBorderColor = ref.watch(selectedCardBorderColorProvider);
     return currentUser.when(
       loading: () => const Loading(),
       error: (e, _) => ShowError(
@@ -38,11 +41,12 @@ class SelectIngredientCard extends ConsumerWidget {
           },
           child: Card(
             color:
-                currentSelected.isNotEmpty ? Colors.blueGrey[50] : Colors.white,
+                currentSelected.isNotEmpty ? selectedCardColor : Colors.white,
             shape: RoundedRectangleBorder(
               side: BorderSide(
-                color:
-                    currentSelected.isNotEmpty ? Colors.blueGrey : Colors.white,
+                color: currentSelected.isNotEmpty
+                    ? selectedCardBorderColor
+                    : Colors.white,
               ),
               borderRadius: BorderRadius.circular(4),
             ),

@@ -3,16 +3,16 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:jus_mobile_order_app/Helpers/error.dart';
+import 'package:jus_mobile_order_app/Helpers/modal_bottom_sheets.dart';
+import 'package:jus_mobile_order_app/Helpers/spacing_widgets.dart';
+import 'package:jus_mobile_order_app/Helpers/validators.dart';
 import 'package:jus_mobile_order_app/Providers/auth_providers.dart';
 import 'package:jus_mobile_order_app/Services/auth_services.dart';
 import 'package:jus_mobile_order_app/Views/forgot_password_page.dart';
 import 'package:jus_mobile_order_app/Views/register_page.dart';
 import 'package:jus_mobile_order_app/Widgets/Buttons/elevated_button_large.dart';
 import 'package:jus_mobile_order_app/Widgets/Buttons/elevated_button_large_loading.dart';
-import 'package:jus_mobile_order_app/Widgets/Helpers/error.dart';
-import 'package:jus_mobile_order_app/Widgets/Helpers/modal_bottom_sheets.dart';
-import 'package:jus_mobile_order_app/Widgets/Helpers/spacing_widgets.dart';
-import 'package:jus_mobile_order_app/Widgets/Helpers/validators.dart';
 
 class LoginPage extends ConsumerWidget {
   const LoginPage({super.key});
@@ -20,7 +20,7 @@ class LoginPage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final email = ref.watch(emailProvider);
     final password = ref.watch(passwordProvider);
-    final loading = ref.watch(authLoadingProvider);
+    final loading = ref.watch(loadingProvider);
     final emailError = ref.watch(emailErrorProvider);
     final passwordError = ref.watch(passwordErrorProvider);
     final loginError = ref.watch(firebaseLoginError);
@@ -146,8 +146,7 @@ class LoginPage extends ConsumerWidget {
                         : LargeElevatedButton(
                             buttonText: 'Sign In',
                             onPressed: () {
-                              ref.read(authLoadingProvider.notifier).state =
-                                  true;
+                              ref.read(loadingProvider.notifier).state = true;
                               validateForm(
                                   ref: ref, email: email, password: password);
                               loginUser(context: context, ref: ref);
@@ -193,7 +192,7 @@ class LoginPage extends ConsumerWidget {
       ref.read(emailErrorProvider.notifier).state = null;
     }
     if (password.isEmpty) {
-      Validator().password(ref);
+      Validator().passwordRegister(ref);
     } else {
       ref.read(passwordErrorProvider.notifier).state = null;
     }
@@ -210,9 +209,10 @@ loginUser({required BuildContext context, required WidgetRef ref}) async {
       final navigator = Navigator.of(context);
       await AuthServices().loginWithEmailAndPassword(
           email: ref.read(emailProvider), password: ref.read(passwordProvider));
+      ref.invalidate(passwordProvider);
       navigator.pop();
     } catch (e) {
-      ref.read(authLoadingProvider.notifier).state = false;
+      ref.read(loadingProvider.notifier).state = false;
       ref.read(firebaseLoginError.notifier).state = e.toString();
     }
   }

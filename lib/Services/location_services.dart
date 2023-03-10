@@ -30,6 +30,7 @@ class LocationServices {
           unavailableProducts: data['unavailableProducts'],
           unavailableIngredients: data['unavailableIngredients'],
           comingSoon: data['comingSoon'],
+          blackoutDates: data['blackoutDates'],
         );
       },
     ).toList();

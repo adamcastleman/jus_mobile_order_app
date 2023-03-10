@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:jus_mobile_order_app/Widgets/Helpers/spacing_widgets.dart';
+import 'package:jus_mobile_order_app/Helpers/spacing_widgets.dart';
 
 class EmptyLocationTile extends StatelessWidget {
   const EmptyLocationTile({super.key});

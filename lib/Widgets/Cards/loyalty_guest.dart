@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:jus_mobile_order_app/Helpers/modal_bottom_sheets.dart';
+import 'package:jus_mobile_order_app/Helpers/spacing_widgets.dart';
+import 'package:jus_mobile_order_app/Views/points_detail_page.dart';
 import 'package:jus_mobile_order_app/Views/register_page.dart';
 import 'package:jus_mobile_order_app/Widgets/Buttons/elevated_button_small.dart';
 import 'package:jus_mobile_order_app/Widgets/Buttons/outlined_button_small.dart';
-import 'package:jus_mobile_order_app/Widgets/Helpers/modal_bottom_sheets.dart';
-import 'package:jus_mobile_order_app/Widgets/Helpers/spacing_widgets.dart';
 
 class LoyaltyCardGuest extends ConsumerWidget {
   const LoyaltyCardGuest({super.key});
@@ -37,7 +38,19 @@ class LoyaltyCardGuest extends ConsumerWidget {
                   'and redeem for free items.',
                   style: Theme.of(context).textTheme.bodyMedium,
                 ),
-                Spacing().vertical(25),
+                Spacing().vertical(20),
+                SmallOutlineButton(
+                  buttonText: 'How Rewards Work',
+                  onPressed: () {
+                    ModalBottomSheet().fullScreen(
+                      context: context,
+                      builder: (context) => const PointsDetailPage(
+                        isScanPage: false,
+                      ),
+                    );
+                  },
+                ),
+                Spacing().vertical(5),
                 SmallElevatedButton(
                   buttonText: 'Join Now',
                   onPressed: () {
@@ -46,10 +59,6 @@ class LoyaltyCardGuest extends ConsumerWidget {
                       builder: (context) => const RegisterPage(),
                     );
                   },
-                ),
-                SmallOutlineButton(
-                  buttonText: 'How Rewards Work',
-                  onPressed: () {},
                 ),
               ],
             ),

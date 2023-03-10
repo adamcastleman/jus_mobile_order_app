@@ -1,13 +1,28 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class ThemeManager {
   final ThemeData theme = ThemeData(
-    scaffoldBackgroundColor: Colors.brown[50],
+    scaffoldBackgroundColor: const Color(0xffF5F5F7),
+    cupertinoOverrideTheme: CupertinoThemeData(
+      textTheme: CupertinoTextThemeData(
+        dateTimePickerTextStyle: TextStyle(
+          fontSize: 18,
+          color: Colors.black,
+          fontFamily: GoogleFonts.quicksand().fontFamily,
+        ),
+        pickerTextStyle: TextStyle(
+          fontSize: 18,
+          color: Colors.black,
+          fontFamily: GoogleFonts.quicksand().fontFamily,
+        ),
+      ),
+    ),
     appBarTheme: AppBarTheme(
       iconTheme: const IconThemeData(color: Colors.black),
       centerTitle: false,
-      backgroundColor: Colors.brown[50],
+      backgroundColor: const Color(0xffF5F5F7),
       elevation: 0,
       actionsIconTheme: const IconThemeData(color: Colors.black, size: 20),
       titleTextStyle: GoogleFonts.montserrat(
@@ -45,9 +60,7 @@ class ThemeManager {
       buttonColor: Colors.black,
     ),
     textButtonTheme: TextButtonThemeData(
-      style: TextButton.styleFrom(
-        foregroundColor: Colors.black,
-      ),
+      style: TextButton.styleFrom(foregroundColor: Colors.black),
     ),
     elevatedButtonTheme: ElevatedButtonThemeData(
       style: ElevatedButton.styleFrom(

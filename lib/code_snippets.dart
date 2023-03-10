@@ -18,3 +18,5 @@
 //     'isBlended': false,
 //   });
 // }
+
+// .when(error: (e,_) => ShowError(error: e.toString()), loading: () => const Loading(), data: (data) => );

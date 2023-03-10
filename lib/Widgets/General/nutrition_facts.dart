@@ -1,9 +1,9 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:jus_mobile_order_app/Helpers/spacing_widgets.dart';
 import 'package:jus_mobile_order_app/Models/product_model.dart';
 import 'package:jus_mobile_order_app/Providers/product_providers.dart';
-import 'package:jus_mobile_order_app/Widgets/Helpers/spacing_widgets.dart';
 
 class NutritionFacts extends ConsumerWidget {
   final ProductModel product;
@@ -11,7 +11,7 @@ class NutritionFacts extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final selectedSize = ref.watch(selectedSizeProvider);
+    final selectedSize = ref.watch(itemSizeProvider);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [

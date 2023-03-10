@@ -2,39 +2,36 @@ import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_emoji/flutter_emoji.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:jus_mobile_order_app/Helpers/error.dart';
+import 'package:jus_mobile_order_app/Helpers/loading.dart';
+import 'package:jus_mobile_order_app/Models/user_model.dart';
 import 'package:jus_mobile_order_app/Providers/stream_providers.dart';
-import 'package:jus_mobile_order_app/Widgets/Helpers/error.dart';
-import 'package:jus_mobile_order_app/Widgets/Helpers/loading.dart';
 
 class HomeGreeting extends ConsumerWidget {
   const HomeGreeting({super.key});
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final user = ref.watch(currentUserProvider);
+    final currentUser = ref.watch(currentUserProvider);
 
-    return user.when(
-        loading: () => const Loading(),
-        error: (e, _) => ShowError(error: e.toString()),
-        data: (data) {
-          return Padding(
-            padding: const EdgeInsets.only(left: 12.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                AutoSizeText(
-                  '${dayPartGreeting()},',
-                  style: const TextStyle(fontSize: 38, letterSpacing: -2),
-                  maxLines: 1,
-                ),
-                AutoSizeText(
-                  determineNameForGreeting(user, context),
-                  style: const TextStyle(fontSize: 38, letterSpacing: -2),
-                  maxLines: 1,
-                ),
-              ],
-            ),
-          );
-        });
+    return currentUser.when(
+      loading: () => const Loading(),
+      error: (e, _) => ShowError(error: e.toString()),
+      data: (user) {
+        return Padding(
+          padding: const EdgeInsets.only(left: 12.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              AutoSizeText(
+                '${dayPartGreeting()}, ${determineNameForGreeting(user, context)}',
+                style: const TextStyle(fontSize: 26),
+                maxLines: 1,
+              ),
+            ],
+          ),
+        );
+      },
+    );
   }
 
   dayPartGreeting() {
@@ -69,11 +66,11 @@ class HomeGreeting extends ConsumerWidget {
     }
   }
 
-  determineNameForGreeting(user, context) {
-    if (user.value?.uid == null) {
+  determineNameForGreeting(UserModel user, BuildContext context) {
+    if (user.uid == null) {
       return 'Friend ${dayPartEmoji()}';
     } else {
-      return '${user.value?.firstName} ${dayPartEmoji()}';
+      return '${user.firstName} ${dayPartEmoji()}';
     }
   }
 }

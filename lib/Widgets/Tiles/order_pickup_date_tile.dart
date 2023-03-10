@@ -1,28 +1,27 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:jus_mobile_order_app/Helpers/divider.dart';
+import 'package:jus_mobile_order_app/Helpers/error.dart';
+import 'package:jus_mobile_order_app/Helpers/loading.dart';
+import 'package:jus_mobile_order_app/Helpers/locations.dart';
+import 'package:jus_mobile_order_app/Helpers/orders.dart';
+import 'package:jus_mobile_order_app/Helpers/pickers.dart';
+import 'package:jus_mobile_order_app/Helpers/spacing_widgets.dart';
+import 'package:jus_mobile_order_app/Helpers/time.dart';
 import 'package:jus_mobile_order_app/Providers/future_providers.dart';
 import 'package:jus_mobile_order_app/Providers/order_providers.dart';
-import 'package:jus_mobile_order_app/Providers/product_providers.dart';
 import 'package:jus_mobile_order_app/Providers/stream_providers.dart';
-import 'package:jus_mobile_order_app/Widgets/Helpers/dates.dart';
-import 'package:jus_mobile_order_app/Widgets/Helpers/divider.dart';
-import 'package:jus_mobile_order_app/Widgets/Helpers/error.dart';
-import 'package:jus_mobile_order_app/Widgets/Helpers/loading.dart';
-import 'package:jus_mobile_order_app/Widgets/Helpers/locations.dart';
-import 'package:jus_mobile_order_app/Widgets/Helpers/pickers.dart';
-import 'package:jus_mobile_order_app/Widgets/Helpers/spacing_widgets.dart';
-import 'package:jus_mobile_order_app/Widgets/Helpers/time.dart';
 
 class OrderPickupDateTile extends ConsumerWidget {
   const OrderPickupDateTile({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final currentOrder = ref.watch(currentOrderItemsProvider);
-    final products = ref.watch(productsProvider);
     final deviceTime = ref.watch(deviceTimezoneProvider);
+    final products = ref.watch(productsProvider);
 
     return deviceTime.when(
       loading: () => const Loading(),
@@ -30,31 +29,12 @@ class OrderPickupDateTile extends ConsumerWidget {
       data: (deviceTimezone) => products.when(
         loading: () => const Loading(),
         error: (e, _) => ShowError(error: e.toString()),
-        data: (data) {
-          var scheduledItems = currentOrder
-              .where((element) => element['isScheduled'] == true)
-              .toList();
-
-          var scheduledList = scheduledItems
-              .map((item) => {
-                    'name': data
-                        .firstWhere(
-                            (element) => element.productID == item['productID'])
-                        .name,
-                    'daysQuantity': item['daysQuantity'],
-                    'itemQuantity': item['itemQuantity'],
-                    'hoursNotice': data
-                        .firstWhere(
-                            (element) => element.productID == item['productID'])
-                        .hoursNotice,
-                  })
-              .toList();
-
+        data: (product) {
           return Column(
             children: [
               JusDivider().thin(),
               ListTile(
-                leading: const FaIcon(FontAwesomeIcons.clock),
+                leading: const FaIcon(FontAwesomeIcons.calendar),
                 title: const Text('Schedule your pickup date'),
                 subtitle: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -68,7 +48,7 @@ class OrderPickupDateTile extends ConsumerWidget {
                     Row(
                       children: [
                         Text(
-                          DateHelper().displayPickupDate(ref),
+                          Time().displayPickupDate(ref),
                           style: const TextStyle(fontWeight: FontWeight.bold),
                         ),
                         Spacing().horizontal(5),
@@ -82,7 +62,15 @@ class OrderPickupDateTile extends ConsumerWidget {
                   size: 18,
                 ),
                 onTap: () {
-                  openScheduleOrLocationPicker(context, ref, scheduledList);
+                  HapticFeedback.lightImpact();
+                  OrderHelpers(ref: ref).setHoursNoticeProvider(product);
+                  openScheduleOrLocationPicker(
+                    context,
+                    ref,
+                    OrderHelpers(ref: ref).listOfScheduledItems(
+                        scheduledItems: OrderHelpers(ref: ref).scheduledItems(),
+                        products: product),
+                  );
                 },
               ),
             ],
@@ -93,7 +81,7 @@ class OrderPickupDateTile extends ConsumerWidget {
   }
 
   determineTimezoneAbbreviation(WidgetRef ref, dynamic deviceTimezone) {
-    if (ref.read(selectedPickupDateProvider) == null ||
+    if (ref.watch(selectedPickupDateProvider) == null ||
         LocationHelper().selectedLocation(ref) == null ||
         deviceTimezone == LocationHelper().selectedLocation(ref).timezone) {
       return const SizedBox();
@@ -108,24 +96,14 @@ class OrderPickupDateTile extends ConsumerWidget {
     }
   }
 
-  openScheduleOrLocationPicker(
-      BuildContext context, WidgetRef ref, dynamic scheduledList) {
+  openScheduleOrLocationPicker(BuildContext context, WidgetRef ref,
+      List<Map<String, dynamic>> scheduledList) {
     if (LocationHelper().selectedLocation(ref) == null) {
       LocationHelper().chooseLocation(context, ref);
     } else {
-      setScheduleDateProvider(ref, scheduledList);
-      Picker().date(context, ref, scheduledList);
+      OrderHelpers(ref: ref).setMinimumScheduleDate();
+
+      Picker().date(context, scheduledList);
     }
-  }
-
-  void setScheduleDateProvider(
-      WidgetRef ref, List<Map<String, dynamic>> scheduledList) {
-    var date = ref.read(selectedPickupDateProvider);
-    date ??= date = Time()
-        .convertLocalTimeToLocationTime(
-            location: LocationHelper().selectedLocation(ref))
-        .add(Duration(hours: scheduledList[0]['hoursNotice'], minutes: 5));
-
-    ref.read(selectedPickupDateProvider.notifier).state = date;
   }
 }

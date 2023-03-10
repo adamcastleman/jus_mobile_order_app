@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:jus_mobile_order_app/Helpers/error.dart';
+import 'package:jus_mobile_order_app/Helpers/loading.dart';
 import 'package:jus_mobile_order_app/Providers/location_providers.dart';
 import 'package:jus_mobile_order_app/Providers/stream_providers.dart';
 import 'package:jus_mobile_order_app/Widgets/Buttons/outline_button_medium.dart';
-import 'package:jus_mobile_order_app/Widgets/Helpers/error.dart';
-import 'package:jus_mobile_order_app/Widgets/Helpers/loading.dart';
 
 import '../../Models/location_model.dart';
 
@@ -44,6 +44,10 @@ class DisplayGoogleMapState extends ConsumerState<DisplayGoogleMap> {
     final locations = ref.watch(locationsProvider);
 
     return locations.when(
+      loading: () => const Loading(),
+      error: (e, _) => ShowError(
+        error: e.toString(),
+      ),
       data: (data) {
         _mapController?.animateCamera(CameraUpdate.newLatLng(
           LatLng(selectedLocationLatLong.latitude,
@@ -51,7 +55,6 @@ class DisplayGoogleMapState extends ConsumerState<DisplayGoogleMap> {
         ));
         handleLocationMarkers(data);
         getCurrentBounds(data);
-
         return Stack(
           children: [
             GoogleMap(
@@ -67,7 +70,7 @@ class DisplayGoogleMapState extends ConsumerState<DisplayGoogleMap> {
               myLocationButtonEnabled: true,
               mapToolbarEnabled: false,
               markers: Set<Marker>.of(_markers),
-              onMapCreated: _onMapCreated,
+              onMapCreated: (controller) => _onMapCreated(controller, data),
             ),
             Padding(
               padding: const EdgeInsets.all(8.0),
@@ -85,10 +88,6 @@ class DisplayGoogleMapState extends ConsumerState<DisplayGoogleMap> {
           ],
         );
       },
-      error: (e, _) => ShowError(
-        error: e.toString(),
-      ),
-      loading: () => const Loading(),
     );
   }
 
@@ -131,23 +130,27 @@ class DisplayGoogleMapState extends ConsumerState<DisplayGoogleMap> {
               location.latitude,
               location.longitude,
             ),
-            onTap: () {
+            onTap: () async {
+              HapticFeedback.lightImpact();
               selectedLocation.comingSoon
                   ? null
                   : ref.read(selectedLocationProvider.notifier).state =
                       selectedLocation;
-              getCurrentBounds(locations);
+              await getCurrentBounds(locations);
             }),
       );
     }
   }
 
-  _onMapCreated(GoogleMapController controller) {
+  _onMapCreated(
+      GoogleMapController controller, List<LocationModel> locations) async {
     if (mounted) {
       setState(() {
         _mapController = controller;
         controller.setMapStyle(_mapStyle);
       });
+
+      await getCurrentBounds(locations);
     }
   }
 }

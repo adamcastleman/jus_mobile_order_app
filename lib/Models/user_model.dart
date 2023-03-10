@@ -11,5 +11,6 @@ class UserModel with _$UserModel {
     String? email,
     String? phone,
     bool? isActiveMember,
+    int? totalPoints,
   }) = _UserModel;
 }

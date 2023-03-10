@@ -33,6 +33,7 @@ mixin _$LocationModel {
   List<dynamic> get unavailableIngredients =>
       throw _privateConstructorUsedError;
   bool get comingSoon => throw _privateConstructorUsedError;
+  List<dynamic> get blackoutDates => throw _privateConstructorUsedError;
 
   @JsonKey(ignore: true)
   $LocationModelCopyWith<LocationModel> get copyWith =>
@@ -61,7 +62,8 @@ abstract class $LocationModelCopyWith<$Res> {
       bool acceptingOrders,
       List<dynamic> unavailableProducts,
       List<dynamic> unavailableIngredients,
-      bool comingSoon});
+      bool comingSoon,
+      List<dynamic> blackoutDates});
 }
 
 /// @nodoc
@@ -93,6 +95,7 @@ class _$LocationModelCopyWithImpl<$Res, $Val extends LocationModel>
     Object? unavailableProducts = null,
     Object? unavailableIngredients = null,
     Object? comingSoon = null,
+    Object? blackoutDates = null,
   }) {
     return _then(_value.copyWith(
       uid: null == uid
@@ -159,6 +162,10 @@ class _$LocationModelCopyWithImpl<$Res, $Val extends LocationModel>
           ? _value.comingSoon
           : comingSoon // ignore: cast_nullable_to_non_nullable
               as bool,
+      blackoutDates: null == blackoutDates
+          ? _value.blackoutDates
+          : blackoutDates // ignore: cast_nullable_to_non_nullable
+              as List<dynamic>,
     ) as $Val);
   }
 }
@@ -187,7 +194,8 @@ abstract class _$$_LocationModelCopyWith<$Res>
       bool acceptingOrders,
       List<dynamic> unavailableProducts,
       List<dynamic> unavailableIngredients,
-      bool comingSoon});
+      bool comingSoon,
+      List<dynamic> blackoutDates});
 }
 
 /// @nodoc
@@ -217,6 +225,7 @@ class __$$_LocationModelCopyWithImpl<$Res>
     Object? unavailableProducts = null,
     Object? unavailableIngredients = null,
     Object? comingSoon = null,
+    Object? blackoutDates = null,
   }) {
     return _then(_$_LocationModel(
       uid: null == uid
@@ -283,6 +292,10 @@ class __$$_LocationModelCopyWithImpl<$Res>
           ? _value.comingSoon
           : comingSoon // ignore: cast_nullable_to_non_nullable
               as bool,
+      blackoutDates: null == blackoutDates
+          ? _value._blackoutDates
+          : blackoutDates // ignore: cast_nullable_to_non_nullable
+              as List<dynamic>,
     ));
   }
 }
@@ -306,11 +319,13 @@ class _$_LocationModel implements _LocationModel {
       required this.acceptingOrders,
       required final List<dynamic> unavailableProducts,
       required final List<dynamic> unavailableIngredients,
-      required this.comingSoon})
+      required this.comingSoon,
+      required final List<dynamic> blackoutDates})
       : _address = address,
         _hours = hours,
         _unavailableProducts = unavailableProducts,
-        _unavailableIngredients = unavailableIngredients;
+        _unavailableIngredients = unavailableIngredients,
+        _blackoutDates = blackoutDates;
 
   @override
   final String uid;
@@ -370,10 +385,17 @@ class _$_LocationModel implements _LocationModel {
 
   @override
   final bool comingSoon;
+  final List<dynamic> _blackoutDates;
+  @override
+  List<dynamic> get blackoutDates {
+    if (_blackoutDates is EqualUnmodifiableListView) return _blackoutDates;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_blackoutDates);
+  }
 
   @override
   String toString() {
-    return 'LocationModel(uid: $uid, name: $name, locationID: $locationID, phone: $phone, address: $address, hours: $hours, timezone: $timezone, latitude: $latitude, longitude: $longitude, isActive: $isActive, isAcceptingOrders: $isAcceptingOrders, salesTaxRate: $salesTaxRate, acceptingOrders: $acceptingOrders, unavailableProducts: $unavailableProducts, unavailableIngredients: $unavailableIngredients, comingSoon: $comingSoon)';
+    return 'LocationModel(uid: $uid, name: $name, locationID: $locationID, phone: $phone, address: $address, hours: $hours, timezone: $timezone, latitude: $latitude, longitude: $longitude, isActive: $isActive, isAcceptingOrders: $isAcceptingOrders, salesTaxRate: $salesTaxRate, acceptingOrders: $acceptingOrders, unavailableProducts: $unavailableProducts, unavailableIngredients: $unavailableIngredients, comingSoon: $comingSoon, blackoutDates: $blackoutDates)';
   }
 
   @override
@@ -407,7 +429,9 @@ class _$_LocationModel implements _LocationModel {
             const DeepCollectionEquality().equals(
                 other._unavailableIngredients, _unavailableIngredients) &&
             (identical(other.comingSoon, comingSoon) ||
-                other.comingSoon == comingSoon));
+                other.comingSoon == comingSoon) &&
+            const DeepCollectionEquality()
+                .equals(other._blackoutDates, _blackoutDates));
   }
 
   @override
@@ -428,7 +452,8 @@ class _$_LocationModel implements _LocationModel {
       acceptingOrders,
       const DeepCollectionEquality().hash(_unavailableProducts),
       const DeepCollectionEquality().hash(_unavailableIngredients),
-      comingSoon);
+      comingSoon,
+      const DeepCollectionEquality().hash(_blackoutDates));
 
   @JsonKey(ignore: true)
   @override
@@ -454,7 +479,8 @@ abstract class _LocationModel implements LocationModel {
       required final bool acceptingOrders,
       required final List<dynamic> unavailableProducts,
       required final List<dynamic> unavailableIngredients,
-      required final bool comingSoon}) = _$_LocationModel;
+      required final bool comingSoon,
+      required final List<dynamic> blackoutDates}) = _$_LocationModel;
 
   @override
   String get uid;
@@ -488,6 +514,8 @@ abstract class _LocationModel implements LocationModel {
   List<dynamic> get unavailableIngredients;
   @override
   bool get comingSoon;
+  @override
+  List<dynamic> get blackoutDates;
   @override
   @JsonKey(ignore: true)
   _$$_LocationModelCopyWith<_$_LocationModel> get copyWith =>
