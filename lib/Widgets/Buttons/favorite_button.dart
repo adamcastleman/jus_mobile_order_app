@@ -2,13 +2,13 @@ import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:jus_mobile_order_app/Helpers/error.dart';
 import 'package:jus_mobile_order_app/Helpers/modal_bottom_sheets.dart';
 import 'package:jus_mobile_order_app/Models/favorites_model.dart';
 import 'package:jus_mobile_order_app/Models/product_model.dart';
 import 'package:jus_mobile_order_app/Models/user_model.dart';
+import 'package:jus_mobile_order_app/Providers/ProviderWidgets/favorites_provider_widget.dart';
+import 'package:jus_mobile_order_app/Providers/ProviderWidgets/user_provider_widget.dart';
 import 'package:jus_mobile_order_app/Providers/product_providers.dart';
-import 'package:jus_mobile_order_app/Providers/stream_providers.dart';
 import 'package:jus_mobile_order_app/Services/favorites_services.dart';
 import 'package:jus_mobile_order_app/Sheets/name_favorite_item_sheet.dart';
 import 'package:jus_mobile_order_app/Views/register_page.dart';
@@ -18,20 +18,11 @@ class FavoriteButton extends ConsumerWidget {
   const FavoriteButton({required this.product, super.key});
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final currentUser = ref.watch(currentUserProvider);
-    final favorites = ref.watch(favoritesProvider);
-    return currentUser.when(
-      error: (e, _) => ShowError(error: e.toString()),
-      loading: () => const Icon(FontAwesomeIcons.heart),
-      data: (user) {
-        return favorites.when(
-          error: (e, _) => ShowError(error: e.toString()),
-          loading: () => const Icon(FontAwesomeIcons.heart),
-          data: (favorite) {
-            return _buildFavoriteButton(context, ref, user, favorite);
-          },
-        );
-      },
+    return UserProviderWidget(
+      builder: (user) => FavoritesProviderWidget(
+        builder: (favorites) =>
+            _buildFavoriteButton(context, ref, user, favorites),
+      ),
     );
   }
 

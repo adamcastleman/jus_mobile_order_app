@@ -2,10 +2,9 @@ import 'package:animations/animations.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:jus_mobile_order_app/Helpers/error.dart';
-import 'package:jus_mobile_order_app/Helpers/loading.dart';
 import 'package:jus_mobile_order_app/Helpers/spacing_widgets.dart';
-import 'package:jus_mobile_order_app/Providers/stream_providers.dart';
+import 'package:jus_mobile_order_app/Providers/ProviderWidgets/offers_provider_widget.dart';
+import 'package:jus_mobile_order_app/Providers/ProviderWidgets/user_provider_widget.dart';
 import 'package:jus_mobile_order_app/Providers/theme_providers.dart';
 import 'package:jus_mobile_order_app/Widgets/Buttons/close_button.dart';
 import 'package:qr_flutter/qr_flutter.dart';
@@ -16,16 +15,10 @@ class OffersCard extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final offers = ref.watch(offersProvider);
-    final currentUser = ref.watch(currentUserProvider);
     final backgroundColor = ref.watch(backgroundColorProvider);
-    return currentUser.when(
-      error: (e, _) => ShowError(error: e.toString()),
-      loading: () => const Loading(),
-      data: (user) => offers.when(
-        error: (e, _) => ShowError(error: e.toString()),
-        loading: () => const Loading(),
-        data: (offers) {
+    return UserProviderWidget(
+      builder: (user) => OffersProviderWidget(
+        builder: (offers) {
           if (offers[index].isMemberOnly &&
               (user.uid == null || !user.isActiveMember!)) {
             return const SizedBox();
@@ -76,36 +69,39 @@ class OffersCard extends ConsumerWidget {
                 ],
               ),
             ),
-            closedBuilder: (context, close) => SizedBox(
-              width: 200,
-              child: Card(
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(4.0),
+            closedBuilder: (context, close) => Container(
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(4.0),
+                border: Border.all(
+                  color: Colors.black,
+                  width: 0.3,
                 ),
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      AutoSizeText(
-                        offers[index].name,
-                        maxLines: 1,
-                        style: const TextStyle(
-                            fontSize: 18, fontWeight: FontWeight.bold),
-                      ),
-                      AutoSizeText(
-                        offers[index].description,
-                        maxLines: 2,
-                        textAlign: TextAlign.center,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                      const AutoSizeText(
-                        'Tap to scan in-store, or apply at checkout',
-                        maxLines: 2,
-                        textAlign: TextAlign.center,
-                      ),
-                    ],
-                  ),
+              ),
+              width: 200,
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    AutoSizeText(
+                      offers[index].name,
+                      maxLines: 1,
+                      style: const TextStyle(
+                          fontSize: 18, fontWeight: FontWeight.bold),
+                    ),
+                    AutoSizeText(
+                      offers[index].description,
+                      maxLines: 2,
+                      textAlign: TextAlign.center,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    const AutoSizeText(
+                      'Tap to scan in-store, or apply at checkout',
+                      maxLines: 2,
+                      textAlign: TextAlign.center,
+                    ),
+                  ],
                 ),
               ),
             ),

@@ -23,6 +23,7 @@ mixin _$LocationModel {
   Map<dynamic, dynamic> get address => throw _privateConstructorUsedError;
   List<dynamic> get hours => throw _privateConstructorUsedError;
   String get timezone => throw _privateConstructorUsedError;
+  String get currency => throw _privateConstructorUsedError;
   double get latitude => throw _privateConstructorUsedError;
   double get longitude => throw _privateConstructorUsedError;
   bool get isActive => throw _privateConstructorUsedError;
@@ -54,6 +55,7 @@ abstract class $LocationModelCopyWith<$Res> {
       Map<dynamic, dynamic> address,
       List<dynamic> hours,
       String timezone,
+      String currency,
       double latitude,
       double longitude,
       bool isActive,
@@ -86,6 +88,7 @@ class _$LocationModelCopyWithImpl<$Res, $Val extends LocationModel>
     Object? address = null,
     Object? hours = null,
     Object? timezone = null,
+    Object? currency = null,
     Object? latitude = null,
     Object? longitude = null,
     Object? isActive = null,
@@ -125,6 +128,10 @@ class _$LocationModelCopyWithImpl<$Res, $Val extends LocationModel>
       timezone: null == timezone
           ? _value.timezone
           : timezone // ignore: cast_nullable_to_non_nullable
+              as String,
+      currency: null == currency
+          ? _value.currency
+          : currency // ignore: cast_nullable_to_non_nullable
               as String,
       latitude: null == latitude
           ? _value.latitude
@@ -186,6 +193,7 @@ abstract class _$$_LocationModelCopyWith<$Res>
       Map<dynamic, dynamic> address,
       List<dynamic> hours,
       String timezone,
+      String currency,
       double latitude,
       double longitude,
       bool isActive,
@@ -216,6 +224,7 @@ class __$$_LocationModelCopyWithImpl<$Res>
     Object? address = null,
     Object? hours = null,
     Object? timezone = null,
+    Object? currency = null,
     Object? latitude = null,
     Object? longitude = null,
     Object? isActive = null,
@@ -255,6 +264,10 @@ class __$$_LocationModelCopyWithImpl<$Res>
       timezone: null == timezone
           ? _value.timezone
           : timezone // ignore: cast_nullable_to_non_nullable
+              as String,
+      currency: null == currency
+          ? _value.currency
+          : currency // ignore: cast_nullable_to_non_nullable
               as String,
       latitude: null == latitude
           ? _value.latitude
@@ -311,6 +324,7 @@ class _$_LocationModel implements _LocationModel {
       required final Map<dynamic, dynamic> address,
       required final List<dynamic> hours,
       required this.timezone,
+      required this.currency,
       required this.latitude,
       required this.longitude,
       required this.isActive,
@@ -354,6 +368,8 @@ class _$_LocationModel implements _LocationModel {
   @override
   final String timezone;
   @override
+  final String currency;
+  @override
   final double latitude;
   @override
   final double longitude;
@@ -395,7 +411,7 @@ class _$_LocationModel implements _LocationModel {
 
   @override
   String toString() {
-    return 'LocationModel(uid: $uid, name: $name, locationID: $locationID, phone: $phone, address: $address, hours: $hours, timezone: $timezone, latitude: $latitude, longitude: $longitude, isActive: $isActive, isAcceptingOrders: $isAcceptingOrders, salesTaxRate: $salesTaxRate, acceptingOrders: $acceptingOrders, unavailableProducts: $unavailableProducts, unavailableIngredients: $unavailableIngredients, comingSoon: $comingSoon, blackoutDates: $blackoutDates)';
+    return 'LocationModel(uid: $uid, name: $name, locationID: $locationID, phone: $phone, address: $address, hours: $hours, timezone: $timezone, currency: $currency, latitude: $latitude, longitude: $longitude, isActive: $isActive, isAcceptingOrders: $isAcceptingOrders, salesTaxRate: $salesTaxRate, acceptingOrders: $acceptingOrders, unavailableProducts: $unavailableProducts, unavailableIngredients: $unavailableIngredients, comingSoon: $comingSoon, blackoutDates: $blackoutDates)';
   }
 
   @override
@@ -412,6 +428,8 @@ class _$_LocationModel implements _LocationModel {
             const DeepCollectionEquality().equals(other._hours, _hours) &&
             (identical(other.timezone, timezone) ||
                 other.timezone == timezone) &&
+            (identical(other.currency, currency) ||
+                other.currency == currency) &&
             (identical(other.latitude, latitude) ||
                 other.latitude == latitude) &&
             (identical(other.longitude, longitude) ||
@@ -444,6 +462,7 @@ class _$_LocationModel implements _LocationModel {
       const DeepCollectionEquality().hash(_address),
       const DeepCollectionEquality().hash(_hours),
       timezone,
+      currency,
       latitude,
       longitude,
       isActive,
@@ -471,6 +490,7 @@ abstract class _LocationModel implements LocationModel {
       required final Map<dynamic, dynamic> address,
       required final List<dynamic> hours,
       required final String timezone,
+      required final String currency,
       required final double latitude,
       required final double longitude,
       required final bool isActive,
@@ -496,6 +516,8 @@ abstract class _LocationModel implements LocationModel {
   List<dynamic> get hours;
   @override
   String get timezone;
+  @override
+  String get currency;
   @override
   double get latitude;
   @override

@@ -21,6 +21,7 @@ class LocationServices {
           address: data['address'],
           hours: data['hours'],
           timezone: data['timezone'],
+          currency: data['currency'],
           latitude: data['latitude'],
           longitude: data['longitude'],
           isActive: data['isActive'],

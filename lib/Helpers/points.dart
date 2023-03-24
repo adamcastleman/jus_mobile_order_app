@@ -1,8 +1,14 @@
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:jus_mobile_order_app/Helpers/error.dart';
+import 'package:jus_mobile_order_app/Helpers/extensions.dart';
+import 'package:jus_mobile_order_app/Helpers/pricing.dart';
+import 'package:jus_mobile_order_app/Models/user_model.dart';
 import 'package:jus_mobile_order_app/Providers/offers_providers.dart';
 import 'package:jus_mobile_order_app/Providers/payments_providers.dart';
 import 'package:jus_mobile_order_app/Providers/product_providers.dart';
 import 'package:jus_mobile_order_app/Providers/stream_providers.dart';
+
+import 'loading.dart';
 
 class PointsHelper {
   final WidgetRef ref;
@@ -19,7 +25,7 @@ class PointsHelper {
         loading: () => [],
         data: (reward) {
           final eligibleRewards =
-              getEligibleRewards(reward.rewardsAmounts, user.totalPoints!);
+              getEligibleRewards(reward.rewardsAmounts, user.points!);
           final applicableRewards = getApplicableRewards(eligibleRewards);
 
           return applicableRewards;
@@ -94,7 +100,7 @@ class PointsHelper {
     final currentUser = ref.watch(currentUserProvider);
     final pointsDetails = ref.watch(pointsDetailsProvider);
     final pointsMultiplier = ref.watch(pointsMultiplierProvider);
-    final selectedPaymentMethod = ref.watch(selectedCreditCardProvider);
+    final selectedPaymentMethod = ref.watch(selectedPaymentMethodProvider);
 
     return currentUser.when(
       error: (e, _) => '{error}',
@@ -129,10 +135,32 @@ class PointsHelper {
       ),
     );
   }
-}
 
-extension NumExtension on num {
-  bool isWhole() {
-    return remainder(1) == 0;
+  totalEarnedPoints() {
+    final currentUser = ref.watch(currentUserProvider);
+
+    return currentUser.when(
+      loading: () => const Loading(),
+      error: (e, _) => ShowError(
+        error: e.toString(),
+      ),
+      data: (user) {
+        final pointsFromOrder =
+            _calculatePointsFromOrder(user, Pricing(ref: ref));
+        final pointsMultiple = PointsHelper(ref: ref).determinePointsMultiple();
+        final earnedPoints = pointsFromOrder * pointsMultiple;
+        return earnedPoints.truncate();
+      },
+    );
+  }
+
+  double _calculatePointsFromOrder(UserModel user, Pricing pricing) {
+    if (user.uid == null) {
+      return 0;
+    } else if (!user.isActiveMember!) {
+      return pricing.discountedSubtotalForNonMembers();
+    } else {
+      return pricing.discountedSubtotalForMembers();
+    }
   }
 }

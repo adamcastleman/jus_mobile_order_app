@@ -11,8 +11,8 @@ import 'package:jus_mobile_order_app/Helpers/set_standard_items.dart';
 import 'package:jus_mobile_order_app/Helpers/spacing_widgets.dart';
 import 'package:jus_mobile_order_app/Helpers/time.dart';
 import 'package:jus_mobile_order_app/Models/product_model.dart';
+import 'package:jus_mobile_order_app/Providers/ProviderWidgets/taxable_products_provider_widget.dart';
 import 'package:jus_mobile_order_app/Providers/product_providers.dart';
-import 'package:jus_mobile_order_app/Providers/stream_providers.dart';
 import 'package:jus_mobile_order_app/Providers/theme_providers.dart';
 import 'package:jus_mobile_order_app/Views/product_detail_page.dart';
 import 'package:jus_mobile_order_app/Widgets/Icons/new_icon.dart';
@@ -25,18 +25,13 @@ class LargeItemCard extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final products = ref.watch(taxableProductsProvider);
     final backgroundColor = ref.watch(backgroundColorProvider);
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 12.0, horizontal: 24.0),
-      child: products.when(
-        loading: () => const Loading(),
-        error: (Object e, _) => Text(
-          e.toString(),
-        ),
-        data: (product) => OpenContainer(
-          closedElevation: 2,
-          openElevation: 2,
+      child: TaxableProductsProviderWidget(
+        builder: (products) => OpenContainer(
+          closedElevation: 0,
+          openElevation: 0,
           openColor: backgroundColor,
           tappable: false,
           transitionType: ContainerTransitionType.fadeThrough,
@@ -45,7 +40,7 @@ class LargeItemCard extends HookConsumerWidget {
             borderRadius: BorderRadius.circular(8.0),
           ),
           openBuilder: (context, open) => ProductDetailPage(
-            product: product[index],
+            product: products[index],
           ),
           closedBuilder: (context, close) {
             return InkWell(
@@ -55,12 +50,12 @@ class LargeItemCard extends HookConsumerWidget {
                   null;
                 } else {
                   ref.read(selectedProductIDProvider.notifier).state =
-                      product[index].productID;
+                      products[index].productID;
                   ref.read(isScheduledProvider.notifier).state =
-                      product[index].isScheduled;
-                  product[index].isScheduled
-                      ? StandardItems(ref: ref).set(product[index])
-                      : StandardIngredients(ref: ref).set(product[index]);
+                      products[index].isScheduled;
+                  products[index].isScheduled
+                      ? StandardItems(ref: ref).set(products[index])
+                      : StandardIngredients(ref: ref).set(products[index]);
                   ref.read(itemKeyProvider.notifier).state =
                       Formulas().idGenerator();
                   close();
@@ -71,7 +66,7 @@ class LargeItemCard extends HookConsumerWidget {
                   padding: const EdgeInsets.symmetric(vertical: 15.0),
                   child: Stack(
                     children: [
-                      determineDescriptorIcon(context, ref, product[index]),
+                      determineDescriptorIcon(context, ref, products[index]),
                       Center(
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -79,7 +74,7 @@ class LargeItemCard extends HookConsumerWidget {
                             SizedBox(
                               height: 200,
                               child: CachedNetworkImage(
-                                imageUrl: product[index].image,
+                                imageUrl: products[index].image,
                                 progressIndicatorBuilder:
                                     (context, url, downloadProgress) =>
                                         const Loading(),
@@ -91,7 +86,7 @@ class LargeItemCard extends HookConsumerWidget {
                               padding:
                                   const EdgeInsets.only(top: 15.0, bottom: 5.0),
                               child: Text(
-                                product[index].name,
+                                products[index].name,
                                 style: const TextStyle(
                                     fontSize: 20, fontWeight: FontWeight.bold),
                               ),
@@ -101,7 +96,7 @@ class LargeItemCard extends HookConsumerWidget {
                                 horizontal: 12.0,
                               ),
                               child: ProductDescription(
-                                products: product,
+                                products: products,
                                 itemIndex: index,
                                 fontSize: 14,
                               ),

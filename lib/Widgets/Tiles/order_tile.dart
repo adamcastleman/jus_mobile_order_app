@@ -4,21 +4,21 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:jus_mobile_order_app/Helpers/error.dart';
-import 'package:jus_mobile_order_app/Helpers/loading.dart';
 import 'package:jus_mobile_order_app/Helpers/pricing.dart';
 import 'package:jus_mobile_order_app/Helpers/spacing_widgets.dart';
 import 'package:jus_mobile_order_app/Models/product_model.dart';
+import 'package:jus_mobile_order_app/Providers/ProviderWidgets/user_provider_widget.dart';
 import 'package:jus_mobile_order_app/Providers/discounts_provider.dart';
 import 'package:jus_mobile_order_app/Providers/order_providers.dart';
 import 'package:jus_mobile_order_app/Providers/product_providers.dart';
-import 'package:jus_mobile_order_app/Providers/stream_providers.dart';
 import 'package:jus_mobile_order_app/Providers/theme_providers.dart';
 import 'package:jus_mobile_order_app/Views/product_detail_page.dart';
 import 'package:jus_mobile_order_app/Widgets/General/order_tile_display_modifications.dart';
 import 'package:jus_mobile_order_app/Widgets/General/order_tile_display_quantity.dart';
 import 'package:jus_mobile_order_app/Widgets/General/order_tile_edit_row.dart';
 import 'package:jus_mobile_order_app/Widgets/General/order_tile_size_display.dart';
+
+import '../../Providers/ProviderWidgets/products_provider_widget.dart';
 
 class OrderTile extends ConsumerWidget {
   final int orderIndex;
@@ -27,23 +27,13 @@ class OrderTile extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final products = ref.watch(productsProvider);
     final backgroundColor = ref.watch(backgroundColorProvider);
-    final currentUser = ref.watch(currentUserProvider);
     final currentOrder = ref.watch(currentOrderItemsProvider);
     final onCheckoutPage = ref.watch(checkOutPageProvider);
-    return currentUser.when(
-      loading: () => const Loading(),
-      error: (e, _) => ShowError(
-        error: e.toString(),
-      ),
-      data: (user) => products.when(
-        loading: () => const Loading(),
-        error: (e, _) => ShowError(
-          error: e.toString(),
-        ),
-        data: (product) {
-          ProductModel currentProduct = product
+    return UserProviderWidget(
+      builder: (user) => ProductsProviderWidget(
+        builder: (products) {
+          ProductModel currentProduct = products
               .where((element) =>
                   element.productID == currentOrder[orderIndex]['productID'])
               .first;
@@ -148,13 +138,8 @@ class OrderTile extends ConsumerWidget {
   }
 
   determinePriceDisplay(WidgetRef ref, ProductModel currentProduct) {
-    final currentUser = ref.watch(currentUserProvider);
-    return currentUser.when(
-      loading: () => const Loading(),
-      error: (e, _) => ShowError(
-        error: e.toString(),
-      ),
-      data: (user) {
+    return UserProviderWidget(
+      builder: (user) {
         if (user.uid == null || !user.isActiveMember!) {
           return Text(
             Pricing(ref: ref)

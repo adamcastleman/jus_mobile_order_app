@@ -1,15 +1,21 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:jus_mobile_order_app/Helpers/loading.dart';
-import 'package:jus_mobile_order_app/Helpers/spacing_widgets.dart';
 
-class DescriptionTile {
-  final dynamic data;
-  final int index;
+class PerksDescriptionTileImageRight extends StatelessWidget {
+  final String name;
+  final String description;
+  final String imageURL;
 
-  DescriptionTile({required this.data, required this.index});
+  const PerksDescriptionTileImageRight({
+    required this.name,
+    required this.description,
+    required this.imageURL,
+    super.key,
+  });
 
-  imageRight() {
+  @override
+  Widget build(BuildContext context) {
     return Stack(
       children: [
         Positioned(
@@ -19,18 +25,17 @@ class DescriptionTile {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                data.perks[index]['name'],
-                style:
-                    const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                name,
+                style: const TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
-              Spacing().vertical(10),
-              Padding(
-                padding: const EdgeInsets.only(left: 12.0),
-                child: SizedBox(
-                  width: 150,
-                  child: Text(
-                    data.perks[index]['description'],
-                  ),
+              const SizedBox(height: 10),
+              SizedBox(
+                width: 150,
+                child: Text(
+                  description,
                 ),
               ),
             ],
@@ -43,7 +48,7 @@ class DescriptionTile {
             width: 200,
             child: CachedNetworkImage(
               fit: BoxFit.fitHeight,
-              imageUrl: data.perks[index]['image'],
+              imageUrl: imageURL,
               placeholder: (context, loading) => const Loading(),
             ),
           ),
@@ -51,8 +56,22 @@ class DescriptionTile {
       ],
     );
   }
+}
 
-  imageLeft({bool? largeImage}) {
+class PerksDescriptionTileImageLeft extends StatelessWidget {
+  final String name;
+  final String description;
+  final String imageURL;
+
+  const PerksDescriptionTileImageLeft({
+    required this.name,
+    required this.description,
+    required this.imageURL,
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
     return Stack(
       children: [
         Positioned(
@@ -62,15 +81,17 @@ class DescriptionTile {
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
               Text(
-                data.perks[index]['name'],
-                style:
-                    const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                name,
+                style: const TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
-              Spacing().vertical(10),
+              const SizedBox(height: 10),
               SizedBox(
                 width: 150,
                 child: Text(
-                  data.perks[index]['description'],
+                  description,
                   textAlign: TextAlign.right,
                 ),
               ),
@@ -83,7 +104,7 @@ class DescriptionTile {
             height: 200,
             width: 200,
             child: CachedNetworkImage(
-              imageUrl: data.perks[index]['image'],
+              imageUrl: imageURL,
               fit: BoxFit.fitHeight,
               placeholder: (context, loading) => const Loading(),
             ),

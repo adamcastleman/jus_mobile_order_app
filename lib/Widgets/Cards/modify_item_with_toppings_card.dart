@@ -3,9 +3,9 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:jus_mobile_order_app/Helpers/error.dart';
-import 'package:jus_mobile_order_app/Helpers/loading.dart';
 import 'package:jus_mobile_order_app/Models/ingredient_model.dart';
+import 'package:jus_mobile_order_app/Providers/ProviderWidgets/modifiable_ingredients_provider_widget.dart';
+import 'package:jus_mobile_order_app/Providers/ProviderWidgets/user_provider_widget.dart';
 import 'package:jus_mobile_order_app/Widgets/Buttons/close_button.dart';
 import 'package:jus_mobile_order_app/Widgets/General/display_ingredient_prices.dart';
 import 'package:jus_mobile_order_app/Widgets/General/ingredient_amount_descriptive_text.dart';
@@ -13,7 +13,6 @@ import 'package:jus_mobile_order_app/Widgets/General/multi_use_ingredient_text.d
 import 'package:jus_mobile_order_app/Widgets/General/selection_incrementor.dart';
 
 import '../../Providers/product_providers.dart';
-import '../../Providers/stream_providers.dart';
 import '../General/multi_use_ingredient_edit_row.dart';
 
 class ModifyItemWithToppingsCard extends HookConsumerWidget {
@@ -25,8 +24,6 @@ class ModifyItemWithToppingsCard extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final selectedIngredients = ref.watch(selectedIngredientsProvider);
-    final currentUser = ref.watch(currentUserProvider);
-    final modifiableIngredients = ref.watch(modifiableIngredientsProvider);
     final rotateController = useAnimationController();
     rotateController.repeat(
       min: 0.0,
@@ -35,17 +32,9 @@ class ModifyItemWithToppingsCard extends HookConsumerWidget {
       reverse: true,
     );
 
-    return currentUser.when(
-      loading: () => const Loading(),
-      error: (e, _) => ShowError(
-        error: e.toString(),
-      ),
-      data: (user) => modifiableIngredients.when(
-        loading: () => const Loading(),
-        error: (e, _) => ShowError(
-          error: e.toString(),
-        ),
-        data: (ingredients) {
+    return UserProviderWidget(
+      builder: (user) => ModifiableIngredientsProviderWidget(
+        builder: (ingredients) {
           IngredientModel currentIngredient = ingredients
               .where(
                   (element) => element.id == selectedIngredients[index]['id'])

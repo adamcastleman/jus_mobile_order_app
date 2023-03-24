@@ -1,13 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:jus_mobile_order_app/Helpers/error.dart';
-import 'package:jus_mobile_order_app/Helpers/loading.dart';
 import 'package:jus_mobile_order_app/Helpers/spacing_widgets.dart';
 import 'package:jus_mobile_order_app/Models/ingredient_model.dart';
 import 'package:jus_mobile_order_app/Models/user_model.dart';
+import 'package:jus_mobile_order_app/Providers/ProviderWidgets/modifiable_ingredients_provider_widget.dart';
+import 'package:jus_mobile_order_app/Providers/ProviderWidgets/user_provider_widget.dart';
 import 'package:jus_mobile_order_app/Providers/product_providers.dart';
-import 'package:jus_mobile_order_app/Providers/stream_providers.dart';
 import 'package:jus_mobile_order_app/Widgets/Buttons/elevated_button_medium.dart';
 import 'package:jus_mobile_order_app/Widgets/Buttons/multi_use_ingredient_quantity_picker.dart';
 import 'package:jus_mobile_order_app/Widgets/Buttons/outline_button_medium.dart';
@@ -18,22 +17,12 @@ class MultiUseIngredientSelectionSheet extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final ingredients = ref.watch(modifiableIngredientsProvider);
-    final user = ref.watch(currentUserProvider);
     final isExtraCharge = ref.watch(currentIngredientExtraChargeProvider);
     final selectedIngredientID = ref.watch(currentIngredientIDProvider);
     HapticFeedback.lightImpact();
-    return ingredients.when(
-      loading: () => const Loading(),
-      error: (e, _) => ShowError(
-        error: e.toString(),
-      ),
-      data: (ingredients) => user.when(
-        loading: () => const Loading(),
-        error: (e, _) => ShowError(
-          error: e.toString(),
-        ),
-        data: (user) {
+    return ModifiableIngredientsProviderWidget(
+      builder: (ingredients) => UserProviderWidget(
+        builder: (user) {
           IngredientModel currentIngredient = ingredients
               .where((element) => element.id == selectedIngredientID)
               .first;

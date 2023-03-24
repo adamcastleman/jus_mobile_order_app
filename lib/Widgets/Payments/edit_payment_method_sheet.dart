@@ -1,15 +1,14 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:jus_mobile_order_app/Helpers/error.dart';
-import 'package:jus_mobile_order_app/Helpers/loading.dart';
 import 'package:jus_mobile_order_app/Helpers/spacing_widgets.dart';
 import 'package:jus_mobile_order_app/Models/payments_model.dart';
+import 'package:jus_mobile_order_app/Providers/ProviderWidgets/user_provider_widget.dart';
 import 'package:jus_mobile_order_app/Providers/payments_providers.dart';
-import 'package:jus_mobile_order_app/Providers/stream_providers.dart';
 import 'package:jus_mobile_order_app/Services/payments_services.dart';
 import 'package:jus_mobile_order_app/Widgets/Buttons/elevated_button_medium.dart';
 import 'package:jus_mobile_order_app/Widgets/Buttons/outline_button_medium.dart';
+import 'package:jus_mobile_order_app/Widgets/General/sheet_notch.dart';
 
 class EditPaymentMethodSheet extends ConsumerWidget {
   final PaymentsModel card;
@@ -18,16 +17,16 @@ class EditPaymentMethodSheet extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final currentUser = ref.watch(currentUserProvider);
-    return currentUser.when(
-      error: (e, _) => ShowError(error: e.toString()),
-      loading: () => const Loading(),
-      data: (user) => Padding(
+    return UserProviderWidget(
+      builder: (user) => Padding(
         padding: MediaQuery.of(context).viewInsets,
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 12.0),
           child: Wrap(
             children: [
+              const Center(
+                child: SheetNotch(),
+              ),
               Padding(
                 padding: const EdgeInsets.symmetric(vertical: 20.0),
                 child: Text(
@@ -122,10 +121,8 @@ class EditPaymentMethodSheet extends ConsumerWidget {
                             maxLines: 1,
                           ),
                           activeColor: Colors.black,
-                          value: ref.watch(defaultPaymentSelectedProvider),
-                          onChanged: (value) => ref
-                              .read(defaultPaymentSelectedProvider.notifier)
-                              .state = value!),
+                          value: false,
+                          onChanged: (value) => true),
                   card.defaultPayment
                       ? const SizedBox()
                       : Spacing().vertical(20),
@@ -142,14 +139,14 @@ class EditPaymentMethodSheet extends ConsumerWidget {
                                   card.cardNickname
                               : ref.read(cardNicknameProvider.notifier).state =
                                   ref.read(cardNicknameProvider);
-                          PaymentsServices(ref: ref, uid: user.uid)
+                          PaymentsServices(ref: ref, userID: user.uid)
                               .updateCardNickname(card.uid);
 
                           Navigator.pop(context);
-                          ref.read(defaultPaymentSelectedProvider) == true
-                              ? PaymentsServices(ref: ref, uid: user.uid)
-                                  .updateDefaultPayment(card.uid)
-                              : null;
+                          // ref.read(defaultPaymentSelectedProvider) == true
+                          //     ? PaymentsServices(ref: ref, userID: user.uid)
+                          //         .updateDefaultPayment(card.uid)
+                          //     : null;
                         },
                       ),
                     ],

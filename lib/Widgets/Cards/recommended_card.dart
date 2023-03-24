@@ -3,15 +3,13 @@ import 'package:auto_size_text/auto_size_text.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:jus_mobile_order_app/Helpers/error.dart';
 import 'package:jus_mobile_order_app/Helpers/formulas.dart';
-import 'package:jus_mobile_order_app/Helpers/loading.dart';
 import 'package:jus_mobile_order_app/Helpers/locations.dart';
 import 'package:jus_mobile_order_app/Helpers/set_standard_ingredients.dart';
 import 'package:jus_mobile_order_app/Helpers/set_standard_items.dart';
 import 'package:jus_mobile_order_app/Helpers/spacing_widgets.dart';
+import 'package:jus_mobile_order_app/Providers/ProviderWidgets/recommended_products_provider_widget.dart';
 import 'package:jus_mobile_order_app/Providers/product_providers.dart';
-import 'package:jus_mobile_order_app/Providers/stream_providers.dart';
 import 'package:jus_mobile_order_app/Views/product_detail_page.dart';
 
 class RecommendedCard extends ConsumerWidget {
@@ -21,11 +19,8 @@ class RecommendedCard extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final recommendedProducts = ref.watch(recommendedProductsProvider);
-    return recommendedProducts.when(
-      error: (e, _) => ShowError(error: e.toString()),
-      loading: () => const Loading(),
-      data: (recommended) => OpenContainer(
+    return RecommendedProductsProviderWidget(
+      builder: (recommended) => OpenContainer(
         openElevation: 0,
         closedElevation: 0,
         closedShape: RoundedRectangleBorder(

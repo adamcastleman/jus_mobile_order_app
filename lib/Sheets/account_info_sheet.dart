@@ -2,12 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:jus_mobile_order_app/Helpers/error.dart';
-import 'package:jus_mobile_order_app/Helpers/loading.dart';
 import 'package:jus_mobile_order_app/Helpers/spacing_widgets.dart';
 import 'package:jus_mobile_order_app/Helpers/validators.dart';
 import 'package:jus_mobile_order_app/Models/user_model.dart';
+import 'package:jus_mobile_order_app/Providers/ProviderWidgets/user_provider_widget.dart';
 import 'package:jus_mobile_order_app/Providers/auth_providers.dart';
-import 'package:jus_mobile_order_app/Providers/stream_providers.dart';
 import 'package:jus_mobile_order_app/Services/auth_services.dart';
 import 'package:jus_mobile_order_app/Services/user_services.dart';
 import 'package:jus_mobile_order_app/Widgets/Buttons/elevated_button_medium.dart';
@@ -19,7 +18,6 @@ class AccountInfoSheet extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final currentUser = ref.watch(currentUserProvider);
     final firstName = ref.watch(firstNameProvider);
     final lastName = ref.watch(lastNameProvider);
     final phone = ref.watch(phoneProvider);
@@ -30,10 +28,8 @@ class AccountInfoSheet extends ConsumerWidget {
     final phoneError = ref.watch(phoneErrorProvider);
     final loading = ref.watch(loadingProvider);
     final firebaseError = ref.watch(firebaseErrorProvider);
-    return currentUser.when(
-      error: (e, _) => ShowError(error: e.toString()),
-      loading: () => const Loading(),
-      data: (user) => Scaffold(
+    return UserProviderWidget(
+      builder: (user) => Scaffold(
         resizeToAvoidBottomInset: true,
         body: SingleChildScrollView(
           child: Column(

@@ -12,6 +12,7 @@ class LocationModel with _$LocationModel {
     required Map address,
     required List hours,
     required String timezone,
+    required String currency,
     required double latitude,
     required double longitude,
     required bool isActive,

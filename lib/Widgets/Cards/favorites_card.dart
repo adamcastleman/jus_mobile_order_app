@@ -3,15 +3,15 @@ import 'package:auto_size_text/auto_size_text.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:jus_mobile_order_app/Helpers/error.dart';
 import 'package:jus_mobile_order_app/Helpers/formulas.dart';
-import 'package:jus_mobile_order_app/Helpers/loading.dart';
 import 'package:jus_mobile_order_app/Helpers/locations.dart';
 import 'package:jus_mobile_order_app/Helpers/set_standard_ingredients.dart';
 import 'package:jus_mobile_order_app/Helpers/set_standard_items.dart';
 import 'package:jus_mobile_order_app/Helpers/spacing_widgets.dart';
+import 'package:jus_mobile_order_app/Providers/ProviderWidgets/favorites_provider_widget.dart';
+import 'package:jus_mobile_order_app/Providers/ProviderWidgets/ingredients_provider_widget.dart';
+import 'package:jus_mobile_order_app/Providers/ProviderWidgets/products_provider_widget.dart';
 import 'package:jus_mobile_order_app/Providers/product_providers.dart';
-import 'package:jus_mobile_order_app/Providers/stream_providers.dart';
 import 'package:jus_mobile_order_app/Views/product_detail_page.dart';
 
 class FavoritesCard extends ConsumerWidget {
@@ -21,19 +21,10 @@ class FavoritesCard extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final favorites = ref.watch(favoritesProvider);
-    final products = ref.watch(productsProvider);
-    final ingredients = ref.watch(ingredientsProvider);
-    return ingredients.when(
-      error: (e, _) => ShowError(error: e.toString()),
-      loading: () => const Loading(),
-      data: (ingredients) => products.when(
-        error: (e, _) => ShowError(error: e.toString()),
-        loading: () => const Loading(),
-        data: (products) => favorites.when(
-          error: (e, _) => ShowError(error: e.toString()),
-          loading: () => const Loading(),
-          data: (favorites) {
+    return IngredientsProviderWidget(
+      builder: (ingredients) => ProductsProviderWidget(
+        builder: (products) => FavoritesProviderWidget(
+          builder: (favorites) {
             final currentProduct = products.firstWhere(
                 (element) => element.productID == favorites[index].productID);
             return OpenContainer(

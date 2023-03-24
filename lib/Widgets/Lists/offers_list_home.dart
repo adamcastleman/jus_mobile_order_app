@@ -1,21 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:jus_mobile_order_app/Helpers/error.dart';
-import 'package:jus_mobile_order_app/Helpers/loading.dart';
 import 'package:jus_mobile_order_app/Helpers/spacing_widgets.dart';
-import 'package:jus_mobile_order_app/Providers/stream_providers.dart';
+import 'package:jus_mobile_order_app/Providers/ProviderWidgets/offers_provider_widget.dart';
 import 'package:jus_mobile_order_app/Widgets/Cards/offers_card.dart';
 
-class OffersList extends ConsumerWidget {
+class OffersList extends StatelessWidget {
   const OffersList({Key? key}) : super(key: key);
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final offers = ref.watch(offersProvider);
-    return offers.when(
-      error: (e, _) => ShowError(error: e.toString()),
-      loading: () => const Loading(),
-      data: (offers) => SizedBox(
+  Widget build(BuildContext context) {
+    return OffersProviderWidget(
+      builder: (offers) => SizedBox(
         height: 270,
         child: Column(
           mainAxisSize: MainAxisSize.min,

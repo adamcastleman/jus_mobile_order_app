@@ -162,6 +162,8 @@ class Picker {
                                           .read(
                                               scheduleAllItemsProvider.notifier)
                                           .state = value!;
+                                      ref.invalidate(
+                                          selectedPickupTimeProvider);
                                     },
                                   ),
                                 ),

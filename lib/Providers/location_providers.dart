@@ -7,6 +7,9 @@ final currentLocationLatLongProvider =
 
 final locationsWithinMapBoundsProvider = StateProvider<List>((ref) => []);
 
+final googleMapControllerProvider =
+    StateProvider<GoogleMapController?>((ref) => null);
+
 final currentMapBoundsProvider = StateProvider<LatLngBounds>(
   (ref) => LatLngBounds(
     northeast: const LatLng(0.0, 0.0),

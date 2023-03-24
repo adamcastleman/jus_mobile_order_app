@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:jus_mobile_order_app/Helpers/divider.dart';
 
-class CartCategory extends StatelessWidget {
+class CategoryWidget extends StatelessWidget {
   final String text;
-  const CartCategory({required this.text, Key? key}) : super(key: key);
+  const CategoryWidget({required this.text, Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {

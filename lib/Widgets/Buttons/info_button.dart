@@ -4,9 +4,7 @@ import 'package:flutter/material.dart';
 class InfoButton extends StatelessWidget {
   final VoidCallback onTap;
   final double size;
-  final Color color;
-  const InfoButton(
-      {required this.onTap, required this.size, required this.color, Key? key})
+  const InfoButton({required this.onTap, required this.size, Key? key})
       : super(key: key);
 
   @override
@@ -16,7 +14,7 @@ class InfoButton extends StatelessWidget {
       child: Icon(
         CupertinoIcons.info_circle_fill,
         size: size,
-        color: color,
+        color: Colors.black,
       ),
     );
   }

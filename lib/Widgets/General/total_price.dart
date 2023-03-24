@@ -8,6 +8,7 @@ import 'package:jus_mobile_order_app/Helpers/points.dart';
 import 'package:jus_mobile_order_app/Helpers/pricing.dart';
 import 'package:jus_mobile_order_app/Helpers/spacing_widgets.dart';
 import 'package:jus_mobile_order_app/Models/user_model.dart';
+import 'package:jus_mobile_order_app/Providers/ProviderWidgets/user_provider_widget.dart';
 import 'package:jus_mobile_order_app/Providers/discounts_provider.dart';
 import 'package:jus_mobile_order_app/Providers/order_providers.dart';
 import 'package:jus_mobile_order_app/Providers/payments_providers.dart';
@@ -23,49 +24,41 @@ class TotalPrice extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final currentUser = ref.watch(currentUserProvider);
-
-    return currentUser.when(
-      loading: () => const Loading(),
-      error: (e, _) => ShowError(
-        error: e.toString(),
+    return UserProviderWidget(
+      builder: (user) => Padding(
+        padding: const EdgeInsets.only(top: 8.0),
+        child: Column(
+          children: [
+            buildOriginalSubtotalRow(ref, user),
+            ref.watch(discountTotalProvider).isEmpty
+                ? const SizedBox()
+                : Column(
+                    children: [
+                      Spacing().vertical(10),
+                      buildDiscountRow(ref, user),
+                      Spacing().vertical(10),
+                      buildSubtotalWithDiscountRow(ref, user),
+                    ],
+                  ),
+            Spacing().vertical(10),
+            buildTaxesRow(ref, user),
+            ref.watch(selectedTipIndexProvider) == 0
+                ? const SizedBox()
+                : Spacing().vertical(10),
+            ref.watch(selectedTipIndexProvider) == 0
+                ? const SizedBox()
+                : buildTipRow(ref, user),
+            user.uid != null ? Spacing().vertical(10) : const SizedBox(),
+            user.uid != null ? buildPointsRow(ref) : const SizedBox(),
+            Spacing().vertical(30),
+            buildOrderTotalRow(ref, user),
+            Spacing().vertical(20),
+            Pricing(ref: ref).discountedSubtotalForNonMembers() <= 0.0
+                ? const SizedBox()
+                : buildSavedAmountRow(context, ref, user),
+          ],
+        ),
       ),
-      data: (user) {
-        return Padding(
-          padding: const EdgeInsets.only(top: 8.0),
-          child: Column(
-            children: [
-              buildOriginalSubtotalRow(ref, user),
-              ref.watch(discountTotalProvider).isEmpty
-                  ? const SizedBox()
-                  : Column(
-                      children: [
-                        Spacing().vertical(10),
-                        buildDiscountRow(ref, user),
-                        Spacing().vertical(10),
-                        buildSubtotalWithDiscountRow(ref, user),
-                      ],
-                    ),
-              Spacing().vertical(10),
-              buildTaxesRow(ref, user),
-              ref.watch(selectedTipIndexProvider) == 0
-                  ? const SizedBox()
-                  : Spacing().vertical(10),
-              ref.watch(selectedTipIndexProvider) == 0
-                  ? const SizedBox()
-                  : buildTipRow(ref, user),
-              user.uid != null ? Spacing().vertical(10) : const SizedBox(),
-              user.uid != null ? buildPointsRow(ref) : const SizedBox(),
-              Spacing().vertical(30),
-              buildOrderTotalRow(ref, user),
-              Spacing().vertical(20),
-              Pricing(ref: ref).discountedSubtotalForNonMembers() == 0.00
-                  ? const SizedBox()
-                  : buildSavedAmountRow(context, ref, user),
-            ],
-          ),
-        );
-      },
     );
   }
 
@@ -108,9 +101,9 @@ class TotalPrice extends ConsumerWidget {
   }
 
   Widget buildDiscountRow(WidgetRef ref, UserModel user) {
-    final String discountTotal = user.uid == null || !user.isActiveMember!
-        ? Pricing(ref: ref).discountTotalForNonMembers().toStringAsFixed(2)
-        : Pricing(ref: ref).discountTotalForMembers().toStringAsFixed(2);
+    final double discountTotal = user.uid == null || !user.isActiveMember!
+        ? Pricing(ref: ref).discountTotalForNonMembers()
+        : Pricing(ref: ref).discountTotalForMembers();
 
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -187,11 +180,24 @@ class TotalPrice extends ConsumerWidget {
     );
   }
 
-  Widget buildOrderTotalRow(WidgetRef ref, UserModel user) {
-    double orderTotal = user.uid == null || !user.isActiveMember!
-        ? Pricing(ref: ref).orderTotalForNonMembers()
-        : Pricing(ref: ref).orderTotalForMembers();
+  orderTotal(WidgetRef ref) {
+    final currentUser = ref.watch(currentUserProvider);
+    return currentUser.when(
+      error: (e, _) => ShowError(error: e.toString()),
+      loading: () => const Loading(),
+      data: (user) {
+        if (user.uid == null || !user.isActiveMember!) {
+          return NumberFormat('#,##0.00')
+              .format(Pricing(ref: ref).orderTotalForNonMembers());
+        } else {
+          return NumberFormat('#,##0.00')
+              .format(Pricing(ref: ref).orderTotalForMembers());
+        }
+      },
+    );
+  }
 
+  Widget buildOrderTotalRow(WidgetRef ref, UserModel user) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -203,8 +209,49 @@ class TotalPrice extends ConsumerWidget {
           ),
         ),
         Text(
-          '\$${NumberFormat('#,##0.00').format(orderTotal)}',
+          '\$${orderTotal(ref)}',
           style: ref.watch(priceBoldProvider),
+        ),
+      ],
+    );
+  }
+
+  Widget buildPointsRow(WidgetRef ref) {
+    final pointsHelper = PointsHelper(ref: ref);
+    final earnedPoints = pointsHelper.totalEarnedPoints();
+
+    if (earnedPoints == 0) {
+      return const SizedBox();
+    }
+
+    final isJusCard =
+        ref.watch(selectedPaymentMethodProvider)['isGiftCard'] ?? false;
+    final pointsMultipleText =
+        pointsHelper.determinePointsMultipleText(isJusCard: isJusCard);
+
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        const Text(
+          'Points',
+          style: TextStyle(fontSize: 16),
+        ),
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.end,
+          children: [
+            Row(
+              children: [
+                Text(
+                  '+$earnedPoints',
+                  style: ref.watch(priceGreenStyleProvider),
+                ),
+              ],
+            ),
+            Text(
+              '$pointsMultipleText/\$1',
+              style: const TextStyle(fontSize: 12),
+            ),
+          ],
         ),
       ],
     );
@@ -233,7 +280,6 @@ class TotalPrice extends ConsumerWidget {
             padding: const EdgeInsets.only(left: 4.0),
             child: InfoButton(
               size: 22,
-              color: Colors.grey[700]!,
               onTap: () {
                 ModalBottomSheet().fullScreen(
                   context: context,
@@ -258,64 +304,6 @@ class TotalPrice extends ConsumerWidget {
       );
     } else {
       return const Text('');
-    }
-  }
-
-  Widget buildPointsRow(WidgetRef ref) {
-    final currentUser = ref.watch(currentUserProvider);
-
-    return currentUser.when(
-        loading: () => const Loading(),
-        error: (e, _) => ShowError(
-              error: e.toString(),
-            ),
-        data: (user) {
-          final pointsFromOrder =
-              _calculatePointsFromOrder(user, Pricing(ref: ref));
-          final pointsMultiple =
-              PointsHelper(ref: ref).determinePointsMultiple();
-          final earnedPoints = pointsFromOrder * pointsMultiple;
-
-          if (earnedPoints == 0) {
-            return const SizedBox();
-          }
-
-          return Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              const Text(
-                'Points',
-                style: TextStyle(fontSize: 16),
-              ),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: [
-                  Row(
-                    children: [
-                      Text(
-                        '+${NumberFormat('#,###').format(earnedPoints.truncateToDouble())}',
-                        style: ref.watch(priceGreenStyleProvider),
-                      ),
-                    ],
-                  ),
-                  Text(
-                    '${PointsHelper(ref: ref).determinePointsMultipleText(isJusCard: ref.watch(selectedCreditCardProvider)['isGiftCard'] ?? false)}/\$1',
-                    style: const TextStyle(fontSize: 12),
-                  ),
-                ],
-              ),
-            ],
-          );
-        });
-  }
-
-  double _calculatePointsFromOrder(UserModel user, Pricing pricing) {
-    if (user.uid == null) {
-      return 0;
-    } else if (!user.isActiveMember!) {
-      return pricing.discountedSubtotalForNonMembers();
-    } else {
-      return pricing.discountedSubtotalForMembers();
     }
   }
 }

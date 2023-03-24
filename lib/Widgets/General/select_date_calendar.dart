@@ -3,26 +3,20 @@ import 'package:flutter/material.dart';
 import 'package:flutter_calendar_carousel/flutter_calendar_carousel.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:intl/intl.dart';
-import 'package:jus_mobile_order_app/Helpers/error.dart';
-import 'package:jus_mobile_order_app/Helpers/loading.dart';
 import 'package:jus_mobile_order_app/Helpers/modal_bottom_sheets.dart';
+import 'package:jus_mobile_order_app/Providers/ProviderWidgets/location_provider_widget.dart';
 import 'package:jus_mobile_order_app/Providers/location_providers.dart';
 import 'package:jus_mobile_order_app/Providers/order_providers.dart';
 import 'package:jus_mobile_order_app/Sheets/invalid_order_sheet.dart';
-
-import '../../Providers/stream_providers.dart';
 
 class SelectDateCalendar extends ConsumerWidget {
   const SelectDateCalendar({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final locations = ref.watch(locationsProvider);
     final selectedLocation = ref.watch(selectedLocationProvider);
-    return locations.when(
-      error: (e, _) => ShowError(error: e.toString()),
-      loading: () => const Loading(),
-      data: (location) => CalendarCarousel(
+    return LocationsProviderWidget(
+      builder: (locations) => CalendarCarousel(
         isScrollable: false,
         firstDayOfWeek: 1,
         minSelectedDate: ref.watch(originalMinimumDateProvider),
@@ -38,7 +32,7 @@ class SelectDateCalendar extends ConsumerWidget {
         rightButtonIcon: const Icon(CupertinoIcons.arrow_right),
         leftButtonIcon: const Icon(CupertinoIcons.arrow_left),
         onDayPressed: (value, list) {
-          List dates = location
+          List dates = locations
               .firstWhere((element) =>
                   element.locationID == selectedLocation.locationID)
               .blackoutDates;

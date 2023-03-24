@@ -191,7 +191,7 @@ class OrderHelpers {
     );
   }
 
-  validateOrder(BuildContext context, UserModel user) {
+  void validateOrderAndPay(BuildContext context, UserModel user) {
     final errorMessage = OrderHelpers(ref: ref).checkValidity(context);
 
     if (errorMessage.isNotEmpty) {
@@ -200,7 +200,12 @@ class OrderHelpers {
           builder: (context) => InvalidOrderSheet(error: errorMessage));
       return;
     } else {
-      PaymentsServices().chargeCard(context);
+      PaymentsServices(ref: ref, context: context)
+          .chargeCardAndCreateOrder(user)
+          .then(
+            (result) =>
+                PaymentsServices(ref: ref).handlePaymentResult(context, result),
+          );
     }
   }
 

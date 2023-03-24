@@ -3,14 +3,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:jus_mobile_order_app/Helpers/error.dart';
-import 'package:jus_mobile_order_app/Helpers/loading.dart';
 import 'package:jus_mobile_order_app/Helpers/points.dart';
 import 'package:jus_mobile_order_app/Helpers/set_standard_ingredients.dart';
 import 'package:jus_mobile_order_app/Models/points_details_model.dart';
 import 'package:jus_mobile_order_app/Models/product_model.dart';
+import 'package:jus_mobile_order_app/Providers/ProviderWidgets/points_details_provider_widget.dart';
 import 'package:jus_mobile_order_app/Providers/product_providers.dart';
-import 'package:jus_mobile_order_app/Providers/stream_providers.dart';
 import 'package:jus_mobile_order_app/Providers/theme_providers.dart';
 import 'package:jus_mobile_order_app/Widgets/General/selection_incrementor.dart';
 
@@ -29,11 +27,8 @@ class OrderTileEditRow extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final backgroundColor = ref.watch(backgroundColorProvider);
     final currentOrder = ref.watch(currentOrderItemsProvider);
-    final pointsDetails = ref.watch(pointsDetailsProvider);
-    return pointsDetails.when(
-      error: (e, _) => ShowError(error: e.toString()),
-      loading: () => const Loading(),
-      data: (points) => Row(
+    return PointsDetailsProviderWidget(
+      builder: (points) => Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           currentProduct.isScheduled

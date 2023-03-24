@@ -1,18 +1,17 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:jus_mobile_order_app/Helpers/error.dart';
-import 'package:jus_mobile_order_app/Helpers/loading.dart';
 import 'package:jus_mobile_order_app/Helpers/modal_bottom_sheets.dart';
 import 'package:jus_mobile_order_app/Helpers/spacing_widgets.dart';
 import 'package:jus_mobile_order_app/Models/points_details_model.dart';
 import 'package:jus_mobile_order_app/Models/user_model.dart';
-import 'package:jus_mobile_order_app/Providers/stream_providers.dart';
+import 'package:jus_mobile_order_app/Providers/ProviderWidgets/points_details_provider_widget.dart';
+import 'package:jus_mobile_order_app/Providers/ProviderWidgets/user_provider_widget.dart';
 import 'package:jus_mobile_order_app/Providers/theme_providers.dart';
 import 'package:jus_mobile_order_app/Views/register_page.dart';
 import 'package:jus_mobile_order_app/Widgets/Buttons/close_button.dart';
 import 'package:jus_mobile_order_app/Widgets/Buttons/elevated_button_large.dart';
-import 'package:jus_mobile_order_app/Widgets/General/description_tile.dart';
+import 'package:jus_mobile_order_app/Widgets/General/perks_description_tile.dart';
 
 class PointsDetailPage extends ConsumerWidget {
   final bool isScanPage;
@@ -22,20 +21,10 @@ class PointsDetailPage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final backgroundColor = ref.watch(backgroundColorProvider);
-    final currentUser = ref.watch(currentUserProvider);
-    final pointsDetails = ref.watch(pointsDetailsProvider);
 
-    return currentUser.when(
-      loading: () => const Loading(),
-      error: (e, _) => ShowError(
-        error: e.toString(),
-      ),
-      data: (user) => pointsDetails.when(
-        loading: () => const Loading(),
-        error: (e, _) => ShowError(
-          error: e.toString(),
-        ),
-        data: (points) => Container(
+    return UserProviderWidget(
+      builder: (user) => PointsDetailsProviderWidget(
+        builder: (points) => Container(
           color: backgroundColor,
           child: SingleChildScrollView(
             child: Column(
@@ -77,11 +66,15 @@ class PointsDetailPage extends ConsumerWidget {
                         ),
                         itemBuilder: (context, index) {
                           if (index.isEven) {
-                            return DescriptionTile(data: points, index: index)
-                                .imageRight();
+                            return PerksDescriptionTileImageRight(
+                                name: points.perks[index]['name'],
+                                description: points.perks[index]['description'],
+                                imageURL: points.perks[index]['image']);
                           } else {
-                            return DescriptionTile(data: points, index: index)
-                                .imageLeft();
+                            return PerksDescriptionTileImageLeft(
+                                name: points.perks[index]['name'],
+                                description: points.perks[index]['description'],
+                                imageURL: points.perks[index]['image']);
                           }
                         },
                       ),

@@ -1,36 +1,30 @@
-import 'package:badges/badges.dart' as badge;
 import 'package:badges/badges.dart';
+import 'package:badges/badges.dart' as badge;
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:jus_mobile_order_app/Helpers/error.dart';
-import 'package:jus_mobile_order_app/Helpers/loading.dart';
 import 'package:jus_mobile_order_app/Helpers/locations.dart';
-import 'package:jus_mobile_order_app/Helpers/payments.dart';
 import 'package:jus_mobile_order_app/Helpers/scan.dart';
 import 'package:jus_mobile_order_app/Helpers/time.dart';
 import 'package:jus_mobile_order_app/Models/user_model.dart';
+import 'package:jus_mobile_order_app/Providers/ProviderWidgets/user_provider_widget.dart';
 import 'package:jus_mobile_order_app/Providers/location_providers.dart';
 import 'package:jus_mobile_order_app/Providers/navigation_providers.dart';
-import 'package:jus_mobile_order_app/Providers/payments_providers.dart';
 import 'package:jus_mobile_order_app/Providers/product_providers.dart';
 import 'package:jus_mobile_order_app/Providers/scan_providers.dart';
-import 'package:jus_mobile_order_app/Providers/stream_providers.dart';
 
 class BottomNavBar extends HookConsumerWidget {
   const BottomNavBar({super.key});
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final currentOrder = ref.watch(currentOrderItemsProvider);
-    final currentUser = ref.watch(currentUserProvider);
     num totalItemAmount = 0;
     for (var item in currentOrder) {
       totalItemAmount = totalItemAmount + item['itemQuantity'];
     }
-    return currentUser.when(
-      error: (e, _) => ShowError(error: e.toString()),
-      loading: () => const Loading(),
-      data: (user) => BottomNavigationBar(
+    return UserProviderWidget(
+      builder: (user) => BottomNavigationBar(
         type: BottomNavigationBarType.fixed,
         selectedFontSize: 14,
         unselectedFontSize: 14,
@@ -98,48 +92,45 @@ class BottomNavBar extends HookConsumerWidget {
     );
   }
 
-  handleNavigation(
+  void handleNavigation(
       BuildContext context, UserModel user, WidgetRef ref, int selected) {
+    cancelQrTimer(ref);
     switch (selected) {
       case 0:
-        {
-          ref.read(qrTimerProvider.notifier).cancelTimer();
-        }
         break;
       case 1:
-        {
-          ref.read(qrTimestampProvider.notifier).state = Time().now(ref);
-          user.uid == null
-              ? null
-              : ref.read(selectedCreditCardProvider.notifier).state =
-                  PaymentsHelpers(ref: ref).constructDefaultPayment();
-          ScanHelpers(ref).scanAndPayMap();
-          ScanHelpers(ref).scanOnlyMap();
-          ref.read(qrTimerProvider.notifier).startTimer(ref);
-        }
+        handleScan(ref);
         break;
       case 2:
-        {
-          ref.read(qrTimerProvider.notifier).cancelTimer();
-          if (ref.read(selectedLocationProvider) == null) {
-            LocationHelper().chooseLocation(context, ref);
-          }
-        }
+        handleOrder(context, ref);
         break;
       case 3:
-        {
-          ref.read(qrTimerProvider.notifier).cancelTimer();
-        }
         break;
       case 4:
-        {
-          ref.read(qrTimerProvider.notifier).cancelTimer();
-        }
         break;
       default:
-        ref.read(qrTimerProvider.notifier).cancelTimer();
     }
+    updateBottomNavigation(ref, selected);
+  }
 
+  void cancelQrTimer(WidgetRef ref) {
+    ref.read(qrTimerProvider.notifier).cancelTimer();
+  }
+
+  void handleScan(WidgetRef ref) {
+    ref.read(qrTimestampProvider.notifier).state = Time().now(ref);
+    ScanHelpers(ref).scanAndPayMap();
+    ScanHelpers(ref).scanOnlyMap();
+    ref.read(qrTimerProvider.notifier).startTimer(ref);
+  }
+
+  void handleOrder(BuildContext context, WidgetRef ref) {
+    if (ref.read(selectedLocationProvider) == null) {
+      LocationHelper().chooseLocation(context, ref);
+    }
+  }
+
+  void updateBottomNavigation(WidgetRef ref, int selected) {
     ref.read(bottomNavigationProvider.notifier).state = selected;
   }
 }

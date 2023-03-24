@@ -1,14 +1,13 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:jus_mobile_order_app/Helpers/error.dart';
-import 'package:jus_mobile_order_app/Helpers/loading.dart';
 import 'package:jus_mobile_order_app/Helpers/points.dart';
 import 'package:jus_mobile_order_app/Models/points_details_model.dart';
 import 'package:jus_mobile_order_app/Models/user_model.dart';
+import 'package:jus_mobile_order_app/Providers/ProviderWidgets/points_details_provider_widget.dart';
+import 'package:jus_mobile_order_app/Providers/ProviderWidgets/user_provider_widget.dart';
 import 'package:jus_mobile_order_app/Providers/points_providers.dart';
 import 'package:jus_mobile_order_app/Providers/product_providers.dart';
-import 'package:jus_mobile_order_app/Providers/stream_providers.dart';
 import 'package:jus_mobile_order_app/Widgets/General/selection_incrementor.dart';
 
 import '../../Providers/discounts_provider.dart';
@@ -19,15 +18,9 @@ class AvailableRewardCard extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final rewards = ref.watch(pointsDetailsProvider);
-    final currentUser = ref.watch(currentUserProvider);
-    return currentUser.when(
-        error: (e, _) => ShowError(error: e.toString()),
-        loading: () => const Loading(),
-        data: (user) => rewards.when(
-              error: (e, _) => ShowError(error: e.toString()),
-              loading: () => const Loading(),
-              data: (reward) => Padding(
+    return UserProviderWidget(
+        builder: (user) => PointsDetailsProviderWidget(
+              builder: (reward) => Padding(
                 padding: const EdgeInsets.symmetric(vertical: 18.0),
                 child: SizedBox(
                   width: 150,
@@ -76,8 +69,7 @@ class AvailableRewardCard extends ConsumerWidget {
                               int pointsInUse = ref.watch(pointsInUseProvider);
                               int rewardAmount = PointsHelper(ref: ref)
                                   .availableRewards()[index]['amount'];
-                              if (pointsInUse + rewardAmount >
-                                  user.totalPoints!) {
+                              if (pointsInUse + rewardAmount > user.points!) {
                                 return;
                               } else {
                                 removeRewardPointsFromTotal(

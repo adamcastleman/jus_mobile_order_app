@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:jus_mobile_order_app/Helpers/error.dart';
-import 'package:jus_mobile_order_app/Helpers/loading.dart';
 import 'package:jus_mobile_order_app/Helpers/spacing_widgets.dart';
-import 'package:jus_mobile_order_app/Providers/stream_providers.dart';
+import 'package:jus_mobile_order_app/Providers/ProviderWidgets/favorites_provider_widget.dart';
 import 'package:jus_mobile_order_app/Providers/theme_providers.dart';
 import 'package:jus_mobile_order_app/Widgets/Cards/favorite_card_empty.dart';
 import 'package:jus_mobile_order_app/Widgets/Cards/favorites_card.dart';
@@ -15,12 +13,9 @@ class FavoritesSheet extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final favorites = ref.watch(favoritesProvider);
     final backgroundColor = ref.watch(backgroundColorProvider);
-    return favorites.when(
-      error: (e, _) => ShowError(error: e.toString()),
-      loading: () => const Loading(),
-      data: (favorite) => Container(
+    return FavoritesProviderWidget(
+      builder: (favorites) => Container(
         height: double.infinity,
         color: backgroundColor,
         padding: const EdgeInsets.only(top: 60.0, left: 12.0, right: 12.0),
@@ -37,7 +32,7 @@ class FavoritesSheet extends ConsumerWidget {
               style: Theme.of(context).textTheme.headlineSmall,
             ),
             Spacing().vertical(30),
-            favorite.isEmpty
+            favorites.isEmpty
                 ? const Center(
                     child: SizedBox(
                       height: 250,
@@ -56,7 +51,7 @@ class FavoritesSheet extends ConsumerWidget {
                               mainAxisSpacing: 10,
                               crossAxisSpacing: 10,
                               childAspectRatio: 1 / 1.3),
-                      itemCount: favorite.isEmpty ? 0 : favorite.length,
+                      itemCount: favorites.isEmpty ? 0 : favorites.length,
                       itemBuilder: (context, index) => FavoritesCard(
                         index: index,
                       ),

@@ -50,7 +50,7 @@ dependencies:
   flutter_calendar_carousel: ^2.4.2
   confetti: ^0.7.0
   add_2_calendar: ^2.2.3
-
+  tuple: ^2.0.1
 
 flutter_native_splash:
   color: '#FFFFFF'

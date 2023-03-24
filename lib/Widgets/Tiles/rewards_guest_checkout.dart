@@ -26,15 +26,15 @@ class RewardsGuestCheckout extends StatelessWidget {
                 ),
                 Spacing().horizontal(10),
                 InfoButton(
-                    onTap: () {
-                      ModalBottomSheet().fullScreen(
-                        context: context,
-                        builder: (context) =>
-                            const PointsDetailPage(isScanPage: false),
-                      );
-                    },
-                    size: 18,
-                    color: Colors.black),
+                  onTap: () {
+                    ModalBottomSheet().fullScreen(
+                      context: context,
+                      builder: (context) =>
+                          const PointsDetailPage(isScanPage: false),
+                    );
+                  },
+                  size: 18,
+                ),
               ],
             ),
             Spacing().vertical(20),

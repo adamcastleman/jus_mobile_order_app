@@ -4,17 +4,16 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:jus_mobile_order_app/Helpers/error.dart';
 import 'package:jus_mobile_order_app/Helpers/loading.dart';
 import 'package:jus_mobile_order_app/Helpers/orders.dart';
-import 'package:jus_mobile_order_app/Helpers/payments.dart';
 import 'package:jus_mobile_order_app/Helpers/spacing_widgets.dart';
 import 'package:jus_mobile_order_app/Models/user_model.dart';
 import 'package:jus_mobile_order_app/Providers/order_providers.dart';
 import 'package:jus_mobile_order_app/Providers/stream_providers.dart';
 import 'package:jus_mobile_order_app/Providers/theme_providers.dart';
-import 'package:jus_mobile_order_app/Widgets/Buttons/elevated_button_large.dart';
-import 'package:jus_mobile_order_app/Widgets/General/credit_card_name_widget.dart';
+import 'package:jus_mobile_order_app/Widgets/Buttons/elevated_button_large_loading.dart';
 import 'package:jus_mobile_order_app/Widgets/General/total_price.dart';
 
-import '../Providers/payments_providers.dart';
+import '../../Providers/auth_providers.dart';
+import '../../Providers/payments_providers.dart';
 
 class TipSheet extends ConsumerWidget {
   const TipSheet({Key? key}) : super(key: key);
@@ -23,6 +22,7 @@ class TipSheet extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final currentUser = ref.watch(currentUserProvider);
     final backgroundColor = ref.watch(backgroundColorProvider);
+    final loading = ref.watch(loadingProvider);
     List<int> percentAmounts = [0, 10, 15, 20];
     return currentUser.when(
       error: (e, _) => ShowError(error: e.toString()),
@@ -52,13 +52,19 @@ class TipSheet extends ConsumerWidget {
                 ),
                 const TotalPrice(),
                 Spacing().vertical(40),
-                LargeElevatedButton(
-                  textWidget: const CreditCardName(
-                    isPayButton: true,
-                    isScanPage: false,
-                  ),
-                  onPressed: () => addPaymentOrValidate(context, ref, user),
-                ),
+                loading == true
+                    ? const LargeElevatedLoadingButton()
+                    : const SizedBox(),
+                // LargeElevatedButton(
+                //         textWidget: const CreditCardName(
+                //           isPayButton: true,
+                //           isScanPage: false,
+                //         ),
+                //         onPressed: () {
+                //           ref.read(loadingProvider.notifier).state = true;
+                //           addPaymentOrValidate(context, ref, user);
+                //         },
+                //       ),
               ],
             ),
           ),
@@ -112,12 +118,11 @@ class TipSheet extends ConsumerWidget {
     WidgetRef ref,
     UserModel user,
   ) {
-    final selectedCreditCard = ref.watch(selectedCreditCardProvider);
+    final selectedCreditCard = ref.watch(selectedPaymentMethodProvider);
     if (selectedCreditCard.isEmpty) {
-      PaymentsHelpers(ref: ref)
-          .determinePaymentSheet(context: context, isCheckoutButton: true);
+      return;
     } else {
-      OrderHelpers(ref: ref).validateOrder(context, user);
+      OrderHelpers(ref: ref).validateOrderAndPay(context, user);
     }
   }
 }

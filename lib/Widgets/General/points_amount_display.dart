@@ -1,11 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:jus_mobile_order_app/Helpers/error.dart';
-import 'package:jus_mobile_order_app/Helpers/loading.dart';
 import 'package:jus_mobile_order_app/Models/product_model.dart';
-import 'package:jus_mobile_order_app/Providers/stream_providers.dart';
+import 'package:jus_mobile_order_app/Providers/ProviderWidgets/points_details_provider_widget.dart';
 
-class PointsAmountDisplay extends ConsumerWidget {
+class PointsAmountDisplay extends StatelessWidget {
   final double fontSize;
   final double padding;
   final bool hasBorder;
@@ -19,15 +16,9 @@ class PointsAmountDisplay extends ConsumerWidget {
       : super(key: key);
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final points = ref.watch(pointsDetailsProvider);
-
-    return points.when(
-      loading: () => const Loading(),
-      error: (e, _) => ShowError(
-        error: e.toString(),
-      ),
-      data: (points) => Container(
+  Widget build(BuildContext context) {
+    return PointsDetailsProviderWidget(
+      builder: (points) => Container(
         padding: EdgeInsets.all(padding),
         decoration: BoxDecoration(
           border: hasBorder ? Border.all(width: 0.5) : null,

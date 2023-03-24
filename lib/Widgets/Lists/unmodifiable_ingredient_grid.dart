@@ -19,8 +19,8 @@ class UnmodifiableIngredientGridView extends ConsumerWidget {
       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
         childAspectRatio: product.isScheduled ? (1 / 1.3) : (1 / 1.2),
         crossAxisCount: 3,
-        mainAxisSpacing: 3,
-        crossAxisSpacing: 3,
+        mainAxisSpacing: 12,
+        crossAxisSpacing: 12,
       ),
       itemCount: determineItemCount(ref),
       itemBuilder: (context, index) => UnmodifiableIngredientCard(

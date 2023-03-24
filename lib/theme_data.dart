@@ -1,6 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:square_in_app_payments/in_app_payments.dart';
+import 'package:square_in_app_payments/models.dart';
 
 class ThemeManager {
   final ThemeData theme = ThemeData(
@@ -124,4 +126,18 @@ class ThemeManager {
       ),
     ),
   );
+
+  Future setIOSCardEntryTheme() async {
+    var themeConfigurationBuilder = IOSThemeBuilder();
+    themeConfigurationBuilder.saveButtonTitle = 'Add Card';
+
+    themeConfigurationBuilder.tintColor = RGBAColorBuilder()
+      ..r = 0
+      ..g = 0
+      ..b = 0
+      ..a = 1;
+    themeConfigurationBuilder.keyboardAppearance = KeyboardAppearance.light;
+
+    await InAppPayments.setIOSCardEntryTheme(themeConfigurationBuilder.build());
+  }
 }

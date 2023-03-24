@@ -1,19 +1,18 @@
-import 'package:add_2_calendar/add_2_calendar.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:confetti/confetti.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:jus_mobile_order_app/Helpers/divider.dart';
-import 'package:jus_mobile_order_app/Helpers/error.dart';
 import 'package:jus_mobile_order_app/Helpers/launchers.dart';
-import 'package:jus_mobile_order_app/Helpers/loading.dart';
 import 'package:jus_mobile_order_app/Helpers/orders.dart';
 import 'package:jus_mobile_order_app/Helpers/permission_handler.dart';
 import 'package:jus_mobile_order_app/Helpers/spacing_widgets.dart';
 import 'package:jus_mobile_order_app/Hooks/confetti_controller.dart';
 import 'package:jus_mobile_order_app/Models/product_model.dart';
+import 'package:jus_mobile_order_app/Providers/ProviderWidgets/products_provider_widget.dart';
 import 'package:jus_mobile_order_app/Providers/discounts_provider.dart';
 import 'package:jus_mobile_order_app/Providers/location_providers.dart';
 import 'package:jus_mobile_order_app/Providers/navigation_providers.dart';
@@ -24,55 +23,36 @@ import 'package:jus_mobile_order_app/Providers/product_providers.dart';
 import 'package:jus_mobile_order_app/Providers/stream_providers.dart';
 import 'package:jus_mobile_order_app/Providers/theme_providers.dart';
 import 'package:jus_mobile_order_app/Widgets/Buttons/close_button.dart';
-import 'package:jus_mobile_order_app/Widgets/General/order_tile_display_modifications.dart';
-import 'package:jus_mobile_order_app/Widgets/General/order_tile_display_quantity.dart';
-import 'package:jus_mobile_order_app/Widgets/General/order_tile_size_display.dart';
 import 'package:jus_mobile_order_app/Widgets/General/total_price.dart';
+import 'package:jus_mobile_order_app/Widgets/Tiles/order_tile.dart';
 
 class OrderConfirmationSheet extends HookConsumerWidget {
   const OrderConfirmationSheet({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final products = ref.watch(productsProvider);
     final controller = useConfettiController();
-    return products.when(
-      error: (e, _) => ShowError(error: e.toString()),
-      loading: () => const Loading(),
-      data: (product) {
+    return ProductsProviderWidget(
+      builder: (products) {
         Future.delayed(const Duration(milliseconds: 150), () {
           if (controller.state == ConfettiControllerState.playing) {
             controller.stop();
             controller.play();
+            HapticFeedback.heavyImpact();
           } else {
             controller.play();
+            HapticFeedback.heavyImpact();
           }
         });
 
         return Container(
           color: ref.watch(backgroundColorProvider),
           child: Padding(
-            padding: const EdgeInsets.only(top: 40.0, left: 20.0, right: 20.0),
+            padding: const EdgeInsets.only(left: 20.0, right: 20.0),
             child: Stack(
               children: [
-                Positioned.fill(
-                  child: Align(
-                    alignment: Alignment.topCenter,
-                    child: ConfettiWidget(
-                      confettiController: controller,
-                      shouldLoop: false,
-                      blastDirection: 3.14,
-                      blastDirectionality: BlastDirectionality.explosive,
-                      maxBlastForce: 30,
-                      numberOfParticles: 50,
-                      gravity: 0.5,
-                      colors: const [
-                        Colors.black,
-                      ],
-                    ),
-                  ),
-                ),
                 ListView(
+                  padding: const EdgeInsets.only(top: 50.0),
                   primary: false,
                   children: [
                     Align(
@@ -101,10 +81,27 @@ class OrderConfirmationSheet extends HookConsumerWidget {
                       ),
                     ),
                     _buildLocationDisplay(ref),
-                    _buildNonScheduledDisplay(ref, product),
-                    _buildScheduledDisplay(context, ref, product),
+                    _buildNonScheduledDisplay(ref, products),
+                    _buildScheduledDisplay(context, ref, products),
                     const TotalPrice(),
                   ],
+                ),
+                Positioned.fill(
+                  child: Align(
+                    alignment: Alignment.topCenter,
+                    child: ConfettiWidget(
+                      confettiController: controller,
+                      shouldLoop: false,
+                      blastDirection: 3.14,
+                      blastDirectionality: BlastDirectionality.explosive,
+                      maxBlastForce: 30,
+                      numberOfParticles: 50,
+                      gravity: 0.5,
+                      colors: const [
+                        Colors.black,
+                      ],
+                    ),
+                  ),
                 ),
               ],
             ),
@@ -147,7 +144,6 @@ class OrderConfirmationSheet extends HookConsumerWidget {
     if (nonScheduledItems.isEmpty) {
       return const SizedBox();
     }
-
     final now = DateTime.now();
     final dateToDisplay = ref.watch(selectedPickupTimeProvider)!;
     final pickupTime = DateFormat('h:mm a').format(dateToDisplay).toLowerCase();
@@ -155,6 +151,7 @@ class OrderConfirmationSheet extends HookConsumerWidget {
         now.month == dateToDisplay.month &&
         now.year == dateToDisplay.year;
     final dateDisplay = isToday ? 'Today, $pickupTime' : pickupTime;
+    List matchingIndices = getOrderIndices(ref, isNonScheduled: true);
 
     return Column(
       mainAxisSize: MainAxisSize.min,
@@ -167,51 +164,15 @@ class OrderConfirmationSheet extends HookConsumerWidget {
         ListView.builder(
           shrinkWrap: true,
           primary: false,
-          itemCount: nonScheduledItems.length,
+          itemCount: matchingIndices.length,
           itemBuilder: (context, index) {
-            final item = nonScheduledItems[index];
-            final productID = item['productID'];
-            final currentProduct =
-                product.firstWhere((element) => element.productID == productID);
-            return ListTile(
-              leading: Text(
-                '${index + 1}.',
-                style: const TextStyle(fontSize: 18),
-              ),
-              title: Row(
-                children: [
-                  Text(
-                    currentProduct.name,
-                    style: const TextStyle(fontWeight: FontWeight.bold),
-                  ),
-                  Spacing().horizontal(10),
-                  _buildQuantityDisplay(index),
-                ],
-              ),
-              subtitle: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  OrderTileSizeDisplay(
-                    orderIndex: index,
-                    currentProduct: currentProduct,
-                  ),
-                  OrderTileDisplayModifications(
-                    orderIndex: index,
-                    currentProduct: currentProduct,
-                  ),
-                ],
-              ),
-            );
+            return OrderTile(orderIndex: matchingIndices[index]);
           },
         ),
         Spacing().vertical(20),
         JusDivider().thick(),
       ],
     );
-  }
-
-  Widget _buildQuantityDisplay(int index) {
-    return OrderTileDisplayQuantity(orderIndex: index);
   }
 
   Widget _buildScheduledDisplay(
@@ -221,7 +182,7 @@ class OrderConfirmationSheet extends HookConsumerWidget {
     if (scheduledItems.isEmpty) {
       return const SizedBox();
     }
-
+    List matchingIndices = getOrderIndices(ref, isNonScheduled: false);
     final pickupDate =
         DateFormat('MM/dd/yyyy').format(ref.watch(selectedPickupDateProvider)!);
     return Column(
@@ -238,7 +199,7 @@ class OrderConfirmationSheet extends HookConsumerWidget {
             ),
             onPressed: () {
               HandlePermissions(context, ref).calendarPermission();
-              addToCalendar(ref);
+              Launcher().launchCalendar(ref);
             },
           ),
         ),
@@ -248,33 +209,7 @@ class OrderConfirmationSheet extends HookConsumerWidget {
           itemCount: scheduledItems.length,
           separatorBuilder: (context, index) => Spacing().vertical(20),
           itemBuilder: (context, index) {
-            final item = scheduledItems[index];
-            final productID = item['productID'];
-            final currentProduct =
-                product.firstWhere((element) => element.productID == productID);
-            return ListTile(
-              leading: Text(
-                '${index + 1}.',
-                style: const TextStyle(fontSize: 18),
-              ),
-              title: Text(
-                currentProduct.name,
-                style: const TextStyle(fontWeight: FontWeight.bold),
-              ),
-              subtitle: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  OrderTileSizeDisplay(
-                    orderIndex: index,
-                    currentProduct: currentProduct,
-                  ),
-                  OrderTileDisplayModifications(
-                    orderIndex: index,
-                    currentProduct: currentProduct,
-                  ),
-                ],
-              ),
-            );
+            return OrderTile(orderIndex: matchingIndices[index]);
           },
         ),
         Spacing().vertical(20),
@@ -283,25 +218,23 @@ class OrderConfirmationSheet extends HookConsumerWidget {
     );
   }
 
-  addToCalendar(WidgetRef ref) {
-    var time = ref.watch(selectedPickupDateProvider)!;
-    var formatStart = DateFormat('yyyy-MM-dd HH:mm:ss')
-        .format(DateTime(time.year, time.month, time.day, 08, 00, 00));
-    var formatEnd = DateFormat('yyyy-MM-dd HH:mm:ss')
-        .format(DateTime(time.year, time.month, time.day, 09, 00, 00));
-    var start = DateTime.parse(formatStart);
-    var end = DateTime.parse(formatEnd);
-    return Add2Calendar.addEvent2Cal(
-      Event(
-        startDate: start,
-        endDate: end,
-        title: 'Pickup jüs order',
-        allDay: false,
-        iosParams: const IOSParams(
-          reminder: Duration(hours: 0),
-        ),
-      ),
-    );
+  List getOrderIndices(WidgetRef ref, {required bool isNonScheduled}) {
+    final OrderHelpers orderHelpers = OrderHelpers(ref: ref);
+    final List items = isNonScheduled
+        ? orderHelpers.nonScheduledItems()
+        : orderHelpers.scheduledItems();
+    final currentOrder = ref.watch(currentOrderItemsProvider);
+
+    List productIds = items.map((item) => item['productID'] as int).toList();
+    List matchingIndices = [];
+
+    for (int index = 0; index < currentOrder.length; index++) {
+      if (productIds.contains(currentOrder[index]['productID'])) {
+        matchingIndices.add(index);
+      }
+    }
+
+    return matchingIndices;
   }
 
   invalidateAllProviders(BuildContext context, WidgetRef ref) {

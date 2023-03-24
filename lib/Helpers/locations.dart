@@ -93,6 +93,7 @@ class LocationHelper {
       address: {},
       hours: [],
       timezone: '',
+      currency: '',
       latitude: 0,
       longitude: 0,
       isActive: false,

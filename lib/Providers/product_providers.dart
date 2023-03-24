@@ -7,10 +7,27 @@ import 'package:jus_mobile_order_app/Models/product_model.dart';
 import 'package:jus_mobile_order_app/Models/user_model.dart';
 import 'package:jus_mobile_order_app/Widgets/Cards/animated_list_card.dart';
 
-final categoryOrderProvider = StateProvider.autoDispose<int>((ref) => 0);
+final tappedCategoryProvider = StateProvider.autoDispose<int>((ref) => 0);
 
-final selectedCategoryFromScrollProvider =
-    StateProvider.autoDispose<dynamic>((ref) => 0);
+final scrollSourceProvider = StateProvider<String>((ref) => 'scroll');
+
+final currentCategoryProvider = StateProvider.autoDispose<int>((ref) => 1);
+
+final categoryHeaderHeightProvider = Provider<double>((ref) => 50);
+
+final productGridCrossAxisCountProvider = Provider<int>((ref) => 2);
+
+final productGridCrossAxisSpacingProvider = Provider<double>((ref) => 6);
+
+final productGridMainAxisSpacingProvider = Provider<double>((ref) => 6);
+
+final productGridAspectRatioProvider = Provider<double>((ref) => 1 / 1.25);
+
+final categoryItemWidthProvider = Provider<double>((ref) => 80.0);
+
+final groupedScrollControllerProvider = Provider<ScrollController>((ref) {
+  return ScrollController();
+});
 
 final isModifiableProductProvider = StateProvider<bool>((ref) => false);
 

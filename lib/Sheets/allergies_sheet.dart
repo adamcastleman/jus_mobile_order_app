@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:jus_mobile_order_app/Helpers/error.dart';
-import 'package:jus_mobile_order_app/Helpers/loading.dart';
 import 'package:jus_mobile_order_app/Helpers/spacing_widgets.dart';
+import 'package:jus_mobile_order_app/Providers/ProviderWidgets/modifiable_ingredients_provider_widget.dart';
 import 'package:jus_mobile_order_app/Providers/product_providers.dart';
-import 'package:jus_mobile_order_app/Providers/stream_providers.dart';
 import 'package:jus_mobile_order_app/Providers/theme_providers.dart';
 import 'package:jus_mobile_order_app/Widgets/Buttons/close_button.dart';
 import 'package:jus_mobile_order_app/Widgets/Buttons/confirm_button.dart';
@@ -15,14 +13,9 @@ class AllergiesSheet extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final ingredients = ref.watch(modifiableIngredientsProvider);
     final backgroundColor = ref.watch(backgroundColorProvider);
-    return ingredients.when(
-      loading: () => const Loading(),
-      error: (e, _) => ShowError(
-        error: e.toString(),
-      ),
-      data: (data) => Container(
+    return ModifiableIngredientsProviderWidget(
+      builder: (ingredients) => Container(
         color: backgroundColor,
         child: ListView(
           padding: const EdgeInsets.symmetric(horizontal: 15),
@@ -69,9 +62,9 @@ class AllergiesSheet extends ConsumerWidget {
                 crossAxisSpacing: 5,
                 childAspectRatio: 1 / 1.1,
               ),
-              itemCount: data.length,
+              itemCount: ingredients.length,
               itemBuilder: (context, index) => SelectMultipleIngredientsCard(
-                ingredient: data[index],
+                ingredient: ingredients[index],
                 isAllergy: true,
               ),
             ),

@@ -218,10 +218,19 @@ class Pricing {
   double orderTotalForMembers() {
     final subtotal = originalSubtotalForMembers();
     final tax = totalTaxForMembers();
+
     return subtotal - discountTotalForMembers() + tax + tipAmountForMembers();
   }
 
   double totalOrderSavings() {
     return orderTotalForNonMembers() - orderTotalForMembers();
+  }
+
+  bool isZeroCharge() {
+    if (originalSubtotalForNonMembers() == discountTotalForNonMembers()) {
+      return true;
+    } else {
+      return false;
+    }
   }
 }

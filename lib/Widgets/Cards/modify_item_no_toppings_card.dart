@@ -3,11 +3,10 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:jus_mobile_order_app/Helpers/error.dart';
-import 'package:jus_mobile_order_app/Helpers/loading.dart';
 import 'package:jus_mobile_order_app/Models/ingredient_model.dart';
+import 'package:jus_mobile_order_app/Providers/ProviderWidgets/modifiable_ingredients_provider_widget.dart';
+import 'package:jus_mobile_order_app/Providers/ProviderWidgets/user_provider_widget.dart';
 import 'package:jus_mobile_order_app/Providers/product_providers.dart';
-import 'package:jus_mobile_order_app/Providers/stream_providers.dart';
 import 'package:jus_mobile_order_app/Widgets/Buttons/close_button.dart';
 import 'package:jus_mobile_order_app/Widgets/General/display_ingredient_prices.dart';
 import 'package:jus_mobile_order_app/Widgets/General/ingredient_amount_descriptive_text.dart';
@@ -21,8 +20,6 @@ class ModifyItemNoToppingsCard extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final selectedIngredients = ref.watch(selectedIngredientsProvider);
-    final currentUser = ref.watch(currentUserProvider);
-    final ingredients = ref.watch(modifiableIngredientsProvider);
     final controller = useAnimationController();
     controller.repeat(
       min: 0.0,
@@ -31,17 +28,9 @@ class ModifyItemNoToppingsCard extends HookConsumerWidget {
       reverse: true,
     );
 
-    return currentUser.when(
-      loading: () => const Loading(),
-      error: (e, _) => ShowError(
-        error: e.toString(),
-      ),
-      data: (user) => ingredients.when(
-        loading: () => const Loading(),
-        error: (e, _) => ShowError(
-          error: e.toString(),
-        ),
-        data: (ingredients) {
+    return UserProviderWidget(
+      builder: (user) => ModifiableIngredientsProviderWidget(
+        builder: (ingredients) {
           IngredientModel currentIngredient = ingredients
               .where(
                   (element) => element.id == selectedIngredients[index]['id'])

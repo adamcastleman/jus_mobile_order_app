@@ -2,13 +2,12 @@ import 'package:auto_size_text/auto_size_text.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:jus_mobile_order_app/Helpers/error.dart';
-import 'package:jus_mobile_order_app/Helpers/loading.dart';
 import 'package:jus_mobile_order_app/Helpers/spacing_widgets.dart';
 import 'package:jus_mobile_order_app/Models/ingredient_model.dart';
 import 'package:jus_mobile_order_app/Models/product_model.dart';
+import 'package:jus_mobile_order_app/Providers/ProviderWidgets/ingredients_provider_widget.dart';
+import 'package:jus_mobile_order_app/Providers/ProviderWidgets/products_provider_widget.dart';
 import 'package:jus_mobile_order_app/Providers/product_providers.dart';
-import 'package:jus_mobile_order_app/Providers/stream_providers.dart';
 
 class UnmodifiableIngredientCard extends ConsumerWidget {
   final ProductModel product;
@@ -17,21 +16,12 @@ class UnmodifiableIngredientCard extends ConsumerWidget {
       {required this.product, required this.index, super.key});
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final ingredients = ref.watch(ingredientsProvider);
-    final products = ref.watch(productsProvider);
-    return ingredients.when(
-      loading: () => const Loading(),
-      error: (e, _) => ShowError(
-        error: e.toString(),
-      ),
-      data: (ingredients) => products.when(
-        loading: () => const Loading(),
-        error: (e, _) => ShowError(
-          error: e.toString(),
-        ),
-        data: (products) => Card(
-          shape: RoundedRectangleBorder(
+    return IngredientsProviderWidget(
+      builder: (ingredients) => ProductsProviderWidget(
+        builder: (products) => Container(
+          decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(4),
+            color: Colors.white,
           ),
           child: Padding(
             padding: product.isScheduled

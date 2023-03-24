@@ -36,16 +36,19 @@ final currentUserProvider = StreamProvider<UserModel>((ref) {
   return UserServices(uid: auth.value?.uid).user;
 });
 
-final savedCreditCardsProvider = StreamProvider<List<PaymentsModel>>((ref) {
+final defaultPaymentMethodProvider = StreamProvider<PaymentsModel>((ref) {
   final auth = ref.watch(authProvider);
-
-  return PaymentsServices(uid: auth.value?.uid).squareCreditCards;
+  return PaymentsServices(userID: auth.value?.uid).defaultPaymentCard;
 });
 
-final defaultPaymentCardProvider = StreamProvider<List<PaymentsModel>>((ref) {
+final creditCardPaymentMethods = StreamProvider<List<PaymentsModel>>((ref) {
   final auth = ref.watch(authProvider);
+  return PaymentsServices(userID: auth.value?.uid).squareCreditCards;
+});
 
-  return PaymentsServices(uid: auth.value?.uid).defaultPaymentCard;
+final giftCardPaymentMethods = StreamProvider<List<PaymentsModel>>((ref) {
+  final auth = ref.watch(authProvider);
+  return PaymentsServices(userID: auth.value?.uid).squareGiftCards;
 });
 
 final ingredientsProvider = StreamProvider<List<IngredientModel>>(

@@ -11,9 +11,9 @@ import 'package:jus_mobile_order_app/Helpers/orders.dart';
 import 'package:jus_mobile_order_app/Helpers/pickers.dart';
 import 'package:jus_mobile_order_app/Helpers/spacing_widgets.dart';
 import 'package:jus_mobile_order_app/Helpers/time.dart';
+import 'package:jus_mobile_order_app/Providers/ProviderWidgets/products_provider_widget.dart';
 import 'package:jus_mobile_order_app/Providers/future_providers.dart';
 import 'package:jus_mobile_order_app/Providers/order_providers.dart';
-import 'package:jus_mobile_order_app/Providers/stream_providers.dart';
 
 class OrderPickupDateTile extends ConsumerWidget {
   const OrderPickupDateTile({Key? key}) : super(key: key);
@@ -21,61 +21,56 @@ class OrderPickupDateTile extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final deviceTime = ref.watch(deviceTimezoneProvider);
-    final products = ref.watch(productsProvider);
 
     return deviceTime.when(
       loading: () => const Loading(),
       error: (e, _) => ShowError(error: e.toString()),
-      data: (deviceTimezone) => products.when(
-        loading: () => const Loading(),
-        error: (e, _) => ShowError(error: e.toString()),
-        data: (product) {
-          return Column(
-            children: [
-              JusDivider().thin(),
-              ListTile(
-                leading: const FaIcon(FontAwesomeIcons.calendar),
-                title: const Text('Schedule your pickup date'),
-                subtitle: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text(
-                      'Your cart contains items that must be scheduled in advance.',
-                      style: TextStyle(fontSize: 12),
-                    ),
-                    Spacing().vertical(
-                        ref.watch(selectedPickupDateProvider) == null ? 0 : 10),
-                    Row(
-                      children: [
-                        Text(
-                          Time().displayPickupDate(ref),
-                          style: const TextStyle(fontWeight: FontWeight.bold),
-                        ),
-                        Spacing().horizontal(5),
-                        determineTimezoneAbbreviation(ref, deviceTimezone),
-                      ],
-                    ),
-                  ],
-                ),
-                trailing: const Icon(
-                  CupertinoIcons.chevron_down,
-                  size: 18,
-                ),
-                onTap: () {
-                  HapticFeedback.lightImpact();
-                  OrderHelpers(ref: ref).setHoursNoticeProvider(product);
-                  openScheduleOrLocationPicker(
-                    context,
-                    ref,
-                    OrderHelpers(ref: ref).listOfScheduledItems(
-                        scheduledItems: OrderHelpers(ref: ref).scheduledItems(),
-                        products: product),
-                  );
-                },
+      data: (deviceTimezone) => ProductsProviderWidget(
+        builder: (products) => Column(
+          children: [
+            JusDivider().thin(),
+            ListTile(
+              leading: const FaIcon(FontAwesomeIcons.calendar),
+              title: const Text('Schedule your pickup date'),
+              subtitle: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    'Your cart contains items that must be scheduled in advance.',
+                    style: TextStyle(fontSize: 12),
+                  ),
+                  Spacing().vertical(
+                      ref.watch(selectedPickupDateProvider) == null ? 0 : 10),
+                  Row(
+                    children: [
+                      Text(
+                        Time().displayPickupDate(ref),
+                        style: const TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                      Spacing().horizontal(5),
+                      determineTimezoneAbbreviation(ref, deviceTimezone),
+                    ],
+                  ),
+                ],
               ),
-            ],
-          );
-        },
+              trailing: const Icon(
+                CupertinoIcons.chevron_down,
+                size: 18,
+              ),
+              onTap: () {
+                HapticFeedback.lightImpact();
+                OrderHelpers(ref: ref).setHoursNoticeProvider(products);
+                openScheduleOrLocationPicker(
+                  context,
+                  ref,
+                  OrderHelpers(ref: ref).listOfScheduledItems(
+                      scheduledItems: OrderHelpers(ref: ref).scheduledItems(),
+                      products: products),
+                );
+              },
+            ),
+          ],
+        ),
       ),
     );
   }

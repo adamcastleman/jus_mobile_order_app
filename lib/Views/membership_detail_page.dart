@@ -7,7 +7,7 @@ import 'package:jus_mobile_order_app/Models/membership_details_model.dart';
 import 'package:jus_mobile_order_app/Providers/stream_providers.dart';
 import 'package:jus_mobile_order_app/Providers/theme_providers.dart';
 import 'package:jus_mobile_order_app/Widgets/Buttons/close_button.dart';
-import 'package:jus_mobile_order_app/Widgets/General/description_tile.dart';
+import 'package:jus_mobile_order_app/Widgets/General/perks_description_tile.dart';
 
 class MembershipDetailPage extends ConsumerWidget {
   const MembershipDetailPage({Key? key}) : super(key: key);
@@ -55,11 +55,15 @@ class MembershipDetailPage extends ConsumerWidget {
                       ),
                       itemBuilder: (context, index) {
                         if (index.isEven) {
-                          return DescriptionTile(data: data, index: index)
-                              .imageRight();
+                          return PerksDescriptionTileImageRight(
+                              name: data.perks[index]['name'],
+                              description: data.perks[index]['description'],
+                              imageURL: data.perks[index]['image']);
                         } else {
-                          return DescriptionTile(data: data, index: index)
-                              .imageLeft();
+                          return PerksDescriptionTileImageLeft(
+                              name: data.perks[index]['name'],
+                              description: data.perks[index]['description'],
+                              imageURL: data.perks[index]['image']);
                         }
                       },
                     ),

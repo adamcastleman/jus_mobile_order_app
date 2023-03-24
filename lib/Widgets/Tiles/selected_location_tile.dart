@@ -3,11 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:jus_mobile_order_app/Helpers/error.dart';
 import 'package:jus_mobile_order_app/Helpers/modal_bottom_sheets.dart';
 import 'package:jus_mobile_order_app/Models/location_model.dart';
+import 'package:jus_mobile_order_app/Providers/ProviderWidgets/location_provider_widget.dart';
 import 'package:jus_mobile_order_app/Providers/location_providers.dart';
-import 'package:jus_mobile_order_app/Providers/stream_providers.dart';
 import 'package:jus_mobile_order_app/Views/choose_location_page.dart';
 
 import '../../Providers/order_providers.dart';
@@ -17,53 +16,50 @@ class SelectedLocationTile extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final selectedLocation = ref.watch(selectedLocationProvider);
-    final locations = ref.watch(locationsProvider);
     final isCheckoutPage = ref.watch(checkOutPageProvider);
-    return ListTile(
-      contentPadding: selectedLocation == null
-          ? const EdgeInsets.symmetric(horizontal: 15.0)
-          : const EdgeInsets.symmetric(vertical: 8.0, horizontal: 15.0),
-      leading: const Icon(
-        FontAwesomeIcons.locationDot,
-        color: Colors.black,
-        size: 28,
-      ),
-      title: const Padding(
-        padding: EdgeInsets.only(bottom: 2.0),
-        child: Text(
-          'Picking up from:',
-          style: TextStyle(fontSize: 14),
+    return LocationsProviderWidget(
+      builder: (locations) => ListTile(
+        contentPadding: selectedLocation == null
+            ? const EdgeInsets.symmetric(horizontal: 15.0)
+            : const EdgeInsets.symmetric(vertical: 8.0, horizontal: 15.0),
+        leading: const Icon(
+          FontAwesomeIcons.locationDot,
+          color: Colors.black,
+          size: 28,
         ),
-      ),
-      subtitle: locations.when(
-        loading: () => const CircularProgressIndicator(),
-        error: (Object e, _) => ShowError(error: e.toString()),
-        data: (data) => Column(
+        title: const Padding(
+          padding: EdgeInsets.only(bottom: 2.0),
+          child: Text(
+            'Picking up from:',
+            style: TextStyle(fontSize: 14),
+          ),
+        ),
+        subtitle: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            locationName(selectedLocation, data),
-            locationAddress(selectedLocation, data),
+            locationName(selectedLocation, locations),
+            locationAddress(selectedLocation, locations),
           ],
         ),
+        trailing: isCheckoutPage
+            ? const SizedBox()
+            : const Icon(
+                CupertinoIcons.chevron_down,
+                size: 20,
+              ),
+        onTap: () {
+          if (isCheckoutPage) {
+            return;
+          } else {
+            HapticFeedback.lightImpact();
+            ref.invalidate(selectedLocationProvider);
+            ModalTopSheet().fullScreen(
+              context: context,
+              child: const ChooseLocationPage(),
+            );
+          }
+        },
       ),
-      trailing: isCheckoutPage
-          ? const SizedBox()
-          : const Icon(
-              CupertinoIcons.chevron_down,
-              size: 20,
-            ),
-      onTap: () {
-        if (isCheckoutPage) {
-          return;
-        } else {
-          HapticFeedback.lightImpact();
-          ref.invalidate(selectedLocationProvider);
-          ModalTopSheet().fullScreen(
-            context: context,
-            child: const ChooseLocationPage(),
-          );
-        }
-      },
     );
   }
 

@@ -3,8 +3,8 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:jus_mobile_order_app/Providers/location_providers.dart';
 import 'package:jus_mobile_order_app/Widgets/Buttons/close_button.dart';
 import 'package:jus_mobile_order_app/Widgets/Buttons/order_here_button.dart';
-import 'package:jus_mobile_order_app/Widgets/General/google_map.dart';
 import 'package:jus_mobile_order_app/Widgets/Lists/locations_list.dart';
+import 'package:jus_mobile_order_app/Widgets/Map/map_display.dart';
 
 class ChooseLocationPage extends ConsumerWidget {
   const ChooseLocationPage({super.key});

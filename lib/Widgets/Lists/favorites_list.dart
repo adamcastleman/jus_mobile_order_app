@@ -1,22 +1,16 @@
 import 'package:flutter/material.dart';
-import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:jus_mobile_order_app/Helpers/error.dart';
-import 'package:jus_mobile_order_app/Helpers/loading.dart';
 import 'package:jus_mobile_order_app/Helpers/spacing_widgets.dart';
-import 'package:jus_mobile_order_app/Providers/stream_providers.dart';
+import 'package:jus_mobile_order_app/Providers/ProviderWidgets/favorites_provider_widget.dart';
 import 'package:jus_mobile_order_app/Widgets/Cards/favorite_card_empty.dart';
 import 'package:jus_mobile_order_app/Widgets/Cards/favorites_card.dart';
 
-class FavoritesList extends ConsumerWidget {
+class FavoritesList extends StatelessWidget {
   const FavoritesList({Key? key}) : super(key: key);
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final favorites = ref.watch(favoritesProvider);
-    return favorites.when(
-      error: (e, _) => ShowError(error: e.toString()),
-      loading: () => const Loading(),
-      data: (favorites) => SizedBox(
+  Widget build(BuildContext context) {
+    return FavoritesProviderWidget(
+      builder: (favorites) => SizedBox(
         height: 270,
         child: Column(
           mainAxisSize: MainAxisSize.min,

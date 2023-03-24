@@ -1,15 +1,13 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:intl/intl.dart';
-import 'package:jus_mobile_order_app/Helpers/error.dart';
-import 'package:jus_mobile_order_app/Helpers/loading.dart';
 import 'package:jus_mobile_order_app/Helpers/modal_bottom_sheets.dart';
 import 'package:jus_mobile_order_app/Helpers/points.dart';
 import 'package:jus_mobile_order_app/Helpers/spacing_widgets.dart';
+import 'package:jus_mobile_order_app/Providers/ProviderWidgets/user_provider_widget.dart';
 import 'package:jus_mobile_order_app/Providers/points_providers.dart';
-import 'package:jus_mobile_order_app/Providers/stream_providers.dart';
 import 'package:jus_mobile_order_app/Views/points_detail_page.dart';
+import 'package:jus_mobile_order_app/Widgets/Buttons/info_button.dart';
 import 'package:jus_mobile_order_app/Widgets/Cards/available_rewards_card.dart';
 import 'package:jus_mobile_order_app/Widgets/Tiles/no_rewards_tile.dart';
 import 'package:jus_mobile_order_app/Widgets/Tiles/offer_in_use_tile.dart';
@@ -21,12 +19,9 @@ class RewardsList extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final pointsInUse = ref.watch(pointsInUseProvider);
-    final currentUser = ref.watch(currentUserProvider);
     final isRewardsAvailable = ref.watch(isRewardsAvailableProvider);
-    return currentUser.when(
-      error: (e, _) => ShowError(error: e.toString()),
-      loading: () => const Loading(),
-      data: (user) => user.uid == null
+    return UserProviderWidget(
+      builder: (user) => user.uid == null
           ? const RewardsGuestCheckout()
           : SizedBox(
               height: PointsHelper(ref: ref).availableRewards().isEmpty ||
@@ -38,13 +33,13 @@ class RewardsList extends ConsumerWidget {
                   Row(
                     children: [
                       PointsHelper(ref: ref).availableRewards().isEmpty
-                          ? Text('Available Points: ${user.totalPoints!}')
+                          ? Text('Available Points: ${user.points!}')
                           : Text(
-                              'Points: ${NumberFormat('#,###').format(pointsInUse)} / ${NumberFormat('#,###').format(user.totalPoints!)}',
+                              'Points: ${NumberFormat('#,###').format(pointsInUse)} / ${NumberFormat('#,###').format(user.points!)}',
                               style: const TextStyle(fontSize: 16),
                             ),
                       Spacing().horizontal(5),
-                      InkWell(
+                      InfoButton(
                         onTap: () {
                           ModalBottomSheet().fullScreen(
                             context: context,
@@ -52,11 +47,8 @@ class RewardsList extends ConsumerWidget {
                                 const PointsDetailPage(isScanPage: false),
                           );
                         },
-                        child: const Icon(
-                          CupertinoIcons.info,
-                          size: 16,
-                        ),
-                      ),
+                        size: 18,
+                      )
                     ],
                   ),
                   PointsHelper(ref: ref).availableRewards().isEmpty

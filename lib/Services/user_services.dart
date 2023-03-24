@@ -23,7 +23,7 @@ class UserServices {
         email: data['email'],
         phone: data['phone'],
         isActiveMember: data['isActiveMember'],
-        totalPoints: data['totalPoints'],
+        points: data['points'],
       );
     } else {
       return const UserModel(
@@ -33,7 +33,7 @@ class UserServices {
         email: null,
         phone: null,
         isActiveMember: null,
-        totalPoints: null,
+        points: null,
       );
     }
   }
@@ -50,6 +50,7 @@ class UserServices {
       'lastName': lastName,
       'email': email,
       'phone': phone,
+      'points': 0,
       'isActiveMember': false,
     });
   }

@@ -1,30 +1,23 @@
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:jus_mobile_order_app/Helpers/divider.dart';
-import 'package:jus_mobile_order_app/Helpers/error.dart';
-import 'package:jus_mobile_order_app/Helpers/loading.dart';
 import 'package:jus_mobile_order_app/Helpers/points.dart';
-import 'package:jus_mobile_order_app/Providers/payments_providers.dart';
-import 'package:jus_mobile_order_app/Providers/stream_providers.dart';
+import 'package:jus_mobile_order_app/Providers/ProviderWidgets/points_details_provider_widget.dart';
+import 'package:jus_mobile_order_app/Providers/ProviderWidgets/user_provider_widget.dart';
 import 'package:jus_mobile_order_app/Services/payments_services.dart';
 import 'package:jus_mobile_order_app/Widgets/General/sheet_notch.dart';
+import 'package:jus_mobile_order_app/Widgets/Payments/guest_payment_option_tile_sign_up_text.dart';
+import 'package:jus_mobile_order_app/Widgets/Payments/payment_option_tile.dart';
 
 class ChoosePaymentTypeSheet extends ConsumerWidget {
   const ChoosePaymentTypeSheet({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final currentUser = ref.watch(currentUserProvider);
-    final pointsDetails = ref.watch(pointsDetailsProvider);
-    return pointsDetails.when(
-      error: (e, _) => ShowError(error: e.toString()),
-      loading: () => const Loading(),
-      data: (points) => currentUser.when(
-        error: (e, _) => ShowError(error: e.toString()),
-        loading: () => const Loading(),
-        data: (user) => Wrap(
+    return UserProviderWidget(
+      builder: (user) => PointsDetailsProviderWidget(
+        builder: (points) => Wrap(
           children: [
             const Center(
               child: SheetNotch(),
@@ -35,59 +28,47 @@ class ChoosePaymentTypeSheet extends ConsumerWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   JusDivider().thin(),
-                  ListTile(
-                    leading: const Icon(CupertinoIcons.creditcard),
-                    title: const Text(
-                      'Add credit card',
-                      style: TextStyle(fontWeight: FontWeight.bold),
-                    ),
+                  PaymentOptionTile(
+                    icon: CupertinoIcons.creditcard,
+                    title: 'Add credit card',
                     subtitle: user.uid == null
-                        ? guestSignUpText()
+                        ? const GuestSignUpText()
                         : Text(
-                            'Earn ${PointsHelper(ref: ref).determinePointsMultipleText(isJusCard: ref.watch(selectedCreditCardProvider)['isGiftCard'] ?? false)} per \$1'),
-                    trailing: const Icon(
-                      CupertinoIcons.chevron_right,
-                      size: 15,
-                    ),
+                            'Earn ${PointsHelper(ref: ref).determinePointsMultipleText(isJusCard: false)} per \$1'),
                     onTap: () {
                       HapticFeedback.lightImpact();
                       PaymentsServices(
                               context: context,
                               ref: ref,
-                              uid: user.uid,
+                              userID: user.uid,
                               firstName: user.firstName)
                           .initSquarePayment();
+                      Navigator.pop(context);
                     },
                   ),
                   JusDivider().thin(),
-                  ListTile(
-                    leading: const Icon(CupertinoIcons.gift),
-                    title: const Text(
-                      'Add jüs card',
-                      style: TextStyle(fontWeight: FontWeight.bold),
-                    ),
+                  PaymentOptionTile(
+                    icon: CupertinoIcons.gift,
+                    title: 'Add jüs card',
                     subtitle: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         const Text('Turn your gift card into a jüs card.'),
                         user.uid == null
-                            ? guestSignUpText()
+                            ? const GuestSignUpText()
                             : Text(
-                                'Earn ${PointsHelper(ref: ref).determinePointsMultipleText(isJusCard: ref.watch(selectedCreditCardProvider)['isGiftCard'] ?? false)} per \$1'),
+                                'Earn ${PointsHelper(ref: ref).determinePointsMultipleText(isJusCard: true)} per \$1'),
                       ],
-                    ),
-                    trailing: const Icon(
-                      CupertinoIcons.chevron_right,
-                      size: 15,
                     ),
                     onTap: () async {
                       HapticFeedback.lightImpact();
                       PaymentsServices(
                               context: context,
                               ref: ref,
-                              uid: user.uid,
+                              userID: user.uid,
                               firstName: user.firstName)
                           .initSquareGiftCardPayment();
+                      Navigator.pop(context);
                     },
                   ),
                   JusDivider().thin(),
@@ -98,10 +79,5 @@ class ChoosePaymentTypeSheet extends ConsumerWidget {
         ),
       ),
     );
-  }
-
-  guestSignUpText() {
-    return const Text(
-        'Sign up to collect points. Redeem points for free items');
   }
 }

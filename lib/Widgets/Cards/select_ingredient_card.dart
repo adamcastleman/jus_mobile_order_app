@@ -3,17 +3,14 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:jus_mobile_order_app/Helpers/error.dart';
-import 'package:jus_mobile_order_app/Helpers/loading.dart';
 import 'package:jus_mobile_order_app/Helpers/modal_bottom_sheets.dart';
 import 'package:jus_mobile_order_app/Helpers/spacing_widgets.dart';
 import 'package:jus_mobile_order_app/Models/ingredient_model.dart';
 import 'package:jus_mobile_order_app/Models/user_model.dart';
+import 'package:jus_mobile_order_app/Providers/ProviderWidgets/user_provider_widget.dart';
 import 'package:jus_mobile_order_app/Providers/product_providers.dart';
 import 'package:jus_mobile_order_app/Providers/theme_providers.dart';
 import 'package:jus_mobile_order_app/Sheets/multi_use_ingredient_selection_sheet.dart';
-
-import '../../Providers/stream_providers.dart';
 
 class SelectIngredientCard extends ConsumerWidget {
   final List<IngredientModel> ingredients;
@@ -23,15 +20,10 @@ class SelectIngredientCard extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final selectedIngredients = ref.watch(selectedIngredientsProvider);
-    final currentUser = ref.watch(currentUserProvider);
     final selectedCardColor = ref.watch(selectedCardColorProvider);
     final selectedCardBorderColor = ref.watch(selectedCardBorderColorProvider);
-    return currentUser.when(
-      loading: () => const Loading(),
-      error: (e, _) => ShowError(
-        error: e.toString(),
-      ),
-      data: (user) {
+    return UserProviderWidget(
+      builder: (user) {
         Iterable<dynamic> currentSelected = selectedIngredients
             .where((element) => element['id'] == ingredients[index].id);
 
@@ -76,17 +68,16 @@ class SelectIngredientCard extends ConsumerWidget {
     );
   }
 
-  determinePricingText(UserModel user, WidgetRef ref) {
-    final currentUser = ref.watch(currentUserProvider);
-    if (currentUser.value?.uid == null &&
-        user.isActiveMember != true &&
-        ingredients[index].isExtraCharge) {
-      return Text('\$${(ingredients[index].price / 100).toStringAsFixed(2)}');
-    } else if (user.isActiveMember != true &&
-        ingredients[index].isExtraCharge) {
-      return Text('\$${(ingredients[index].price / 100).toStringAsFixed(2)}');
-    } else if (user.isActiveMember == true &&
-        ingredients[index].isExtraCharge) {
+  Widget determinePricingText(UserModel user, WidgetRef ref) {
+    final ingredient = ingredients[index];
+
+    if (!ingredient.isExtraCharge) {
+      return const SizedBox();
+    }
+
+    final price = (ingredient.price / 100).toStringAsFixed(2);
+
+    if (user.isActiveMember == true) {
       return const Text(
         'Free for members',
         style: TextStyle(
@@ -94,9 +85,9 @@ class SelectIngredientCard extends ConsumerWidget {
           fontSize: 12,
         ),
       );
-    } else {
-      return const SizedBox();
     }
+
+    return Text('\$$price');
   }
 
   handleIngredientSelection(BuildContext context,
