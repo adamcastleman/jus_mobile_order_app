@@ -21,7 +21,7 @@ final productGridCrossAxisSpacingProvider = Provider<double>((ref) => 6);
 
 final productGridMainAxisSpacingProvider = Provider<double>((ref) => 6);
 
-final productGridAspectRatioProvider = Provider<double>((ref) => 1 / 1.25);
+final productGridAspectRatioProvider = Provider<double>((ref) => 1 / 1.5);
 
 final categoryItemWidthProvider = Provider<double>((ref) => 80.0);
 

@@ -1,5 +1,3 @@
-import 'package:auto_size_text/auto_size_text.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
@@ -8,8 +6,8 @@ import 'package:jus_mobile_order_app/Models/product_model.dart';
 import 'package:jus_mobile_order_app/Providers/ProviderWidgets/taxable_products_provider_widget.dart';
 import 'package:jus_mobile_order_app/Providers/product_providers.dart';
 import 'package:jus_mobile_order_app/Providers/theme_providers.dart';
+import 'package:jus_mobile_order_app/Widgets/Cards/menu_card.dart';
 import 'package:simple_grouped_listview/simple_grouped_listview.dart';
-import 'package:tuple/tuple.dart';
 
 class ListOfTaxableProductsByGroup extends HookConsumerWidget {
   const ListOfTaxableProductsByGroup({super.key});
@@ -22,17 +20,20 @@ class ListOfTaxableProductsByGroup extends HookConsumerWidget {
       builder: (products) {
         scrollToHeader(context, ref, scrollController, products);
         return GroupedListView.grid(
-          padding: const EdgeInsets.symmetric(horizontal: 10.0),
+          padding: const EdgeInsets.only(
+            left: 10,
+            right: 10,
+            bottom: 20,
+          ),
           controller: scrollController,
           crossAxisCount: ref.watch(productGridCrossAxisCountProvider),
           mainAxisSpacing: ref.watch(productGridMainAxisSpacingProvider),
           crossAxisSpacing: ref.watch(productGridCrossAxisSpacingProvider),
           itemsAspectRatio: ref.watch(productGridAspectRatioProvider),
           items: products,
-          itemGrouper: (ProductModel product) =>
-              Tuple2(product.category, product.categoryOrder),
+          itemGrouper: (ProductModel product) => product.category,
           headerBuilder: (context, category) {
-            return _buildCategoryHeader(context, ref, category.item1);
+            return _buildCategoryHeader(context, ref, category);
           },
           gridItemBuilder: (context, countInGroup, itemIndexInGroup, product,
                   itemIndexInOriginalList) =>
@@ -109,37 +110,7 @@ class ListOfTaxableProductsByGroup extends HookConsumerWidget {
       ifAbsent: () => 1,
     );
 
-    return Container(
-      padding: const EdgeInsets.all(8.0),
-      decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(
-            8.0,
-          ),
-          color: Colors.white),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
-        children: [
-          SizedBox(
-            height: 130,
-            child: CachedNetworkImage(
-              imageUrl: product.image,
-            ),
-          ),
-          AutoSizeText(
-            product.name,
-            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-            maxLines: 2,
-          ),
-          AutoSizeText(
-            product.description,
-            style: const TextStyle(fontSize: 12),
-            textAlign: TextAlign.center,
-            maxLines: 2,
-            overflow: TextOverflow.ellipsis,
-          ),
-        ],
-      ),
-    );
+    return MenuCard(index: itemIndexInOriginalList);
   }
 
   double _calculateSelectedHeaderHeight(WidgetRef ref) {
@@ -288,5 +259,3 @@ class ListOfTaxableProductsByGroup extends HookConsumerWidget {
     );
   }
 }
-
-//[0.0, 257.48, 728.4399999999999, 1199.3999999999999, 1456.8799999999999, 1714.36, 2398.7999999999997, 2869.7599999999998, 3554.2, 4025.16, 4709.599999999999]
