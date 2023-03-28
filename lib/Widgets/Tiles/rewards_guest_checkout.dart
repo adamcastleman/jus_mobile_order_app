@@ -24,16 +24,16 @@ class RewardsGuestCheckout extends StatelessWidget {
                   'Earn points. Get free stuff.',
                   style: TextStyle(fontSize: 18),
                 ),
-                Spacing().horizontal(10),
+                Spacing().horizontal(5),
                 InfoButton(
                   onTap: () {
                     ModalBottomSheet().fullScreen(
                       context: context,
                       builder: (context) =>
-                          const PointsDetailPage(isScanPage: false),
+                          const PointsDetailPage(closeButton: true),
                     );
                   },
-                  size: 18,
+                  size: 22,
                 ),
               ],
             ),

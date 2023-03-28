@@ -47,17 +47,23 @@ class LoyaltyCard extends StatelessWidget {
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          const Text(
-                            'Available Points',
-                            style: TextStyle(fontSize: 16),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
+                          const Align(
+                            alignment: Alignment.centerLeft,
+                            child: Text(
+                              'Available Points',
+                              style: TextStyle(fontSize: 16),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
                           ),
-                          Text(
-                            NumberFormat('#,###').format(user.points),
-                            style: const TextStyle(
-                              fontSize: 40,
-                              fontWeight: FontWeight.bold,
+                          Align(
+                            alignment: Alignment.centerLeft,
+                            child: Text(
+                              NumberFormat('#,###').format(user.points),
+                              style: const TextStyle(
+                                fontSize: 40,
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
                           ),
                         ],
@@ -70,7 +76,7 @@ class LoyaltyCard extends StatelessWidget {
                           ModalBottomSheet().fullScreen(
                             context: context,
                             builder: (context) =>
-                                const PointsDetailPage(isScanPage: false),
+                                const PointsDetailPage(closeButton: true),
                           );
                         },
                         child: Text(

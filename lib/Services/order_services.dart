@@ -10,8 +10,12 @@ class OrderServices {
 
   Stream<List<OrderModel>> get orders {
     return ordersCollection
-        .where('createdAt',
-            isLessThan: DateTime.now().add(const Duration(days: 120)))
+        .where(
+          'createdAt',
+          isLessThan: DateTime.now().add(
+            const Duration(days: 120),
+          ),
+        )
         .where('userID', isEqualTo: userID)
         .orderBy('createdAt', descending: true)
         .snapshots()
@@ -22,24 +26,20 @@ class OrderServices {
     return snapshot.docs.map(
       (doc) {
         final dynamic data = doc.data();
+
         return OrderModel(
-          uid: data['uid'],
           userID: data['userID'],
-          orderID: data['orderID'],
+          orderNumber: data['orderNumber'],
           locationID: data['locationID'],
-          createdAt: data['createAt'].toDate(),
-          pickupTime: data['pickupTime'].toDate(),
-          pickupDate: data['pickupDate'].toDate(),
-          scheduleAllItems: data['scheduleAllItems'],
+          createdAt: data['createdAt'].toDate(),
           items: data['items'],
-          paymentID: data['paymentID'],
           paymentMethod: data['paymentMethod'],
-          orderStatus: data['orderStatus'],
-          paymentStatus: data['paymentStatus'],
+          paymentSource: data['paymentSource'],
           cardBrand: data['cardBrand'],
           lastFourDigits: data['lastFourDigits'],
           totalAmount: data['totalAmount'],
-          subtotalAmount: data['subtotalAmount'],
+          originalSubtotalAmount: data['originalSubtotalAmount'] ?? 0,
+          discountedSubtotalAmount: data['discountedSubtotalAmount'] ?? 0,
           taxAmount: data['taxAmount'],
           tipAmount: data['tipAmount'],
           discountAmount: data['discountAmount'],

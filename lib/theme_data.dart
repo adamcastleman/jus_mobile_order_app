@@ -115,6 +115,15 @@ class ThemeManager {
         color: Colors.grey[600],
       ),
     ),
+    expansionTileTheme: const ExpansionTileThemeData(
+      childrenPadding: EdgeInsets.symmetric(vertical: 12.0),
+      expandedAlignment: Alignment.topLeft,
+      shape: RoundedRectangleBorder(side: BorderSide.none),
+      iconColor: Colors.black,
+      collapsedTextColor: Colors.black,
+      collapsedIconColor: Colors.black,
+      textColor: Colors.black,
+    ),
     bottomSheetTheme: const BottomSheetThemeData(
       modalBackgroundColor: Colors.white,
       backgroundColor: Colors.white,

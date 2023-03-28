@@ -2,6 +2,11 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:jus_mobile_order_app/Models/product_model.dart';
 
 class ProductServices {
+  final String? productUID;
+  final int? locationID;
+
+  ProductServices({this.productUID, this.locationID});
+
   final FirebaseFirestore firestore = FirebaseFirestore.instance;
 
   Stream<List<ProductModel>> get products {
@@ -31,6 +36,16 @@ class ProductServices {
         .map(getProductsFromDatabase);
   }
 
+  Stream<ProductQuantityModel> get quantityLimits {
+    return firestore
+        .collection('products')
+        .doc(productUID)
+        .collection('quantityLimits')
+        .where('locationID', isEqualTo: locationID)
+        .snapshots()
+        .map(getQuantityLimitsFromDatabase);
+  }
+
   List<ProductModel> getProductsFromDatabase(QuerySnapshot snapshot) {
     return snapshot.docs.map(
       (doc) {
@@ -53,14 +68,30 @@ class ProductServices {
           isNew: data['isNew'],
           isModifiable: data['isModifiable'],
           isScheduled: data['isScheduled'],
-          hoursNotice: data['hoursNotice'],
           hasToppings: data['hasToppings'],
           nutrition: data['nutrition'],
           perks: data['perks'],
           servingsFruit: data['servingsFruit'],
           servingsVeggie: data['servingsVeggie'],
+          scheduledProductLimit: data['scheduledProductLimit'],
+          scheduledProductType: data['scheduledProductType'],
         );
       },
     ).toList();
+  }
+
+  ProductQuantityModel getQuantityLimitsFromDatabase(QuerySnapshot snapshot) {
+    return snapshot.docs.map((doc) {
+      final dynamic data = doc.data();
+      return ProductQuantityModel(
+        uid: data['uid'],
+        locationID: data['locationID'],
+        productType: data['productType'],
+        hoursNotice: data['hoursNotice'],
+        quantityLimit: data['quantityLimit'] ?? 0,
+        scheduledProductDescriptor: data['scheduledProductDescriptor'] ?? '',
+        scheduledQuantityLimit: data['scheduledQuantityLimit'] ?? 0,
+      );
+    }).first;
   }
 }

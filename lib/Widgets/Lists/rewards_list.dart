@@ -44,7 +44,7 @@ class RewardsList extends ConsumerWidget {
                           ModalBottomSheet().fullScreen(
                             context: context,
                             builder: (context) =>
-                                const PointsDetailPage(isScanPage: false),
+                                const PointsDetailPage(closeButton: true),
                           );
                         },
                         size: 18,

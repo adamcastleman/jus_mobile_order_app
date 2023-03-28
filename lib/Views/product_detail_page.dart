@@ -1,6 +1,7 @@
 import 'package:animations/animations.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:jus_mobile_order_app/Helpers/loading.dart';
 import 'package:jus_mobile_order_app/Helpers/set_standard_ingredients.dart';
@@ -41,11 +42,12 @@ class ProductDetailPage extends ConsumerWidget {
           editOrder != true
               ? JusCloseButton(
                   onPressed: () {
+                    HapticFeedback.lightImpact();
                     Navigator.pop(context);
                     ref.invalidate(selectedIngredientsProvider);
                     ref.invalidate(selectedAllergiesProvider);
                     ref.invalidate(itemQuantityProvider);
-                    ref.invalidate(daysQuantityProvider);
+                    ref.invalidate(scheduledQuantityProvider);
                     ref.invalidate(itemSizeProvider);
                     ref.invalidate(selectedProductIDProvider);
                     ref.invalidate(favoriteItemNameProvider);
@@ -77,14 +79,17 @@ class ProductDetailPage extends ConsumerWidget {
                 primary: false,
                 children: [
                   Center(
-                    child: SizedBox(
-                      height: 250,
-                      child: CachedNetworkImage(
-                        fit: BoxFit.fitWidth,
-                        imageUrl: product.image,
-                        placeholder: (context, url) => const Loading(),
-                        errorWidget: (context, url, error) =>
-                            const Icon(Icons.error),
+                    child: Hero(
+                      tag: 'product-image',
+                      child: SizedBox(
+                        height: 300,
+                        child: CachedNetworkImage(
+                          fit: BoxFit.fitWidth,
+                          imageUrl: product.image,
+                          placeholder: (context, url) => const Loading(),
+                          errorWidget: (context, url, error) =>
+                              const Icon(Icons.error),
+                        ),
                       ),
                     ),
                   ),

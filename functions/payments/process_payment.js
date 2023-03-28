@@ -7,7 +7,7 @@ const processPayment = async (orderMap) => {
 
   try {
     const response = await client.paymentsApi.createPayment({
-      sourceId: orderMap.paymentSource,
+      sourceId: 'cnon:card-nonce-ok',
       idempotencyKey: uuidv4(),
       externalDetails: {
         source: orderMap.paymentMethod,

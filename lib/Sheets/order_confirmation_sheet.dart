@@ -13,11 +13,13 @@ import 'package:jus_mobile_order_app/Helpers/spacing_widgets.dart';
 import 'package:jus_mobile_order_app/Hooks/confetti_controller.dart';
 import 'package:jus_mobile_order_app/Models/product_model.dart';
 import 'package:jus_mobile_order_app/Providers/ProviderWidgets/products_provider_widget.dart';
+import 'package:jus_mobile_order_app/Providers/auth_providers.dart';
 import 'package:jus_mobile_order_app/Providers/discounts_provider.dart';
 import 'package:jus_mobile_order_app/Providers/location_providers.dart';
 import 'package:jus_mobile_order_app/Providers/navigation_providers.dart';
 import 'package:jus_mobile_order_app/Providers/offers_providers.dart';
 import 'package:jus_mobile_order_app/Providers/order_providers.dart';
+import 'package:jus_mobile_order_app/Providers/payments_providers.dart';
 import 'package:jus_mobile_order_app/Providers/points_providers.dart';
 import 'package:jus_mobile_order_app/Providers/product_providers.dart';
 import 'package:jus_mobile_order_app/Providers/stream_providers.dart';
@@ -34,16 +36,19 @@ class OrderConfirmationSheet extends HookConsumerWidget {
     final controller = useConfettiController();
     return ProductsProviderWidget(
       builder: (products) {
-        Future.delayed(const Duration(milliseconds: 150), () {
-          if (controller.state == ConfettiControllerState.playing) {
-            controller.stop();
-            controller.play();
-            HapticFeedback.heavyImpact();
-          } else {
-            controller.play();
-            HapticFeedback.heavyImpact();
-          }
-        });
+        Future.delayed(
+          const Duration(milliseconds: 150),
+          () {
+            if (controller.state == ConfettiControllerState.playing) {
+              controller.stop();
+              controller.play();
+              HapticFeedback.heavyImpact();
+            } else {
+              controller.play();
+              HapticFeedback.heavyImpact();
+            }
+          },
+        );
 
         return Container(
           color: ref.watch(backgroundColorProvider),
@@ -52,7 +57,7 @@ class OrderConfirmationSheet extends HookConsumerWidget {
             child: Stack(
               children: [
                 ListView(
-                  padding: const EdgeInsets.only(top: 50.0),
+                  padding: const EdgeInsets.only(top: 50.0, bottom: 50.0),
                   primary: false,
                   children: [
                     Align(
@@ -243,6 +248,11 @@ class OrderConfirmationSheet extends HookConsumerWidget {
     ref.invalidate(currentOrderItemsIndexProvider);
     ref.invalidate(currentOrderCostProvider);
     ref.invalidate(discountTotalProvider);
+    ref.invalidate(selectedPaymentMethodProvider);
+    ref.invalidate(emailProvider);
+    ref.invalidate(phoneProvider);
+    ref.invalidate(firstNameProvider);
+    ref.invalidate(lastNameProvider);
     ref.invalidate(pointsMultiplierProvider);
     ref.invalidate(pointsInUseProvider);
     ref.invalidate(selectedPickupTimeProvider);

@@ -37,18 +37,18 @@ class HomePage extends ConsumerWidget {
               const AnnouncementTile(),
               user.uid == null
                   ? const Padding(
-                      padding: EdgeInsets.symmetric(vertical: 8.0),
+                      padding: EdgeInsets.only(top: 22.0),
                       child: LoyaltyCardGuest(),
                     )
                   : const LoyaltyCard(),
               showOffersList(user, offers),
               user.uid == null
                   ? const Padding(
-                      padding: EdgeInsets.symmetric(vertical: 8.0),
+                      padding: EdgeInsets.only(top: 22.0),
                       child: FavoritesCardGuest(),
                     )
                   : const FavoritesList(),
-              const RecommendedList(),
+              user.uid == null ? const SizedBox() : const RecommendedList(),
             ],
           ),
         ),
@@ -57,9 +57,6 @@ class HomePage extends ConsumerWidget {
   }
 
   Widget showOffersList(UserModel user, List<OffersModel> offers) {
-    if (user.uid == null) {
-      return const SizedBox();
-    }
     if (offers.isEmpty) {
       return const SizedBox();
     }

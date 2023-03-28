@@ -3,12 +3,10 @@ import 'package:flutter/material.dart';
 class LargeElevatedButton extends StatelessWidget {
   final VoidCallback onPressed;
   final String? buttonText;
-  final Widget? textWidget;
 
   const LargeElevatedButton({
     this.buttonText,
     required this.onPressed,
-    this.textWidget,
     super.key,
   });
   @override
@@ -20,11 +18,10 @@ class LargeElevatedButton extends StatelessWidget {
         ),
       ),
       onPressed: onPressed,
-      child: textWidget ??
-          Text(
-            buttonText ?? '',
-            style: const TextStyle(fontSize: 16),
-          ),
+      child: Text(
+        buttonText ?? '',
+        style: const TextStyle(fontSize: 16),
+      ),
     );
   }
 }

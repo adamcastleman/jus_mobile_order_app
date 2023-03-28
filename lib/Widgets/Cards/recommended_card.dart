@@ -27,7 +27,6 @@ class RecommendedCard extends ConsumerWidget {
           borderRadius: BorderRadius.circular(8.0),
         ),
         tappable: false,
-        transitionType: ContainerTransitionType.fadeThrough,
         transitionDuration: const Duration(milliseconds: 600),
         openBuilder: (context, open) {
           return ProductDetailPage(
@@ -61,11 +60,14 @@ class RecommendedCard extends ConsumerWidget {
                     vertical: 12.0, horizontal: 12.0),
                 child: Column(
                   children: [
-                    SizedBox(
-                      height: 140,
-                      width: 100,
-                      child: CachedNetworkImage(
-                        imageUrl: recommended[index].image,
+                    Hero(
+                      tag: 'product-image',
+                      child: SizedBox(
+                        height: 130,
+                        width: 100,
+                        child: CachedNetworkImage(
+                          imageUrl: recommended[index].image,
+                        ),
                       ),
                     ),
                     Spacing().vertical(15),

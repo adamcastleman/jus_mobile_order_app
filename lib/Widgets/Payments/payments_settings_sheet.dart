@@ -6,7 +6,6 @@ import 'package:jus_mobile_order_app/Helpers/spacing_widgets.dart';
 import 'package:jus_mobile_order_app/Providers/ProviderWidgets/credit_card_provider_widget.dart';
 import 'package:jus_mobile_order_app/Providers/ProviderWidgets/gift_card_provider_widget.dart';
 import 'package:jus_mobile_order_app/Providers/ProviderWidgets/user_provider_widget.dart';
-import 'package:jus_mobile_order_app/Providers/payments_providers.dart';
 import 'package:jus_mobile_order_app/Providers/theme_providers.dart';
 import 'package:jus_mobile_order_app/Services/payments_services.dart';
 import 'package:jus_mobile_order_app/Widgets/Buttons/close_button.dart';
@@ -40,7 +39,6 @@ class PaymentSettingsSheet extends ConsumerWidget {
                     child: JusCloseButton(
                       removePadding: true,
                       onPressed: () {
-                        ref.invalidate(pageTypeProvider);
                         Navigator.pop(context);
                       },
                     ),

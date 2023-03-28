@@ -3,11 +3,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:jus_mobile_order_app/Helpers/locations.dart';
 import 'package:jus_mobile_order_app/Helpers/points.dart';
 import 'package:jus_mobile_order_app/Helpers/set_standard_ingredients.dart';
 import 'package:jus_mobile_order_app/Models/points_details_model.dart';
 import 'package:jus_mobile_order_app/Models/product_model.dart';
 import 'package:jus_mobile_order_app/Providers/ProviderWidgets/points_details_provider_widget.dart';
+import 'package:jus_mobile_order_app/Providers/location_providers.dart';
 import 'package:jus_mobile_order_app/Providers/product_providers.dart';
 import 'package:jus_mobile_order_app/Providers/theme_providers.dart';
 import 'package:jus_mobile_order_app/Widgets/General/selection_incrementor.dart';
@@ -58,14 +60,7 @@ class OrderTileEditRow extends ConsumerWidget {
                   : Padding(
                       padding: const EdgeInsets.only(right: 12.0),
                       child: InkWell(
-                        onTap: () {
-                          HapticFeedback.lightImpact();
-                          setItemIndex(ref);
-                          setItemVariation(ref);
-
-                          removeCostFromTotal(ref);
-                          close();
-                        },
+                        onTap: () => handleEditTap(context, ref),
                         child: CircleAvatar(
                           radius: 16,
                           backgroundColor: Colors.black,
@@ -82,20 +77,16 @@ class OrderTileEditRow extends ConsumerWidget {
                       ),
                     ),
               InkWell(
-                onTap: () {
-                  setItemIndex(ref);
-                  removeCostFromTotal(ref);
-                  removeItemFromCart(ref);
-                },
+                onTap: () => handleDeleteTap(ref),
                 child: CircleAvatar(
                   radius: 16,
-                  backgroundColor: Colors.black,
+                  backgroundColor: Colors.red,
                   child: CircleAvatar(
                     radius: 15.5,
                     backgroundColor: backgroundColor,
                     child: const Icon(
                       CupertinoIcons.trash,
-                      color: Colors.black,
+                      color: Colors.red,
                       size: 16,
                     ),
                   ),
@@ -106,6 +97,27 @@ class OrderTileEditRow extends ConsumerWidget {
         ],
       ),
     );
+  }
+
+  void handleEditTap(
+    BuildContext context,
+    WidgetRef ref,
+  ) {
+    HapticFeedback.lightImpact();
+    if (ref.read(selectedLocationProvider) == null) {
+      LocationHelper().chooseLocation(context, ref);
+    } else {
+      setItemIndex(ref);
+      setItemVariation(ref);
+      removeCostFromTotal(ref);
+      close();
+    }
+  }
+
+  void handleDeleteTap(WidgetRef ref) {
+    setItemIndex(ref);
+    removeCostFromTotal(ref);
+    removeItemFromCart(ref);
   }
 
   addSingleQuantityCost(
@@ -127,7 +139,7 @@ class OrderTileEditRow extends ConsumerWidget {
               ['amount'] +
           extraChargeMembers,
       'itemQuantity': 1,
-      'daysQuantity': currentOrder[index]['daysQuantity'],
+      'scheduledQuantity': currentOrder[index]['scheduledQuantity'],
     });
   }
 
@@ -179,8 +191,8 @@ class OrderTileEditRow extends ConsumerWidget {
         .set(currentOrder[index]['itemQuantity']);
 
     ref
-        .read(daysQuantityProvider.notifier)
-        .set(currentOrder[index]['daysQuantity']);
+        .read(scheduledQuantityProvider.notifier)
+        .set(currentOrder[index]['scheduledQuantity']);
     ref.read(itemSizeProvider.notifier).state = currentOrder[index]['itemSize'];
     ref.read(productHasToppingsProvider.notifier).state =
         currentOrder[index]['hasToppings'];
@@ -220,8 +232,8 @@ class OrderTileEditRow extends ConsumerWidget {
     final price =
         currentProduct.price[currentOrderItem[index]['itemSize']]['amount'];
     final itemQuantity = currentOrderItem[index]['itemQuantity'];
-    final daysQuantity = currentOrderItem[index]['daysQuantity'];
-    return (price + extraCharge) * itemQuantity * daysQuantity;
+    final scheduledQuantity = currentOrderItem[index]['scheduledQuantity'];
+    return (price + extraCharge) * itemQuantity * scheduledQuantity;
   }
 
   memberCostTotal(WidgetRef ref) {
@@ -235,7 +247,7 @@ class OrderTileEditRow extends ConsumerWidget {
     final price = currentProduct
         .memberPrice[currentOrderItem[index]['itemSize']]['amount'];
     final itemQuantity = currentOrderItem[index]['itemQuantity'];
-    final daysQuantity = currentOrderItem[index]['daysQuantity'];
-    return price * itemQuantity * daysQuantity;
+    final scheduledQuantity = currentOrderItem[index]['scheduledQuantity'];
+    return price * itemQuantity * scheduledQuantity;
   }
 }

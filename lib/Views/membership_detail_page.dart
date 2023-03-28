@@ -28,7 +28,7 @@ class MembershipDetailPage extends ConsumerWidget {
             children: [
               Spacing().vertical(MediaQuery.of(context).size.height * 0.05),
               Align(
-                alignment: Alignment.topLeft,
+                alignment: Alignment.topRight,
                 child: JusCloseButton(
                   onPressed: () {
                     Navigator.pop(context);
@@ -44,6 +44,7 @@ class MembershipDetailPage extends ConsumerWidget {
                         fontSize: 30, fontWeight: FontWeight.bold),
                   ),
                   membershipPriceCard(data),
+                  Spacing().vertical(15),
                   Padding(
                     padding: const EdgeInsets.symmetric(vertical: 20.0),
                     child: ListView.separated(

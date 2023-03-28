@@ -102,7 +102,9 @@ class BottomNavBar extends HookConsumerWidget {
         handleScan(ref);
         break;
       case 2:
-        handleOrder(context, ref);
+        if (ref.read(selectedLocationProvider) == null) {
+          LocationHelper().chooseLocation(context, ref);
+        }
         break;
       case 3:
         break;
@@ -122,12 +124,6 @@ class BottomNavBar extends HookConsumerWidget {
     ScanHelpers(ref).scanAndPayMap();
     ScanHelpers(ref).scanOnlyMap();
     ref.read(qrTimerProvider.notifier).startTimer(ref);
-  }
-
-  void handleOrder(BuildContext context, WidgetRef ref) {
-    if (ref.read(selectedLocationProvider) == null) {
-      LocationHelper().chooseLocation(context, ref);
-    }
   }
 
   void updateBottomNavigation(WidgetRef ref, int selected) {

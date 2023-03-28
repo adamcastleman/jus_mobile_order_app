@@ -29,6 +29,7 @@ class PaymentsServices {
   final String? firstName;
   final WidgetRef? ref;
   final BuildContext? context;
+  final ProviderContainer container = ProviderContainer();
 
   PaymentsServices({this.context, this.ref, this.userID, this.firstName});
 
@@ -64,6 +65,47 @@ class PaymentsServices {
         .map(getDefaultCardFromDatabase);
   }
 
+  PaymentsModel getDefaultCardFromDatabase(QuerySnapshot snapshot) {
+    return snapshot.docs.map(
+      (doc) {
+        final dynamic data = doc.data();
+
+        return PaymentsModel(
+          uid: data['uid'],
+          userID: data['userID'],
+          nonce: data['nonce'],
+          brand: data['brand'],
+          isGiftCard: data['isGiftCard'],
+          lastFourDigits: data['lastFourDigits'],
+          expirationMonth: data['expirationMonth'],
+          expirationYear: data['expirationYear'],
+          defaultPayment: data['defaultPayment'],
+          cardNickname: data['cardNickname'],
+        );
+      },
+    ).first;
+  }
+
+  List<PaymentsModel> getPaymentCardsFromDatabase(QuerySnapshot snapshot) {
+    return snapshot.docs.map(
+      (doc) {
+        final dynamic data = doc.data();
+        return PaymentsModel(
+          uid: data['uid'],
+          userID: data['userID'],
+          nonce: data['nonce'],
+          brand: data['brand'],
+          isGiftCard: data['isGiftCard'],
+          lastFourDigits: data['lastFourDigits'],
+          expirationMonth: data['expirationMonth'],
+          expirationYear: data['expirationYear'],
+          defaultPayment: data['defaultPayment'],
+          cardNickname: data['cardNickname'],
+        );
+      },
+    ).toList();
+  }
+
   addPaymentCardToDatabase({
     required String nonce,
     required String brand,
@@ -93,47 +135,6 @@ class PaymentsServices {
     }
   }
 
-  List<PaymentsModel> getPaymentCardsFromDatabase(QuerySnapshot snapshot) {
-    return snapshot.docs.map(
-      (doc) {
-        final dynamic data = doc.data();
-        return PaymentsModel(
-          uid: data['uid'],
-          userID: data['userID'],
-          nonce: data['nonce'],
-          brand: data['brand'],
-          isGiftCard: data['isGiftCard'],
-          lastFourDigits: data['lastFourDigits'],
-          expirationMonth: data['expirationMonth'],
-          expirationYear: data['expirationYear'],
-          defaultPayment: data['defaultPayment'],
-          cardNickname: data['cardNickname'],
-        );
-      },
-    ).toList();
-  }
-
-  PaymentsModel getDefaultCardFromDatabase(QuerySnapshot snapshot) {
-    return snapshot.docs.map(
-      (doc) {
-        final dynamic data = doc.data();
-
-        return PaymentsModel(
-          uid: data['uid'],
-          userID: data['userID'],
-          nonce: data['nonce'],
-          brand: data['brand'],
-          isGiftCard: data['isGiftCard'],
-          lastFourDigits: data['lastFourDigits'],
-          expirationMonth: data['expirationMonth'],
-          expirationYear: data['expirationYear'],
-          defaultPayment: data['defaultPayment'],
-          cardNickname: data['cardNickname'],
-        );
-      },
-    ).first;
-  }
-
   Future setApplicationID() async {
     await InAppPayments.setSquareApplicationId('sq0idp-sTnvNvgfZ8wGZr9x7uxsmA');
   }
@@ -155,23 +156,45 @@ class PaymentsServices {
   }
 
   inputCreditCard() async {
+    // To ensure the Square In-App Payments modal can validate cards asynchronously
+    // and update the initial stored value for guest cards, pass a reference
+    // to the selectedPaymentMethod provider when updating payment methods.
+    // For registered users, the default card provider automatically updates
+    // the selectedPaymentMethod provider, so this is not a concern for them.
+    // Passing the reference ensures proper updates for all payment methods
+    // without destabilizing the ref.read() method that occurs when called directly
+    // in async functions.
+    SelectedPaymentMethodNotifier reference =
+        ref!.read(selectedPaymentMethodProvider.notifier);
     await InAppPayments.startCardEntryFlow(
         onCardNonceRequestSuccess: (CardDetails result) {
           _onCardEntryCardNonceRequestSuccess(
-              result: result, isGiftCard: false);
+              reference: reference, result: result, isGiftCard: false);
         },
         onCardEntryCancel: () {});
   }
 
   Future inputGiftCard() async {
+    // To ensure the Square In-App Payments modal can validate cards asynchronously
+    // and update the initial stored value for guest cards, pass a reference
+    // to the selectedPaymentMethod provider when updating payment methods.
+    // For registered users, the default card provider automatically updates
+    // the selectedPaymentMethod provider, so this is not a concern for them.
+    // Passing the reference ensures proper updates for all payment methods
+    // without destabilizing the ref.read() method that occurs when called directly
+    // in async functions.
+    SelectedPaymentMethodNotifier reference =
+        ref!.read(selectedPaymentMethodProvider.notifier);
     await InAppPayments.startGiftCardEntryFlow(
         onCardNonceRequestSuccess: (CardDetails result) {
-          _onCardEntryCardNonceRequestSuccess(result: result, isGiftCard: true);
+          _onCardEntryCardNonceRequestSuccess(
+              reference: reference, result: result, isGiftCard: true);
         },
         onCardEntryCancel: () {});
   }
 
   void _onCardEntryCardNonceRequestSuccess({
+    required SelectedPaymentMethodNotifier reference,
     required CardDetails result,
     required bool isGiftCard,
   }) async {
@@ -199,11 +222,13 @@ class PaymentsServices {
       //at a time for a guest, and entering a new card will override the previously entered one.
       //Therefore, the selectedPaymentMethodProvider must be manually updated each time .
       PaymentsHelper().updatePaymentMethod(
-          ref: ref!,
-          cardNickname: firstName,
-          nonce: result.nonce,
-          brand: result.card.brand.name,
-          lastFourDigits: result.card.lastFourDigits);
+        reference: reference,
+        cardNickname: firstName,
+        nonce: result.nonce,
+        brand: result.card.brand.name,
+        isGiftCard: isGiftCard,
+        lastFourDigits: result.card.lastFourDigits,
+      );
     }
     try {
       await InAppPayments.completeCardEntry(onCardEntryComplete: () {});
@@ -213,20 +238,33 @@ class PaymentsServices {
   }
 
   chargeCardAndCreateOrder(UserModel user) {
-    final selectedLocation = ref!.watch(selectedLocationProvider);
-    final selectedCard = ref!.watch(selectedPaymentMethodProvider);
-    final pickupTime = ref!.watch(selectedPickupTimeProvider);
-    final pickupDate = ref!.watch(selectedPickupDateProvider);
-    final scheduleAllItems = ref!.watch(scheduleAllItemsProvider);
-    final isMember = user.uid != null && user.isActiveMember == true;
+    final totals = _calculatePricingAndTotals(user);
+    final orderMap = _generateOrderMap(user, totals);
 
-    final items = ProductHelpers(ref: ref!).generateProductList();
+    final result = FirebaseFunctions.instance
+        .httpsCallable('createOrder')
+        .call({'orderMap': orderMap})
+        .then((value) => value)
+        .catchError((onError) {
+          ref!.invalidate(loadingProvider);
+          ModalBottomSheet().partScreen(
+            context: context!,
+            builder: (context) => InvalidDatabaseEntrySheet(
+              error: onError.toString(),
+            ),
+          );
+          return Future<HttpsCallableResult>.error(onError);
+        });
+    return result;
+  }
 
-    final points = PointsHelper(ref: ref!).totalEarnedPoints();
-    final pointsInUse = ref!.watch(pointsInUseProvider);
-
+  Map<String, int> _calculatePricingAndTotals(UserModel user) {
     final pricing = Pricing(ref: ref);
-    final subtotal = isMember
+    final isMember = user.uid != null && user.isActiveMember == true;
+    final originalSubtotal = isMember
+        ? pricing.originalSubtotalForMembers()
+        : pricing.originalSubtotalForNonMembers();
+    final discountedSubtotal = isMember
         ? pricing.discountedSubtotalForMembers()
         : pricing.discountedSubtotalForNonMembers();
     final tax = isMember
@@ -239,103 +277,159 @@ class PaymentsServices {
         ? pricing.tipAmountForMembers()
         : pricing.tipAmountForNonMembers();
 
-    final totalInCents = ((subtotal + tax) * 100).round();
-    final subtotalInCents = (subtotal * 100).round();
+    final totalInCents = ((discountedSubtotal + tax) * 100).round();
+    final originalSubtotalInCents = (originalSubtotal * 100).round();
+    final discountedSubtotalInCents = (discountedSubtotal * 100).round();
     final taxTotalInCents = (tax * 100).round();
-    final tipTotalInCents = (tipTotal * 100).toInt();
+    final tipTotalInCents = (tipTotal * 100).round();
     final discountTotalInCents = (discountTotal * 100).round();
-    final locationID = selectedLocation.locationID;
 
-    final cardBrand = selectedCard['brand'];
-    final lastFourDigits = selectedCard['lastFourDigits'];
+    return {
+      'originalSubtotalInCents': originalSubtotalInCents,
+      'totalInCents': totalInCents,
+      'discountedSubtotalInCents': discountedSubtotalInCents,
+      'taxTotalInCents': taxTotalInCents,
+      'tipTotalInCents': tipTotalInCents,
+      'discountTotalInCents': discountTotalInCents,
+    };
+  }
+
+  Map<String, dynamic> _generateOrderMap(
+      UserModel user, Map<String, int?> totals) {
+    final selectedLocation = ref!.watch(selectedLocationProvider);
+    final selectedCard = ref!.watch(selectedPaymentMethodProvider);
+    final pickupTime = ref!.watch(selectedPickupTimeProvider);
+    final pickupDate = ref!.watch(selectedPickupDateProvider);
+    final scheduleAllItems = ref!.watch(scheduleAllItemsProvider);
+
+    final guestFirstName = ref!.watch(firstNameProvider);
+    final guestLastName = ref!.watch(lastNameProvider);
+    final guestEmail = ref!.watch(emailProvider);
+    final guestPhone = ref!.watch(phoneProvider);
+
+    final items = ProductHelpers(ref: ref!).generateProductList();
+    final points = PointsHelper(ref: ref!).totalEarnedPoints();
+    final pointsInUse = ref!.watch(pointsInUseProvider);
+
+    final int totalInCents = totals['totalInCents'] ?? 0;
+    final int tipTotalInCents = totals['tipTotalInCents'] ?? 0;
     final nonce =
         totalInCents + tipTotalInCents == 0 ? null : selectedCard['nonce'];
     final paymentMethod =
         totalInCents + tipTotalInCents == 0 ? 'storeCredit' : 'card';
 
-    final orderMap = {
-      'locationID': locationID,
+    return {
+      'isGuest': user.uid == null ? true : false,
+      'guestFirstName': guestFirstName,
+      'guestLastName': guestLastName,
+      'guestEmail': guestEmail,
+      'guestPhone': guestPhone,
+      'locationID': selectedLocation.locationID,
       'items': items,
       'paymentSource':
-          paymentMethod == 'storeCredit' ? 'EXTERNAL' : 'cnon:card-nonce-ok',
+          Platform.isIOS || Platform.isAndroid ? 'Mobile Order' : 'Web Order',
       'externalPaymentType':
           paymentMethod == 'storeCredit' ? 'STORED_BALANCE' : '',
       'pickupTime': pickupTime?.millisecondsSinceEpoch,
       'pickupDate': pickupDate?.millisecondsSinceEpoch,
       'scheduleAllItems': scheduleAllItems,
       'paymentMethod': paymentMethod,
-      'nonce': totalInCents + tipTotalInCents == 0 ? null : nonce,
-      'cardBrand': cardBrand,
-      'lastFourDigits': lastFourDigits,
-      'totalAmount': totalInCents,
-      'subtotalAmount': subtotalInCents,
-      'discountAmount': discountTotalInCents,
-      'taxAmount': taxTotalInCents,
-      'tipAmount': tipTotalInCents,
+      'nonce': nonce,
+      'totalAmount': totals['totalInCents'],
+      'originalSubtotalAmount': totals['originalSubtotalInCents'],
+      'discountedSubtotalAmount': totals['discountedSubtotalInCents'],
+      'discountAmount': totals['discountTotalInCents'],
+      'taxAmount': totals['taxTotalInCents'],
+      'tipAmount': totals['tipTotalInCents'],
       'pointsEarned': points,
       'pointsRedeemed': pointsInUse,
     };
-
-    final result = FirebaseFunctions.instance
-        .httpsCallable('createOrder')
-        .call({
-          'orderMap': orderMap,
-        })
-        .then((value) => value)
-        .catchError((onError) {
-          ref!.invalidate(loadingProvider);
-          ModalBottomSheet().partScreen(
-            context: context!,
-            builder: (context) => InvalidPaymentSheet(
-              error: onError.toString(),
-            ),
-          );
-          return Future<HttpsCallableResult>.error(onError);
-        });
-    return result;
   }
 
   void handlePaymentResult(BuildContext context, dynamic result) {
     final status = result.data;
 
     if (status == 200) {
-      ref!.invalidate(loadingProvider);
-
-      Navigator.pop(context);
-      Navigator.pop(context);
-      HapticFeedback.heavyImpact();
-
-      ModalBottomSheet().fullScreen(
-        context: context,
-        builder: (context) => const OrderConfirmationSheet(),
-      );
+      _showSuccessModal(context);
     } else {
-      ref!.invalidate(loadingProvider);
-      Navigator.pop(context);
-      ModalBottomSheet().partScreen(
-          context: context,
-          enableDrag: true,
-          isScrollControlled: true,
-          isDismissible: true,
-          builder: (context) {
-            return InvalidPaymentSheet(
-              error: SquarePaymentsErrors().getSquareErrorMessage(
-                result.data['message'],
-              ),
-            );
-          });
+      _showErrorModal(context, result.data['message']);
     }
   }
 
-  updateCardNickname(String cardID) async {
-    await FirebaseFunctions.instance
-        .httpsCallable('updateCardNickname')
-        .call({'cardID': cardID});
+  void _showSuccessModal(BuildContext context) {
+    ref!.invalidate(loadingProvider);
+
+    Navigator.pop(context);
+    Navigator.pop(context);
+    HapticFeedback.heavyImpact();
+
+    ModalBottomSheet().fullScreen(
+      context: context,
+      builder: (context) => const OrderConfirmationSheet(),
+    );
   }
 
-  updateDefaultPayment(String cardID) async {
-    await FirebaseFunctions.instance
-        .httpsCallable('updateDefaultPayment')
-        .call({'cardID': cardID});
+  void _showErrorModal(BuildContext context, String message) {
+    ref!.invalidate(loadingProvider);
+    Navigator.pop(context);
+    ModalBottomSheet().partScreen(
+        context: context,
+        enableDrag: true,
+        isScrollControlled: true,
+        isDismissible: true,
+        builder: (context) {
+          return InvalidDatabaseEntrySheet(
+            error: SquarePaymentsErrors().getSquareErrorMessage(message),
+          );
+        });
+  }
+
+  updateCardNickname(
+      {required BuildContext context,
+      required String cardNickname,
+      required String cardID}) async {
+    try {
+      await FirebaseFunctions.instance
+          .httpsCallable('updateCardNickname')
+          .call({'cardID': cardID, 'cardNickname': cardNickname});
+      ref!.invalidate(cardNicknameProvider);
+    } catch (e) {
+      return ModalBottomSheet().partScreen(
+        context: context,
+        builder: (context) => InvalidDatabaseEntrySheet(
+          error: e.toString(),
+        ),
+      );
+    }
+  }
+
+  updateDefaultPayment(BuildContext context, String cardID) async {
+    try {
+      await FirebaseFunctions.instance
+          .httpsCallable('updateDefaultPayment')
+          .call({'cardID': cardID});
+    } catch (e) {
+      return ModalBottomSheet().partScreen(
+        context: context,
+        builder: (context) => InvalidDatabaseEntrySheet(
+          error: e.toString(),
+        ),
+      );
+    }
+  }
+
+  deletePaymentMethod(BuildContext context, String cardID) async {
+    try {
+      await FirebaseFunctions.instance
+          .httpsCallable('deletePaymentMethod')
+          .call({'cardID': cardID});
+    } catch (e) {
+      return ModalBottomSheet().partScreen(
+        context: context,
+        builder: (context) => InvalidDatabaseEntrySheet(
+          error: e.toString(),
+        ),
+      );
+    }
   }
 }

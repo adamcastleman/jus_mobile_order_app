@@ -7,9 +7,9 @@ class NewIcon extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: 100,
-      width: 100,
-      child: Image.asset('assets/new_icon.jpg'),
+      height: 50,
+      width: 50,
+      child: Image.asset('assets/new_icon.png'),
     );
   }
 }

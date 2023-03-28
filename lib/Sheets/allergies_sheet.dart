@@ -48,7 +48,7 @@ class AllergiesSheet extends ConsumerWidget {
             ),
             Spacing().vertical(5),
             const Text(
-              'If your allergy is not in this list, you do not need to worry.',
+              'If your allergy isn\'t listed, it\'s not a concern for this item.',
               style: TextStyle(fontSize: 12),
             ),
             Spacing().vertical(20),

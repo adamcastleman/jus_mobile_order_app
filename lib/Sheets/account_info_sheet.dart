@@ -206,19 +206,19 @@ class AccountInfoSheet extends ConsumerWidget {
     final formValidatedNotifier = ref.read(formValidatedProvider.notifier);
 
     if (firstName.isEmpty) {
-      Validator().firstName(ref);
+      FormValidator().firstName(ref);
     } else {
       firstNameErrorNotifier.state = null;
     }
 
     if (lastName.isEmpty) {
-      Validator().lastName(ref);
+      FormValidator().lastName(ref);
     } else {
       lastNameErrorNotifier.state = null;
     }
 
     if (phone.length != 10) {
-      Validator().phone(ref);
+      FormValidator().phone(ref);
     } else {
       phoneErrorNotifier.state = null;
     }
@@ -249,7 +249,7 @@ class AccountInfoSheet extends ConsumerWidget {
     }
 
     if (password.isNotEmpty && password != confirmPassword) {
-      Validator().confirmPassword(ref);
+      FormValidator().confirmPassword(ref);
     } else {
       confirmPasswordErrorNotifier.state = null;
     }

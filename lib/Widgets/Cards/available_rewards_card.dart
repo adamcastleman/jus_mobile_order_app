@@ -153,7 +153,7 @@ class AvailableRewardCard extends ConsumerWidget {
 
     for (var item in currentOrder) {
       int id = item['productID'];
-      int itemQuantity = item['itemQuantity'] * item['daysQuantity'];
+      int itemQuantity = item['itemQuantity'] * item['scheduledQuantity'];
 
       for (var reward in availableRewards) {
         if (reward['products'].contains(id)) {
@@ -187,7 +187,8 @@ class AvailableRewardCard extends ConsumerWidget {
         'memberPrice': orderCost['memberPrice'],
         'itemKey': orderCost['itemKey'],
         'productID': orderItem['productID'],
-        'itemQuantity': orderItem['itemQuantity'] * orderItem['daysQuantity'],
+        'itemQuantity':
+            orderItem['itemQuantity'] * orderItem['scheduledQuantity'],
         'amount': rewardAmount,
         'source': 'points',
       });

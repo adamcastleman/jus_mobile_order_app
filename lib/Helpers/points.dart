@@ -119,16 +119,16 @@ class PointsHelper {
           }
 
           if (!user.isActiveMember! &&
-              selectedPaymentMethod['isGiftCard'] == true) {
+              selectedPaymentMethod['brand'] == 'giftCard') {
             return jusCardPointsValue * pointsMultiplier;
           } else if (!user.isActiveMember! &&
-              selectedPaymentMethod['isGiftCard'] != true) {
+              selectedPaymentMethod['brand'] != 'giftCard') {
             return creditCardPointsValue * pointsMultiplier;
           } else if (user.isActiveMember! &&
-              selectedPaymentMethod['isGiftCard'] == true) {
+              selectedPaymentMethod['brand'] == 'giftCard') {
             return jusCardMemberPointsValue * pointsMultiplier;
           } else if (user.isActiveMember! &&
-              selectedPaymentMethod['isGiftCard'] != true) {
+              selectedPaymentMethod['brand'] != 'giftCard') {
             return creditCardMemberPointsValue * pointsMultiplier;
           }
         },

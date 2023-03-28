@@ -1,23 +1,20 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:jus_mobile_order_app/Helpers/locations.dart';
 import 'package:jus_mobile_order_app/Helpers/modal_bottom_sheets.dart';
 import 'package:jus_mobile_order_app/Helpers/time.dart';
+import 'package:jus_mobile_order_app/Helpers/validators.dart';
 import 'package:jus_mobile_order_app/Models/user_model.dart';
-import 'package:jus_mobile_order_app/Providers/location_providers.dart';
 import 'package:jus_mobile_order_app/Providers/order_providers.dart';
 import 'package:jus_mobile_order_app/Services/payments_services.dart';
 import 'package:jus_mobile_order_app/Sheets/invalid_order_sheet.dart';
 
 import '../Providers/product_providers.dart';
-import '../Providers/stream_providers.dart';
 
 class OrderHelpers {
   final WidgetRef ref;
   OrderHelpers({required this.ref});
 
-  scheduledItems() {
+  List<Map<String, dynamic>> scheduledItems() {
     final currentOrder = ref.watch(currentOrderItemsProvider);
     final allItemsScheduled = ref.watch(scheduleAllItemsProvider);
     if (allItemsScheduled) {
@@ -29,231 +26,106 @@ class OrderHelpers {
     }
   }
 
-  nonScheduledItems() {
+  List<Map<String, dynamic>> nonScheduledItems() {
     final currentOrder = ref.watch(currentOrderItemsProvider);
     final allItemsScheduled = ref.watch(scheduleAllItemsProvider);
+
     if (allItemsScheduled) {
       return [];
-    } else {
-      return currentOrder
-          .where((element) => element['isScheduled'] != true)
-          .toList();
     }
+
+    return currentOrder.where((element) => !element['isScheduled']).toList();
   }
 
   List<Map<String, dynamic>> listOfScheduledItems({
     required List<dynamic> scheduledItems,
     required List<dynamic> products,
   }) {
-    final scheduledItemMaps = <Map<String, dynamic>>[];
-
-    for (final item in scheduledItems) {
-      final product = products
-          .firstWhere((element) => element.productID == item['productID']);
-
-      final name = product.name;
-      final daysQuantity = item['daysQuantity'];
-      final itemQuantity = item['itemQuantity'];
-      final hoursNotice = product.hoursNotice;
-
-      final scheduledItemMap = {
-        'name': name,
-        'daysQuantity': daysQuantity,
-        'itemQuantity': itemQuantity,
-        'hoursNotice': hoursNotice,
+    Map<String, dynamic> toScheduledItemMap(dynamic item) {
+      final product =
+          products.firstWhere((p) => p.productID == item['productID']);
+      return {
+        'name': product.name,
+        'productUID': product.uid,
+        'scheduledQuantity': item['scheduledQuantity'],
+        'itemQuantity': item['itemQuantity'],
       };
-
-      scheduledItemMaps.add(scheduledItemMap);
     }
 
-    return scheduledItemMaps;
+    return scheduledItems
+        .map<Map<String, dynamic>>(toScheduledItemMap)
+        .toList();
   }
 
   void setOrderingDateAndTimeProviders(List product) {
+    final hasScheduledItems = scheduledItems().isNotEmpty;
+    final hasNonScheduledItems = nonScheduledItems().isNotEmpty;
+
     ref.read(scheduledAndNowItemsInCartProvider.notifier).state =
-        OrderHelpers(ref: ref).scheduledItems().isNotEmpty &&
-            OrderHelpers(ref: ref).nonScheduledItems().isNotEmpty;
-    setHoursNoticeProvider(product);
+        hasScheduledItems && hasNonScheduledItems;
+
     setMinimumPickupTime();
-  }
-
-  void setHoursNoticeProvider(List product) {
-    var items = listOfScheduledItems(
-      scheduledItems: OrderHelpers(ref: ref).scheduledItems(),
-      products: product,
-    );
-
-    int firstItemHoursNotice =
-        items.isNotEmpty ? items.first['hoursNotice'] : 0;
-
-    ref.read(scheduledProductHoursNoticeProvider.notifier).state =
-        firstItemHoursNotice;
   }
 
   void setMinimumScheduleDate() {
     final hoursNotice = ref.watch(scheduledProductHoursNoticeProvider);
     final selectedTime = ref.read(selectedPickupDateProvider);
-    DateTime now = Time().now(ref);
-    DateTime deadline = DateTime(now.year, now.month, now.day, 0, 0, 0)
-        .add(Duration(hours: hoursNotice));
+
+    final now = Time().now(ref);
+    final deadline = _getDeadline(now, hoursNotice);
 
     ref
         .read(selectedPickupDateProvider.notifier)
         .selected(selectedTime ?? deadline);
-
     ref.read(originalMinimumDateProvider.notifier).state = deadline;
   }
 
-  setMinimumPickupTime() {
-    if (Time().nowRounded(ref).isBefore(Time().openTime(ref))) {
-      ref.read(originalMinimumTimeProvider.notifier).state =
-          Time().openTime(ref);
-      ref.read(selectedPickupTimeProvider.notifier).state =
-          Time().openTime(ref);
-      return Time().openTime(ref);
+  DateTime _getDeadline(DateTime now, int hoursNotice) {
+    return DateTime(now.year, now.month, now.day, 0, 0, 0)
+        .add(Duration(hours: hoursNotice));
+  }
+
+  DateTime setMinimumPickupTime() {
+    final nowRounded = Time().nowRounded(ref);
+    final openTime = Time().openTime(ref);
+
+    DateTime minimumTime;
+    if (nowRounded.isBefore(openTime)) {
+      minimumTime = DateTime(nowRounded.year, nowRounded.month, nowRounded.day,
+          openTime.hour, openTime.minute);
     } else {
-      ref.read(originalMinimumTimeProvider.notifier).state =
-          Time().nowRounded(ref);
-      ref.read(selectedPickupTimeProvider.notifier).state =
-          Time().nowRounded(ref);
-      return Time().nowRounded(ref);
+      minimumTime = nowRounded;
     }
-  }
 
-  bool isScheduleDateValid() {
-    final currentOrder = ref.watch(currentOrderItemsProvider);
-    final scheduledDate = ref.watch(selectedPickupDateProvider);
-    final deadline = ref.watch(originalMinimumDateProvider);
+    ref.read(originalMinimumTimeProvider.notifier).state = minimumTime;
+    ref.read(selectedPickupTimeProvider.notifier).state = minimumTime;
 
-    if (currentOrder.any((element) => element['isScheduled'] == true)) {
-      if (scheduledDate == null) {
-        return false;
-      }
-
-      return scheduledDate == deadline || scheduledDate.isAfter(deadline!);
-    }
-    return true;
-  }
-
-  bool isSelectedTimeValid() {
-    final selectedTime = ref.watch(selectedPickupTimeProvider);
-    final currentTime = Time().now(ref);
-    final validTime = currentTime.add(const Duration(minutes: 5));
-
-    if (selectedTime == null) {
-      return false;
-    }
-    if (selectedTime.isBefore(validTime)) {
-      return false;
-    }
-    return true;
-  }
-
-  String getUnavailableItemsMessage() {
-    final locations = ref.watch(locationsProvider);
-    final currentOrder = ref.watch(currentOrderItemsProvider);
-    final selectedLocation = ref.watch(selectedLocationProvider);
-    final products = ref.watch(productsProvider);
-
-    return products.when(
-      error: (e, _) => '',
-      loading: () => '',
-      data: (product) => locations.when(
-        error: (e, _) => '',
-        loading: () => '',
-        data: (location) {
-          final unavailableProductIDs = location
-              .firstWhere((element) =>
-                  element.locationID == selectedLocation.locationID)
-              .unavailableProducts;
-
-          final unavailableItems = currentOrder
-              .where(
-                  (item) => unavailableProductIDs.contains(item['productID']))
-              .map((item) =>
-                  product.firstWhere((p) => p.productID == item['productID']))
-              .map((product) => product.name)
-              .toList();
-
-          if (unavailableItems.isEmpty) {
-            return '';
-          } else if (unavailableItems.length == 1) {
-            return '${unavailableItems.first} is not available';
-          } else if (unavailableItems.length == 2) {
-            return '${unavailableItems.first} and ${unavailableItems.last} are not available';
-          } else {
-            final lastItem = unavailableItems.removeLast();
-            final items = unavailableItems.join(', ');
-            return '$items, and $lastItem are not available';
-          }
-        },
-      ),
-    );
+    return minimumTime;
   }
 
   void validateOrderAndPay(BuildContext context, UserModel user) {
-    final errorMessage = OrderHelpers(ref: ref).checkValidity(context);
+    final errorMessage = OrderValidators(ref: ref).checkValidity(context);
 
     if (errorMessage.isNotEmpty) {
-      ModalBottomSheet().partScreen(
-          context: context,
-          builder: (context) => InvalidOrderSheet(error: errorMessage));
-      return;
+      _showInvalidOrderModal(context, errorMessage);
     } else {
-      PaymentsServices(ref: ref, context: context)
-          .chargeCardAndCreateOrder(user)
-          .then(
-            (result) =>
-                PaymentsServices(ref: ref).handlePaymentResult(context, result),
-          );
+      _processPayment(context, user);
     }
   }
 
-  String checkValidity(BuildContext context) {
-    final currentOrder = ref.watch(currentOrderItemsProvider);
+  void _showInvalidOrderModal(BuildContext context, String errorMessage) {
+    ModalBottomSheet().partScreen(
+      context: context,
+      builder: (context) => InvalidOrderSheet(error: errorMessage),
+    );
+  }
 
-    bool isScheduledOrder =
-        currentOrder.every((element) => element['isScheduled'] == true) ||
-            ref.watch(scheduleAllItemsProvider);
-    bool hasScheduledAndForNowItem =
-        ref.watch(scheduledAndNowItemsInCartProvider);
-    DateTime? pickupDate = ref.watch(selectedPickupDateProvider);
-    DateTime? pickupTime = ref.watch(selectedPickupTimeProvider);
-    bool notAcceptingOrders = !Time().acceptingOrders(context, ref) ||
-        !LocationHelper().acceptingOrders(ref);
-    bool notValidScheduleDate = !isScheduleDateValid();
-    bool notValidSelectedTime =
-        ref.watch(scheduleAllItemsProvider) != true && !isSelectedTimeValid();
-    String unavailableItems = getUnavailableItemsMessage();
-
-    HapticFeedback.heavyImpact();
-
-    if ((isScheduledOrder || hasScheduledAndForNowItem) && pickupDate == null) {
-      return 'Your cart contains items that must be scheduled in advance. Please select a pickup date.';
-    }
-
-    if (!isScheduledOrder && notAcceptingOrders) {
-      return '${LocationHelper().selectedLocation(ref).name} is not accepting pickup orders right now.';
-    }
-
-    if (!isScheduledOrder && pickupTime == null) {
-      return 'Please select a pickup time for this order';
-    }
-
-    if (hasScheduledAndForNowItem &&
-        notAcceptingOrders &&
-        notValidScheduleDate) {
-      return 'Please schedule your pickup date for ${LocationHelper().selectedLocation(ref).name}, which is not accepting pickup orders right now.';
-    }
-
-    if (!isScheduledOrder && notValidSelectedTime) {
-      return 'This pickup time is no longer valid.';
-    }
-
-    if (unavailableItems.isNotEmpty) {
-      return '$unavailableItems at ${LocationHelper().selectedLocation(ref).name} right now. Please remove this item from you cart before continuing.';
-    }
-
-    return '';
+  void _processPayment(BuildContext context, UserModel user) {
+    PaymentsServices(ref: ref, context: context)
+        .chargeCardAndCreateOrder(user)
+        .then(
+          (result) =>
+              PaymentsServices(ref: ref).handlePaymentResult(context, result),
+        );
   }
 }

@@ -43,7 +43,8 @@ class PerksDescriptionTileImageRight extends StatelessWidget {
         ),
         Align(
           alignment: Alignment.bottomRight,
-          child: SizedBox(
+          child: Container(
+            margin: const EdgeInsets.only(top: 20),
             height: 200,
             width: 200,
             child: CachedNetworkImage(
@@ -100,7 +101,8 @@ class PerksDescriptionTileImageLeft extends StatelessWidget {
         ),
         Align(
           alignment: Alignment.bottomLeft,
-          child: SizedBox(
+          child: Container(
+            margin: const EdgeInsets.only(top: 20),
             height: 200,
             width: 200,
             child: CachedNetworkImage(

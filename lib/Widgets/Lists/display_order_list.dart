@@ -10,16 +10,14 @@ class DisplayOrderList extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final currentOrder = ref.watch(currentOrderItemsProvider);
-    return Flexible(
-      child: ListView.separated(
-        shrinkWrap: true,
-        physics: const NeverScrollableScrollPhysics(),
-        primary: false,
-        itemCount: currentOrder.length,
-        separatorBuilder: (context, index) => JusDivider().thin(),
-        itemBuilder: (context, index) => OrderTile(
-          orderIndex: index,
-        ),
+    return ListView.separated(
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      primary: false,
+      itemCount: currentOrder.length,
+      separatorBuilder: (context, index) => JusDivider().thin(),
+      itemBuilder: (context, index) => OrderTile(
+        orderIndex: index,
       ),
     );
   }

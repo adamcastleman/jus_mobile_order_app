@@ -3,6 +3,7 @@ import 'package:jus_mobile_order_app/Models/favorites_model.dart';
 import 'package:jus_mobile_order_app/Models/ingredient_model.dart';
 import 'package:jus_mobile_order_app/Models/location_model.dart';
 import 'package:jus_mobile_order_app/Models/membership_details_model.dart';
+import 'package:jus_mobile_order_app/Models/order_model.dart';
 import 'package:jus_mobile_order_app/Models/points_details_model.dart';
 import 'package:jus_mobile_order_app/Models/product_model.dart';
 import 'package:jus_mobile_order_app/Models/user_model.dart';
@@ -14,6 +15,7 @@ import 'package:jus_mobile_order_app/Services/ingredient_services.dart';
 import 'package:jus_mobile_order_app/Services/location_services.dart';
 import 'package:jus_mobile_order_app/Services/membership_details_services.dart';
 import 'package:jus_mobile_order_app/Services/offers_services.dart';
+import 'package:jus_mobile_order_app/Services/order_services.dart';
 import 'package:jus_mobile_order_app/Services/payments_services.dart';
 import 'package:jus_mobile_order_app/Services/points_details_services.dart';
 import 'package:jus_mobile_order_app/Services/product_services.dart';
@@ -70,12 +72,21 @@ final taxableProductsProvider = StreamProvider<List<ProductModel>>(
 final recommendedProductsProvider = StreamProvider<List<ProductModel>>(
     (ref) => ProductServices().recommendedProducts);
 
+final productQuantityLimitProvider =
+    StreamProvider.family<ProductQuantityModel, QuantityLimitParams>(
+        (ref, params) {
+  final productUID = params.productUID;
+  final locationID = params.locationID;
+  return ProductServices(locationID: locationID, productUID: productUID)
+      .quantityLimits;
+});
+
 final membershipDetailsProvider = StreamProvider<MembershipDetailsModel>(
     (ref) => MembershipDetailsServices().membershipDetails);
 
 final favoritesProvider = StreamProvider<List<FavoritesModel>>((ref) {
   final auth = ref.watch(authProvider);
-  return FavoritesServices(uid: auth.value?.uid).favorites;
+  return FavoritesServices(userID: auth.value?.uid).favorites;
 });
 
 final pointsDetailsProvider = StreamProvider<PointsDetailsModel>(
@@ -91,3 +102,6 @@ final offersProvider = StreamProvider((ref) => OffersServices().offers);
 
 final announcementsProvider =
     StreamProvider((ref) => AnnouncementServices().announcements);
+
+final ordersProvider = StreamProvider.family<List<OrderModel>, String>(
+    (ref, userID) => OrderServices(userID: userID).orders);

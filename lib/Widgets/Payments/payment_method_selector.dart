@@ -15,41 +15,39 @@ class PaymentMethodSelector extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final selectedPayment = ref.watch(selectedPaymentMethodProvider);
-    if (selectedPayment.isEmpty) {
-      return AddPaymentMethodTile(
-        title: 'Add payment method',
-        onTap: () {
-          _showChoosePaymentTypeSheet(context);
-        },
-      );
-    } else {
-      return UserProviderWidget(
-        builder: (user) => SelectedPaymentTile(
-          onTap: () {
-            ref.read(pageTypeProvider.notifier).state = PageType.scanPage;
-            user.uid == null
-                ? _showChoosePaymentTypeSheet(context)
-                : _showPaymentSettingsSheet(context);
-          },
-        ),
-      );
-    }
-  }
-
-  void _showChoosePaymentTypeSheet(BuildContext context) {
-    ModalBottomSheet().partScreen(
-      isDismissible: true,
-      isScrollControlled: true,
-      enableDrag: true,
-      context: context,
-      builder: (context) => const ChoosePaymentTypeSheet(),
+    return UserProviderWidget(
+      builder: (user) => selectedPayment.isEmpty
+          ? AddPaymentMethodTile(
+              title: 'Add payment method',
+              onTap: () => _showChoosePaymentTypeSheet(context),
+            )
+          : SelectedPaymentTile(
+              onTap: () {
+                if (user.uid == null) {
+                  _showChoosePaymentTypeSheet(context);
+                } else {
+                  ref.read(pageTypeProvider.notifier).state = PageType.scanPage;
+                  _showPaymentSettingsSheet(context);
+                }
+              },
+            ),
     );
   }
+}
 
-  void _showPaymentSettingsSheet(BuildContext context) {
-    ModalBottomSheet().fullScreen(
-      context: context,
-      builder: (context) => const PaymentSettingsSheet(),
-    );
-  }
+void _showChoosePaymentTypeSheet(BuildContext context) {
+  ModalBottomSheet().partScreen(
+    isDismissible: true,
+    isScrollControlled: true,
+    enableDrag: true,
+    context: context,
+    builder: (context) => const ChoosePaymentTypeSheet(),
+  );
+}
+
+void _showPaymentSettingsSheet(BuildContext context) {
+  ModalBottomSheet().fullScreen(
+    context: context,
+    builder: (context) => const PaymentSettingsSheet(),
+  );
 }

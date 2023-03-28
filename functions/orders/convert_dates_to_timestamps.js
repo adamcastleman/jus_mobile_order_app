@@ -14,7 +14,6 @@ const convertDatesToTimestamps = (orderMap) => {
 
   orderMap.pickupTime = pickupTime;
   orderMap.pickupDate = pickupDate;
-  console.log('Made it to the end');
 };
 
 module.exports = convertDatesToTimestamps;

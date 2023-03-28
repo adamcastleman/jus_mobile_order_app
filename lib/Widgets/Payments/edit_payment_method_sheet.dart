@@ -1,14 +1,14 @@
-import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:jus_mobile_order_app/Helpers/spacing_widgets.dart';
 import 'package:jus_mobile_order_app/Models/payments_model.dart';
 import 'package:jus_mobile_order_app/Providers/ProviderWidgets/user_provider_widget.dart';
 import 'package:jus_mobile_order_app/Providers/payments_providers.dart';
-import 'package:jus_mobile_order_app/Services/payments_services.dart';
-import 'package:jus_mobile_order_app/Widgets/Buttons/elevated_button_medium.dart';
-import 'package:jus_mobile_order_app/Widgets/Buttons/outline_button_medium.dart';
 import 'package:jus_mobile_order_app/Widgets/General/sheet_notch.dart';
+import 'package:jus_mobile_order_app/Widgets/Payments/card_info_fields.dart';
+import 'package:jus_mobile_order_app/Widgets/Payments/default_payment_checkbox_tile.dart';
+import 'package:jus_mobile_order_app/Widgets/Payments/delete_payment_method_button.dart';
+import 'package:jus_mobile_order_app/Widgets/Payments/update_payment_method_button.dart';
 
 class EditPaymentMethodSheet extends ConsumerWidget {
   final PaymentsModel card;
@@ -21,7 +21,7 @@ class EditPaymentMethodSheet extends ConsumerWidget {
       builder: (user) => Padding(
         padding: MediaQuery.of(context).viewInsets,
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 12.0),
+          padding: const EdgeInsets.only(bottom: 25.0, left: 12, right: 12),
           child: Wrap(
             children: [
               const Center(
@@ -37,123 +37,33 @@ class EditPaymentMethodSheet extends ConsumerWidget {
               Padding(
                 padding: const EdgeInsets.only(bottom: 5.0),
                 child: Center(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Text(
-                        'Card Number',
-                        style: TextStyle(fontSize: 16),
-                      ),
-                      TextFormField(
-                        initialValue:
-                            '**** **** **** **** ${card.lastFourDigits}',
-                        readOnly: true,
-                      ),
-                    ],
+                  child: CardInfoFields(
+                    card: card,
                   ),
                 ),
               ),
-              Padding(
-                padding: const EdgeInsets.only(bottom: 25.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    SizedBox(
-                      width: MediaQuery.of(context).size.width * 0.40,
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const Text(
-                            'Exp.',
-                            style: TextStyle(fontSize: 16),
-                          ),
-                          TextFormField(
-                            readOnly: true,
-                            initialValue:
-                                '${card.expirationMonth}/${card.expirationYear}',
-                          ),
-                        ],
+              card.defaultPayment
+                  ? Spacing().vertical(250)
+                  : Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 12.0),
+                      child: DefaultPaymentCheckbox(
+                        value:
+                            ref.watch(defaultPaymentCheckboxProvider) ?? false,
+                        onChanged: (value) => ref
+                            .read(defaultPaymentCheckboxProvider.notifier)
+                            .state = value,
                       ),
                     ),
-                    SizedBox(
-                      width: MediaQuery.of(context).size.width * 0.40,
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const Text(
-                            'CVV',
-                            style: TextStyle(fontSize: 16),
-                          ),
-                          TextFormField(
-                            readOnly: true,
-                            initialValue: '***',
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              Spacing().vertical(20),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
-                  const Text(
-                    'Nickname',
-                    style: TextStyle(fontSize: 16),
+                  DeletePaymentMethodButton(
+                    cardID: card.uid,
                   ),
-                  TextFormField(
-                    initialValue: card.cardNickname,
-                    onChanged: (value) {
-                      ref.read(cardNicknameProvider.notifier).state = value;
-                    },
-                    validator: (value) =>
-                        value!.isEmpty ? 'Nickname must not be empty' : null,
-                  ),
-                  card.defaultPayment
-                      ? Spacing().vertical(40)
-                      : Spacing().vertical(20),
-                  card.defaultPayment
-                      ? const SizedBox()
-                      : CheckboxListTile(
-                          title: const AutoSizeText(
-                            'Set as default payment method',
-                            maxLines: 1,
-                          ),
-                          activeColor: Colors.black,
-                          value: false,
-                          onChanged: (value) => true),
-                  card.defaultPayment
-                      ? const SizedBox()
-                      : Spacing().vertical(20),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      MediumOutlineButton(
-                          buttonText: 'Delete Card', onPressed: () {}),
-                      MediumElevatedButton(
-                        buttonText: 'Save',
-                        onPressed: () {
-                          ref.watch(cardNicknameProvider).isEmpty
-                              ? ref.read(cardNicknameProvider.notifier).state =
-                                  card.cardNickname
-                              : ref.read(cardNicknameProvider.notifier).state =
-                                  ref.read(cardNicknameProvider);
-                          PaymentsServices(ref: ref, userID: user.uid)
-                              .updateCardNickname(card.uid);
-
-                          Navigator.pop(context);
-                          // ref.read(defaultPaymentSelectedProvider) == true
-                          //     ? PaymentsServices(ref: ref, userID: user.uid)
-                          //         .updateDefaultPayment(card.uid)
-                          //     : null;
-                        },
-                      ),
-                    ],
-                  ),
-                  Spacing().vertical(60),
+                  UpdatePaymentMethodButton(card: card),
                 ],
               ),
+              Spacing().vertical(60),
             ],
           ),
         ),

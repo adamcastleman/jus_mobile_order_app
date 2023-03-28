@@ -53,7 +53,7 @@ class NameFavoriteItemSheet extends ConsumerWidget {
                         onPressed: () {
                           HapticFeedback.lightImpact();
                           Navigator.pop(context);
-                          _addItemToFavorites(ref, user);
+                          _addItemToFavorites(context, ref, user);
                         },
                       ),
                     ],
@@ -67,9 +67,9 @@ class NameFavoriteItemSheet extends ConsumerWidget {
     );
   }
 
-  _addItemToFavorites(WidgetRef ref, UserModel user) {
-    FavoritesServices(ref: ref, uid: user.uid!)
-        .addToFavorites(addIngredients(ref), addToppings(ref));
+  _addItemToFavorites(BuildContext context, WidgetRef ref, UserModel user) {
+    FavoritesServices(ref: ref)
+        .addToFavorites(context, addIngredients(ref), addToppings(ref));
   }
 
   addIngredients(WidgetRef ref) {

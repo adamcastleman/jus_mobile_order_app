@@ -4,15 +4,13 @@ import 'package:flutter/services.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:jus_mobile_order_app/Helpers/divider.dart';
-import 'package:jus_mobile_order_app/Helpers/error.dart';
-import 'package:jus_mobile_order_app/Helpers/loading.dart';
 import 'package:jus_mobile_order_app/Helpers/locations.dart';
 import 'package:jus_mobile_order_app/Helpers/orders.dart';
 import 'package:jus_mobile_order_app/Helpers/pickers.dart';
 import 'package:jus_mobile_order_app/Helpers/spacing_widgets.dart';
 import 'package:jus_mobile_order_app/Helpers/time.dart';
 import 'package:jus_mobile_order_app/Providers/ProviderWidgets/products_provider_widget.dart';
-import 'package:jus_mobile_order_app/Providers/future_providers.dart';
+import 'package:jus_mobile_order_app/Providers/ProviderWidgets/timezone_provider_widget.dart';
 import 'package:jus_mobile_order_app/Providers/order_providers.dart';
 
 class OrderPickupDateTile extends ConsumerWidget {
@@ -20,12 +18,8 @@ class OrderPickupDateTile extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final deviceTime = ref.watch(deviceTimezoneProvider);
-
-    return deviceTime.when(
-      loading: () => const Loading(),
-      error: (e, _) => ShowError(error: e.toString()),
-      data: (deviceTimezone) => ProductsProviderWidget(
+    return TimezoneProviderWidget(
+      builder: (deviceTimezone) => ProductsProviderWidget(
         builder: (products) => Column(
           children: [
             JusDivider().thin(),
@@ -59,7 +53,6 @@ class OrderPickupDateTile extends ConsumerWidget {
               ),
               onTap: () {
                 HapticFeedback.lightImpact();
-                OrderHelpers(ref: ref).setHoursNoticeProvider(products);
                 openScheduleOrLocationPicker(
                   context,
                   ref,

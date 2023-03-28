@@ -9,43 +9,40 @@ class FavoritesCardGuest extends ConsumerWidget {
   const FavoritesCardGuest({super.key});
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return UnconstrainedBox(
-      child: SizedBox(
-        height: 250,
-        width: MediaQuery.of(context).size.width * 0.9,
-        child: Card(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 15.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                Text(
-                  'Your favorites are waiting.',
-                  style: Theme.of(context).textTheme.headlineSmall,
-                ),
-                Spacing().vertical(25),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 22.0),
-                  child: Text(
-                    'If you order the same things every time, create an account to save your favorites so it\'s faster and easier to order next time.',
-                    style: Theme.of(context).textTheme.bodyMedium,
-                    textAlign: TextAlign.center,
-                  ),
-                ),
-                Spacing().vertical(25),
-                SmallElevatedButton(
-                  buttonText: 'Create Account',
-                  onPressed: () {
-                    ModalBottomSheet().fullScreen(
-                      context: context,
-                      builder: (context) => const RegisterPage(),
-                    );
-                  },
-                ),
-              ],
+    return Container(
+      color: Colors.white,
+      height: 250,
+      width: MediaQuery.of(context).size.width * 0.95,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 15.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [
+            Text(
+              'Your favorites are waiting.',
+              style: Theme.of(context).textTheme.headlineSmall,
             ),
-          ),
+            Spacing().vertical(25),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 22.0),
+              child: Text(
+                'If you order the same things every time, create an account to save your favorites so it\'s faster and easier to order next time.',
+                style: Theme.of(context).textTheme.bodyMedium,
+                textAlign: TextAlign.center,
+              ),
+            ),
+            Spacing().vertical(25),
+            SmallElevatedButton(
+              buttonText: 'Create Account',
+              onPressed: () {
+                ModalBottomSheet().fullScreen(
+                  context: context,
+                  builder: (context) => const RegisterPage(),
+                );
+              },
+            ),
+          ],
         ),
       ),
     );

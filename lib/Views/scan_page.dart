@@ -24,7 +24,7 @@ class ScanPage extends HookConsumerWidget {
 
     return UserProviderWidget(builder: (user) {
       if (user.uid == null) {
-        return const PointsDetailPage(isScanPage: true);
+        return const PointsDetailPage(closeButton: false);
       }
       return PointsDetailsProviderWidget(
         builder: (points) => Scaffold(

@@ -11,6 +11,7 @@ import 'package:jus_mobile_order_app/Helpers/spacing_widgets.dart';
 import 'package:jus_mobile_order_app/Providers/ProviderWidgets/favorites_provider_widget.dart';
 import 'package:jus_mobile_order_app/Providers/ProviderWidgets/ingredients_provider_widget.dart';
 import 'package:jus_mobile_order_app/Providers/ProviderWidgets/products_provider_widget.dart';
+import 'package:jus_mobile_order_app/Providers/location_providers.dart';
 import 'package:jus_mobile_order_app/Providers/product_providers.dart';
 import 'package:jus_mobile_order_app/Views/product_detail_page.dart';
 
@@ -34,7 +35,6 @@ class FavoritesCard extends ConsumerWidget {
                 borderRadius: BorderRadius.circular(8.0),
               ),
               tappable: false,
-              transitionType: ContainerTransitionType.fadeThrough,
               transitionDuration: const Duration(milliseconds: 600),
               openBuilder: (context, open) {
                 return ProductDetailPage(
@@ -44,7 +44,7 @@ class FavoritesCard extends ConsumerWidget {
               closedBuilder: (context, close) {
                 return InkWell(
                   onTap: () {
-                    if (LocationHelper().selectedLocation(ref) == null) {
+                    if (ref.read(selectedLocationProvider) == null) {
                       LocationHelper().chooseLocation(context, ref);
                       null;
                     } else {
@@ -78,11 +78,14 @@ class FavoritesCard extends ConsumerWidget {
                           vertical: 12.0, horizontal: 12.0),
                       child: Column(
                         children: [
-                          SizedBox(
-                            height: 140,
-                            width: 100,
-                            child: CachedNetworkImage(
-                              imageUrl: currentProduct.image,
+                          Hero(
+                            tag: 'product-image',
+                            child: SizedBox(
+                              height: 130,
+                              width: 100,
+                              child: CachedNetworkImage(
+                                imageUrl: currentProduct.image,
+                              ),
                             ),
                           ),
                           Spacing().vertical(15),

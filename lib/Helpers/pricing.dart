@@ -15,22 +15,22 @@ class Pricing {
     ProductModel product,
   ) {
     final selectedSize = ref!.watch(itemSizeProvider);
-    final daysQuantity = ref!.watch(daysQuantityProvider);
+    final scheduledQuantity = ref!.watch(scheduledQuantityProvider);
 
     return (product.price[selectedSize]['amount'] / 100 +
             totalCostForExtraChargeIngredientsForNonMembers()) *
-        daysQuantity;
+        scheduledQuantity;
   }
 
   double productDetailPriceForMembers(
     ProductModel product,
   ) {
     final selectedSize = ref!.watch(itemSizeProvider);
-    final daysQuantity = ref!.watch(daysQuantityProvider);
+    final scheduledQuantity = ref!.watch(scheduledQuantityProvider);
 
     return (product.memberPrice[selectedSize]['amount'] / 100 +
             totalCostForExtraChargeIngredientsForMembers()) *
-        daysQuantity;
+        scheduledQuantity;
   }
 
   String orderTileProductPriceForNonMembers(
@@ -40,7 +40,7 @@ class Pricing {
         currentProduct.price[currentOrder[index]['itemSize']]['amount'] / 100 +
             extraChargeIngredientOnSingleItemForNonMembers(
                 currentOrder[index]['selectedIngredients']);
-    price *= currentOrder[index]['daysQuantity'];
+    price *= currentOrder[index]['scheduledQuantity'];
     String priceString = price.toStringAsFixed(2);
     String unit = currentOrder[index]['itemQuantity'] > 1 ? '/ea' : '';
     return '\$$priceString$unit';
@@ -54,7 +54,7 @@ class Pricing {
                 100 +
             extraChargeIngredientOnSingleItemForMembers(
                 currentOrder[index]['selectedIngredients'])) *
-        currentOrder[index]['daysQuantity'];
+        currentOrder[index]['scheduledQuantity'];
     return '\$${price.toStringAsFixed(2)}${currentOrder[index]['itemQuantity'] > 1 ? '/ea' : ''}';
   }
 
@@ -87,7 +87,7 @@ class Pricing {
 
   double individualProductSavingsForMembers(ProductModel product) {
     final quantity = ref!.watch(itemQuantityProvider);
-    final daysQuantity = ref!.watch(daysQuantityProvider);
+    final scheduledQuantity = ref!.watch(scheduledQuantityProvider);
     final selectedSize = ref!.watch(itemSizeProvider);
 
     return (product.price[selectedSize]['amount'] / 100 +
@@ -95,7 +95,7 @@ class Pricing {
             product.memberPrice[selectedSize]['amount'] / 100 +
             Pricing(ref: ref).totalCostForExtraChargeIngredientsForMembers()) *
         quantity *
-        daysQuantity;
+        scheduledQuantity;
   }
 
   double totalCostForExtraChargeIngredientsForNonMembers() {

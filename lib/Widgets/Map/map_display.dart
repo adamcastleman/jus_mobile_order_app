@@ -46,8 +46,6 @@ class DisplayGoogleMap extends HookConsumerWidget {
     );
   }
 
-
-
   void _handleMarkers(
       WidgetRef ref,
       ValueNotifier<GoogleMapController?> mapController,
@@ -80,6 +78,7 @@ class DisplayGoogleMap extends HookConsumerWidget {
       ),
       markers: markers,
       onMapCreated: (controller) {
+        ref.read(googleMapControllerProvider.notifier).state = controller;
         MapInitializers(ref: ref).onMapCreated(
           controller,
           mapStyle,

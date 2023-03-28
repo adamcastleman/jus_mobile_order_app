@@ -1,7 +1,5 @@
 import 'package:email_validator/email_validator.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:jus_mobile_order_app/Helpers/error.dart';
 import 'package:jus_mobile_order_app/Helpers/modal_bottom_sheets.dart';
@@ -11,8 +9,10 @@ import 'package:jus_mobile_order_app/Providers/auth_providers.dart';
 import 'package:jus_mobile_order_app/Services/auth_services.dart';
 import 'package:jus_mobile_order_app/Views/forgot_password_page.dart';
 import 'package:jus_mobile_order_app/Views/register_page.dart';
+import 'package:jus_mobile_order_app/Widgets/Buttons/close_button.dart';
 import 'package:jus_mobile_order_app/Widgets/Buttons/elevated_button_large.dart';
 import 'package:jus_mobile_order_app/Widgets/Buttons/elevated_button_large_loading.dart';
+import 'package:jus_mobile_order_app/Widgets/General/text_fields.dart';
 
 class LoginPage extends ConsumerWidget {
   const LoginPage({super.key});
@@ -30,8 +30,8 @@ class LoginPage extends ConsumerWidget {
       body: SingleChildScrollView(
         primary: false,
         physics: const ClampingScrollPhysics(),
-        padding:
-            EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
+        padding: EdgeInsets.only(
+            top: 30.0, bottom: MediaQuery.of(context).viewInsets.bottom),
         child: Column(
           children: [
             Padding(
@@ -43,13 +43,12 @@ class LoginPage extends ConsumerWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    InkWell(
-                      child: const Icon(CupertinoIcons.clear_circled),
-                      onTap: () {
-                        Navigator.pop(context);
-                      },
+                    const Align(
+                      alignment: Alignment.topRight,
+                      child: JusCloseButton(
+                        removePadding: true,
+                      ),
                     ),
-                    Spacing().vertical(25),
                     Text(
                       'Sign in',
                       style: Theme.of(context).textTheme.headlineSmall,
@@ -58,41 +57,21 @@ class LoginPage extends ConsumerWidget {
                     const Text(
                       'Sign in to collect and redeem points, access your member code, save favorites and more.',
                     ),
-                    Spacing().vertical(25),
-                    TextFormField(
-                      initialValue: email,
-                      decoration: const InputDecoration(
-                        hintText: 'Email',
+                    Spacing().vertical(15),
+                    const Text(
+                      'If you had a registered account on our legacy website, '
+                      'you must create a new account.',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
                       ),
-                      onChanged: (value) =>
-                          ref.read(emailProvider.notifier).state = value,
-                      autocorrect: false,
-                      autofocus: true,
-                      keyboardType: TextInputType.emailAddress,
-                      inputFormatters: [
-                        FilteringTextInputFormatter.deny(RegExp(r'\s')),
-                      ],
                     ),
-                    emailError == null
-                        ? const SizedBox()
-                        : Padding(
-                            padding: const EdgeInsets.only(top: 5.0),
-                            child: ShowError(
-                              error: emailError,
-                            ),
-                          ),
+                    Spacing().vertical(25),
+                    JusTextField(ref: ref).email(autofocus: true),
+                    JusTextField(ref: ref).error(emailError),
                     Spacing().vertical(15),
                     Stack(
                       children: [
-                        TextFormField(
-                          initialValue: password,
-                          onChanged: (value) =>
-                              ref.read(passwordProvider.notifier).state = value,
-                          decoration: const InputDecoration(
-                            hintText: 'Password',
-                          ),
-                          obscureText: true,
-                        ),
+                        JusTextField(ref: ref).password(),
                         Padding(
                           padding: const EdgeInsets.only(right: 4.0),
                           child: Align(
@@ -122,14 +101,7 @@ class LoginPage extends ConsumerWidget {
                         ),
                       ],
                     ),
-                    passwordError == null
-                        ? const SizedBox()
-                        : Padding(
-                            padding: const EdgeInsets.only(top: 5.0),
-                            child: ShowError(
-                              error: passwordError,
-                            ),
-                          ),
+                    JusTextField(ref: ref).error(passwordError),
                     loginError == null
                         ? Spacing().vertical(40)
                         : Spacing().vertical(20),
@@ -152,7 +124,7 @@ class LoginPage extends ConsumerWidget {
                               loginUser(context: context, ref: ref);
                             },
                           ),
-                    Spacing().vertical(10),
+                    Spacing().vertical(5),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
@@ -187,12 +159,12 @@ class LoginPage extends ConsumerWidget {
       required String email,
       required String password}) {
     if (!EmailValidator.validate(email)) {
-      Validator().email(ref);
+      FormValidator().email(ref);
     } else {
       ref.read(emailErrorProvider.notifier).state = null;
     }
     if (password.isEmpty) {
-      Validator().passwordRegister(ref);
+      FormValidator().passwordRegister(ref);
     } else {
       ref.read(passwordErrorProvider.notifier).state = null;
     }

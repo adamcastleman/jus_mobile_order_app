@@ -1,5 +1,6 @@
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:jus_mobile_order_app/Helpers/modal_bottom_sheets.dart';
@@ -19,10 +20,25 @@ class FavoriteButton extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return UserProviderWidget(
-      builder: (user) => FavoritesProviderWidget(
+      builder: (user) => user.uid == null
+          ? _guestFavoriteButton(context) : FavoritesProviderWidget(
         builder: (favorites) =>
-            _buildFavoriteButton(context, ref, user, favorites),
+             _buildFavoriteButton(context, ref, user, favorites),
       ),
+    );
+  }
+
+  Widget _guestFavoriteButton(BuildContext context) {
+    return IconButton(
+      icon: const Icon(FontAwesomeIcons.heart),
+      iconSize: 22,
+      onPressed: () {
+        HapticFeedback.lightImpact();
+        ModalBottomSheet().fullScreen(
+          context: context,
+          builder: (context) => const RegisterPage(),
+        );
+      },
     );
   }
 
@@ -56,7 +72,8 @@ class FavoriteButton extends ConsumerWidget {
         icon: const Icon(FontAwesomeIcons.heart),
         iconSize: 22,
         onPressed: () {
-          determineFavoriteOrRegister(context, user, ref);
+          HapticFeedback.lightImpact();
+          nameFavorite(context, user, ref);
         },
       );
     } else {
@@ -64,30 +81,23 @@ class FavoriteButton extends ConsumerWidget {
         icon: const Icon(FontAwesomeIcons.solidHeart),
         iconSize: 22,
         onPressed: () {
-          FavoritesServices(uid: user.uid!)
-              .deleteFromFavorites(docID: matchingFavorite.first.uid);
+          HapticFeedback.lightImpact();
+          FavoritesServices().deleteFromFavorites(
+              context: context, docID: matchingFavorite.first.uid);
         },
       );
     }
   }
 
-  determineFavoriteOrRegister(
-      BuildContext context, UserModel user, WidgetRef ref) {
-    if (user.uid == null) {
-      return ModalBottomSheet().fullScreen(
-        context: context,
-        builder: (context) => const RegisterPage(),
-      );
-    } else {
-      ref.read(favoriteItemNameProvider.notifier).state = product.name;
-      ModalBottomSheet().partScreen(
-        isScrollControlled: true,
-        isDismissible: true,
-        context: context,
-        builder: (context) => NameFavoriteItemSheet(
-          currentProduct: product,
-        ),
-      );
-    }
+  nameFavorite(BuildContext context, UserModel user, WidgetRef ref) {
+    ref.read(favoriteItemNameProvider.notifier).state = product.name;
+    ModalBottomSheet().partScreen(
+      isScrollControlled: true,
+      isDismissible: true,
+      context: context,
+      builder: (context) => NameFavoriteItemSheet(
+        currentProduct: product,
+      ),
+    );
   }
 }

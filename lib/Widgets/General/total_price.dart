@@ -224,8 +224,8 @@ class TotalPrice extends ConsumerWidget {
       return const SizedBox();
     }
 
-    final isJusCard =
-        ref.watch(selectedPaymentMethodProvider)['isGiftCard'] ?? false;
+    final isJusCard = ref.watch(selectedPaymentMethodProvider)['isGiftCard'];
+
     final pointsMultipleText =
         pointsHelper.determinePointsMultipleText(isJusCard: isJusCard);
 

@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:jus_mobile_order_app/Helpers/error.dart';
-import 'package:jus_mobile_order_app/Helpers/loading.dart';
 import 'package:jus_mobile_order_app/Helpers/orders.dart';
+import 'package:jus_mobile_order_app/Helpers/payments.dart';
 import 'package:jus_mobile_order_app/Helpers/spacing_widgets.dart';
 import 'package:jus_mobile_order_app/Models/user_model.dart';
+import 'package:jus_mobile_order_app/Providers/ProviderWidgets/user_provider_widget.dart';
 import 'package:jus_mobile_order_app/Providers/order_providers.dart';
-import 'package:jus_mobile_order_app/Providers/stream_providers.dart';
 import 'package:jus_mobile_order_app/Providers/theme_providers.dart';
+import 'package:jus_mobile_order_app/Widgets/Buttons/elevated_button_large.dart';
 import 'package:jus_mobile_order_app/Widgets/Buttons/elevated_button_large_loading.dart';
 import 'package:jus_mobile_order_app/Widgets/General/total_price.dart';
 
@@ -20,14 +20,14 @@ class TipSheet extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final currentUser = ref.watch(currentUserProvider);
     final backgroundColor = ref.watch(backgroundColorProvider);
+    final selectedPayment = ref.watch(selectedPaymentMethodProvider);
     final loading = ref.watch(loadingProvider);
     List<int> percentAmounts = [0, 10, 15, 20];
-    return currentUser.when(
-      error: (e, _) => ShowError(error: e.toString()),
-      loading: () => const Loading(),
-      data: (user) => Wrap(
+    final selectedPaymentText =
+        PaymentsHelper().displaySelectedCardTextFromMap(selectedPayment);
+    return UserProviderWidget(
+      builder: (user) => Wrap(
         children: [
           Container(
             decoration: BoxDecoration(
@@ -54,17 +54,15 @@ class TipSheet extends ConsumerWidget {
                 Spacing().vertical(40),
                 loading == true
                     ? const LargeElevatedLoadingButton()
-                    : const SizedBox(),
-                // LargeElevatedButton(
-                //         textWidget: const CreditCardName(
-                //           isPayButton: true,
-                //           isScanPage: false,
-                //         ),
-                //         onPressed: () {
-                //           ref.read(loadingProvider.notifier).state = true;
-                //           addPaymentOrValidate(context, ref, user);
-                //         },
-                //       ),
+                    : LargeElevatedButton(
+                        buttonText: selectedPayment.isEmpty
+                            ? 'Add payment method'
+                            : selectedPaymentText,
+                        onPressed: () {
+                          ref.read(loadingProvider.notifier).state = true;
+                          addPaymentOrValidate(context, ref, user);
+                        },
+                      ),
               ],
             ),
           ),

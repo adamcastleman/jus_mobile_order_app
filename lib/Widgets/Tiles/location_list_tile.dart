@@ -23,6 +23,7 @@ class LocationListTile extends ConsumerWidget {
     final visibleLocations = ref.watch(locationsWithinMapBoundsProvider);
     final currentLocation = ref.watch(currentLocationLatLongProvider);
     final selectedLocation = ref.watch(selectedLocationProvider);
+    final mapController = ref.read(googleMapControllerProvider);
 
     return ListTile(
       shape: OutlineInputBorder(
@@ -92,7 +93,10 @@ class LocationListTile extends ConsumerWidget {
       onTap: () {
         HapticFeedback.lightImpact();
         var location = visibleLocations[index];
+        ref.read(currentLocationLatLongProvider.notifier).state =
+            LatLng(location.latitude, location.longitude);
         setLocationData(ref, location);
+        _animateCameraToMarker(ref, mapController!);
       },
     );
   }
@@ -175,6 +179,17 @@ class LocationListTile extends ConsumerWidget {
   setLatAndLongOfLocation(WidgetRef ref, location) {
     ref.read(currentLocationLatLongProvider.notifier).state =
         LatLng(location.latitude, location.longitude);
+  }
+
+  _animateCameraToMarker(WidgetRef ref, GoogleMapController mapController) {
+    mapController.animateCamera(
+      CameraUpdate.newCameraPosition(
+        CameraPosition(
+          target: ref.watch(currentLocationLatLongProvider),
+          zoom: 11.0,
+        ),
+      ),
+    );
   }
 
   setOpenAndCloseTime(WidgetRef ref, location) {

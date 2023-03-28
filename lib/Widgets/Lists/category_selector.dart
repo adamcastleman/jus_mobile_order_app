@@ -20,7 +20,6 @@ class CategorySelector extends HookConsumerWidget {
         ? ref.watch(taxableProductsProvider)
         : ref.watch(productsProvider);
     final currentCategory = ref.watch(currentCategoryProvider);
-    final selectedCategory = ref.watch(tappedCategoryProvider);
     final controller = useScrollController();
 
     return SizedBox(

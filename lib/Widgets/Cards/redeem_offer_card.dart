@@ -80,7 +80,7 @@ class RedeemOfferCard extends ConsumerWidget {
                         color: Colors.green,
                       ),
                       Text(
-                        '${PointsHelper(ref: ref).determinePointsMultipleText(isJusCard: ref.watch(selectedPaymentMethodProvider)['isGiftCard'] ?? false)}/\$1',
+                        '${PointsHelper(ref: ref).determinePointsMultipleText(isJusCard: ref.watch(selectedPaymentMethodProvider)['isGiftCard'])}/\$1',
                         style: const TextStyle(fontSize: 11),
                       ),
                     ],
@@ -161,12 +161,12 @@ class RedeemOfferCard extends ConsumerWidget {
   int calculateItemQuantity(
       WidgetRef ref, int index, List<OffersModel> offers) {
     int itemQuantity = 0;
-    int daysQuantity = 1;
+    int scheduledQuantity = 1;
     int total = 0;
     for (var item in getQualifyingItems(ref, index, offers)) {
       itemQuantity = item['itemQuantity'] as int;
-      daysQuantity = item['daysQuantity'] as int;
-      total += itemQuantity * daysQuantity;
+      scheduledQuantity = item['scheduledQuantity'] as int;
+      total += itemQuantity * scheduledQuantity;
     }
     return total;
   }
@@ -257,7 +257,7 @@ class RedeemOfferCard extends ConsumerWidget {
       );
 
       matchingCost['itemQuantity'] +=
-          product['itemQuantity'] * product['daysQuantity'];
+          product['itemQuantity'] * product['scheduledQuantity'];
     }
 
     final updatedMap = <String, Map<String, dynamic>>{};

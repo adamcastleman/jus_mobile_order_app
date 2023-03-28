@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:jus_mobile_order_app/Helpers/spacing_widgets.dart';
 import 'package:jus_mobile_order_app/Models/product_model.dart';
+import 'package:jus_mobile_order_app/Providers/ProviderWidgets/product_quantity_limit_provider.dart';
 
 import '../../Providers/product_providers.dart';
 
@@ -20,19 +21,22 @@ class OrderTileSizeDisplay extends ConsumerWidget {
         (!currentProduct.isModifiable && !currentProduct.hasToppings)) {
       return const SizedBox();
     } else if (currentProduct.isScheduled) {
-      return Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Spacing().vertical(4),
-          Text(
-            'Quantity: ${currentOrder[orderIndex]['itemQuantity']}',
-            style: style,
-          ),
-          Text(
-            'Number of Days: ${currentOrder[orderIndex]['daysQuantity'] ?? ''}',
-            style: style,
-          ),
-        ],
+      return ProductQuantityLimitProviderWidget(
+        productUID: currentProduct.uid,
+        builder: (quantityLimit) => Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Spacing().vertical(4),
+            Text(
+              'Quantity: ${currentOrder[orderIndex]['itemQuantity']}',
+              style: style,
+            ),
+            Text(
+              '${quantityLimit.scheduledProductDescriptor}: ${currentOrder[orderIndex]['scheduledQuantity'] ?? ''}',
+              style: style,
+            ),
+          ],
+        ),
       );
     } else {
       return Column(

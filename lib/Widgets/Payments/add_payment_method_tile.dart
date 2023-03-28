@@ -12,7 +12,6 @@ class AddPaymentMethodTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListTile(
-      tileColor: Colors.black,
       leading: const AddPaymentMethodIcon(),
       title: Text(title),
       trailing: const ChevronRightIcon(),

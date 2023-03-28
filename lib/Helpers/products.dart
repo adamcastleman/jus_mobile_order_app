@@ -19,17 +19,18 @@ class ProductHelpers {
     final standardIngredients = ref.watch(standardIngredientsProvider);
     final selectedIngredients = ref.watch(selectedIngredientsProvider);
     final itemQuantity = ref.watch(itemQuantityProvider);
-    final daysQuantity = ref.watch(daysQuantityProvider);
+    final scheduledQuantity = ref.watch(scheduledQuantityProvider);
     final itemSize = ref.watch(itemSizeProvider);
     final hasToppings = ref.watch(productHasToppingsProvider);
     final selectedToppings = ref.watch(selectedToppingsProvider);
     final allergies = ref.watch(selectedAllergiesProvider);
     return {
       'productID': product.productID,
+      'productUID': product.uid,
       'isScheduled': product.isScheduled,
       'isModifiable': product.isModifiable,
       'itemQuantity': itemQuantity,
-      'daysQuantity': daysQuantity,
+      'scheduledQuantity': scheduledQuantity,
       'itemSize': itemSize,
       'itemKey': ref.watch(itemKeyProvider),
       'points': PointsHelper(ref: ref)
@@ -62,7 +63,7 @@ class ProductHelpers {
 
   addCost(ProductModel product, PointsDetailsModel points) {
     final itemQuantity = ref.watch(itemQuantityProvider);
-    final daysQuantity = ref.watch(daysQuantityProvider);
+    final scheduledQuantity = ref.watch(scheduledQuantityProvider);
     final itemSize = ref.watch(itemSizeProvider);
 
     ref.read(currentOrderCostProvider.notifier).addCost({
@@ -76,12 +77,12 @@ class ProductHelpers {
       'productID': product.productID,
       'itemKey': ref.watch(itemKeyProvider),
       'itemQuantity': itemQuantity,
-      'daysQuantity': daysQuantity,
+      'scheduledQuantity': scheduledQuantity,
     });
 
     ref.invalidate(itemQuantityProvider);
     ref.invalidate(selectedIngredientsProvider);
-    ref.invalidate(daysQuantityProvider);
+    ref.invalidate(scheduledQuantityProvider);
     ref.invalidate(itemSizeProvider);
     ref.invalidate(editOrderProvider);
     ref.invalidate(productHasToppingsProvider);
@@ -242,32 +243,43 @@ class ProductHelpers {
   }
 
   generateProductList() {
+    final currentUser = ref.watch(currentUserProvider);
     final currentOrder = ref.watch(currentOrderItemsProvider);
+    final currentOrderCosts = ref.watch(currentOrderCostProvider);
     final products = ref.watch(productsProvider);
     final ingredients = ref.watch(ingredientsProvider);
 
-    return ingredients.when(
+    return currentUser.when(
       error: (e, _) => ShowError(error: e.toString()),
       loading: () => const Loading(),
-      data: (ingredients) => products.when(
+      data: (user) => ingredients.when(
         error: (e, _) => ShowError(error: e.toString()),
         loading: () => const Loading(),
-        data: (product) {
-          return _buildFinalList(currentOrder, product, ingredients);
-        },
+        data: (ingredients) => products.when(
+          error: (e, _) => ShowError(error: e.toString()),
+          loading: () => const Loading(),
+          data: (product) {
+            return _buildFinalList(
+                user, currentOrder, currentOrderCosts, product, ingredients);
+          },
+        ),
       ),
     );
   }
 
-  List _buildFinalList(List currentOrder, List<ProductModel> product,
+  List _buildFinalList(
+      UserModel user,
+      List currentOrder,
+      List currentOrderCosts,
+      List<ProductModel> product,
       List<IngredientModel> ingredients) {
     List finalList = [];
 
     for (var index = 0; index < currentOrder.length; index++) {
       final currentProduct =
           _findProduct(currentOrder[index]['productID'], product);
-      final itemMap = _buildItemMap(
-          currentOrder, index, currentProduct, product, ingredients);
+      final itemMap = _buildItemMap(user, currentOrder, currentOrderCosts,
+          index, currentProduct, product, ingredients);
       finalList.add(itemMap);
     }
 
@@ -279,7 +291,9 @@ class ProductHelpers {
   }
 
   Map _buildItemMap(
+    UserModel user,
     List currentOrder,
+    List currentOrderCosts,
     int index,
     ProductModel currentProduct,
     List<ProductModel> product,
@@ -288,11 +302,22 @@ class ProductHelpers {
     String productName = currentProduct.name;
     int productID = currentProduct.productID;
     int itemQuantity = currentOrder[index]['itemQuantity'];
-    int? daysQuantity =
-        currentProduct.isScheduled ? currentOrder[index]['daysQuantity'] : null;
-    String? itemSize = !currentProduct.isScheduled
-        ? currentProduct.price[currentOrder[index]['itemSize']]['name']
+    int? scheduledQuantity = currentProduct.isScheduled
+        ? currentOrder[index]['scheduledQuantity']
         : null;
+    String? itemSize =
+        !currentProduct.isScheduled && currentProduct.isModifiable
+            ? currentProduct.price[currentOrder[index]['itemSize']]['name']
+            : null;
+
+    int itemPriceNonMember = currentOrderCosts
+        .firstWhere((element) =>
+            element['itemKey'] == currentOrder[index]['itemKey'])['price']
+        .toInt();
+    int itemPriceMember = currentOrderCosts
+        .firstWhere((element) =>
+            element['itemKey'] == currentOrder[index]['itemKey'])['memberPrice']
+        .toInt();
 
     List selectedToppingsList =
         _buildSelectedToppingsList(currentOrder[index], ingredients);
@@ -315,9 +340,12 @@ class ProductHelpers {
       'id': productID,
       'itemQuantity': itemQuantity,
       'size': itemSize,
-      'daysQuantity': daysQuantity,
+      'scheduledQuantity': scheduledQuantity,
       'modifications': ingredientModificationList,
       'allergies': allergiesList,
+      'price': user.uid == null || !user.isActiveMember!
+          ? itemPriceNonMember
+          : itemPriceMember,
     };
   }
 

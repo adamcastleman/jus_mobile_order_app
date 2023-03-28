@@ -31,7 +31,6 @@ class MenuCard extends ConsumerWidget {
         openColor: backgroundColor,
         closedColor: Colors.white,
         tappable: false,
-        transitionType: ContainerTransitionType.fade,
         transitionDuration: const Duration(milliseconds: 600),
         closedShape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(8.0),
@@ -60,36 +59,41 @@ class MenuCard extends ConsumerWidget {
             },
             child: Consumer(
               builder: (context, ref, child) => Padding(
-                padding: const EdgeInsets.symmetric(vertical: 15.0),
+                padding:
+                    const EdgeInsets.symmetric(vertical: 15.0, horizontal: 5.0),
                 child: Stack(
                   children: [
-                    determineDescriptorIcon(context, ref, products[index]),
                     Center(
-                        child: Column(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      children: [
-                        SizedBox(
-                          height: 150,
-                          child: CachedNetworkImage(
-                            imageUrl: products[index].image,
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        children: [
+                          Hero(
+                            tag: 'product-image',
+                            child: SizedBox(
+                              height: 150,
+                              child: CachedNetworkImage(
+                                imageUrl: products[index].image,
+                              ),
+                            ),
                           ),
-                        ),
-                        AutoSizeText(
-                          products[index].name,
-                          style: const TextStyle(
-                              fontSize: 16, fontWeight: FontWeight.bold),
-                          maxLines: 1,
-                          textAlign: TextAlign.center,
-                        ),
-                        AutoSizeText(
-                          products[index].description,
-                          style: const TextStyle(fontSize: 12),
-                          textAlign: TextAlign.center,
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ],
-                    )),
+                          AutoSizeText(
+                            products[index].name,
+                            style: const TextStyle(
+                                fontSize: 16, fontWeight: FontWeight.bold),
+                            maxLines: 1,
+                            textAlign: TextAlign.center,
+                          ),
+                          AutoSizeText(
+                            products[index].description,
+                            style: const TextStyle(fontSize: 12),
+                            textAlign: TextAlign.center,
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ],
+                      ),
+                    ),
+                    determineDescriptorIcon(context, ref, products[index]),
                   ],
                 ),
               ),
@@ -120,10 +124,7 @@ class MenuCard extends ConsumerWidget {
         ),
       );
     } else if (!isInStock) {
-      return Padding(
-        padding: const EdgeInsets.only(left: 8.0),
-        child: Image.asset('assets/sold_out.png', height: 75, width: 75),
-      );
+      return Image.asset('assets/sold_out.png', height: 50, width: 50);
     } else {
       return product.isNew ? NewIcon(product: product) : const SizedBox();
     }

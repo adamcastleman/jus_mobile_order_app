@@ -30,6 +30,7 @@ class OrderTile extends ConsumerWidget {
     final backgroundColor = ref.watch(backgroundColorProvider);
     final currentOrder = ref.watch(currentOrderItemsProvider);
     final onCheckoutPage = ref.watch(checkOutPageProvider);
+
     return UserProviderWidget(
       builder: (user) => ProductsProviderWidget(
         builder: (products) {
@@ -110,7 +111,7 @@ class OrderTile extends ConsumerWidget {
                                       top: user.uid == null ||
                                               !user.isActiveMember!
                                           ? 0
-                                          : 6,
+                                          : 12,
                                     ),
                                     child: onCheckoutPage
                                         ? const SizedBox()

@@ -37,6 +37,7 @@ class ChoosePaymentTypeSheet extends ConsumerWidget {
                             'Earn ${PointsHelper(ref: ref).determinePointsMultipleText(isJusCard: false)} per \$1'),
                     onTap: () {
                       HapticFeedback.lightImpact();
+
                       PaymentsServices(
                               context: context,
                               ref: ref,

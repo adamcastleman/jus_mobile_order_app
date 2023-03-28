@@ -10,6 +10,7 @@ import 'package:jus_mobile_order_app/Services/auth_services.dart';
 import 'package:jus_mobile_order_app/Sheets/account_info_sheet.dart';
 import 'package:jus_mobile_order_app/Sheets/favorites_sheet.dart';
 import 'package:jus_mobile_order_app/Sheets/offers_sheet.dart';
+import 'package:jus_mobile_order_app/Sheets/transaction_history_sheet.dart';
 import 'package:jus_mobile_order_app/Views/signed_out_profile_page.dart';
 import 'package:jus_mobile_order_app/Widgets/Icons/member_icon.dart';
 import 'package:jus_mobile_order_app/Widgets/Payments/payments_settings_sheet.dart';
@@ -81,7 +82,7 @@ class ProfilePage extends ConsumerWidget {
                           ModalBottomSheet().fullScreen(
                               context: context,
                               builder: (context) =>
-                                  const PaymentSettingsSheet());
+                                  const TransactionHistorySheet());
                         }),
                     ProfilePageTile(
                       icon: const Icon(CupertinoIcons.heart),
@@ -120,7 +121,7 @@ class ProfilePage extends ConsumerWidget {
                     ),
                     const Padding(
                       padding: EdgeInsets.symmetric(horizontal: 22.0),
-                      child: Text('v2023.2.17'),
+                      child: Text('v2023.3.28'),
                     ),
                   ],
                 ),

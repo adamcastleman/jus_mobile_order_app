@@ -24,7 +24,7 @@ class LocationHelper {
         }
       },
       error: (e, _) => false,
-      loading: () => emptyModel(),
+      loading: () => emptyLocationModel(),
     );
   }
 
@@ -70,7 +70,7 @@ class LocationHelper {
         }
       },
       error: (e, _) => false,
-      loading: () => emptyModel(),
+      loading: () => emptyLocationModel(),
     );
   }
 
@@ -84,7 +84,7 @@ class LocationHelper {
     }
   }
 
-  emptyModel() {
+  emptyLocationModel() {
     return const LocationModel(
       uid: '',
       name: '',

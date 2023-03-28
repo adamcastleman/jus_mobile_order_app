@@ -17,14 +17,16 @@ class PointsMultipleText extends ConsumerWidget {
     num pointValue;
     return UserProviderWidget(
       builder: (user) => PointsDetailsProviderWidget(builder: (points) {
-        if (!user.isActiveMember! && selectedCard['isGiftCard'] != true) {
+        if (!user.isActiveMember! && selectedCard['brand'] != 'giftCard') {
           pointValue = points.pointsPerDollar;
         } else if (!user.isActiveMember! &&
-            selectedCard['isGiftCard'] == true) {
+            selectedCard['brand'] == 'giftCard') {
           pointValue = points.jusCardPointsPerDollar;
-        } else if (user.isActiveMember! && selectedCard['isGiftCard'] != true) {
+        } else if (user.isActiveMember! &&
+            selectedCard['brand'] != 'giftCard') {
           pointValue = points.memberPointsPerDollar;
-        } else if (user.isActiveMember! && selectedCard['isGiftCard'] == true) {
+        } else if (user.isActiveMember! &&
+            selectedCard['brand'] == 'giftCard') {
           pointValue = points.jusCardPointsPerDollarMember;
         } else {
           return const SizedBox();
@@ -47,7 +49,7 @@ class PointsMultipleText extends ConsumerWidget {
                 ModalBottomSheet().fullScreen(
                     context: context,
                     builder: (context) =>
-                        const PointsDetailPage(isScanPage: false));
+                        const PointsDetailPage(closeButton: true));
               },
             )
           ],

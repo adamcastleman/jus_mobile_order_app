@@ -143,7 +143,7 @@ class ForgotPasswordPage extends ConsumerWidget {
     required String email,
   }) {
     if (!EmailValidator.validate(email)) {
-      Validator().email(ref);
+      FormValidator().email(ref);
     } else {
       ref.read(emailErrorProvider.notifier).state = null;
     }

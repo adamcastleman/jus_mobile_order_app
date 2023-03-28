@@ -44,8 +44,9 @@ final itemKeyProvider = StateProvider<String>((ref) => '');
 final itemQuantityProvider = StateNotifierProvider<SelectItemQuantity, int>(
     (ref) => SelectItemQuantity());
 
-final daysQuantityProvider = StateNotifierProvider<SelectDaysQuantity, int>(
-    (ref) => SelectDaysQuantity());
+final scheduledQuantityProvider =
+    StateNotifierProvider<SelectScheduledQuantity, int>(
+        (ref) => SelectScheduledQuantity());
 
 final animatedListKeyProvider =
     Provider.autoDispose<GlobalKey<AnimatedListState>>(
@@ -151,9 +152,16 @@ class SelectedAllergies extends StateNotifier<List<int>> {
 class SelectItemQuantity extends StateNotifier<int> {
   SelectItemQuantity() : super(1);
 
-  increment() {
-    HapticFeedback.lightImpact();
-    state = state + 1;
+  increment(int? quantityLimit) {
+    if (quantityLimit == null) {
+      HapticFeedback.lightImpact();
+      state = state + 1;
+    } else if (state == quantityLimit) {
+      state = state;
+    } else {
+      HapticFeedback.lightImpact();
+      state = state + 1;
+    }
   }
 
   decrement() {
@@ -170,14 +178,17 @@ class SelectItemQuantity extends StateNotifier<int> {
   }
 }
 
-class SelectDaysQuantity extends StateNotifier<int> {
-  SelectDaysQuantity() : super(1);
+class SelectScheduledQuantity extends StateNotifier<int> {
+  SelectScheduledQuantity() : super(1);
 
-  increment() {
-    HapticFeedback.lightImpact();
-    if (state == 5) {
+  increment(int? scheduledQuantity) {
+    if (scheduledQuantity == null) {
+      state = state + 1;
+    }
+    if (state == scheduledQuantity) {
       state = state;
     } else {
+      HapticFeedback.lightImpact();
       state = state + 1;
     }
   }
@@ -490,7 +501,7 @@ class CurrentOrderItems extends StateNotifier<List<Map<String, dynamic>>> {
 
       return element['productID'] == item['productID'] &&
           element['itemSize'] == item['itemSize'] &&
-          element['daysQuantity'] == item['daysQuantity'] &&
+          element['scheduledQuantity'] == item['scheduledQuantity'] &&
           (item['selectedIngredients'].isEmpty || selectedIngredientsEqual) &&
           (item['selectedToppings'].isEmpty || selectedToppingsEqual) &&
           selectedAllergiesEqual;
@@ -501,8 +512,8 @@ class CurrentOrderItems extends StateNotifier<List<Map<String, dynamic>>> {
     } else {
       product.first['itemQuantity'] =
           product.first['itemQuantity'] + item['itemQuantity'];
-      product.first['daysQuantity'] =
-          product.first['isScheduled'] ? item['daysQuantity'] : 1;
+      product.first['scheduledQuantity'] =
+          product.first['isScheduled'] ? item['scheduledQuantity'] : 1;
       product.first['itemSize'] = item['itemSize'];
       state = [...state];
     }
@@ -513,9 +524,9 @@ class CurrentOrderItems extends StateNotifier<List<Map<String, dynamic>>> {
     final currentOrder = ref.watch(currentOrderItemsProvider);
     final currentOrderIndex = ref.watch(currentOrderItemsIndexProvider);
     currentOrder[currentOrderIndex]['itemQuantity'] = item['itemQuantity'];
-    currentOrder[currentOrderIndex]['daysQuantity'] =
+    currentOrder[currentOrderIndex]['scheduledQuantity'] =
         currentOrder[currentOrderIndex]['isScheduled']
-            ? item['daysQuantity']
+            ? item['scheduledQuantity']
             : 1;
     currentOrder[currentOrderIndex]['itemSize'] = item['itemSize'];
     currentOrder[currentOrderIndex]['itemKey'] = item['itemKey'];
@@ -570,8 +581,8 @@ class CurrentOrderCost extends StateNotifier<List<Map<String, dynamic>>> {
 
   addCost(Map<String, dynamic> item) {
     int itemQuantity = item['itemQuantity'];
-    int daysQuantity = item['daysQuantity'];
-    int totalMaps = itemQuantity * daysQuantity;
+    int scheduledQuantity = item['scheduledQuantity'];
+    int totalMaps = itemQuantity * scheduledQuantity;
 
     List<Map<String, dynamic>> maps = List.generate(
         totalMaps,
@@ -582,7 +593,7 @@ class CurrentOrderCost extends StateNotifier<List<Map<String, dynamic>>> {
               'itemKey': item['itemKey'],
               'productID': item['productID'],
               'itemQuantity': 1,
-              'daysQuantity': 1
+              'scheduledQuantity': 1
             });
 
     state = [...state, ...maps];
