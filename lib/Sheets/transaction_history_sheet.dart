@@ -30,6 +30,8 @@ class TransactionHistorySheet extends ConsumerWidget {
             ),
             Spacing().vertical(15),
             const TransactionHistoryListView(),
+            Spacing().vertical(15),
+            const Text('That\'s all (from the last 120 days)'),
           ],
         ),
       ),

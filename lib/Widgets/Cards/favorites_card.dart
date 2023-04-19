@@ -3,10 +3,8 @@ import 'package:auto_size_text/auto_size_text.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:jus_mobile_order_app/Helpers/formulas.dart';
 import 'package:jus_mobile_order_app/Helpers/locations.dart';
-import 'package:jus_mobile_order_app/Helpers/set_standard_ingredients.dart';
-import 'package:jus_mobile_order_app/Helpers/set_standard_items.dart';
+import 'package:jus_mobile_order_app/Helpers/products.dart';
 import 'package:jus_mobile_order_app/Helpers/spacing_widgets.dart';
 import 'package:jus_mobile_order_app/Providers/ProviderWidgets/favorites_provider_widget.dart';
 import 'package:jus_mobile_order_app/Providers/ProviderWidgets/ingredients_provider_widget.dart';
@@ -48,26 +46,8 @@ class FavoritesCard extends ConsumerWidget {
                       LocationHelper().chooseLocation(context, ref);
                       null;
                     } else {
-                      ref.read(selectedProductIDProvider.notifier).state =
-                          currentProduct.productID;
-                      ref.read(isScheduledProvider.notifier).state =
-                          currentProduct.isScheduled;
-                      currentProduct.isScheduled
-                          ? StandardItems(ref: ref).set(currentProduct)
-                          : StandardIngredients(ref: ref).set(currentProduct);
-                      ref
-                          .read(selectedIngredientsProvider.notifier)
-                          .addIngredients(favorites[index].ingredients);
-                      ref
-                          .read(selectedToppingsProvider.notifier)
-                          .addMultipleToppings(favorites[index].toppings);
-                      ref.read(itemKeyProvider.notifier).state =
-                          Formulas().idGenerator();
-                      ref.read(itemSizeProvider.notifier).state =
-                          favorites[index].size;
-                      ref
-                          .read(selectedAllergiesProvider.notifier)
-                          .addListOfAllergies(favorites[index].allergies);
+                      ProductHelpers(ref: ref).setFavoritesProviders(
+                          currentProduct, favorites[index]);
                       close();
                     }
                   },
@@ -81,7 +61,9 @@ class FavoritesCard extends ConsumerWidget {
                           Hero(
                             tag: 'product-image',
                             child: SizedBox(
-                              height: 130,
+                              height: ref.watch(isFavoritesSheetProvider)
+                                  ? 160
+                                  : 130,
                               width: 100,
                               child: CachedNetworkImage(
                                 imageUrl: currentProduct.image,

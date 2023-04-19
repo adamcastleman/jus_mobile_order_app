@@ -29,7 +29,6 @@ class LocationServices {
           salesTaxRate: data['salesTaxRate'],
           acceptingOrders: data['acceptingOrders'],
           unavailableProducts: data['unavailableProducts'],
-          unavailableIngredients: data['unavailableIngredients'],
           comingSoon: data['comingSoon'],
           blackoutDates: data['blackoutDates'],
         );

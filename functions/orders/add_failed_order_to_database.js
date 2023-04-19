@@ -1,17 +1,18 @@
 const admin = require("firebase-admin");
-const  convertDatesToTimestamps  = require("../orders/convert_dates_to_timestamps");
 
 const addFailedOrderToDatabase = async (db, orderMap) => {
   console.log("Inside addFailedOrderToDatabase function");
 
-  convertDatesToTimestamps(orderMap);
-  const newOrderRef = db.collection("failed_orders").doc();
+  const orderWithoutNonce = { ...orderMap };
+  delete orderWithoutNonce.nonce;
 
-  orderMap.uid = newOrderRef.id;
-  orderMap.orderID = newOrderRef.id;
-  orderMap.orderStatus = "failed";
+  const newOrderRef = db.collection("failedOrders").doc();
 
-  await newOrderRef.set(orderMap);
+  orderWithoutNonce.uid = newOrderRef.id;
+  orderWithoutNonce.orderID = newOrderRef.id;
+  orderWithoutNonce.orderStatus = "failed";
+
+  await newOrderRef.set(orderWithoutNonce);
   console.log("Failed Order added to database successfully");
 
   return true;

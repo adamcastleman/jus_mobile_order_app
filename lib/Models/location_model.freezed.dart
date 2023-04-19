@@ -31,8 +31,6 @@ mixin _$LocationModel {
   double get salesTaxRate => throw _privateConstructorUsedError;
   bool get acceptingOrders => throw _privateConstructorUsedError;
   List<dynamic> get unavailableProducts => throw _privateConstructorUsedError;
-  List<dynamic> get unavailableIngredients =>
-      throw _privateConstructorUsedError;
   bool get comingSoon => throw _privateConstructorUsedError;
   List<dynamic> get blackoutDates => throw _privateConstructorUsedError;
 
@@ -63,7 +61,6 @@ abstract class $LocationModelCopyWith<$Res> {
       double salesTaxRate,
       bool acceptingOrders,
       List<dynamic> unavailableProducts,
-      List<dynamic> unavailableIngredients,
       bool comingSoon,
       List<dynamic> blackoutDates});
 }
@@ -96,7 +93,6 @@ class _$LocationModelCopyWithImpl<$Res, $Val extends LocationModel>
     Object? salesTaxRate = null,
     Object? acceptingOrders = null,
     Object? unavailableProducts = null,
-    Object? unavailableIngredients = null,
     Object? comingSoon = null,
     Object? blackoutDates = null,
   }) {
@@ -161,10 +157,6 @@ class _$LocationModelCopyWithImpl<$Res, $Val extends LocationModel>
           ? _value.unavailableProducts
           : unavailableProducts // ignore: cast_nullable_to_non_nullable
               as List<dynamic>,
-      unavailableIngredients: null == unavailableIngredients
-          ? _value.unavailableIngredients
-          : unavailableIngredients // ignore: cast_nullable_to_non_nullable
-              as List<dynamic>,
       comingSoon: null == comingSoon
           ? _value.comingSoon
           : comingSoon // ignore: cast_nullable_to_non_nullable
@@ -201,7 +193,6 @@ abstract class _$$_LocationModelCopyWith<$Res>
       double salesTaxRate,
       bool acceptingOrders,
       List<dynamic> unavailableProducts,
-      List<dynamic> unavailableIngredients,
       bool comingSoon,
       List<dynamic> blackoutDates});
 }
@@ -232,7 +223,6 @@ class __$$_LocationModelCopyWithImpl<$Res>
     Object? salesTaxRate = null,
     Object? acceptingOrders = null,
     Object? unavailableProducts = null,
-    Object? unavailableIngredients = null,
     Object? comingSoon = null,
     Object? blackoutDates = null,
   }) {
@@ -297,10 +287,6 @@ class __$$_LocationModelCopyWithImpl<$Res>
           ? _value._unavailableProducts
           : unavailableProducts // ignore: cast_nullable_to_non_nullable
               as List<dynamic>,
-      unavailableIngredients: null == unavailableIngredients
-          ? _value._unavailableIngredients
-          : unavailableIngredients // ignore: cast_nullable_to_non_nullable
-              as List<dynamic>,
       comingSoon: null == comingSoon
           ? _value.comingSoon
           : comingSoon // ignore: cast_nullable_to_non_nullable
@@ -332,13 +318,11 @@ class _$_LocationModel implements _LocationModel {
       required this.salesTaxRate,
       required this.acceptingOrders,
       required final List<dynamic> unavailableProducts,
-      required final List<dynamic> unavailableIngredients,
       required this.comingSoon,
       required final List<dynamic> blackoutDates})
       : _address = address,
         _hours = hours,
         _unavailableProducts = unavailableProducts,
-        _unavailableIngredients = unavailableIngredients,
         _blackoutDates = blackoutDates;
 
   @override
@@ -390,15 +374,6 @@ class _$_LocationModel implements _LocationModel {
     return EqualUnmodifiableListView(_unavailableProducts);
   }
 
-  final List<dynamic> _unavailableIngredients;
-  @override
-  List<dynamic> get unavailableIngredients {
-    if (_unavailableIngredients is EqualUnmodifiableListView)
-      return _unavailableIngredients;
-    // ignore: implicit_dynamic_type
-    return EqualUnmodifiableListView(_unavailableIngredients);
-  }
-
   @override
   final bool comingSoon;
   final List<dynamic> _blackoutDates;
@@ -411,7 +386,7 @@ class _$_LocationModel implements _LocationModel {
 
   @override
   String toString() {
-    return 'LocationModel(uid: $uid, name: $name, locationID: $locationID, phone: $phone, address: $address, hours: $hours, timezone: $timezone, currency: $currency, latitude: $latitude, longitude: $longitude, isActive: $isActive, isAcceptingOrders: $isAcceptingOrders, salesTaxRate: $salesTaxRate, acceptingOrders: $acceptingOrders, unavailableProducts: $unavailableProducts, unavailableIngredients: $unavailableIngredients, comingSoon: $comingSoon, blackoutDates: $blackoutDates)';
+    return 'LocationModel(uid: $uid, name: $name, locationID: $locationID, phone: $phone, address: $address, hours: $hours, timezone: $timezone, currency: $currency, latitude: $latitude, longitude: $longitude, isActive: $isActive, isAcceptingOrders: $isAcceptingOrders, salesTaxRate: $salesTaxRate, acceptingOrders: $acceptingOrders, unavailableProducts: $unavailableProducts, comingSoon: $comingSoon, blackoutDates: $blackoutDates)';
   }
 
   @override
@@ -444,8 +419,6 @@ class _$_LocationModel implements _LocationModel {
                 other.acceptingOrders == acceptingOrders) &&
             const DeepCollectionEquality()
                 .equals(other._unavailableProducts, _unavailableProducts) &&
-            const DeepCollectionEquality().equals(
-                other._unavailableIngredients, _unavailableIngredients) &&
             (identical(other.comingSoon, comingSoon) ||
                 other.comingSoon == comingSoon) &&
             const DeepCollectionEquality()
@@ -470,7 +443,6 @@ class _$_LocationModel implements _LocationModel {
       salesTaxRate,
       acceptingOrders,
       const DeepCollectionEquality().hash(_unavailableProducts),
-      const DeepCollectionEquality().hash(_unavailableIngredients),
       comingSoon,
       const DeepCollectionEquality().hash(_blackoutDates));
 
@@ -498,7 +470,6 @@ abstract class _LocationModel implements LocationModel {
       required final double salesTaxRate,
       required final bool acceptingOrders,
       required final List<dynamic> unavailableProducts,
-      required final List<dynamic> unavailableIngredients,
       required final bool comingSoon,
       required final List<dynamic> blackoutDates}) = _$_LocationModel;
 
@@ -532,8 +503,6 @@ abstract class _LocationModel implements LocationModel {
   bool get acceptingOrders;
   @override
   List<dynamic> get unavailableProducts;
-  @override
-  List<dynamic> get unavailableIngredients;
   @override
   bool get comingSoon;
   @override

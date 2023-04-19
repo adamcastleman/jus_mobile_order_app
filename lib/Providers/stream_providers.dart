@@ -7,6 +7,7 @@ import 'package:jus_mobile_order_app/Models/order_model.dart';
 import 'package:jus_mobile_order_app/Models/points_details_model.dart';
 import 'package:jus_mobile_order_app/Models/product_model.dart';
 import 'package:jus_mobile_order_app/Models/user_model.dart';
+import 'package:jus_mobile_order_app/Models/wallet_activities_model.dart';
 import 'package:jus_mobile_order_app/Services/announcement_services.dart';
 import 'package:jus_mobile_order_app/Services/auth_services.dart';
 import 'package:jus_mobile_order_app/Services/favorites_services.dart';
@@ -16,7 +17,7 @@ import 'package:jus_mobile_order_app/Services/location_services.dart';
 import 'package:jus_mobile_order_app/Services/membership_details_services.dart';
 import 'package:jus_mobile_order_app/Services/offers_services.dart';
 import 'package:jus_mobile_order_app/Services/order_services.dart';
-import 'package:jus_mobile_order_app/Services/payments_services.dart';
+import 'package:jus_mobile_order_app/Services/payment_methods_services.dart';
 import 'package:jus_mobile_order_app/Services/points_details_services.dart';
 import 'package:jus_mobile_order_app/Services/product_services.dart';
 import 'package:jus_mobile_order_app/Services/user_services.dart';
@@ -40,17 +41,17 @@ final currentUserProvider = StreamProvider<UserModel>((ref) {
 
 final defaultPaymentMethodProvider = StreamProvider<PaymentsModel>((ref) {
   final auth = ref.watch(authProvider);
-  return PaymentsServices(userID: auth.value?.uid).defaultPaymentCard;
+  return PaymentMethodsServices(userID: auth.value?.uid).defaultPaymentCard;
 });
 
 final creditCardPaymentMethods = StreamProvider<List<PaymentsModel>>((ref) {
   final auth = ref.watch(authProvider);
-  return PaymentsServices(userID: auth.value?.uid).squareCreditCards;
+  return PaymentMethodsServices(userID: auth.value?.uid).squareCreditCards;
 });
 
 final giftCardPaymentMethods = StreamProvider<List<PaymentsModel>>((ref) {
   final auth = ref.watch(authProvider);
-  return PaymentsServices(userID: auth.value?.uid).squareGiftCards;
+  return PaymentMethodsServices(userID: auth.value?.uid).wallets;
 });
 
 final ingredientsProvider = StreamProvider<List<IngredientModel>>(
@@ -98,6 +99,9 @@ final emptyCartImageProvider =
 final signInImageProvider =
     StreamProvider((ref) => ImageServices().signInImage);
 
+final deleteAccountImageProvider =
+    StreamProvider((ref) => ImageServices().deleteAccount);
+
 final offersProvider = StreamProvider((ref) => OffersServices().offers);
 
 final announcementsProvider =
@@ -105,3 +109,8 @@ final announcementsProvider =
 
 final ordersProvider = StreamProvider.family<List<OrderModel>, String>(
     (ref, userID) => OrderServices(userID: userID).orders);
+
+final walletActivitiesProvider =
+    StreamProvider.family<List<WalletActivitiesModel>, String>((ref, userID) {
+  return PaymentMethodsServices(userID: userID).walletActivities;
+});

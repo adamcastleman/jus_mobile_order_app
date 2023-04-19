@@ -76,11 +76,11 @@ class OrderConfirmationSheet extends HookConsumerWidget {
                         size: 100,
                       ),
                     ),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 22.0),
+                    const Padding(
+                      padding: EdgeInsets.symmetric(vertical: 22.0),
                       child: AutoSizeText(
                         'We\'ve received your order.',
-                        style: Theme.of(context).textTheme.headlineMedium,
+                        style: TextStyle(fontSize: 25),
                         textAlign: TextAlign.center,
                         maxLines: 1,
                       ),
@@ -88,6 +88,7 @@ class OrderConfirmationSheet extends HookConsumerWidget {
                     _buildLocationDisplay(ref),
                     _buildNonScheduledDisplay(ref, products),
                     _buildScheduledDisplay(context, ref, products),
+                    JusDivider().thick(),
                     const TotalPrice(),
                   ],
                 ),
@@ -120,24 +121,32 @@ class OrderConfirmationSheet extends HookConsumerWidget {
     final location = ref.watch(selectedLocationProvider);
     return Column(
       children: [
-        JusDivider().thick(),
-        ListTile(
-          leading: const Icon(CupertinoIcons.house),
-          title: Text(
-            location.name,
-            style: const TextStyle(),
-          ),
-          trailing: TextButton(
-            child: const Text(
-              'Directions',
-              style: TextStyle(decoration: TextDecoration.underline),
-            ),
-            onPressed: () {
-              Launcher().launchMaps(
-                  latitude: location.latitude,
-                  longitude: location.longitude,
-                  label: location.name);
-            },
+        JusDivider().thin(),
+        Padding(
+          padding: const EdgeInsets.symmetric(vertical: 12.0),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                'Location: ${location.name}',
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 18,
+                ),
+              ),
+              InkWell(
+                child: const Text(
+                  'Directions',
+                  style: TextStyle(decoration: TextDecoration.underline),
+                ),
+                onTap: () {
+                  Launcher().launchMaps(
+                      latitude: location.latitude,
+                      longitude: location.longitude,
+                      label: location.name);
+                },
+              ),
+            ],
           ),
         ),
       ],
@@ -159,23 +168,24 @@ class OrderConfirmationSheet extends HookConsumerWidget {
     List matchingIndices = getOrderIndices(ref, isNonScheduled: true);
 
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisSize: MainAxisSize.min,
       children: [
-        JusDivider().thick(),
-        ListTile(
-          leading: const Icon(CupertinoIcons.clock),
-          title: Text(dateDisplay),
+        Spacing().vertical(10),
+        Text(
+          'Pickup Time: $dateDisplay',
+          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
         ),
-        ListView.builder(
+        Spacing().vertical(20),
+        ListView.separated(
           shrinkWrap: true,
           primary: false,
           itemCount: matchingIndices.length,
+          separatorBuilder: (context, index) => JusDivider().thin(),
           itemBuilder: (context, index) {
             return OrderTile(orderIndex: matchingIndices[index]);
           },
         ),
-        Spacing().vertical(20),
-        JusDivider().thick(),
       ],
     );
   }
@@ -193,32 +203,39 @@ class OrderConfirmationSheet extends HookConsumerWidget {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        nonScheduledItems.isEmpty ? JusDivider().thick() : const SizedBox(),
-        ListTile(
-          leading: const Icon(CupertinoIcons.calendar),
-          title: Text(pickupDate),
-          trailing: TextButton(
-            child: const Text(
-              'Add to calendar',
-              style: TextStyle(decoration: TextDecoration.underline),
-            ),
-            onPressed: () {
-              HandlePermissions(context, ref).calendarPermission();
-              Launcher().launchCalendar(ref);
-            },
+        nonScheduledItems.isEmpty ? const SizedBox() : JusDivider().thin(),
+        Padding(
+          padding: const EdgeInsets.symmetric(vertical: 12.0),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                'Scheduled: $pickupDate',
+                style:
+                    const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+              ),
+              InkWell(
+                onTap: () {
+                  HandlePermissions(context, ref).calendarPermission();
+                  Launcher().launchCalendar(ref);
+                },
+                child: const Text(
+                  'Add to calendar',
+                  style: TextStyle(decoration: TextDecoration.underline),
+                ),
+              ),
+            ],
           ),
         ),
         ListView.separated(
           shrinkWrap: true,
           primary: false,
           itemCount: scheduledItems.length,
-          separatorBuilder: (context, index) => Spacing().vertical(20),
+          separatorBuilder: (context, index) => JusDivider().thin(),
           itemBuilder: (context, index) {
             return OrderTile(orderIndex: matchingIndices[index]);
           },
         ),
-        Spacing().vertical(20),
-        JusDivider().thick(),
       ],
     );
   }
@@ -249,6 +266,7 @@ class OrderConfirmationSheet extends HookConsumerWidget {
     ref.invalidate(currentOrderCostProvider);
     ref.invalidate(discountTotalProvider);
     ref.invalidate(selectedPaymentMethodProvider);
+    ref.invalidate(applePaySelectedProvider);
     ref.invalidate(emailProvider);
     ref.invalidate(phoneProvider);
     ref.invalidate(firstNameProvider);

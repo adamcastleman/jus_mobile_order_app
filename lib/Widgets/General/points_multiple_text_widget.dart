@@ -21,13 +21,13 @@ class PointsMultipleText extends ConsumerWidget {
           pointValue = points.pointsPerDollar;
         } else if (!user.isActiveMember! &&
             selectedCard['brand'] == 'giftCard') {
-          pointValue = points.jusCardPointsPerDollar;
+          pointValue = points.walletPointsPerDollar;
         } else if (user.isActiveMember! &&
             selectedCard['brand'] != 'giftCard') {
           pointValue = points.memberPointsPerDollar;
         } else if (user.isActiveMember! &&
             selectedCard['brand'] == 'giftCard') {
-          pointValue = points.jusCardPointsPerDollarMember;
+          pointValue = points.walletPointsPerDollarMember;
         } else {
           return const SizedBox();
         }

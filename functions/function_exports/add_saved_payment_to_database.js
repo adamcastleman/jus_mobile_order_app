@@ -18,8 +18,10 @@ exports.addSavedPaymentToDatabase = functions.https.onCall(async (data, context)
     expirationMonth,
     expirationYear,
     postalCode,
-    isGiftCard,
+    isWallet,
     firstName,
+    gan,
+    balance,
   } = data;
 
   const userID = context.auth.uid;
@@ -44,8 +46,10 @@ exports.addSavedPaymentToDatabase = functions.https.onCall(async (data, context)
       expirationYear: expirationYear,
       postalCode: postalCode,
       defaultPayment: true,
-      isGiftCard: isGiftCard,
-      cardNickname: isGiftCard === true ? "jüs card" : firstName,
+      gan: gan,
+      balance: balance,
+      isWallet: isWallet,
+      cardNickname: isWallet === true ?  `${firstName}\'s Wallet`: firstName,
     });
   }
 

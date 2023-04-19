@@ -1,15 +1,21 @@
-import 'package:email_validator/email_validator.dart';
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:jus_mobile_order_app/Helpers/Validators/checkout_validators.dart';
 import 'package:jus_mobile_order_app/Helpers/divider.dart';
 import 'package:jus_mobile_order_app/Helpers/modal_bottom_sheets.dart';
 import 'package:jus_mobile_order_app/Helpers/orders.dart';
 import 'package:jus_mobile_order_app/Helpers/pricing.dart';
 import 'package:jus_mobile_order_app/Helpers/spacing_widgets.dart';
-import 'package:jus_mobile_order_app/Helpers/validators.dart';
 import 'package:jus_mobile_order_app/Models/user_model.dart';
+import 'package:jus_mobile_order_app/Payments/apple_pay_selected_tile.dart';
+import 'package:jus_mobile_order_app/Payments/choose_payment_type_sheet.dart';
+import 'package:jus_mobile_order_app/Payments/no_charge_payment_tile.dart';
+import 'package:jus_mobile_order_app/Payments/payment_method_selector.dart';
+import 'package:jus_mobile_order_app/Payments/tip_sheet.dart';
 import 'package:jus_mobile_order_app/Providers/ProviderWidgets/user_provider_widget.dart';
 import 'package:jus_mobile_order_app/Providers/auth_providers.dart';
 import 'package:jus_mobile_order_app/Providers/discounts_provider.dart';
@@ -25,10 +31,6 @@ import 'package:jus_mobile_order_app/Widgets/General/text_fields.dart';
 import 'package:jus_mobile_order_app/Widgets/Lists/display_order_list.dart';
 import 'package:jus_mobile_order_app/Widgets/Lists/offers_list_checkout.dart';
 import 'package:jus_mobile_order_app/Widgets/Lists/rewards_list.dart';
-import 'package:jus_mobile_order_app/Widgets/Payments/choose_payment_type_sheet.dart';
-import 'package:jus_mobile_order_app/Widgets/Payments/no_charge_payment_tile.dart';
-import 'package:jus_mobile_order_app/Widgets/Payments/payment_method_selector.dart';
-import 'package:jus_mobile_order_app/Widgets/Payments/tip_sheet.dart';
 import 'package:jus_mobile_order_app/Widgets/Tiles/order_pickup_date_tile.dart';
 import 'package:jus_mobile_order_app/Widgets/Tiles/order_pickup_time_tile.dart';
 import 'package:jus_mobile_order_app/Widgets/Tiles/selected_location_tile.dart';
@@ -68,6 +70,7 @@ class CheckoutPage extends HookConsumerWidget {
                         ref.invalidate(selectedTipIndexProvider);
                         ref.invalidate(selectedTipPercentageProvider);
                         ref.invalidate(pointsMultiplierProvider);
+                        ref.invalidate(applePaySelectedProvider);
                         Navigator.pop(context);
                       },
                     ),
@@ -170,78 +173,60 @@ class CheckoutPage extends HookConsumerWidget {
   }
 
   Widget _getPaymentTile(WidgetRef ref) {
-    return Pricing(ref: ref).isZeroCharge()
-        ? const NoChargePaymentTile()
-        : const PaymentMethodSelector();
+    final applePaySelected = ref.watch(applePaySelectedProvider);
+    if (Pricing(ref: ref).isZeroCharge()) {
+      return const NoChargePaymentTile();
+    } else if ((Platform.isIOS || Platform.isMacOS) && applePaySelected) {
+      return const ApplePaySelectedTile();
+    } else {
+      return Column(
+        children: [
+          const PaymentMethodSelector(),
+          JusDivider().thin(),
+          (Platform.isIOS || Platform.isMacOS)
+              ? const ApplePaySelectedTile()
+              : const SizedBox(),
+        ],
+      );
+    }
   }
 
-  _validateGuestFormAndContinue(BuildContext context, WidgetRef ref,
+  void _validateGuestFormAndContinue(BuildContext context, WidgetRef ref,
       UserModel user, ScrollController controller) {
-    final firstName = ref.watch(firstNameProvider);
-    final lastName = ref.watch(lastNameProvider);
-    final email = ref.watch(emailProvider);
-    final phone = ref.watch(phoneProvider);
     if (user.uid == null) {
-      _validateForm(
-        ref: ref,
-        firstName: firstName,
-        lastName: lastName,
-        email: email,
-        phone: phone,
-      );
+      CheckoutValidators(ref: ref).validateForm();
       if (!ref.read(formValidatedProvider)) {
-        controller.animateTo(0.0,
-            duration: const Duration(milliseconds: 200), curve: Curves.linear);
+        _scrollToTop(controller);
+      } else {
+        _showBottomSheet(context, ref);
       }
-    }
-
-    if (ref.read(formValidatedProvider)) {
-      ModalBottomSheet().partScreen(
-        isScrollControlled: true,
-        enableDrag: false,
-        isDismissible: true,
-        context: context,
-        builder: (context) => ref.watch(selectedPaymentMethodProvider).isEmpty
-            ? const ChoosePaymentTypeSheet()
-            : const TipSheet(),
-      );
+    } else {
+      _showBottomSheet(context, ref);
     }
   }
 
-  _validateForm({
-    required WidgetRef ref,
-    required String firstName,
-    required String lastName,
-    required String phone,
-    required String email,
-  }) {
-    if (firstName.isEmpty) {
-      FormValidator().firstName(ref);
-    } else {
-      ref.read(firstNameErrorProvider.notifier).state = null;
-    }
-    if (lastName.isEmpty) {
-      FormValidator().lastName(ref);
-    } else {
-      ref.read(lastNameErrorProvider.notifier).state = null;
-    }
+  void _scrollToTop(ScrollController controller) {
+    controller.animateTo(
+      0.0,
+      duration: const Duration(milliseconds: 200),
+      curve: Curves.linear,
+    );
+  }
 
-    if (phone.length != 10) {
-      FormValidator().phone(ref);
-    } else {
-      ref.read(phoneErrorProvider.notifier).state = null;
-    }
-    if (!EmailValidator.validate(email)) {
-      FormValidator().email(ref);
-    } else {
-      ref.read(emailErrorProvider.notifier).state = null;
-    }
+  void _showBottomSheet(BuildContext context, WidgetRef ref) {
+    final hasSelectedPaymentMethod =
+        ref.watch(selectedPaymentMethodProvider).isNotEmpty;
 
-    if (ref.read(emailErrorProvider.notifier).state == null &&
-        ref.read(firstNameErrorProvider.notifier).state == null &&
-        ref.read(lastNameErrorProvider.notifier).state == null &&
-        ref.read(phoneErrorProvider.notifier).state == null) {
-      ref.read(formValidatedProvider.notifier).state = true;
-    }
+    builder(BuildContext context) => hasSelectedPaymentMethod
+        ? const TipSheet()
+        : const ChoosePaymentTypeSheet();
+
+    ModalBottomSheet().partScreen(
+      isScrollControlled: true,
+      enableDrag: false,
+      isDismissible: true,
+      context: context,
+      builder: builder,
+    );
   }
 }

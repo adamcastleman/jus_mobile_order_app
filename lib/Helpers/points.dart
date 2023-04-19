@@ -58,7 +58,7 @@ class PointsHelper {
     return null;
   }
 
-  String determinePointsMultipleText({required bool isJusCard}) {
+  String determinePointsMultipleText({required bool isWallet}) {
     final currentUser = ref.watch(currentUserProvider);
     final pointsDetails = ref.watch(pointsDetailsProvider);
     final pointsMultiple = ref.watch(pointsMultiplierProvider);
@@ -70,11 +70,11 @@ class PointsHelper {
         error: (e, _) => '{error}',
         loading: () => '{error}',
         data: (points) {
-          var pointValue = isJusCard
-              ? points.jusCardPointsPerDollar * pointsMultiple
+          var pointValue = isWallet
+              ? points.walletPointsPerDollar * pointsMultiple
               : points.pointsPerDollar * pointsMultiple;
-          var memberPointsValue = isJusCard
-              ? points.jusCardPointsPerDollarMember * pointsMultiple
+          var memberPointsValue = isWallet
+              ? points.walletPointsPerDollarMember * pointsMultiple
               : points.memberPointsPerDollar * pointsMultiple;
           if (user.uid == null || !user.isActiveMember!) {
             if (pointValue.isWhole()) {
@@ -109,8 +109,8 @@ class PointsHelper {
         error: (e, _) => '{error}',
         loading: () => '{error}',
         data: (points) {
-          var jusCardPointsValue = points.jusCardPointsPerDollar;
-          var jusCardMemberPointsValue = points.jusCardPointsPerDollarMember;
+          var jusCardPointsValue = points.walletPointsPerDollar;
+          var jusCardMemberPointsValue = points.walletPointsPerDollarMember;
           var creditCardPointsValue = points.pointsPerDollar;
           var creditCardMemberPointsValue = points.memberPointsPerDollar;
 

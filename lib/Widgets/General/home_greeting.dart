@@ -16,7 +16,7 @@ class HomeGreeting extends ConsumerWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             AutoSizeText(
-              '${dayPartGreeting()} ${determineNameForGreeting(user, context)}',
+              '${dayPartGreeting()}${determineNameForGreeting(user, context)}',
               style: const TextStyle(fontSize: 26),
               maxLines: 1,
             ),

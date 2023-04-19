@@ -3,6 +3,7 @@ import 'package:badges/badges.dart' as badge;
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:jus_mobile_order_app/Helpers/enums.dart';
 import 'package:jus_mobile_order_app/Helpers/locations.dart';
 import 'package:jus_mobile_order_app/Helpers/scan.dart';
 import 'package:jus_mobile_order_app/Helpers/time.dart';
@@ -10,6 +11,7 @@ import 'package:jus_mobile_order_app/Models/user_model.dart';
 import 'package:jus_mobile_order_app/Providers/ProviderWidgets/user_provider_widget.dart';
 import 'package:jus_mobile_order_app/Providers/location_providers.dart';
 import 'package:jus_mobile_order_app/Providers/navigation_providers.dart';
+import 'package:jus_mobile_order_app/Providers/payments_providers.dart';
 import 'package:jus_mobile_order_app/Providers/product_providers.dart';
 import 'package:jus_mobile_order_app/Providers/scan_providers.dart';
 
@@ -99,7 +101,7 @@ class BottomNavBar extends HookConsumerWidget {
       case 0:
         break;
       case 1:
-        handleScan(ref);
+        handleScanPageInitializers(ref);
         break;
       case 2:
         if (ref.read(selectedLocationProvider) == null) {
@@ -119,7 +121,8 @@ class BottomNavBar extends HookConsumerWidget {
     ref.read(qrTimerProvider.notifier).cancelTimer();
   }
 
-  void handleScan(WidgetRef ref) {
+  void handleScanPageInitializers(WidgetRef ref) {
+    ref.read(pageTypeProvider.notifier).state = PageType.selectPaymentMethod;
     ref.read(qrTimestampProvider.notifier).state = Time().now(ref);
     ScanHelpers(ref).scanAndPayMap();
     ScanHelpers(ref).scanOnlyMap();

@@ -19,8 +19,8 @@ class PointsDetailsServices {
         rewardsAmounts: data['rewardsAmounts'],
         pointsPerDollar: data['pointsPerDollar'],
         memberPointsPerDollar: data['memberPointsPerDollar'],
-        jusCardPointsPerDollar: data['jusCardPointsPerDollar'],
-        jusCardPointsPerDollarMember: data['jusCardPointsPerDollarMember'],
+        walletPointsPerDollar: data['walletPointsPerDollar'],
+        walletPointsPerDollarMember: data['walletPointsPerDollarMember'],
         pointsStatus: data['pointsStatus'],
         memberPointsStatus: data['memberPointsStatus'],
       );

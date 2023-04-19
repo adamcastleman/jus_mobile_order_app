@@ -7,14 +7,16 @@ class PaymentsModel with _$PaymentsModel {
   const factory PaymentsModel({
     required String uid,
     required String userID,
-    required String nonce,
     required String brand,
     required String lastFourDigits,
-    required int expirationMonth,
-    required int expirationYear,
     required bool defaultPayment,
     required String cardNickname,
-    required bool isGiftCard,
+    required bool isWallet,
     String? postalCode,
+    int? expirationMonth,
+    int? expirationYear,
+    String? nonce,
+    String? gan,
+    int? balance,
   }) = _PaymentsModel;
 }

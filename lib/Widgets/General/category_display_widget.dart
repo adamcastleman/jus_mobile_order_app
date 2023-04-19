@@ -12,7 +12,10 @@ class CategoryWidget extends StatelessWidget {
       children: [
         Text(
           text,
-          style: const TextStyle(fontSize: 16),
+          style: const TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.bold,
+          ),
         ),
         JusDivider().thick(),
       ],

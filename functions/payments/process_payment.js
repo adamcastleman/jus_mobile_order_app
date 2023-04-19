@@ -10,16 +10,16 @@ const processPayment = async (orderMap) => {
       sourceId: 'cnon:card-nonce-ok',
       idempotencyKey: uuidv4(),
       externalDetails: {
-        source: orderMap.paymentMethod,
-        type: orderMap.externalPaymentType,
+        source: orderMap.paymentDetails.paymentMethod,
+        type: orderMap.paymentDetails.externalPaymentType,
       },
       amountMoney: {
-        amount: orderMap.totalAmount,
-        currency: "USD",
+        amount: orderMap.totals.totalAmount,
+        currency: orderMap.paymentDetails.currency,
       },
       tipMoney: {
-        amount: orderMap.tipAmount,
-        currency: "USD",
+        amount: orderMap.totals.tipAmount,
+        currency: orderMap.paymentDetails.currency,
       },
     });
 

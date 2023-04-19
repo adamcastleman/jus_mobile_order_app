@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:jus_mobile_order_app/Helpers/spacing_widgets.dart';
 import 'package:jus_mobile_order_app/Providers/ProviderWidgets/favorites_provider_widget.dart';
+import 'package:jus_mobile_order_app/Providers/product_providers.dart';
 import 'package:jus_mobile_order_app/Providers/theme_providers.dart';
 import 'package:jus_mobile_order_app/Widgets/Cards/favorite_card_empty.dart';
 import 'package:jus_mobile_order_app/Widgets/Cards/favorites_card.dart';
@@ -23,9 +24,14 @@ class FavoritesSheet extends ConsumerWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Align(
+            Align(
               alignment: Alignment.topRight,
-              child: JusCloseButton(),
+              child: JusCloseButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                  ref.invalidate(isFavoritesSheetProvider);
+                },
+              ),
             ),
             Text(
               'Favorites',

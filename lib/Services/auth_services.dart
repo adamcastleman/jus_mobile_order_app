@@ -1,3 +1,4 @@
+import 'package:cloud_functions/cloud_functions.dart';
 import 'package:firebase_auth/firebase_auth.dart' as auth;
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:jus_mobile_order_app/Models/user_model.dart';
@@ -87,7 +88,9 @@ class AuthServices {
 
   Future<void> updatePassword(String password) async {
     try {
-      return await _auth.currentUser!.updatePassword(password);
+      await FirebaseFunctions.instance
+          .httpsCallable('updatePassword')
+          .call({'password': password});
     } on auth.FirebaseAuthException catch (e) {
       throw e.message.toString();
     }

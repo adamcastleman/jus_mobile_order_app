@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:cloud_functions/cloud_functions.dart';
 import 'package:jus_mobile_order_app/Models/user_model.dart';
 
 class UserServices {
@@ -44,8 +45,7 @@ class UserServices {
       required String lastName,
       required String email,
       required String phone}) async {
-    await userCollection.doc(uid).set({
-      'uid': uid,
+    await FirebaseFunctions.instance.httpsCallable('createUser').call({
       'firstName': firstName,
       'lastName': lastName,
       'email': email,
@@ -59,11 +59,20 @@ class UserServices {
     required String firstName,
     required String lastName,
     required String phone,
+    required String email,
   }) async {
-    await userCollection.doc(uid).update({
+    await FirebaseFunctions.instance.httpsCallable('updateUserInfo').call({
       'firstName': firstName,
       'lastName': lastName,
       'phone': phone,
+      'email': email,
     });
+  }
+
+  Future updateMembership(bool isActiveMember) async {
+    await FirebaseFirestore.instance
+        .collection('users')
+        .doc(uid)
+        .update({'isActiveMember': !isActiveMember});
   }
 }

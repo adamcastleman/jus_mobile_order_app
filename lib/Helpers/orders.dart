@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:jus_mobile_order_app/Helpers/Validators/order_validators.dart';
 import 'package:jus_mobile_order_app/Helpers/modal_bottom_sheets.dart';
 import 'package:jus_mobile_order_app/Helpers/time.dart';
-import 'package:jus_mobile_order_app/Helpers/validators.dart';
-import 'package:jus_mobile_order_app/Models/user_model.dart';
+import 'package:jus_mobile_order_app/Models/product_model.dart';
 import 'package:jus_mobile_order_app/Providers/order_providers.dart';
-import 'package:jus_mobile_order_app/Services/payments_services.dart';
 import 'package:jus_mobile_order_app/Sheets/invalid_order_sheet.dart';
 
 import '../Providers/product_providers.dart';
@@ -37,6 +36,13 @@ class OrderHelpers {
     return currentOrder.where((element) => !element['isScheduled']).toList();
   }
 
+  setScheduledLimitProviders(ProductQuantityModel quantityLimit) {
+    ref.read(scheduledQuantityDescriptorProvider.notifier).state =
+        quantityLimit.scheduledProductDescriptor;
+    ref.read(scheduledProductHoursNoticeProvider.notifier).state =
+        quantityLimit.hoursNotice;
+  }
+
   List<Map<String, dynamic>> listOfScheduledItems({
     required List<dynamic> scheduledItems,
     required List<dynamic> products,
@@ -48,6 +54,7 @@ class OrderHelpers {
         'name': product.name,
         'productUID': product.uid,
         'scheduledQuantity': item['scheduledQuantity'],
+        'scheduledProductDescriptor': item['scheduledProductDescriptor'],
         'itemQuantity': item['itemQuantity'],
       };
     }
@@ -103,29 +110,18 @@ class OrderHelpers {
     return minimumTime;
   }
 
-  void validateOrderAndPay(BuildContext context, UserModel user) {
+  validateOrder(BuildContext context) {
     final errorMessage = OrderValidators(ref: ref).checkValidity(context);
 
     if (errorMessage.isNotEmpty) {
-      _showInvalidOrderModal(context, errorMessage);
-    } else {
-      _processPayment(context, user);
+      return errorMessage;
     }
   }
 
-  void _showInvalidOrderModal(BuildContext context, String errorMessage) {
+  void showInvalidOrderModal(BuildContext context, String errorMessage) {
     ModalBottomSheet().partScreen(
       context: context,
       builder: (context) => InvalidOrderSheet(error: errorMessage),
     );
-  }
-
-  void _processPayment(BuildContext context, UserModel user) {
-    PaymentsServices(ref: ref, context: context)
-        .chargeCardAndCreateOrder(user)
-        .then(
-          (result) =>
-              PaymentsServices(ref: ref).handlePaymentResult(context, result),
-        );
   }
 }

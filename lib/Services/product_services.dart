@@ -91,6 +91,8 @@ class ProductServices {
         quantityLimit: data['quantityLimit'] ?? 0,
         scheduledProductDescriptor: data['scheduledProductDescriptor'] ?? '',
         scheduledQuantityLimit: data['scheduledQuantityLimit'] ?? 0,
+        toppingsDescriptor: data['toppingsDescriptor'] ?? 'Select Toppings',
+        toppingsQuantityLimit: data['toppingsQuantityLimit'] ?? 50,
       );
     }).first;
   }

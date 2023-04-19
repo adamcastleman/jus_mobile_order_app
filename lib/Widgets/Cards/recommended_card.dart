@@ -3,13 +3,10 @@ import 'package:auto_size_text/auto_size_text.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:jus_mobile_order_app/Helpers/formulas.dart';
 import 'package:jus_mobile_order_app/Helpers/locations.dart';
-import 'package:jus_mobile_order_app/Helpers/set_standard_ingredients.dart';
-import 'package:jus_mobile_order_app/Helpers/set_standard_items.dart';
+import 'package:jus_mobile_order_app/Helpers/products.dart';
 import 'package:jus_mobile_order_app/Helpers/spacing_widgets.dart';
 import 'package:jus_mobile_order_app/Providers/ProviderWidgets/recommended_products_provider_widget.dart';
-import 'package:jus_mobile_order_app/Providers/product_providers.dart';
 import 'package:jus_mobile_order_app/Views/product_detail_page.dart';
 
 class RecommendedCard extends ConsumerWidget {
@@ -40,16 +37,8 @@ class RecommendedCard extends ConsumerWidget {
                 LocationHelper().chooseLocation(context, ref);
                 null;
               } else {
-                ref.read(selectedProductIDProvider.notifier).state =
-                    recommended[index].productID;
-                ref.read(isScheduledProvider.notifier).state =
-                    recommended[index].isScheduled;
-                recommended[index].isScheduled
-                    ? StandardItems(ref: ref).set(recommended[index])
-                    : StandardIngredients(ref: ref).set(recommended[index]);
-
-                ref.read(itemKeyProvider.notifier).state =
-                    Formulas().idGenerator();
+                ProductHelpers(ref: ref)
+                    .setRecommendedProviders(recommended[index]);
                 close();
               }
             },

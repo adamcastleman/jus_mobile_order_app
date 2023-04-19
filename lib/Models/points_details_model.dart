@@ -11,8 +11,8 @@ class PointsDetailsModel with _$PointsDetailsModel {
     required String name,
     required int pointsPerDollar,
     required int memberPointsPerDollar,
-    required num jusCardPointsPerDollar,
-    required num jusCardPointsPerDollarMember,
+    required num walletPointsPerDollar,
+    required num walletPointsPerDollarMember,
     required String pointsStatus,
     required String memberPointsStatus,
   }) = _PointsDetailsModel;

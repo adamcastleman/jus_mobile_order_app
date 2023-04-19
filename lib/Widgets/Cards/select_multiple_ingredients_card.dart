@@ -3,6 +3,8 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:jus_mobile_order_app/Helpers/spacing_widgets.dart';
+import 'package:jus_mobile_order_app/Models/product_model.dart';
+import 'package:jus_mobile_order_app/Providers/ProviderWidgets/product_quantity_limit_provider.dart';
 import 'package:jus_mobile_order_app/Providers/theme_providers.dart';
 import 'package:jus_mobile_order_app/Widgets/General/allergen_label.dart';
 
@@ -18,46 +20,50 @@ class SelectMultipleIngredientsCard extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return InkWell(
-      onTap: () {
-        determineUpdatedProvider(ref);
-      },
-      child: SizedBox(
-        width: 100,
-        child: Card(
-          color: determineCardColor(ref),
-          shape: RoundedRectangleBorder(
-            side: BorderSide(color: determineBorderColor(ref)),
-            borderRadius: BorderRadius.circular(4),
-          ),
-          child: Column(
-            children: [
-              SizedBox(
-                height: 70,
-                width: 70,
-                child: CachedNetworkImage(
-                  imageUrl: ingredient.image,
+    final productUID = ref.watch(selectedProductUIDProvider);
+    return ProductQuantityLimitProviderWidget(
+      productUID: productUID!,
+      builder: (quantityLimit) => InkWell(
+        onTap: () {
+          determineUpdatedProvider(ref, quantityLimit);
+        },
+        child: SizedBox(
+          width: 100,
+          child: Card(
+            color: determineCardColor(ref),
+            shape: RoundedRectangleBorder(
+              side: BorderSide(color: determineBorderColor(ref)),
+              borderRadius: BorderRadius.circular(4),
+            ),
+            child: Column(
+              children: [
+                SizedBox(
+                  height: 70,
+                  width: 70,
+                  child: CachedNetworkImage(
+                    imageUrl: ingredient.image,
+                  ),
                 ),
-              ),
-              Spacing().vertical(5),
-              AutoSizeText(
-                ingredient.name,
-                style: const TextStyle(fontSize: 12),
-                textAlign: TextAlign.center,
-                maxLines: 2,
-              ),
-              AllergenLabel(
-                ingredient: ingredient,
-              ),
-              Spacing().vertical(8),
-            ],
+                Spacing().vertical(5),
+                AutoSizeText(
+                  ingredient.name,
+                  style: const TextStyle(fontSize: 12),
+                  textAlign: TextAlign.center,
+                  maxLines: 2,
+                ),
+                AllergenLabel(
+                  ingredient: ingredient,
+                ),
+                Spacing().vertical(8),
+              ],
+            ),
           ),
         ),
       ),
     );
   }
 
-  determineUpdatedProvider(WidgetRef ref) {
+  determineUpdatedProvider(WidgetRef ref, ProductQuantityModel quantityLimit) {
     final selectedToppings = ref.watch(selectedToppingsProvider);
     final selectedAllergies = ref.watch(selectedAllergiesProvider);
     if (isAllergy) {
@@ -70,7 +76,9 @@ class SelectMultipleIngredientsCard extends ConsumerWidget {
       if (selectedToppings.contains(ingredient.id)) {
         ref.read(selectedToppingsProvider.notifier).remove(ingredient.id);
       } else {
-        ref.read(selectedToppingsProvider.notifier).add(ingredient.id);
+        ref
+            .read(selectedToppingsProvider.notifier)
+            .add(ingredient.id, quantityLimit.toppingsQuantityLimit!);
       }
     }
   }

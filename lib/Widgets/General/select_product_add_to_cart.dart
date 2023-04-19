@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:jus_mobile_order_app/Helpers/locations.dart';
+import 'package:jus_mobile_order_app/Helpers/orders.dart';
 import 'package:jus_mobile_order_app/Helpers/products.dart';
 import 'package:jus_mobile_order_app/Helpers/set_standard_ingredients.dart';
 import 'package:jus_mobile_order_app/Helpers/time.dart';
@@ -8,7 +9,6 @@ import 'package:jus_mobile_order_app/Models/points_details_model.dart';
 import 'package:jus_mobile_order_app/Models/product_model.dart';
 import 'package:jus_mobile_order_app/Providers/ProviderWidgets/points_details_provider_widget.dart';
 import 'package:jus_mobile_order_app/Providers/ProviderWidgets/product_quantity_limit_provider.dart';
-import 'package:jus_mobile_order_app/Providers/order_providers.dart';
 import 'package:jus_mobile_order_app/Providers/product_providers.dart';
 import 'package:jus_mobile_order_app/Widgets/Buttons/elevated_button_large.dart';
 import 'package:jus_mobile_order_app/Widgets/Buttons/elevated_button_medium.dart';
@@ -107,8 +107,7 @@ class AddToCartRow extends ConsumerWidget {
   ) {
     final editOrder = ref.watch(editOrderProvider);
     if (product.isScheduled) {
-      ref.read(scheduledProductHoursNoticeProvider.notifier).state =
-          quantityLimit.hoursNotice;
+      OrderHelpers(ref: ref).setScheduledLimitProviders(quantityLimit);
     }
     if (editOrder) {
       ProductHelpers(ref: ref).editItemInCart(product, points);

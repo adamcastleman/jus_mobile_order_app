@@ -80,7 +80,7 @@ class RedeemOfferCard extends ConsumerWidget {
                         color: Colors.green,
                       ),
                       Text(
-                        '${PointsHelper(ref: ref).determinePointsMultipleText(isJusCard: ref.watch(selectedPaymentMethodProvider)['isGiftCard'])}/\$1',
+                        '${PointsHelper(ref: ref).determinePointsMultipleText(isWallet: ref.watch(selectedPaymentMethodProvider)['isGiftCard'])}/\$1',
                         style: const TextStyle(fontSize: 11),
                       ),
                     ],

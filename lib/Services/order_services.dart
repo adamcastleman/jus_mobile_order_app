@@ -11,13 +11,13 @@ class OrderServices {
   Stream<List<OrderModel>> get orders {
     return ordersCollection
         .where(
-          'createdAt',
+          'paymentDetails.createdAt',
           isLessThan: DateTime.now().add(
             const Duration(days: 120),
           ),
         )
-        .where('userID', isEqualTo: userID)
-        .orderBy('createdAt', descending: true)
+        .where('userDetails.userID', isEqualTo: userID)
+        .orderBy('paymentDetails.createdAt', descending: true)
         .snapshots()
         .map(getOrdersFromDatabase);
   }
@@ -28,23 +28,25 @@ class OrderServices {
         final dynamic data = doc.data();
 
         return OrderModel(
-          userID: data['userID'],
-          orderNumber: data['orderNumber'],
-          locationID: data['locationID'],
-          createdAt: data['createdAt'].toDate(),
-          items: data['items'],
-          paymentMethod: data['paymentMethod'],
-          paymentSource: data['paymentSource'],
-          cardBrand: data['cardBrand'],
-          lastFourDigits: data['lastFourDigits'],
-          totalAmount: data['totalAmount'],
-          originalSubtotalAmount: data['originalSubtotalAmount'] ?? 0,
-          discountedSubtotalAmount: data['discountedSubtotalAmount'] ?? 0,
-          taxAmount: data['taxAmount'],
-          tipAmount: data['tipAmount'],
-          discountAmount: data['discountAmount'],
-          pointsEarned: data['pointsEarned'],
-          pointsRedeemed: data['pointsRedeemed'],
+          userID: data['userDetails']['userID'],
+          locationID: data['locationDetails']['locationID'],
+          pointsEarned: data['pointsDetails']['pointsEarned'],
+          pointsRedeemed: data['pointsDetails']['pointsRedeemed'],
+          orderNumber: data['orderDetails']['orderNumber'],
+          orderSource: data['orderDetails']['orderSource'],
+          items: data['orderDetails']['items'],
+          pickupDate: data['orderDetails']['pickupDate']?.toDate(),
+          pickupTime: data['orderDetails']['pickupTime']?.toDate(),
+          paymentMethod: data['paymentDetails']['paymentMethod'],
+          createdAt: data['paymentDetails']['createdAt'].toDate(),
+          cardBrand: data['paymentDetails']['cardBrand'],
+          lastFourDigits: data['paymentDetails']['lastFourDigits'],
+          totalAmount: data['totals']['totalAmount'],
+          originalSubtotalAmount: data['totals']['originalSubtotalAmount'],
+          discountedSubtotalAmount: data['totals']['discountedSubtotalAmount'],
+          taxAmount: data['totals']['taxAmount'],
+          tipAmount: data['totals']['tipAmount'],
+          discountAmount: data['totals']['discountAmount'],
         );
       },
     ).toList();

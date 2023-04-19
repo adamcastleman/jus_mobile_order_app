@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:jus_mobile_order_app/Helpers/divider.dart';
 import 'package:jus_mobile_order_app/Helpers/spacing_widgets.dart';
+import 'package:jus_mobile_order_app/Payments/payment_method_selector.dart';
 import 'package:jus_mobile_order_app/Providers/ProviderWidgets/points_details_provider_widget.dart';
 import 'package:jus_mobile_order_app/Providers/ProviderWidgets/user_provider_widget.dart';
 import 'package:jus_mobile_order_app/Providers/theme_providers.dart';
@@ -11,7 +12,6 @@ import 'package:jus_mobile_order_app/Widgets/General/qr_code_display.dart';
 import 'package:jus_mobile_order_app/Widgets/General/scan_descriptor_widget.dart';
 import 'package:jus_mobile_order_app/Widgets/General/scan_type_tabs_widget.dart';
 import 'package:jus_mobile_order_app/Widgets/General/user_points_status_display.dart';
-import 'package:jus_mobile_order_app/Widgets/Payments/payment_method_selector.dart';
 
 import '../Providers/scan_providers.dart';
 

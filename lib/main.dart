@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart' hide Router;
 import 'package:flutter/services.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:jus_mobile_order_app/Services/payments_services.dart';
 import 'package:jus_mobile_order_app/Views/home_scaffold.dart';
 import 'package:jus_mobile_order_app/firebase_options.dart';
 import 'package:jus_mobile_order_app/theme_data.dart';
@@ -13,6 +14,7 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   appTrackingTransparencyRequest();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  await PaymentsServices().setApplicationID();
   FirebaseMessaging.onBackgroundMessage(backgroundHandler);
   LicenseRegistry.addLicense(() async* {
     final license = await rootBundle.loadString('Montserrat/OFL.txt');
@@ -27,9 +29,6 @@ void main() async {
   );
 }
 
-appTrackingTransparencyRequest() async =>
-    kIsWeb == false ? await Permission.appTrackingTransparency.request() : null;
-
 class JusMobileOrder extends StatelessWidget {
   const JusMobileOrder({super.key});
 
@@ -38,7 +37,6 @@ class JusMobileOrder extends StatelessWidget {
     final ThemeData theme = ThemeManager().theme;
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'Flutter Demo',
       theme: theme,
       home: const HomeScaffold(),
     );
@@ -48,5 +46,8 @@ class JusMobileOrder extends StatelessWidget {
 Future<void> backgroundHandler(RemoteMessage message) async {
   return Future.value();
 }
+
+appTrackingTransparencyRequest() async =>
+    kIsWeb == false ? await Permission.appTrackingTransparency.request() : null;
 
 //open -a /Applications/Android\ Studio.app

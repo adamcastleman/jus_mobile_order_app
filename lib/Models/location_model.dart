@@ -20,7 +20,6 @@ class LocationModel with _$LocationModel {
     required double salesTaxRate,
     required bool acceptingOrders,
     required List unavailableProducts,
-    required List unavailableIngredients,
     required bool comingSoon,
     required List blackoutDates,
   }) = _LocationModel;

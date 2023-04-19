@@ -17,17 +17,21 @@ class PointsAmountDisplay extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return PointsDetailsProviderWidget(
-      builder: (points) => Container(
-        padding: EdgeInsets.all(padding),
-        decoration: BoxDecoration(
-          border: hasBorder ? Border.all(width: 0.5) : null,
-        ),
-        child: Text(
-          '${points.rewardsAmounts.where((element) => element['products'].contains(product.productID)).first['amount']}-point item',
-          style: TextStyle(fontSize: fontSize),
-        ),
-      ),
-    );
+    return PointsDetailsProviderWidget(builder: (points) {
+      var qualifyingProducts = points.rewardsAmounts
+          .where((element) => element['products'].contains(product.productID));
+      return qualifyingProducts.isEmpty
+          ? const SizedBox()
+          : Container(
+              padding: EdgeInsets.all(padding),
+              decoration: BoxDecoration(
+                border: hasBorder ? Border.all(width: 0.5) : null,
+              ),
+              child: Text(
+                '${qualifyingProducts.first['amount']}-point item',
+                style: TextStyle(fontSize: fontSize),
+              ),
+            );
+    });
   }
 }

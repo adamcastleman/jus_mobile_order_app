@@ -17,13 +17,21 @@ class PointsDetailsProviderWidget extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final points = ref.watch(pointsDetailsProvider);
     return points.when(
-      error: (e, _) =>
-          error ??
-          ShowError(
-            error: e.toString(),
-          ),
-      loading: () => loading ?? const Loading(),
-      data: (points) => builder(points),
-    );
+        error: (e, _) =>
+            error ??
+            ShowError(
+              error: e.toString(),
+            ),
+        loading: () => loading ?? const Loading(),
+        data: (points) {
+          final sortedRewardsAmounts =
+              List<Map<String, dynamic>>.from(points.rewardsAmounts);
+          sortedRewardsAmounts.sort(
+            (a, b) => a['amount'].compareTo(b['amount']),
+          );
+          final sortedPoints =
+              points.copyWith(rewardsAmounts: sortedRewardsAmounts);
+          return builder(sortedPoints);
+        });
   }
 }

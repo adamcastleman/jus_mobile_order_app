@@ -1,8 +1,12 @@
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:jus_mobile_order_app/Helpers/error.dart';
+import 'package:jus_mobile_order_app/Helpers/formulas.dart';
 import 'package:jus_mobile_order_app/Helpers/loading.dart';
 import 'package:jus_mobile_order_app/Helpers/points.dart';
 import 'package:jus_mobile_order_app/Helpers/pricing.dart';
+import 'package:jus_mobile_order_app/Helpers/set_standard_ingredients.dart';
+import 'package:jus_mobile_order_app/Helpers/set_standard_items.dart';
+import 'package:jus_mobile_order_app/Models/favorites_model.dart';
 import 'package:jus_mobile_order_app/Models/ingredient_model.dart';
 import 'package:jus_mobile_order_app/Models/points_details_model.dart';
 import 'package:jus_mobile_order_app/Models/product_model.dart';
@@ -15,11 +19,53 @@ class ProductHelpers {
 
   ProductHelpers({required this.ref});
 
+  setProductProviders(ProductModel product) {
+    ref.read(selectedProductIDProvider.notifier).state = product.productID;
+    ref.read(selectedProductUIDProvider.notifier).state = product.uid;
+    ref.read(isScheduledProvider.notifier).state = product.isScheduled;
+    product.isScheduled
+        ? StandardItems(ref: ref).set(product)
+        : StandardIngredients(ref: ref).set(product);
+    ref.read(itemKeyProvider.notifier).state = Formulas().idGenerator();
+  }
+
+  setFavoritesProviders(ProductModel product, FavoritesModel favorite) {
+    ref.read(selectedProductIDProvider.notifier).state = product.productID;
+    ref.read(isScheduledProvider.notifier).state = product.isScheduled;
+    ref.read(selectedProductUIDProvider.notifier).state = product.uid;
+    product.isScheduled
+        ? StandardItems(ref: ref).set(product)
+        : StandardIngredients(ref: ref).set(product);
+    ref
+        .read(selectedIngredientsProvider.notifier)
+        .addIngredients(favorite.ingredients);
+    ref
+        .read(selectedToppingsProvider.notifier)
+        .addMultipleToppings(favorite.toppings);
+    ref.read(itemKeyProvider.notifier).state = Formulas().idGenerator();
+    ref.read(itemSizeProvider.notifier).state = favorite.size;
+    ref
+        .read(selectedAllergiesProvider.notifier)
+        .addListOfAllergies(favorite.allergies);
+  }
+
+  setRecommendedProviders(ProductModel recommended) {
+    ref.read(selectedProductIDProvider.notifier).state = recommended.productID;
+    ref.read(selectedProductUIDProvider.notifier).state = recommended.uid;
+    ref.read(isScheduledProvider.notifier).state = recommended.isScheduled;
+    recommended.isScheduled
+        ? StandardItems(ref: ref).set(recommended)
+        : StandardIngredients(ref: ref).set(recommended);
+
+    ref.read(itemKeyProvider.notifier).state = Formulas().idGenerator();
+  }
+
   currentItem(ProductModel product, PointsDetailsModel points) {
     final standardIngredients = ref.watch(standardIngredientsProvider);
     final selectedIngredients = ref.watch(selectedIngredientsProvider);
     final itemQuantity = ref.watch(itemQuantityProvider);
     final scheduledQuantity = ref.watch(scheduledQuantityProvider);
+    final scheduledDescriptor = ref.watch(scheduledQuantityDescriptorProvider);
     final itemSize = ref.watch(itemSizeProvider);
     final hasToppings = ref.watch(productHasToppingsProvider);
     final selectedToppings = ref.watch(selectedToppingsProvider);
@@ -31,6 +77,7 @@ class ProductHelpers {
       'isModifiable': product.isModifiable,
       'itemQuantity': itemQuantity,
       'scheduledQuantity': scheduledQuantity,
+      'scheduledDescriptor': scheduledDescriptor,
       'itemSize': itemSize,
       'itemKey': ref.watch(itemKeyProvider),
       'points': PointsHelper(ref: ref)
@@ -299,11 +346,16 @@ class ProductHelpers {
     List<ProductModel> product,
     List<IngredientModel> ingredients,
   ) {
-    String productName = currentProduct.name;
     int productID = currentProduct.productID;
+    String productName = currentProduct.name;
+    String image = currentProduct.image;
     int itemQuantity = currentOrder[index]['itemQuantity'];
+    bool isScheduled = currentProduct.isScheduled;
     int? scheduledQuantity = currentProduct.isScheduled
         ? currentOrder[index]['scheduledQuantity']
+        : null;
+    String? scheduledDescriptor = currentProduct.isScheduled
+        ? currentOrder[index]['scheduledDescriptor']
         : null;
     String? itemSize =
         !currentProduct.isScheduled && currentProduct.isModifiable
@@ -337,10 +389,13 @@ class ProductHelpers {
 
     return {
       'name': productName,
+      'image': image,
       'id': productID,
       'itemQuantity': itemQuantity,
       'size': itemSize,
+      'isScheduled': isScheduled,
       'scheduledQuantity': scheduledQuantity,
+      'scheduledDescriptor': scheduledDescriptor,
       'modifications': ingredientModificationList,
       'allergies': allergiesList,
       'price': user.uid == null || !user.isActiveMember!

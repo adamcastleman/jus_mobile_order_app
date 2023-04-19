@@ -2,8 +2,8 @@ const admin = require("firebase-admin");
 
 const convertDatesToTimestamps = (orderMap) => {
 
-  const pickupTimeMillis = orderMap.pickupTime;
-  const pickupDateMillis = orderMap.pickupDate;
+  const pickupTimeMillis = orderMap.orderDetails.pickupTime;
+  const pickupDateMillis = orderMap.orderDetails.pickupDate;
 
   const pickupTime = pickupTimeMillis
     ? admin.firestore.Timestamp.fromMillis(pickupTimeMillis)
@@ -12,8 +12,12 @@ const convertDatesToTimestamps = (orderMap) => {
     ? admin.firestore.Timestamp.fromMillis(pickupDateMillis)
     : null;
 
-  orderMap.pickupTime = pickupTime;
-  orderMap.pickupDate = pickupDate;
+  orderMap.orderDetails.pickupTime = pickupTime;
+  orderMap.orderDetails.pickupDate = pickupDate;
+  orderMap.orderDetails.pickupDateMillis = pickupDateMillis;
+
+
 };
+
 
 module.exports = convertDatesToTimestamps;

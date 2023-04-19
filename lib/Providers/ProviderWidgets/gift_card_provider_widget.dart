@@ -5,11 +5,11 @@ import 'package:jus_mobile_order_app/Helpers/loading.dart';
 import 'package:jus_mobile_order_app/Models/payments_model.dart';
 import 'package:jus_mobile_order_app/Providers/stream_providers.dart';
 
-class GiftCardProviderWidget extends ConsumerWidget {
+class WalletProviderWidget extends ConsumerWidget {
   final Widget Function(List<PaymentsModel> cards) builder;
   final dynamic loading;
   final dynamic error;
-  const GiftCardProviderWidget(
+  const WalletProviderWidget(
       {required this.builder, this.loading, this.error, Key? key})
       : super(key: key);
 

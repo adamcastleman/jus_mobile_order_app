@@ -35,14 +35,22 @@ final productHasToppingsProvider = StateProvider<bool>((ref) => false);
 
 final selectedProductIDProvider = StateProvider<int?>((ref) => null);
 
+final selectedProductUIDProvider = StateProvider<String?>((ref) => null);
+
 final itemSizeProvider = StateProvider<int>((ref) => 0);
 
 final editOrderProvider = StateProvider<bool>((ref) => false);
 
 final itemKeyProvider = StateProvider<String>((ref) => '');
 
+final isFavoritesSheetProvider =
+    StateProvider.autoDispose<bool>((ref) => false);
+
 final itemQuantityProvider = StateNotifierProvider<SelectItemQuantity, int>(
     (ref) => SelectItemQuantity());
+
+final scheduledQuantityDescriptorProvider =
+    StateProvider<String?>((ref) => null);
 
 final scheduledQuantityProvider =
     StateNotifierProvider<SelectScheduledQuantity, int>(
@@ -108,8 +116,8 @@ final currentOrderItemsIndexProvider = StateProvider<int>((ref) => 0);
 class SelectedToppings extends StateNotifier<List<int>> {
   SelectedToppings() : super([]);
 
-  add(int ingredient) {
-    if (state.length == 3) {
+  add(int ingredient, int quantityLimit) {
+    if (state.length == quantityLimit) {
       state = state;
     } else {
       HapticFeedback.lightImpact();
@@ -514,6 +522,7 @@ class CurrentOrderItems extends StateNotifier<List<Map<String, dynamic>>> {
           product.first['itemQuantity'] + item['itemQuantity'];
       product.first['scheduledQuantity'] =
           product.first['isScheduled'] ? item['scheduledQuantity'] : 1;
+      product.first['scheduledDescriptor'] = item['scheduledDescriptor'];
       product.first['itemSize'] = item['itemSize'];
       state = [...state];
     }
@@ -528,6 +537,8 @@ class CurrentOrderItems extends StateNotifier<List<Map<String, dynamic>>> {
         currentOrder[currentOrderIndex]['isScheduled']
             ? item['scheduledQuantity']
             : 1;
+    currentOrder[currentOrderIndex]['scheduledDescriptor'] =
+        item['scheduledDescriptor'];
     currentOrder[currentOrderIndex]['itemSize'] = item['itemSize'];
     currentOrder[currentOrderIndex]['itemKey'] = item['itemKey'];
     currentOrder[currentOrderIndex]['selectedIngredients'] =

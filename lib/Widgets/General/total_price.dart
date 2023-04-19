@@ -224,10 +224,10 @@ class TotalPrice extends ConsumerWidget {
       return const SizedBox();
     }
 
-    final isJusCard = ref.watch(selectedPaymentMethodProvider)['isGiftCard'];
+    final isWallet = ref.watch(selectedPaymentMethodProvider)['isWallet'];
 
     final pointsMultipleText =
-        pointsHelper.determinePointsMultipleText(isJusCard: isJusCard);
+        pointsHelper.determinePointsMultipleText(isWallet: isWallet ?? false);
 
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,

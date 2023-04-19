@@ -10,4 +10,8 @@ class ImageServices {
   Stream<dynamic> get signInImage {
     return collectionReference.doc('signIn').snapshots();
   }
+
+  Stream<dynamic> get deleteAccount {
+    return collectionReference.doc('deleteAccount').snapshots();
+  }
 }

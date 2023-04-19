@@ -102,7 +102,6 @@ class LocationHelper {
       acceptingOrders: false,
       unavailableProducts: [],
       comingSoon: false,
-      unavailableIngredients: [],
       blackoutDates: [],
     );
   }

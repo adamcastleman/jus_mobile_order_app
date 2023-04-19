@@ -46,7 +46,7 @@ class AvailableRewardCard extends ConsumerWidget {
                                     ['name'],
                                 style: const TextStyle(
                                     fontSize: 16, fontWeight: FontWeight.bold),
-                                maxLines: 2,
+                                maxLines: 3,
                               ),
                               Padding(
                                 padding:

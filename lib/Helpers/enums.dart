@@ -1,4 +1,4 @@
 enum PageType {
-  scanPage,
-  paymentMethodsPage,
+  editPaymentMethod,
+  selectPaymentMethod,
 }

@@ -27,7 +27,9 @@ class ProductQuantityLimitProviderWidget extends ConsumerWidget {
 
     final params = QuantityLimitParams(
         productUID: productUID,
-        locationID: locationID ?? selectedLocation.locationID);
+        locationID: locationID == null && selectedLocation == null
+            ? 1
+            : locationID ?? selectedLocation.locationID);
     final quantityLimits = ref.watch(
       productQuantityLimitProvider(params),
     );

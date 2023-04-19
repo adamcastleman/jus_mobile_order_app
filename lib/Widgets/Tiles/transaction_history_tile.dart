@@ -20,84 +20,91 @@ class TransactionHistoryTile extends StatelessWidget {
   Widget build(BuildContext context) {
     return LocationsProviderWidget(
       builder: (locations) => ProductsProviderWidget(
-        builder: (products) => Column(
-          children: [
-            order.pointsRedeemed != 0
-                ? Padding(
-                    padding: const EdgeInsets.only(bottom: 12.0),
-                    child: ListTile(
-                      title: Text(
-                        '${order.pointsRedeemed} points redeemed',
-                        style: const TextStyle(
-                            fontSize: 18, fontWeight: FontWeight.bold),
-                      ),
-                      trailing: Text(
-                          DateFormat('MM/dd/yyyy').format(order.createdAt)),
-                    ))
-                : const SizedBox(),
-            ListTile(
-              leading: determineOrderIcon(order),
-              title: Text(
-                order.paymentSource,
-                style: const TextStyle(fontWeight: FontWeight.bold),
+        builder: (products) => InkWell(
+          onTap: () {
+            ModalBottomSheet().fullScreen(
+                context: context,
+                builder: (context) => ReceiptSheet(order: order));
+          },
+          child: Column(
+            children: [
+              order.pointsRedeemed != 0
+                  ? Padding(
+                      padding: const EdgeInsets.only(bottom: 12.0),
+                      child: ListTile(
+                        title: Text(
+                          '${order.pointsRedeemed} points redeemed',
+                          style: const TextStyle(
+                              fontSize: 18, fontWeight: FontWeight.bold),
+                        ),
+                        trailing: Text(
+                            DateFormat('MM/dd/yyyy').format(order.createdAt)),
+                      ))
+                  : const SizedBox(),
+              ListTile(
+                leading: determineOrderIcon(order),
+                title: Text(
+                  order.orderSource,
+                  style: const TextStyle(fontWeight: FontWeight.bold),
+                ),
+                subtitle: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(order.totalAmount <= 0
+                        ? 'No charge'
+                        : '${order.cardBrand} x${order.lastFourDigits}'),
+                    Text(locations
+                        .firstWhere(
+                            (element) => element.locationID == order.locationID)
+                        .name),
+                  ],
+                ),
+                trailing: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: [
+                        Text(
+                          '\$${NumberFormat.currency(
+                            locale: 'en_US',
+                            symbol: '',
+                            decimalDigits: 2,
+                          ).format((order.totalAmount + order.tipAmount) / 100)}',
+                          style: const TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                        Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text(
+                              '+${order.pointsEarned}',
+                              style: const TextStyle(color: Colors.green),
+                            ),
+                            const Text(' points'),
+                          ],
+                        ),
+                        Text(DateFormat('M/dd/yyyy').format(order.createdAt)),
+                      ],
+                    ),
+                    Spacing().horizontal(10),
+                    const ChevronRightIcon(),
+                  ],
+                ),
+                onTap: () {
+                  ModalBottomSheet().fullScreen(
+                      context: context,
+                      builder: (context) => ReceiptSheet(order: order));
+                },
               ),
-              subtitle: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(order.totalAmount <= 0
-                      ? 'No charge'
-                      : '${order.cardBrand} x${order.lastFourDigits}'),
-                  Text(locations
-                      .firstWhere(
-                          (element) => element.locationID == order.locationID)
-                      .name),
-                ],
-              ),
-              trailing: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    children: [
-                      Text(
-                        '\$${NumberFormat.currency(
-                          locale: 'en_US',
-                          symbol: '',
-                          decimalDigits: 2,
-                        ).format((order.totalAmount + order.taxAmount + order.taxAmount) / 100)}',
-                        style: const TextStyle(fontWeight: FontWeight.bold),
-                      ),
-                      Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Text(
-                            '+${order.pointsEarned}',
-                            style: const TextStyle(color: Colors.green),
-                          ),
-                          const Text(' points'),
-                        ],
-                      ),
-                      Text(DateFormat('M/dd/yyyy').format(order.createdAt)),
-                    ],
-                  ),
-                  Spacing().horizontal(10),
-                  const ChevronRightIcon(),
-                ],
-              ),
-              onTap: () {
-                ModalBottomSheet().fullScreen(
-                    context: context,
-                    builder: (context) => ReceiptSheet(order: order));
-              },
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
   }
 
   determineOrderIcon(OrderModel order) {
-    switch (order.paymentSource) {
+    switch (order.orderSource) {
       case 'Mobile Order':
         {
           return const Icon(CupertinoIcons.device_phone_portrait);

@@ -42,6 +42,8 @@ class ProductQuantityModel with _$ProductQuantityModel {
     int? quantityLimit,
     int? scheduledQuantityLimit,
     String? scheduledProductDescriptor,
+    String? toppingsDescriptor,
+    int? toppingsQuantityLimit,
   }) = _ProductQuantityModel;
 }
 

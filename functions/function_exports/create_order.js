@@ -14,14 +14,15 @@ exports.createOrder = functions.https.onCall(async (data, context) => {
   const db = admin.firestore();
   const orderMap = data.orderMap;
   const userID = context.auth?.uid ?? null;
-  orderMap.userID = userID;
+  orderMap.userDetails.userID = userID;
 
    try {
       const paymentResult = await processPayment(orderMap);
-      console.log(paymentResult);
       updateOrderMapWithPaymentData(orderMap, paymentResult);
       await addOrderToDatabase(db, orderMap, userID);
       userID === null ? null : await updatePoints(db, orderMap);
+
+
       return 200;
     } catch (error) {
     console.log(error);

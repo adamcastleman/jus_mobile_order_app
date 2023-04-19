@@ -4,14 +4,11 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:jus_mobile_order_app/Helpers/formulas.dart';
 import 'package:jus_mobile_order_app/Helpers/locations.dart';
-import 'package:jus_mobile_order_app/Helpers/set_standard_ingredients.dart';
-import 'package:jus_mobile_order_app/Helpers/set_standard_items.dart';
+import 'package:jus_mobile_order_app/Helpers/products.dart';
 import 'package:jus_mobile_order_app/Helpers/time.dart';
 import 'package:jus_mobile_order_app/Models/product_model.dart';
 import 'package:jus_mobile_order_app/Providers/ProviderWidgets/taxable_products_provider_widget.dart';
-import 'package:jus_mobile_order_app/Providers/product_providers.dart';
 import 'package:jus_mobile_order_app/Providers/theme_providers.dart';
 import 'package:jus_mobile_order_app/Views/product_detail_page.dart';
 import 'package:jus_mobile_order_app/Widgets/Icons/new_icon.dart';
@@ -40,20 +37,12 @@ class MenuCard extends ConsumerWidget {
         ),
         closedBuilder: (context, close) {
           return InkWell(
-            onTap: () {
+            onTap: () async {
               if (LocationHelper().selectedLocation(ref) == null) {
                 LocationHelper().chooseLocation(context, ref);
                 null;
               } else {
-                ref.read(selectedProductIDProvider.notifier).state =
-                    products[index].productID;
-                ref.read(isScheduledProvider.notifier).state =
-                    products[index].isScheduled;
-                products[index].isScheduled
-                    ? StandardItems(ref: ref).set(products[index])
-                    : StandardIngredients(ref: ref).set(products[index]);
-                ref.read(itemKeyProvider.notifier).state =
-                    Formulas().idGenerator();
+                ProductHelpers(ref: ref).setProductProviders(products[index]);
                 close();
               }
             },

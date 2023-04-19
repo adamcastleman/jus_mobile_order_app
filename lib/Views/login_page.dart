@@ -1,10 +1,10 @@
 import 'package:email_validator/email_validator.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:jus_mobile_order_app/Helpers/Validators/form_validators.dart';
 import 'package:jus_mobile_order_app/Helpers/error.dart';
 import 'package:jus_mobile_order_app/Helpers/modal_bottom_sheets.dart';
 import 'package:jus_mobile_order_app/Helpers/spacing_widgets.dart';
-import 'package:jus_mobile_order_app/Helpers/validators.dart';
 import 'package:jus_mobile_order_app/Providers/auth_providers.dart';
 import 'package:jus_mobile_order_app/Services/auth_services.dart';
 import 'package:jus_mobile_order_app/Views/forgot_password_page.dart';
@@ -13,6 +13,8 @@ import 'package:jus_mobile_order_app/Widgets/Buttons/close_button.dart';
 import 'package:jus_mobile_order_app/Widgets/Buttons/elevated_button_large.dart';
 import 'package:jus_mobile_order_app/Widgets/Buttons/elevated_button_large_loading.dart';
 import 'package:jus_mobile_order_app/Widgets/General/text_fields.dart';
+
+import '../Providers/loading_providers.dart';
 
 class LoginPage extends ConsumerWidget {
   const LoginPage({super.key});

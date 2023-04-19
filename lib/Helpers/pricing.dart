@@ -227,7 +227,8 @@ class Pricing {
   }
 
   bool isZeroCharge() {
-    if (originalSubtotalForNonMembers() == discountTotalForNonMembers()) {
+    if (originalSubtotalForNonMembers() + tipAmountForNonMembers() ==
+        discountTotalForNonMembers()) {
       return true;
     } else {
       return false;

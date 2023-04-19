@@ -675,6 +675,8 @@ mixin _$ProductQuantityModel {
   int? get quantityLimit => throw _privateConstructorUsedError;
   int? get scheduledQuantityLimit => throw _privateConstructorUsedError;
   String? get scheduledProductDescriptor => throw _privateConstructorUsedError;
+  String? get toppingsDescriptor => throw _privateConstructorUsedError;
+  int? get toppingsQuantityLimit => throw _privateConstructorUsedError;
 
   @JsonKey(ignore: true)
   $ProductQuantityModelCopyWith<ProductQuantityModel> get copyWith =>
@@ -694,7 +696,9 @@ abstract class $ProductQuantityModelCopyWith<$Res> {
       int hoursNotice,
       int? quantityLimit,
       int? scheduledQuantityLimit,
-      String? scheduledProductDescriptor});
+      String? scheduledProductDescriptor,
+      String? toppingsDescriptor,
+      int? toppingsQuantityLimit});
 }
 
 /// @nodoc
@@ -718,6 +722,8 @@ class _$ProductQuantityModelCopyWithImpl<$Res,
     Object? quantityLimit = freezed,
     Object? scheduledQuantityLimit = freezed,
     Object? scheduledProductDescriptor = freezed,
+    Object? toppingsDescriptor = freezed,
+    Object? toppingsQuantityLimit = freezed,
   }) {
     return _then(_value.copyWith(
       uid: null == uid
@@ -748,6 +754,14 @@ class _$ProductQuantityModelCopyWithImpl<$Res,
           ? _value.scheduledProductDescriptor
           : scheduledProductDescriptor // ignore: cast_nullable_to_non_nullable
               as String?,
+      toppingsDescriptor: freezed == toppingsDescriptor
+          ? _value.toppingsDescriptor
+          : toppingsDescriptor // ignore: cast_nullable_to_non_nullable
+              as String?,
+      toppingsQuantityLimit: freezed == toppingsQuantityLimit
+          ? _value.toppingsQuantityLimit
+          : toppingsQuantityLimit // ignore: cast_nullable_to_non_nullable
+              as int?,
     ) as $Val);
   }
 }
@@ -767,7 +781,9 @@ abstract class _$$_ProductQuantityModelCopyWith<$Res>
       int hoursNotice,
       int? quantityLimit,
       int? scheduledQuantityLimit,
-      String? scheduledProductDescriptor});
+      String? scheduledProductDescriptor,
+      String? toppingsDescriptor,
+      int? toppingsQuantityLimit});
 }
 
 /// @nodoc
@@ -788,6 +804,8 @@ class __$$_ProductQuantityModelCopyWithImpl<$Res>
     Object? quantityLimit = freezed,
     Object? scheduledQuantityLimit = freezed,
     Object? scheduledProductDescriptor = freezed,
+    Object? toppingsDescriptor = freezed,
+    Object? toppingsQuantityLimit = freezed,
   }) {
     return _then(_$_ProductQuantityModel(
       uid: null == uid
@@ -818,6 +836,14 @@ class __$$_ProductQuantityModelCopyWithImpl<$Res>
           ? _value.scheduledProductDescriptor
           : scheduledProductDescriptor // ignore: cast_nullable_to_non_nullable
               as String?,
+      toppingsDescriptor: freezed == toppingsDescriptor
+          ? _value.toppingsDescriptor
+          : toppingsDescriptor // ignore: cast_nullable_to_non_nullable
+              as String?,
+      toppingsQuantityLimit: freezed == toppingsQuantityLimit
+          ? _value.toppingsQuantityLimit
+          : toppingsQuantityLimit // ignore: cast_nullable_to_non_nullable
+              as int?,
     ));
   }
 }
@@ -832,7 +858,9 @@ class _$_ProductQuantityModel implements _ProductQuantityModel {
       required this.hoursNotice,
       this.quantityLimit,
       this.scheduledQuantityLimit,
-      this.scheduledProductDescriptor});
+      this.scheduledProductDescriptor,
+      this.toppingsDescriptor,
+      this.toppingsQuantityLimit});
 
   @override
   final String uid;
@@ -848,10 +876,14 @@ class _$_ProductQuantityModel implements _ProductQuantityModel {
   final int? scheduledQuantityLimit;
   @override
   final String? scheduledProductDescriptor;
+  @override
+  final String? toppingsDescriptor;
+  @override
+  final int? toppingsQuantityLimit;
 
   @override
   String toString() {
-    return 'ProductQuantityModel(uid: $uid, locationID: $locationID, productType: $productType, hoursNotice: $hoursNotice, quantityLimit: $quantityLimit, scheduledQuantityLimit: $scheduledQuantityLimit, scheduledProductDescriptor: $scheduledProductDescriptor)';
+    return 'ProductQuantityModel(uid: $uid, locationID: $locationID, productType: $productType, hoursNotice: $hoursNotice, quantityLimit: $quantityLimit, scheduledQuantityLimit: $scheduledQuantityLimit, scheduledProductDescriptor: $scheduledProductDescriptor, toppingsDescriptor: $toppingsDescriptor, toppingsQuantityLimit: $toppingsQuantityLimit)';
   }
 
   @override
@@ -873,7 +905,11 @@ class _$_ProductQuantityModel implements _ProductQuantityModel {
             (identical(other.scheduledProductDescriptor,
                     scheduledProductDescriptor) ||
                 other.scheduledProductDescriptor ==
-                    scheduledProductDescriptor));
+                    scheduledProductDescriptor) &&
+            (identical(other.toppingsDescriptor, toppingsDescriptor) ||
+                other.toppingsDescriptor == toppingsDescriptor) &&
+            (identical(other.toppingsQuantityLimit, toppingsQuantityLimit) ||
+                other.toppingsQuantityLimit == toppingsQuantityLimit));
   }
 
   @override
@@ -885,7 +921,9 @@ class _$_ProductQuantityModel implements _ProductQuantityModel {
       hoursNotice,
       quantityLimit,
       scheduledQuantityLimit,
-      scheduledProductDescriptor);
+      scheduledProductDescriptor,
+      toppingsDescriptor,
+      toppingsQuantityLimit);
 
   @JsonKey(ignore: true)
   @override
@@ -903,7 +941,9 @@ abstract class _ProductQuantityModel implements ProductQuantityModel {
       required final int hoursNotice,
       final int? quantityLimit,
       final int? scheduledQuantityLimit,
-      final String? scheduledProductDescriptor}) = _$_ProductQuantityModel;
+      final String? scheduledProductDescriptor,
+      final String? toppingsDescriptor,
+      final int? toppingsQuantityLimit}) = _$_ProductQuantityModel;
 
   @override
   String get uid;
@@ -919,6 +959,10 @@ abstract class _ProductQuantityModel implements ProductQuantityModel {
   int? get scheduledQuantityLimit;
   @override
   String? get scheduledProductDescriptor;
+  @override
+  String? get toppingsDescriptor;
+  @override
+  int? get toppingsQuantityLimit;
   @override
   @JsonKey(ignore: true)
   _$$_ProductQuantityModelCopyWith<_$_ProductQuantityModel> get copyWith =>
