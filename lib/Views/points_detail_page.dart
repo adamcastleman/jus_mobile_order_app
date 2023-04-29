@@ -27,12 +27,16 @@ class PointsDetailPage extends ConsumerWidget {
         builder: (points) => Container(
           color: backgroundColor,
           child: ListView(
-            padding: const EdgeInsets.symmetric(vertical: 30.0),
+            padding: const EdgeInsets.symmetric(vertical: 35.0),
             children: [
               closeButton
-                  ? const Align(
+                  ? Align(
                       alignment: Alignment.topRight,
-                      child: JusCloseButton(),
+                      child: Transform.translate(
+                        offset:
+                            const Offset(-5, 5), // Adjust the translation here
+                        child: const JusCloseButton(),
+                      ),
                     )
                   : const SizedBox(),
               Column(

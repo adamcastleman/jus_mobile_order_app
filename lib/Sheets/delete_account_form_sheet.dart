@@ -5,10 +5,10 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:jus_mobile_order_app/Helpers/Validators/address_validators.dart';
 import 'package:jus_mobile_order_app/Helpers/modal_bottom_sheets.dart';
 import 'package:jus_mobile_order_app/Helpers/spacing_widgets.dart';
-import 'package:jus_mobile_order_app/Payments/invalid_payment_sheet.dart';
 import 'package:jus_mobile_order_app/Providers/ProviderWidgets/user_provider_widget.dart';
 import 'package:jus_mobile_order_app/Providers/auth_providers.dart';
 import 'package:jus_mobile_order_app/Providers/loading_providers.dart';
+import 'package:jus_mobile_order_app/Sheets/invalid_sheet_single_pop.dart';
 import 'package:jus_mobile_order_app/Widgets/Buttons/close_button.dart';
 import 'package:jus_mobile_order_app/Widgets/Buttons/elevated_button_medium.dart';
 import 'package:jus_mobile_order_app/Widgets/Buttons/elevated_button_medium_loading.dart';
@@ -108,6 +108,8 @@ class DeleteAccountFormSheet extends HookConsumerWidget {
                                   ToastHelper().showToast(
                                       message: 'We have received your request');
                                 });
+                                ref.read(loadingProvider.notifier).state =
+                                    false;
                               } else {
                                 ref.read(loadingProvider.notifier).state =
                                     false;
@@ -142,7 +144,7 @@ class DeleteAccountFormSheet extends HookConsumerWidget {
           isScrollControlled: false,
           isDismissible: false,
           context: context,
-          builder: (context) => const InvalidPaymentSheet(
+          builder: (context) => const InvalidSheetSinglePop(
               error:
                   'There was an error sending this request. Please try again.'));
       ref.read(loadingProvider.notifier).state = false;

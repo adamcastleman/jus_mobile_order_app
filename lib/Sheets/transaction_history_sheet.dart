@@ -14,7 +14,8 @@ class TransactionHistorySheet extends ConsumerWidget {
     return Container(
       color: backgroundColor,
       child: Padding(
-        padding: const EdgeInsets.only(top: 50.0, left: 12.0, right: 12.0),
+        padding: const EdgeInsets.only(
+            top: 50.0, left: 12.0, right: 12.0, bottom: 12.0),
         child: ListView(
           primary: false,
           children: [
@@ -30,8 +31,12 @@ class TransactionHistorySheet extends ConsumerWidget {
             ),
             Spacing().vertical(15),
             const TransactionHistoryListView(),
-            Spacing().vertical(15),
-            const Text('That\'s all (from the last 120 days)'),
+            Spacing().vertical(5),
+            const Center(
+              child: Text(
+                'That\'s all (from the last 120 days)',
+              ),
+            ),
           ],
         ),
       ),

@@ -65,11 +65,11 @@ class SavedPaymentTile extends ConsumerWidget {
     } else {
       final defaultPayment = card.defaultPayment ? 'Default' : '';
       return card.defaultPayment
-          ? const SizedBox()
-          : Text(
+          ? Text(
               defaultPayment,
               style: TextStyle(fontSize: 13, color: Colors.grey[600]),
-            );
+            )
+          : const SizedBox();
     }
   }
 
@@ -95,6 +95,8 @@ class SavedPaymentTile extends ConsumerWidget {
         lastFourDigits: card.lastFourDigits,
         brand: card.brand.toString(),
         isWallet: card.isWallet ? true : false,
+        gan: card.gan,
+        balance: card.balance,
       );
 
       Navigator.pop(context);

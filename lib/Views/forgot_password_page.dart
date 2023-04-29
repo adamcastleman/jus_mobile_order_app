@@ -101,6 +101,7 @@ class ForgotPasswordPage extends ConsumerWidget {
                               validateForm(ref: ref, email: email);
                               sendForgotPasswordLink(
                                   context: context, ref: ref);
+                              ref.read(loadingProvider.notifier).state = false;
                             },
                           ),
                     Spacing().vertical(10),

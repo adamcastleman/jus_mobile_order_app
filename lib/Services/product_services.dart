@@ -36,6 +36,14 @@ class ProductServices {
         .map(getProductsFromDatabase);
   }
 
+  Stream<List<ProductModel>> get newProducts {
+    return firestore
+        .collection('products')
+        .where('isNew', isEqualTo: true)
+        .snapshots()
+        .map(getProductsFromDatabase);
+  }
+
   Stream<ProductQuantityModel> get quantityLimits {
     return firestore
         .collection('products')

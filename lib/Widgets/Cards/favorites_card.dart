@@ -1,17 +1,10 @@
-import 'package:animations/animations.dart';
-import 'package:auto_size_text/auto_size_text.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:jus_mobile_order_app/Helpers/locations.dart';
 import 'package:jus_mobile_order_app/Helpers/products.dart';
-import 'package:jus_mobile_order_app/Helpers/spacing_widgets.dart';
 import 'package:jus_mobile_order_app/Providers/ProviderWidgets/favorites_provider_widget.dart';
 import 'package:jus_mobile_order_app/Providers/ProviderWidgets/ingredients_provider_widget.dart';
 import 'package:jus_mobile_order_app/Providers/ProviderWidgets/products_provider_widget.dart';
-import 'package:jus_mobile_order_app/Providers/location_providers.dart';
-import 'package:jus_mobile_order_app/Providers/product_providers.dart';
-import 'package:jus_mobile_order_app/Views/product_detail_page.dart';
+import 'package:jus_mobile_order_app/Widgets/Cards/menu_card_small.dart';
 
 class FavoritesCard extends ConsumerWidget {
   final int index;
@@ -26,65 +19,11 @@ class FavoritesCard extends ConsumerWidget {
           builder: (favorites) {
             final currentProduct = products.firstWhere(
                 (element) => element.productID == favorites[index].productID);
-            return OpenContainer(
-              openElevation: 0,
-              closedElevation: 0,
-              closedShape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(8.0),
-              ),
-              tappable: false,
-              transitionDuration: const Duration(milliseconds: 600),
-              openBuilder: (context, open) {
-                return ProductDetailPage(
-                  product: currentProduct,
-                );
-              },
-              closedBuilder: (context, close) {
-                return InkWell(
-                  onTap: () {
-                    if (ref.read(selectedLocationProvider) == null) {
-                      LocationHelper().chooseLocation(context, ref);
-                      null;
-                    } else {
-                      ProductHelpers(ref: ref).setFavoritesProviders(
-                          currentProduct, favorites[index]);
-                      close();
-                    }
-                  },
-                  child: SizedBox(
-                    width: 150,
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(
-                          vertical: 12.0, horizontal: 12.0),
-                      child: Column(
-                        children: [
-                          Hero(
-                            tag: 'product-image',
-                            child: SizedBox(
-                              height: ref.watch(isFavoritesSheetProvider)
-                                  ? 160
-                                  : 130,
-                              width: 100,
-                              child: CachedNetworkImage(
-                                imageUrl: currentProduct.image,
-                              ),
-                            ),
-                          ),
-                          Spacing().vertical(15),
-                          AutoSizeText(
-                            favorites[index].name,
-                            style: const TextStyle(
-                                fontSize: 16, fontWeight: FontWeight.bold),
-                            maxLines: 2,
-                            textAlign: TextAlign.center,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                );
-              },
+            return MenuCardSmall(
+              product: currentProduct,
+              favoriteName: favorites[index].name,
+              providerFunction: () => ProductHelpers(ref: ref)
+                  .setFavoritesProviders(currentProduct, favorites[index]),
             );
           },
         ),

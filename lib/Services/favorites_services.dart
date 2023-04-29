@@ -4,8 +4,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:jus_mobile_order_app/Helpers/modal_bottom_sheets.dart';
 import 'package:jus_mobile_order_app/Models/favorites_model.dart';
-import 'package:jus_mobile_order_app/Payments/invalid_payment_sheet.dart';
 import 'package:jus_mobile_order_app/Providers/product_providers.dart';
+import 'package:jus_mobile_order_app/Sheets/invalid_sheet_single_pop.dart';
 
 class FavoritesServices {
   final WidgetRef? ref;
@@ -51,7 +51,7 @@ class FavoritesServices {
     } catch (e) {
       ModalBottomSheet().partScreen(
         context: context,
-        builder: (context) => InvalidPaymentSheet(
+        builder: (context) => InvalidSheetSinglePop(
           error: e.toString(),
         ),
       );
@@ -67,7 +67,7 @@ class FavoritesServices {
     } catch (e) {
       ModalBottomSheet().partScreen(
         context: context,
-        builder: (context) => InvalidPaymentSheet(
+        builder: (context) => InvalidSheetSinglePop(
           error: e.toString(),
         ),
       );

@@ -12,7 +12,6 @@ class PaymentsModel with _$PaymentsModel {
     required bool defaultPayment,
     required String cardNickname,
     required bool isWallet,
-    String? postalCode,
     int? expirationMonth,
     int? expirationYear,
     String? nonce,

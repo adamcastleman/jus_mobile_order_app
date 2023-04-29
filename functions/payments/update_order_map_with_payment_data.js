@@ -5,7 +5,7 @@ const updateOrderMapWithPaymentData = (orderMap, paymentResult) => {
     const sourceType = paymentResult.payment.source_type;
     orderMap.paymentDetails.paymentID = paymentResult.payment.id;
     orderMap.paymentDetails.paymentStatus = paymentResult.payment.status;
-    orderMap.paymentDetails.cardBrand = sourceType === 'EXTERNAL' || sourceType === 'CASH' ? null : paymentResult.payment.card_details.card.card_brand.toUpperCase();
+    orderMap.paymentDetails.cardBrand = sourceType === 'EXTERNAL' || sourceType === 'CASH' ? null : paymentResult.payment.card_details.card.card_brand.toUpperCase() === 'SQUARE_GIFT_CARD' ? 'WALLET' : paymentResult.payment.card_details.card.card_brand.toUpperCase();
     orderMap.paymentDetails.lastFourDigits = sourceType === 'EXTERNAL' || sourceType === 'CASH' ? null : paymentResult.payment.card_details.card.last_4;
     orderMap.paymentDetails.createdAt = admin.firestore.Timestamp.fromDate(
       new Date(paymentResult.payment.created_at)

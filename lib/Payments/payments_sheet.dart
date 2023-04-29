@@ -1,20 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:jus_mobile_order_app/Helpers/divider.dart';
+import 'package:jus_mobile_order_app/Helpers/enums.dart';
 import 'package:jus_mobile_order_app/Helpers/modal_bottom_sheets.dart';
 import 'package:jus_mobile_order_app/Helpers/payments.dart';
 import 'package:jus_mobile_order_app/Helpers/points.dart';
 import 'package:jus_mobile_order_app/Helpers/spacing_widgets.dart';
 import 'package:jus_mobile_order_app/Payments/add_payment_method_tile.dart';
-import 'package:jus_mobile_order_app/Payments/create_wallet_sheet.dart';
-import 'package:jus_mobile_order_app/Payments/invalid_payment_sheet.dart';
 import 'package:jus_mobile_order_app/Payments/saved_payments_list_view.dart';
-import 'package:jus_mobile_order_app/Payments/transfer_gift_card_to_wallet_sheet.dart';
 import 'package:jus_mobile_order_app/Providers/ProviderWidgets/credit_card_provider_widget.dart';
-import 'package:jus_mobile_order_app/Providers/ProviderWidgets/gift_card_provider_widget.dart';
 import 'package:jus_mobile_order_app/Providers/ProviderWidgets/user_provider_widget.dart';
+import 'package:jus_mobile_order_app/Providers/ProviderWidgets/wallet_provider_widget.dart';
+import 'package:jus_mobile_order_app/Providers/payments_providers.dart';
 import 'package:jus_mobile_order_app/Providers/theme_providers.dart';
 import 'package:jus_mobile_order_app/Services/payments_services.dart';
+import 'package:jus_mobile_order_app/Sheets/invalid_sheet_single_pop.dart';
+import 'package:jus_mobile_order_app/Wallets/create_wallet_sheet.dart';
+import 'package:jus_mobile_order_app/Wallets/transfer_gift_card_to_wallet_sheet.dart';
 import 'package:jus_mobile_order_app/Widgets/Buttons/close_button.dart';
 import 'package:jus_mobile_order_app/Widgets/General/category_display_widget.dart';
 
@@ -65,9 +67,9 @@ class PaymentSettingsSheet extends ConsumerWidget {
                         isDismissible: true,
                         context: context,
                         builder: (context) => wallets.isEmpty
-                            ? const InvalidPaymentSheet(
+                            ? const InvalidSheetSinglePop(
                                 error:
-                                    'Create a Wallet to transfer gift card balance')
+                                    'Create a Wallet to transfer a gift card balance.')
                             : const TransferGiftCardToWalletSheet(),
                       );
                     },
@@ -85,15 +87,27 @@ class PaymentSettingsSheet extends ConsumerWidget {
                     isTransfer: false,
                     title: 'Create Wallet',
                     onTap: () {
-                      PaymentsHelper(ref: ref)
-                          .setSelectedPaymentToValidPaymentMethod(creditCards);
-                      ModalBottomSheet().partScreen(
-                        enableDrag: true,
-                        isDismissible: true,
-                        isScrollControlled: true,
-                        context: context,
-                        builder: (context) => const CreateWalletSheet(),
-                      );
+                      if (creditCards.isEmpty) {
+                        ModalBottomSheet().partScreen(
+                          context: context,
+                          builder: (context) => const InvalidSheetSinglePop(
+                              error:
+                                  'Before creating a Wallet, please upload a payment method.'),
+                        );
+                      } else {
+                        ref.read(walletTypeProvider.notifier).state =
+                            WalletType.createWallet;
+                        PaymentsHelper(ref: ref)
+                            .setSelectedPaymentToValidPaymentMethod(
+                                creditCards);
+                        ModalBottomSheet().partScreen(
+                          enableDrag: true,
+                          isDismissible: true,
+                          isScrollControlled: true,
+                          context: context,
+                          builder: (context) => const CreateWalletSheet(),
+                        );
+                      }
                     },
                   ),
                   Spacing().vertical(20),

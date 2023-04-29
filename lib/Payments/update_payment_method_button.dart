@@ -3,8 +3,8 @@ import 'package:flutter/services.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:jus_mobile_order_app/Helpers/modal_bottom_sheets.dart';
 import 'package:jus_mobile_order_app/Models/payments_model.dart';
-import 'package:jus_mobile_order_app/Payments/invalid_payment_sheet.dart';
 import 'package:jus_mobile_order_app/Services/payment_methods_services.dart';
+import 'package:jus_mobile_order_app/Sheets/invalid_sheet_single_pop.dart';
 import 'package:jus_mobile_order_app/Widgets/Buttons/elevated_button_medium.dart';
 
 import '../Providers/payments_providers.dart';
@@ -22,19 +22,25 @@ class UpdatePaymentMethodButton extends ConsumerWidget {
         HapticFeedback.mediumImpact();
         _validateFormAndSaveNicknameToDatabase(context, ref);
         _validateDefaultCheckboxAndUpdateDatabase(context, ref);
-        Navigator.pop(context);
       },
     );
   }
 
-  void _validateFormAndSaveNicknameToDatabase(
-      BuildContext context, WidgetRef ref) {
+  _validateFormAndSaveNicknameToDatabase(BuildContext context, WidgetRef ref) {
     final cardNickname = ref.watch(cardNicknameProvider);
+
     if (cardNickname.isEmpty && card.cardNickname.isEmpty) {
       ModalBottomSheet().partScreen(
         context: context,
-        builder: (context) => const InvalidPaymentSheet(
-          error: 'Card nickname cannot be empty',
+        builder: (context) => const InvalidSheetSinglePop(
+          error: 'Card nickname cannot be empty.',
+        ),
+      );
+    } else if (cardNickname.length > 20) {
+      ModalBottomSheet().partScreen(
+        context: context,
+        builder: (context) => const InvalidSheetSinglePop(
+          error: 'This nickname is too long, please choose a shorter name.',
         ),
       );
     } else {
@@ -45,6 +51,7 @@ class UpdatePaymentMethodButton extends ConsumerWidget {
       PaymentMethodsServices(ref: ref).updateCardNickname(
           context: context, cardNickname: cardNickname, cardID: card.uid);
     }
+    Navigator.pop(context);
   }
 
   void _validateDefaultCheckboxAndUpdateDatabase(

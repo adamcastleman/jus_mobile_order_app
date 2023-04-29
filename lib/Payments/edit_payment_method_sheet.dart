@@ -8,6 +8,7 @@ import 'package:jus_mobile_order_app/Payments/delete_payment_method_button.dart'
 import 'package:jus_mobile_order_app/Payments/update_payment_method_button.dart';
 import 'package:jus_mobile_order_app/Providers/ProviderWidgets/user_provider_widget.dart';
 import 'package:jus_mobile_order_app/Providers/payments_providers.dart';
+import 'package:jus_mobile_order_app/Widgets/Buttons/load_wallet_button.dart';
 import 'package:jus_mobile_order_app/Widgets/General/sheet_notch.dart';
 
 class EditPaymentMethodSheet extends ConsumerWidget {
@@ -54,15 +55,22 @@ class EditPaymentMethodSheet extends ConsumerWidget {
                             .state = value,
                       ),
                     ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  DeletePaymentMethodButton(
-                    cardID: card.uid,
-                    defaultPayment: card.defaultPayment,
-                  ),
-                  UpdatePaymentMethodButton(card: card),
-                ],
+              Padding(
+                padding: card.defaultPayment
+                    ? const EdgeInsets.only(top: 12.0, bottom: 22.0)
+                    : EdgeInsets.zero,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    card.isWallet
+                        ? const LoadWalletButton()
+                        : DeletePaymentMethodButton(
+                            cardID: card.uid,
+                            defaultPayment: card.defaultPayment,
+                          ),
+                    UpdatePaymentMethodButton(card: card),
+                  ],
+                ),
               ),
               Spacing().vertical(60),
             ],

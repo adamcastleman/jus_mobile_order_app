@@ -11,7 +11,7 @@ import 'package:jus_mobile_order_app/Providers/loading_providers.dart';
 import 'package:jus_mobile_order_app/Sheets/delete_account_sheet.dart';
 import 'package:jus_mobile_order_app/Widgets/Buttons/elevated_button_medium.dart';
 import 'package:jus_mobile_order_app/Widgets/Buttons/elevated_button_medium_loading.dart';
-import 'package:jus_mobile_order_app/Widgets/Buttons/outline_button_medium.dart';
+import 'package:jus_mobile_order_app/Widgets/Buttons/outlined_button_medium.dart';
 import 'package:jus_mobile_order_app/Widgets/General/category_display_widget.dart';
 import 'package:jus_mobile_order_app/Widgets/General/text_fields.dart';
 
@@ -129,8 +129,9 @@ class AccountInfoSheet extends ConsumerWidget {
                     ),
                     onPressed: () {
                       ModalBottomSheet().fullScreen(
-                          context: context,
-                          builder: (context) => const DeleteAccountSheet(),);
+                        context: context,
+                        builder: (context) => const DeleteAccountSheet(),
+                      );
                     },
                   )
                 ],

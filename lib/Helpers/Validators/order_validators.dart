@@ -20,13 +20,13 @@ class OrderValidators {
 
     String? errorMessage;
 
-    errorMessage = _checkScheduledOrder();
+    errorMessage = checkScheduledOrder();
     if (errorMessage != null) return errorMessage;
 
-    errorMessage = _checkNotAcceptingOrders(context);
+    errorMessage = checkNotAcceptingOrders(context);
     if (errorMessage != null) return errorMessage;
 
-    errorMessage = _checkPickupTime();
+    errorMessage = checkPickupTime(context);
     if (errorMessage != null) return errorMessage;
 
     errorMessage = _checkUnavailableItems();
@@ -35,7 +35,7 @@ class OrderValidators {
     return '';
   }
 
-  String? _checkScheduledOrder() {
+  String? checkScheduledOrder() {
     final currentOrder = ref.watch(currentOrderItemsProvider);
 
     bool isScheduledOrder =
@@ -52,7 +52,7 @@ class OrderValidators {
     return null;
   }
 
-  String? _checkNotAcceptingOrders(BuildContext context) {
+  String? checkNotAcceptingOrders(BuildContext context) {
     bool isScheduledOrder = ref.watch(scheduleAllItemsProvider);
     bool notAcceptingOrders = !Time().acceptingOrders(context, ref) ||
         !LocationHelper().acceptingOrders(ref);
@@ -65,13 +65,19 @@ class OrderValidators {
     return null;
   }
 
-  String? _checkPickupTime() {
+  String? checkPickupTime(BuildContext context) {
     final currentOrder = ref.watch(currentOrderItemsProvider);
     bool isScheduledOrder =
         currentOrder.every((element) => element['isScheduled'] == true) ||
             ref.watch(scheduleAllItemsProvider);
     DateTime? pickupTime = ref.watch(selectedPickupTimeProvider);
     bool notValidSelectedTime = !_isSelectedTimeValid();
+    bool acceptingOrders = LocationHelper().acceptingOrders(ref) &&
+        Time().acceptingOrders(context, ref);
+
+    if (!isScheduledOrder && !acceptingOrders) {
+      return 'This location is not accepting pickup orders right now';
+    }
 
     if (!isScheduledOrder && pickupTime == null) {
       return 'Please select a pickup time for this order';

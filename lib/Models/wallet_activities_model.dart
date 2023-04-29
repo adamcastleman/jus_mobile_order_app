@@ -10,5 +10,6 @@ class WalletActivitiesModel with _$WalletActivitiesModel {
     required DateTime createdAt,
     required String gan,
     required int amount,
+    required String activity,
   }) = _WalletActivitiesModel;
 }

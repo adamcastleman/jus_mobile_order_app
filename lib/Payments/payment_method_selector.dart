@@ -36,7 +36,7 @@ class PaymentMethodSelector extends ConsumerWidget {
         } else {
           return SelectedPaymentTile(
             onTap: () {
-              if (user.uid == null) {
+              if (user.uid == null || selectedPayment['isWallet'] == null) {
                 _showChoosePaymentTypeSheet(context);
               } else {
                 ref.read(pageTypeProvider.notifier).state =

@@ -1,5 +1,6 @@
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:jus_mobile_order_app/Helpers/locations.dart';
+import 'package:jus_mobile_order_app/Models/user_model.dart';
 import 'package:jus_mobile_order_app/Providers/discounts_provider.dart';
 import 'package:jus_mobile_order_app/Providers/order_providers.dart';
 import 'package:jus_mobile_order_app/Providers/product_providers.dart';
@@ -220,6 +221,14 @@ class Pricing {
     final tax = totalTaxForMembers();
 
     return subtotal - discountTotalForMembers() + tax + tipAmountForMembers();
+  }
+
+  double orderTotalFromUserType(UserModel user) {
+    if (user.uid == null || !user.isActiveMember!) {
+      return orderTotalForNonMembers() * 100;
+    } else {
+      return Pricing(ref: ref).orderTotalForMembers() * 100;
+    }
   }
 
   double totalOrderSavings() {

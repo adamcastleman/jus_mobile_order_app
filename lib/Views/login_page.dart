@@ -180,11 +180,14 @@ class LoginPage extends ConsumerWidget {
 loginUser({required BuildContext context, required WidgetRef ref}) async {
   if (ref.read(loginValidatedProvider.notifier).state == true) {
     try {
-      final navigator = Navigator.of(context);
       await AuthServices().loginWithEmailAndPassword(
           email: ref.read(emailProvider), password: ref.read(passwordProvider));
       ref.invalidate(passwordProvider);
-      navigator.pop();
+
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        Navigator.pop(context);
+        ref.read(loadingProvider.notifier).state = false;
+      });
     } catch (e) {
       ref.read(loadingProvider.notifier).state = false;
       ref.read(firebaseLoginError.notifier).state = e.toString();

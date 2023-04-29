@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cloud_functions/cloud_functions.dart';
+import 'package:jus_mobile_order_app/Models/membership_stats_model.dart';
 import 'package:jus_mobile_order_app/Models/user_model.dart';
 
 class UserServices {
@@ -12,6 +13,14 @@ class UserServices {
 
   Stream<UserModel> get user {
     return userCollection.doc(uid).snapshots().map(getCurrentUserFromDatabase);
+  }
+
+  Stream<MembershipStatsModel> get membershipStats {
+    return userCollection
+        .doc(uid)
+        .collection('memberStatistics')
+        .snapshots()
+        .map(getMemberStatsFromDatabase);
   }
 
   UserModel getCurrentUserFromDatabase(DocumentSnapshot snapshot) {
@@ -39,6 +48,16 @@ class UserServices {
     }
   }
 
+  MembershipStatsModel getMemberStatsFromDatabase(QuerySnapshot snapshot) {
+    return snapshot.docs.map((doc) {
+      final dynamic data = doc.data();
+      return MembershipStatsModel(
+        totalSaved: data['totalSaved'] ?? 0,
+        bonusPoints: data['bonusPoints'] ?? 0,
+      );
+    }).first;
+  }
+
   Future<void> createUser(
       {required uid,
       required String firstName,
@@ -51,6 +70,7 @@ class UserServices {
       'email': email,
       'phone': phone,
       'points': 0,
+      'uid': uid,
       'isActiveMember': false,
     });
   }

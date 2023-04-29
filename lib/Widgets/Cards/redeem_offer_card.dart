@@ -5,7 +5,6 @@ import 'package:flutter/services.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:jus_mobile_order_app/Helpers/points.dart';
 import 'package:jus_mobile_order_app/Helpers/spacing_widgets.dart';
-import 'package:jus_mobile_order_app/Helpers/time.dart';
 import 'package:jus_mobile_order_app/Models/offers_model.dart';
 import 'package:jus_mobile_order_app/Providers/offers_providers.dart';
 import 'package:jus_mobile_order_app/Providers/payments_providers.dart';
@@ -63,10 +62,8 @@ class RedeemOfferCard extends ConsumerWidget {
 
   Widget buildOfferButton(WidgetRef ref, int index, List<OffersModel> offers) {
     final offer = offers[index];
-    final isOfferActive = DateTime.now().isAfter(offer.startDate) &&
-        DateTime.now().isBefore(offer.endDate);
 
-    if (isOfferActive && offer.pointsMultiple > 1) {
+    if (offer.pointsMultiple > 1) {
       return Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
@@ -80,7 +77,7 @@ class RedeemOfferCard extends ConsumerWidget {
                         color: Colors.green,
                       ),
                       Text(
-                        '${PointsHelper(ref: ref).determinePointsMultipleText(isWallet: ref.watch(selectedPaymentMethodProvider)['isGiftCard'])}/\$1',
+                        '${PointsHelper(ref: ref).determinePointsMultipleText(isWallet: ref.watch(selectedPaymentMethodProvider)['isWallet'])}/\$1',
                         style: const TextStyle(fontSize: 11),
                       ),
                     ],
@@ -113,7 +110,7 @@ class RedeemOfferCard extends ConsumerWidget {
           ),
         ],
       );
-    } else if (isOfferActive && offer.pointsMultiple <= 1) {
+    } else if (offer.pointsMultiple <= 1) {
       return SelectionIncrementer(
         verticalPadding: 0,
         horizontalPadding: 0,
@@ -143,11 +140,7 @@ class RedeemOfferCard extends ConsumerWidget {
         },
       );
     } else {
-      return AutoSizeText(
-        Time().formatDateRange(offer.startDate, offer.endDate),
-        maxLines: 1,
-        style: const TextStyle(fontSize: 24),
-      );
+      return const SizedBox();
     }
   }
 

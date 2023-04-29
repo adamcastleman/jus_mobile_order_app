@@ -26,14 +26,19 @@ class RecommendedList extends ConsumerWidget {
               ),
             ),
             Expanded(
-              child: ListView.separated(
-                shrinkWrap: true,
-                primary: false,
-                padding: const EdgeInsets.symmetric(horizontal: 12.0),
-                scrollDirection: Axis.horizontal,
-                separatorBuilder: (context, index) => Spacing().horizontal(15),
-                itemCount: recommended.isEmpty ? 0 : recommended.length,
-                itemBuilder: (context, index) => RecommendedCard(index: index),
+              child: Align(
+                alignment: Alignment.centerLeft,
+                child: ListView.separated(
+                  shrinkWrap: true,
+                  primary: false,
+                  padding: const EdgeInsets.symmetric(horizontal: 12.0),
+                  scrollDirection: Axis.horizontal,
+                  separatorBuilder: (context, index) =>
+                      Spacing().horizontal(15),
+                  itemCount: recommended.isEmpty ? 0 : recommended.length,
+                  itemBuilder: (context, index) =>
+                      RecommendedCard(index: index),
+                ),
               ),
             ),
           ],

@@ -13,12 +13,10 @@ exports.createUser = functions.https.onCall(async (data, context) => {
   const email = data.email;
   const phone = data.phone;
   const points = data.points;
-
-
-  const docRef = db.collection("users").doc();
+  const uid = data.uid;
 
   const userDocument = {
-    uid: docRef.id,
+    uid: uid,
     firstName: firstName,
     lastName: lastName,
     email: email,
@@ -27,8 +25,20 @@ exports.createUser = functions.https.onCall(async (data, context) => {
     isActiveMember: false,
   };
 
+  const docRef = db.collection("users").doc(uid);
+
+  const memberStatsRef = db
+    .collection("users")
+    .doc(uid)
+    .collection("memberStatistics")
+    .doc("stats");
+
   try {
     await docRef.set(userDocument);
+    await memberStatsRef.set({
+      totalSaved: 0,
+      bonusPoints: 0,
+    });
     return { status: "User created successfully", uid: docRef.id };
   } catch (error) {
     console.error("Error creating user:", error);

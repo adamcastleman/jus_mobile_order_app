@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart' hide Router;
 import 'package:flutter/services.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:jus_mobile_order_app/Providers/loading_providers.dart';
 import 'package:jus_mobile_order_app/Services/payments_services.dart';
 import 'package:jus_mobile_order_app/Views/home_scaffold.dart';
 import 'package:jus_mobile_order_app/firebase_options.dart';
@@ -12,9 +13,13 @@ import 'package:permission_handler/permission_handler.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  appTrackingTransparencyRequest();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   await PaymentsServices().setApplicationID();
+  await [
+    Permission.location,
+    Permission.notification,
+    Permission.appTrackingTransparency,
+  ].request();
   FirebaseMessaging.onBackgroundMessage(backgroundHandler);
   LicenseRegistry.addLicense(() async* {
     final license = await rootBundle.loadString('Montserrat/OFL.txt');
@@ -29,16 +34,20 @@ void main() async {
   );
 }
 
-class JusMobileOrder extends StatelessWidget {
+class JusMobileOrder extends ConsumerWidget {
   const JusMobileOrder({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final loading = ref.watch(loadingProvider);
     final ThemeData theme = ThemeManager().theme;
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      theme: theme,
-      home: const HomeScaffold(),
+    return AbsorbPointer(
+      absorbing: loading,
+      child: MaterialApp(
+        debugShowCheckedModeBanner: false,
+        theme: theme,
+        home: const HomeScaffold(),
+      ),
     );
   }
 }
@@ -46,8 +55,5 @@ class JusMobileOrder extends StatelessWidget {
 Future<void> backgroundHandler(RemoteMessage message) async {
   return Future.value();
 }
-
-appTrackingTransparencyRequest() async =>
-    kIsWeb == false ? await Permission.appTrackingTransparency.request() : null;
 
 //open -a /Applications/Android\ Studio.app

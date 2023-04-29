@@ -13,7 +13,6 @@ import 'package:jus_mobile_order_app/Payments/payment_option_tile.dart';
 import 'package:jus_mobile_order_app/Providers/ProviderWidgets/credit_card_provider_widget.dart';
 import 'package:jus_mobile_order_app/Providers/ProviderWidgets/user_provider_widget.dart';
 import 'package:jus_mobile_order_app/Providers/payments_providers.dart';
-import 'package:jus_mobile_order_app/Services/payment_methods_services.dart';
 import 'package:jus_mobile_order_app/Services/payments_services.dart';
 import 'package:jus_mobile_order_app/Widgets/General/sheet_notch.dart';
 
@@ -90,7 +89,7 @@ class SelectCreditCardForWalletSheet extends ConsumerWidget {
                           ],
                         ),
                         onTap: () {
-                          ref.watch(applePaySelectedProvider.notifier).state =
+                          ref.read(applePaySelectedProvider.notifier).state =
                               true;
                           Navigator.pop(context);
                         },
@@ -102,16 +101,16 @@ class SelectCreditCardForWalletSheet extends ConsumerWidget {
                             '${cards[index].cardNickname} - ${cards[index].brand.capitalize} ending in ${cards[index].lastFourDigits}',
                         subtitle: const SizedBox(),
                         onTap: () {
-                          ref.watch(applePaySelectedProvider.notifier).state =
+                          ref.read(applePaySelectedProvider.notifier).state =
                               false;
-                          PaymentMethodsServices().updatePaymentMethod(
-                              reference: ref
-                                  .read(selectedPaymentMethodProvider.notifier),
-                              cardNickname: cards[index].cardNickname,
-                              isWallet: cards[index].isWallet,
-                              nonce: cards[index].nonce,
-                              lastFourDigits: cards[index].lastFourDigits,
-                              brand: cards[index].brand);
+                          ref.read(selectedCreditCardProvider.notifier).state =
+                              {
+                            'cardNickname': cards[index].cardNickname,
+                            'isWallet': cards[index].isWallet,
+                            'nonce': cards[index].nonce,
+                            'lastFourDigits': cards[index].lastFourDigits,
+                            'brand': cards[index].brand,
+                          };
                           Navigator.pop(context);
                         },
                       );

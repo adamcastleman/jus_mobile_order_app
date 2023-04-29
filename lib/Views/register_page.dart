@@ -159,14 +159,16 @@ class RegisterPage extends ConsumerWidget {
   }) async {
     if (ref.read(formValidatedProvider.notifier).state == true) {
       try {
-        final navigator = Navigator.of(context);
         await AuthServices().registerWithEmailAndPassword(
             email: ref.read(emailProvider),
             password: ref.read(passwordProvider),
             firstName: ref.read(firstNameProvider),
             lastName: ref.read(lastNameProvider),
             phone: ref.read(phoneProvider));
-        navigator.pop();
+        WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+          Navigator.pop(context);
+          ref.read(loadingProvider.notifier).state = false;
+        });
         ref.invalidate(firstNameProvider);
         ref.invalidate(lastNameProvider);
         ref.invalidate(phoneProvider);

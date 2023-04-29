@@ -6,8 +6,11 @@ const processPayment = async (orderMap) => {
   const client = await createSquareClient();
 
   try {
+
+    const giftCardID = orderMap.paymentDetails.giftCardID ?? null;
+
     const response = await client.paymentsApi.createPayment({
-      sourceId: 'cnon:card-nonce-ok',
+      sourceId: giftCardID === null ? 'cnon:card-nonce-ok' : giftCardID,
       idempotencyKey: uuidv4(),
       externalDetails: {
         source: orderMap.paymentDetails.paymentMethod,

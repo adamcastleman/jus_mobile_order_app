@@ -9,6 +9,7 @@ import 'package:jus_mobile_order_app/Widgets/Cards/loyalty_card.dart';
 import 'package:jus_mobile_order_app/Widgets/Cards/loyalty_guest.dart';
 import 'package:jus_mobile_order_app/Widgets/General/home_greeting.dart';
 import 'package:jus_mobile_order_app/Widgets/Lists/favorites_list.dart';
+import 'package:jus_mobile_order_app/Widgets/Lists/new_product_list.dart';
 import 'package:jus_mobile_order_app/Widgets/Lists/offers_list_home.dart';
 import 'package:jus_mobile_order_app/Widgets/Lists/recommended_list.dart';
 import 'package:jus_mobile_order_app/Widgets/Tiles/announcement_tile.dart';
@@ -44,10 +45,11 @@ class HomePage extends ConsumerWidget {
               showOffersList(user, offers),
               user.uid == null
                   ? const Padding(
-                      padding: EdgeInsets.only(top: 22.0),
+                      padding: EdgeInsets.only(top: 18.0),
                       child: FavoritesCardGuest(),
                     )
                   : const FavoritesList(),
+              user.uid == null ? const SizedBox() : const NewProductList(),
               user.uid == null ? const SizedBox() : const RecommendedList(),
             ],
           ),
@@ -57,7 +59,7 @@ class HomePage extends ConsumerWidget {
   }
 
   Widget showOffersList(UserModel user, List<OffersModel> offers) {
-    if (offers.isEmpty) {
+    if (offers.isEmpty || user.uid == null) {
       return const SizedBox();
     }
 

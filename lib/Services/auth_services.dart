@@ -26,13 +26,17 @@ class AuthServices {
           email: email, password: password);
       auth.User? user = result.user;
 
-      UserServices(uid: user?.uid).createUser(
-        uid: user?.uid,
-        email: email,
-        firstName: firstName,
-        lastName: lastName,
-        phone: phone,
-      );
+      if (user != null) {
+        UserServices(uid: user.uid).createUser(
+          uid: user.uid,
+          email: email,
+          firstName: firstName,
+          lastName: lastName,
+          phone: phone,
+        );
+      } else {
+        throw 'There was a problem creating your account. Please try again later.';
+      }
     } on auth.FirebaseAuthException catch (e) {
       switch (e.code) {
         case 'email-already-in-use':
@@ -42,7 +46,7 @@ class AuthServices {
         case 'weak-password':
           throw 'This password is too weak. Please create a more complex password';
         default:
-          'There was a problem creating your account. Please try again later.';
+          throw 'There was a problem creating your account. Please try again later.';
       }
     }
   }

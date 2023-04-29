@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:jus_mobile_order_app/Widgets/Buttons/elevated_button_large.dart';
 
-class InvalidOrderSheet extends StatelessWidget {
+class InvalidSheetDoublePop extends StatelessWidget {
   final String error;
-  const InvalidOrderSheet({required this.error, super.key});
+  const InvalidSheetDoublePop({required this.error, super.key});
   @override
   Widget build(BuildContext context) {
     return Container(

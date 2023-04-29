@@ -4,7 +4,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:jus_mobile_order_app/Models/location_model.dart';
 import 'package:jus_mobile_order_app/Providers/ProviderWidgets/location_provider_widget.dart';
 import 'package:jus_mobile_order_app/Providers/location_providers.dart';
-import 'package:jus_mobile_order_app/Widgets/Buttons/outline_button_medium.dart';
+import 'package:jus_mobile_order_app/Widgets/Buttons/outlined_button_medium.dart';
 
 class SearchButtonWidget extends HookConsumerWidget {
   const SearchButtonWidget({Key? key}) : super(key: key);

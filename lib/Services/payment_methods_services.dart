@@ -6,8 +6,8 @@ import 'package:jus_mobile_order_app/Helpers/modal_bottom_sheets.dart';
 import 'package:jus_mobile_order_app/Helpers/payments.dart';
 import 'package:jus_mobile_order_app/Models/payments_model.dart';
 import 'package:jus_mobile_order_app/Models/wallet_activities_model.dart';
-import 'package:jus_mobile_order_app/Payments/invalid_payment_sheet.dart';
 import 'package:jus_mobile_order_app/Providers/payments_providers.dart';
+import 'package:jus_mobile_order_app/Sheets/invalid_sheet_single_pop.dart';
 
 class PaymentMethodsServices {
   final WidgetRef? ref;
@@ -109,7 +109,11 @@ class PaymentMethodsServices {
 
   List<WalletActivitiesModel> getWalletActivitiesFromDatabase(
       QuerySnapshot snapshot) {
-    return snapshot.docs.map(
+    return snapshot.docs
+        .where((doc) =>
+            (doc.data() as Map<String, dynamic>)['cardDetails']['activity'] !=
+            'REDEEM')
+        .map(
       (doc) {
         final dynamic data = doc.data();
         return WalletActivitiesModel(
@@ -117,7 +121,8 @@ class PaymentMethodsServices {
             orderNumber: data['orderDetails']['orderNumber'],
             createdAt: data['paymentDetails']['createdAt'].toDate(),
             gan: data['cardDetails']['gan'],
-            amount: data['paymentDetails']['amount']);
+            amount: data['paymentDetails']['amount'],
+            activity: data['cardDetails']['activity']);
       },
     ).toList();
   }
@@ -128,7 +133,6 @@ class PaymentMethodsServices {
     required String lastFourDigits,
     required int expirationMonth,
     required int expirationYear,
-    required String postalCode,
     required bool isWallet,
     required String firstName,
   }) async {
@@ -141,7 +145,6 @@ class PaymentMethodsServices {
         'lastFourDigits': lastFourDigits,
         'expirationMonth': expirationMonth,
         'expirationYear': expirationYear,
-        'postalCode': postalCode,
         'isWallet': isWallet,
         'gan': null,
         'balance': null,
@@ -185,7 +188,7 @@ class PaymentMethodsServices {
     } catch (e) {
       return ModalBottomSheet().partScreen(
         context: context,
-        builder: (context) => InvalidPaymentSheet(
+        builder: (context) => InvalidSheetSinglePop(
           error: e.toString(),
         ),
       );
@@ -200,7 +203,7 @@ class PaymentMethodsServices {
     } catch (e) {
       return ModalBottomSheet().partScreen(
         context: context,
-        builder: (context) => InvalidPaymentSheet(
+        builder: (context) => InvalidSheetSinglePop(
           error: e.toString(),
         ),
       );
@@ -215,7 +218,7 @@ class PaymentMethodsServices {
     } catch (e) {
       return ModalBottomSheet().partScreen(
         context: context,
-        builder: (context) => InvalidPaymentSheet(
+        builder: (context) => InvalidSheetSinglePop(
           error: e.toString(),
         ),
       );

@@ -78,7 +78,7 @@ class SquarePaymentsErrors {
       case 'EXPIRATION_FAILURE':
         return 'The card expiration date is either invalid or indicates that the card is expired.';
       case 'GENERIC_DECLINE':
-        return 'This card was declined without any additional information on why. If the payment information seems correct, please contact you issuer to ask for more information.';
+        return 'This card was declined without any additional information on why. Please contact your bank.';
       case 'GIFT_CARD_AVAILABLE_AMOUNT':
         return 'We can\'t accept partial payments from a gift card if if your purchase also includes a tip';
       case 'INSUFFICIENT_FUNDS':
@@ -98,7 +98,7 @@ class SquarePaymentsErrors {
       case 'INVALID_FEES':
         return 'We have stopped this transaction to save you from surging, unreasonable fees. Please try again later.';
       case 'INVALID_LOCATION':
-        return 'We cannot accpet payments in this specified region.';
+        return 'We cannot accept payments in this specified region.';
       case 'INVALID_PIN':
         return 'The card issuer declined the request because the PIN is invalid.';
       case 'INVALID_POSTAL_CODE':
@@ -130,7 +130,7 @@ class SquarePaymentsErrors {
       case 'TEMPORARY_ERROR':
         return 'A temporary internal error occurred. We did not process your transaction. You can safely try again.';
       default:
-        return 'Unknown error. Your card was not charged. Please try again later.';
+        return 'Unknown error. Please try again later.';
     }
   }
 }

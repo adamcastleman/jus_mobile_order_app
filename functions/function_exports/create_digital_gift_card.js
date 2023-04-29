@@ -1,6 +1,6 @@
 const functions = require("firebase-functions");
 const admin = require("firebase-admin");
-const processGiftCardPayment = require("../gift_cards/process_gift_card_payment");
+const processGiftCardPayment = require("../payments/process_gift_card_payment");
 const createNewGiftCard = require("../gift_cards/create_new_gift_card");
 const updateGiftCardMapWithCardData = require("../gift_cards/update_gift_card_map_with_card_data");
 const updateGiftCardMapWithPaymentData = require("../gift_cards/update_gift_card_map_with_payment_data");

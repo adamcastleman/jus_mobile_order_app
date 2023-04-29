@@ -15,12 +15,14 @@ const addOrderToDatabase = async (db, orderMap, userID) => {
 
   try {
     delete orderWithoutNonce.paymentDetails.nonce;
+    delete orderWithoutNonce.paymentDetails.gan;
+    delete orderWithoutNonce.paymentDetails.giftCardID;
 
     convertDatesToTimestamps(orderWithoutNonce);
 
     const newOrderRef = db.collection("orders").doc();
     orderWithoutNonce.uid = newOrderRef.id;
-    orderWithoutNonce.orderDetails.orderStatus = "SUCCESS";
+    orderWithoutNonce.orderDetails.orderStatus = "RECEIVED";
     orderWithoutNonce.orderDetails.orderNumber = nanoid();
 
     await newOrderRef.set(orderWithoutNonce);
@@ -44,7 +46,7 @@ const addOrderToDatabase = async (db, orderMap, userID) => {
     await addFailedOrderToDatabase(db, orderWithoutNonce);
     await sendEmailToAdminOnFailedOrder(orderWithoutNonce);
     console.error("Error adding order to database:", error);
-    throw error;
+    return 400;
   }
 };
 

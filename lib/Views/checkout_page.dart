@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:jus_mobile_order_app/Helpers/Validators/checkout_validators.dart';
+import 'package:jus_mobile_order_app/Helpers/Validators/order_validators.dart';
 import 'package:jus_mobile_order_app/Helpers/divider.dart';
 import 'package:jus_mobile_order_app/Helpers/modal_bottom_sheets.dart';
 import 'package:jus_mobile_order_app/Helpers/orders.dart';
@@ -24,6 +25,7 @@ import 'package:jus_mobile_order_app/Providers/order_providers.dart';
 import 'package:jus_mobile_order_app/Providers/payments_providers.dart';
 import 'package:jus_mobile_order_app/Providers/points_providers.dart';
 import 'package:jus_mobile_order_app/Providers/theme_providers.dart';
+import 'package:jus_mobile_order_app/Sheets/invalid_sheet_single_pop.dart';
 import 'package:jus_mobile_order_app/Widgets/Buttons/close_button.dart';
 import 'package:jus_mobile_order_app/Widgets/Buttons/elevated_button_large.dart';
 import 'package:jus_mobile_order_app/Widgets/General/category_display_widget.dart';
@@ -113,8 +115,7 @@ class CheckoutPage extends HookConsumerWidget {
                       buttonText: 'Checkout',
                       onPressed: () {
                         HapticFeedback.mediumImpact();
-                        _validateGuestFormAndContinue(
-                            context, ref, user, controller);
+                        _validateCheckoutData(context, ref, user, controller);
                       },
                     ),
                   ),
@@ -126,6 +127,22 @@ class CheckoutPage extends HookConsumerWidget {
         ),
       ),
     );
+  }
+
+  _validateCheckoutData(BuildContext context, WidgetRef ref, UserModel user,
+      ScrollController controller) {
+    HapticFeedback.mediumImpact();
+    String? validationResult =
+        OrderValidators(ref: ref).checkPickupTime(context);
+
+    if (validationResult != null) {
+      ModalBottomSheet().partScreen(
+        context: context,
+        builder: (context) => InvalidSheetSinglePop(error: validationResult),
+      );
+    } else {
+      _validateGuestFormAndContinue(context, ref, user, controller);
+    }
   }
 
   _determinePaymentMethodTile(WidgetRef ref, UserModel user) {

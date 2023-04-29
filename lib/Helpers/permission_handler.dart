@@ -11,7 +11,7 @@ class HandlePermissions {
   BuildContext context;
   WidgetRef ref;
   HandlePermissions(this.context, this.ref);
-  locationPermission() async {
+  Future<PermissionStatus> locationPermission() async {
     if (await Permission.location.isDenied) {
       return Permission.location.request();
     } else if (await Permission.location.isPermanentlyDenied) {
@@ -21,6 +21,7 @@ class HandlePermissions {
           builder: (context) => const LocationPermissionAlertDialog(),
         );
       }
+      return await Permission.location.status;
     } else if (await Permission.location.status.isGranted ||
         await Permission.location.status.isLimited) {
       Position position = await Geolocator.getCurrentPosition(
@@ -29,7 +30,10 @@ class HandlePermissions {
           LatLng(position.latitude, position.longitude);
       ref.read(currentLocationLatLongProvider.notifier).state =
           LatLng(position.latitude, position.longitude);
-    } else {}
+      return await Permission.location.status;
+    } else {
+      return await Permission.location.status;
+    }
   }
 
   calendarPermission() async {

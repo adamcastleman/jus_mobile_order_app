@@ -7,7 +7,7 @@ import 'package:jus_mobile_order_app/Providers/ProviderWidgets/user_provider_wid
 import 'package:jus_mobile_order_app/Providers/product_providers.dart';
 import 'package:jus_mobile_order_app/Services/favorites_services.dart';
 import 'package:jus_mobile_order_app/Widgets/Buttons/elevated_button_medium.dart';
-import 'package:jus_mobile_order_app/Widgets/Buttons/outline_button_medium.dart';
+import 'package:jus_mobile_order_app/Widgets/Buttons/outlined_button_medium.dart';
 
 class NameFavoriteItemSheet extends ConsumerWidget {
   final ProductModel currentProduct;

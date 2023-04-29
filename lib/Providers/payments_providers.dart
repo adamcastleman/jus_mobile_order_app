@@ -6,6 +6,8 @@ import 'package:jus_mobile_order_app/Providers/stream_providers.dart';
 final pageTypeProvider =
     StateProvider<PageType>((ref) => PageType.editPaymentMethod);
 
+final walletTypeProvider = StateProvider<WalletType?>((ref) => null);
+
 final cardNicknameProvider = StateProvider<String>((ref) => '');
 
 final defaultPaymentCheckboxProvider =
@@ -18,6 +20,8 @@ final physicalGiftCardBalanceProvider =
 
 final currentlySelectedWalletProvider =
     StateProvider.autoDispose<Map>((ref) => {});
+
+final selectedCreditCardProvider = StateProvider.autoDispose<Map>((ref) => {});
 
 final selectedPaymentMethodProvider =
     StateNotifierProvider<SelectedPaymentMethodNotifier, Map>((ref) {
@@ -39,6 +43,8 @@ class SelectedPaymentMethodNotifier extends StateNotifier<Map> {
           'brand': payment.brand,
           'isWallet': payment.isWallet,
         };
+      } else {
+        state = {};
       }
     });
   }
@@ -65,7 +71,8 @@ class SelectedPaymentMethodNotifier extends StateNotifier<Map> {
 
 final selectedLoadAmountIndexProvider = StateProvider<int>((ref) => 3);
 
-final selectedLoadAmountProvider = StateProvider<int?>((ref) => null);
+final selectedLoadAmountProvider =
+    StateProvider.autoDispose<int?>((ref) => null);
 
 final loadAmountsProvider = Provider<List<int>>((ref) => [
       1000,

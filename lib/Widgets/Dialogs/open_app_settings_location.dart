@@ -12,7 +12,7 @@ class LocationPermissionAlertDialog extends StatelessWidget {
         children: [
           Spacing().vertical(10),
           const Text(
-              'We use your location to find stores near you. Turn on location permission in settings to help you search for relevant stores more quickly.'),
+              'We use your location to find stores near you, and allow you to select a location to order from. Turn on location permission in settings to begin an order.'),
         ],
       ),
       actions: [

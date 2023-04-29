@@ -12,7 +12,7 @@ import 'package:jus_mobile_order_app/Providers/ProviderWidgets/product_quantity_
 import 'package:jus_mobile_order_app/Providers/product_providers.dart';
 import 'package:jus_mobile_order_app/Widgets/Buttons/elevated_button_large.dart';
 import 'package:jus_mobile_order_app/Widgets/Buttons/elevated_button_medium.dart';
-import 'package:jus_mobile_order_app/Widgets/Buttons/outline_button_medium.dart';
+import 'package:jus_mobile_order_app/Widgets/Buttons/outlined_button_medium.dart';
 import 'package:jus_mobile_order_app/Widgets/Buttons/untappable_elevated_button_large.dart';
 
 class AddToCartRow extends ConsumerWidget {

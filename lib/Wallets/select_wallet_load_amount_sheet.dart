@@ -3,13 +3,14 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:jus_mobile_order_app/Providers/payments_providers.dart';
 import 'package:jus_mobile_order_app/Widgets/Buttons/confirm_button.dart';
 
-class SelectJusCardLoadAmountSheet extends ConsumerWidget {
-  const SelectJusCardLoadAmountSheet({Key? key}) : super(key: key);
+class SelectWalletLoadAmountSheet extends ConsumerWidget {
+  const SelectWalletLoadAmountSheet({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final loadAmounts = ref.watch(loadAmountsProvider);
     final loadAmountsIndex = ref.watch(selectedLoadAmountIndexProvider);
+
     FixedExtentScrollController scrollController =
         FixedExtentScrollController(initialItem: loadAmountsIndex);
 

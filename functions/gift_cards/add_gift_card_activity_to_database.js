@@ -9,6 +9,9 @@ const addGiftCardActivityToDatabase = async (db, giftCardMap, userID) => {
   const alphabet = '0123456789ABCDEF';
   const nanoid = customAlphabet(alphabet, 10);
 
+  console.log('I have entered gift card activity');
+
+
   if (!giftCardMap.orderDetails) {
     giftCardMap.orderDetails = {};
   }
@@ -24,9 +27,14 @@ const addGiftCardActivityToDatabase = async (db, giftCardMap, userID) => {
     giftCardMap.orderDetails.orderStatus = "SUCCESS";
     giftCardMap.orderDetails.orderNumber = nanoid();
 
-    await giftCardActivitiesRef.set(giftCardMap);
+     console.log('Before set condition');
 
-    await sendGiftCardConfirmationEmail(giftCardMap);
+     console.log(giftCardMap.cardDetails.activity);
+
+       await giftCardActivitiesRef.set(giftCardMap);
+       if(giftCardMap.cardDetails.activity == 'LOAD' || giftCardMap.cardDetails.activity == 'TRANSFER') {
+        await sendGiftCardConfirmationEmail(giftCardMap);
+        }
 
     return giftCardMap;
   } catch (error) {

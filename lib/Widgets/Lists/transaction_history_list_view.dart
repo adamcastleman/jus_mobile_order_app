@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:jus_mobile_order_app/Helpers/divider.dart';
 import 'package:jus_mobile_order_app/Models/order_model.dart';
+import 'package:jus_mobile_order_app/Models/wallet_activities_model.dart';
 import 'package:jus_mobile_order_app/Providers/ProviderWidgets/orders_provider_widget.dart';
 import 'package:jus_mobile_order_app/Providers/ProviderWidgets/wallet_activities_provider_widget.dart';
-import 'package:jus_mobile_order_app/Widgets/Tiles/transaction_history_tile.dart';
+import 'package:jus_mobile_order_app/Wallets/wallet_history_tile.dart';
+import 'package:jus_mobile_order_app/Widgets/Tiles/order_history_tile.dart';
 import 'package:simple_grouped_listview/simple_grouped_listview.dart';
 
 class TransactionHistoryListView extends StatelessWidget {
@@ -13,28 +16,56 @@ class TransactionHistoryListView extends StatelessWidget {
   Widget build(BuildContext context) {
     final monthYearFormat = DateFormat('yyyy-MM');
     return WalletActivitiesProviderWidget(
-      builder: (activities) => OrdersProviderWidget(builder: (orders) {
+      builder: (wallet) => OrdersProviderWidget(builder: (orders) {
+        final combinedList = [...orders, ...wallet];
+        combinedList.sort((a, b) {
+          final aCreatedAt = (a is OrderModel
+              ? a.createdAt
+              : (a as WalletActivitiesModel).createdAt);
+          final bCreatedAt = (b is OrderModel
+              ? b.createdAt
+              : (b as WalletActivitiesModel).createdAt);
+          return bCreatedAt.compareTo(aCreatedAt);
+        });
+
         return GroupedListView.list(
-          primary: false,
-          items: orders,
-          itemGrouper: (OrderModel order) =>
-              monthYearFormat.format(DateTime.now()),
-          headerBuilder: (context, createdAt) =>
-              _buildHeader(context, createdAt),
-          listItemBuilder: (context, int countInGroup, int itemIndexInGroup,
-                  OrderModel order, int itemIndexInOriginalList) =>
-              Padding(
-            padding: const EdgeInsets.symmetric(vertical: 8.0),
-            child: Column(
-              children: [
-                TransactionHistoryTile(
-                  order: order,
-                  tileIndex: itemIndexInOriginalList,
-                ),
-              ],
-            ),
-          ),
-        );
+            primary: false,
+            items: combinedList,
+            itemGrouper: (dynamic item) =>
+                monthYearFormat.format(item.createdAt),
+            headerBuilder: (context, createdAt) =>
+                _buildHeader(context, createdAt),
+            listItemBuilder: (context, int countInGroup, int itemIndexInGroup,
+                dynamic item, int itemIndexInOriginalList) {
+              if (item is OrderModel) {
+                return Padding(
+                  padding: const EdgeInsets.only(bottom: 8.0),
+                  child: Column(
+                    children: [
+                      OrderHistoryTile(
+                        order: item,
+                        tileIndex: itemIndexInOriginalList,
+                      ),
+                      JusDivider().thin(),
+                    ],
+                  ),
+                );
+              }
+              {
+                return Padding(
+                  padding: const EdgeInsets.only(bottom: 8.0),
+                  child: Column(
+                    children: [
+                      wallet.isEmpty
+                          ? const SizedBox()
+                          : WalletHistoryTile(
+                              wallet: item, tileIndex: itemIndexInOriginalList),
+                      JusDivider().thin(),
+                    ],
+                  ),
+                );
+              }
+            });
       }),
     );
   }

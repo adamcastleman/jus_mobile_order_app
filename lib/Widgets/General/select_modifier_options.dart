@@ -9,7 +9,7 @@ import 'package:jus_mobile_order_app/Providers/ProviderWidgets/modifiable_ingred
 import 'package:jus_mobile_order_app/Providers/product_providers.dart';
 import 'package:jus_mobile_order_app/Sheets/invalid_modification_sheet.dart';
 import 'package:jus_mobile_order_app/Widgets/Buttons/elevated_button_medium.dart';
-import 'package:jus_mobile_order_app/Widgets/Buttons/outline_button_medium.dart';
+import 'package:jus_mobile_order_app/Widgets/Buttons/outlined_button_medium.dart';
 
 class SelectModifierOptions extends ConsumerWidget {
   final ProductModel product;

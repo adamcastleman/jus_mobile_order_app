@@ -16,11 +16,10 @@ class EmptyFavoriteCard extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return SizedBox(
-      width: MediaQuery.of(context).size.width * 0.9,
-      child: Card(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(4.0),
-        ),
+      width: MediaQuery.of(context).size.width * 0.95,
+      child: Container(
+        decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(4), color: Colors.white),
         child: Padding(
           padding: const EdgeInsets.only(
               top: 22.0, bottom: 18.0, left: 12.0, right: 12.0),

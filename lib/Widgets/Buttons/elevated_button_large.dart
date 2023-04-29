@@ -1,3 +1,4 @@
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 
 class LargeElevatedButton extends StatelessWidget {
@@ -18,9 +19,10 @@ class LargeElevatedButton extends StatelessWidget {
         ),
       ),
       onPressed: onPressed,
-      child: Text(
+      child: AutoSizeText(
         buttonText ?? '',
         style: const TextStyle(fontSize: 16),
+        maxLines: 1,
       ),
     );
   }

@@ -8,16 +8,16 @@ import 'package:jus_mobile_order_app/Helpers/modal_bottom_sheets.dart';
 import 'package:jus_mobile_order_app/Helpers/payments.dart';
 import 'package:jus_mobile_order_app/Models/payments_model.dart';
 import 'package:jus_mobile_order_app/Models/user_model.dart';
-import 'package:jus_mobile_order_app/Payments/create_wallet_sheet.dart';
-import 'package:jus_mobile_order_app/Payments/invalid_payment_sheet.dart';
-import 'package:jus_mobile_order_app/Payments/list_of_wallets_sheet.dart';
 import 'package:jus_mobile_order_app/Providers/ProviderWidgets/credit_card_provider_widget.dart';
-import 'package:jus_mobile_order_app/Providers/ProviderWidgets/gift_card_provider_widget.dart';
 import 'package:jus_mobile_order_app/Providers/ProviderWidgets/user_provider_widget.dart';
+import 'package:jus_mobile_order_app/Providers/ProviderWidgets/wallet_provider_widget.dart';
 import 'package:jus_mobile_order_app/Providers/loading_providers.dart';
 import 'package:jus_mobile_order_app/Providers/payments_providers.dart';
 import 'package:jus_mobile_order_app/Providers/theme_providers.dart';
 import 'package:jus_mobile_order_app/Services/payments_services.dart';
+import 'package:jus_mobile_order_app/Sheets/invalid_sheet_single_pop.dart';
+import 'package:jus_mobile_order_app/Wallets/create_wallet_sheet.dart';
+import 'package:jus_mobile_order_app/Wallets/list_of_wallets_sheet.dart';
 import 'package:jus_mobile_order_app/Widgets/Buttons/elevated_button_large.dart';
 import 'package:jus_mobile_order_app/Widgets/Buttons/elevated_button_large_loading.dart';
 import 'package:jus_mobile_order_app/Widgets/General/sheet_notch.dart';
@@ -197,14 +197,24 @@ class TransferGiftCardToWalletSheet extends ConsumerWidget {
         const Icon(FontAwesomeIcons.wallet),
       ],
       onTap: () {
-        PaymentsHelper(ref: ref).setSelectedPaymentToValidPaymentMethod(cards);
-        ModalBottomSheet().partScreen(
-          isDismissible: true,
-          isScrollControlled: true,
-          enableDrag: true,
-          context: context,
-          builder: (context) => const CreateWalletSheet(),
-        );
+        if (cards.isEmpty) {
+          ModalBottomSheet().partScreen(
+            context: context,
+            builder: (context) => const InvalidSheetSinglePop(
+                error:
+                    'Before creating a Wallet, please upload a payment method.'),
+          );
+        } else {
+          PaymentsHelper(ref: ref)
+              .setSelectedPaymentToValidPaymentMethod(cards);
+          ModalBottomSheet().partScreen(
+            isDismissible: true,
+            isScrollControlled: true,
+            enableDrag: true,
+            context: context,
+            builder: (context) => const CreateWalletSheet(),
+          );
+        }
       },
     );
   }
@@ -244,7 +254,7 @@ class TransferGiftCardToWalletSheet extends ConsumerWidget {
       return ModalBottomSheet().partScreen(
         context: context,
         builder: (context) =>
-            const InvalidPaymentSheet(error: 'Please upload your gift card.'),
+            const InvalidSheetSinglePop(error: 'Please upload your gift card.'),
       );
     }
 
@@ -252,7 +262,7 @@ class TransferGiftCardToWalletSheet extends ConsumerWidget {
       return ModalBottomSheet().partScreen(
         context: context,
         builder: (context) =>
-            const InvalidPaymentSheet(error: 'This gift card is empty.'),
+            const InvalidSheetSinglePop(error: 'This gift card is empty.'),
       );
     }
 
@@ -275,7 +285,7 @@ class TransferGiftCardToWalletSheet extends ConsumerWidget {
       } else {
         ModalBottomSheet().partScreen(
             context: context,
-            builder: (context) => const InvalidPaymentSheet(
+            builder: (context) => const InvalidSheetSinglePop(
                 error:
                     'There was an unexpected error processing this request. Please try again later.'));
       }

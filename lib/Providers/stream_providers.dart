@@ -3,6 +3,7 @@ import 'package:jus_mobile_order_app/Models/favorites_model.dart';
 import 'package:jus_mobile_order_app/Models/ingredient_model.dart';
 import 'package:jus_mobile_order_app/Models/location_model.dart';
 import 'package:jus_mobile_order_app/Models/membership_details_model.dart';
+import 'package:jus_mobile_order_app/Models/membership_stats_model.dart';
 import 'package:jus_mobile_order_app/Models/order_model.dart';
 import 'package:jus_mobile_order_app/Models/points_details_model.dart';
 import 'package:jus_mobile_order_app/Models/product_model.dart';
@@ -73,6 +74,9 @@ final taxableProductsProvider = StreamProvider<List<ProductModel>>(
 final recommendedProductsProvider = StreamProvider<List<ProductModel>>(
     (ref) => ProductServices().recommendedProducts);
 
+final newProductsProvider =
+    StreamProvider<List<ProductModel>>((ref) => ProductServices().newProducts);
+
 final productQuantityLimitProvider =
     StreamProvider.family<ProductQuantityModel, QuantityLimitParams>(
         (ref, params) {
@@ -114,3 +118,6 @@ final walletActivitiesProvider =
     StreamProvider.family<List<WalletActivitiesModel>, String>((ref, userID) {
   return PaymentMethodsServices(userID: userID).walletActivities;
 });
+
+final memberStatsProvider = StreamProvider.family<MembershipStatsModel, String>(
+    (ref, userID) => UserServices(uid: userID).membershipStats);

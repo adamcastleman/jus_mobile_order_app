@@ -3,6 +3,8 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:jus_mobile_order_app/Helpers/enums.dart';
+import 'package:jus_mobile_order_app/Helpers/modal_bottom_sheets.dart';
 import 'package:jus_mobile_order_app/Helpers/orders.dart';
 import 'package:jus_mobile_order_app/Helpers/points.dart';
 import 'package:jus_mobile_order_app/Helpers/pricing.dart';
@@ -16,6 +18,7 @@ import 'package:jus_mobile_order_app/Providers/order_providers.dart';
 import 'package:jus_mobile_order_app/Providers/payments_providers.dart';
 import 'package:jus_mobile_order_app/Providers/points_providers.dart';
 import 'package:jus_mobile_order_app/Services/payments_services.dart';
+import 'package:jus_mobile_order_app/Wallets/load_money_and_pay_sheet.dart';
 import 'package:jus_mobile_order_app/Widgets/Buttons/elevated_button_large.dart';
 import 'package:jus_mobile_order_app/Widgets/Buttons/elevated_button_large_loading.dart';
 import 'package:jus_mobile_order_app/Widgets/Buttons/large_apple_pay_button.dart';
@@ -47,28 +50,37 @@ class PaymentsHelper {
   }
 
   setSelectedPaymentToValidPaymentMethod(List<PaymentsModel> creditCards) {
-    final eligibleCard = creditCards.firstWhere((element) => !element.isWallet);
-    ref!
-        .read(selectedPaymentMethodProvider.notifier)
-        .updateSelectedPaymentMethod(
-          card: PaymentsHelper().setSelectedPaymentMap(
-              cardNickname: eligibleCard.cardNickname,
-              isWallet: eligibleCard.isWallet,
-              nonce: eligibleCard.nonce,
-              gan: eligibleCard.gan,
-              brand: eligibleCard.brand,
-              balance: eligibleCard.balance,
-              lastFourDigits: eligibleCard.lastFourDigits),
-        );
+    if (creditCards.isEmpty) {
+      ref!
+          .read(selectedPaymentMethodProvider.notifier)
+          .updateSelectedPaymentMethod(card: {});
+    } else {
+      final eligibleCard =
+          creditCards.firstWhere((element) => !element.isWallet);
+      ref!
+          .read(selectedPaymentMethodProvider.notifier)
+          .updateSelectedPaymentMethod(
+            card: PaymentsHelper().setSelectedPaymentMap(
+                cardNickname: eligibleCard.cardNickname,
+                isWallet: eligibleCard.isWallet,
+                nonce: eligibleCard.nonce,
+                gan: eligibleCard.gan,
+                brand: eligibleCard.brand,
+                balance: eligibleCard.balance,
+                lastFourDigits: eligibleCard.lastFourDigits),
+          );
+    }
   }
 
   String displaySelectedCardTextFromMap(Map selectedPayment) {
     final cardNickname = selectedPayment['cardNickname'] == null
         ? ''
         : '${selectedPayment['cardNickname']} - ';
-    final brandName = selectedPayment['isWallet']
-        ? 'Wallet'
-        : getBrandName(selectedPayment['brand']);
+    final brandName = selectedPayment['isWallet'] == null
+        ? ''
+        : selectedPayment['isWallet']
+            ? 'Wallet'
+            : getBrandName(selectedPayment['brand']);
     final lastFourDigits = ' x${selectedPayment['lastFourDigits']}';
 
     return [cardNickname, brandName, lastFourDigits].join().trim();
@@ -111,20 +123,42 @@ class PaymentsHelper {
     final selectedPayment = ref.watch(selectedPaymentMethodProvider);
     final loading = ref.watch(loadingProvider);
     final selectedPaymentText =
-        PaymentsHelper().displaySelectedCardTextFromMap(selectedPayment);
+        'Pay with ${PaymentsHelper().displaySelectedCardTextFromMap(selectedPayment)}';
+    final totalPrice = user.uid == null || !user.isActiveMember!
+        ? Pricing(ref: ref).orderTotalForNonMembers() * 100
+        : Pricing(ref: ref).orderTotalForMembers() * 100;
+
     if (loading == true) {
       return const LargeElevatedLoadingButton();
+    }
+
+    if (selectedPayment['balance'] != null &&
+        totalPrice > selectedPayment['balance']) {
+      return LargeElevatedButton(
+        buttonText: 'Load Money and Pay',
+        onPressed: () {
+          HapticFeedback.lightImpact();
+          ref.read(walletTypeProvider.notifier).state = WalletType.loadAndPay;
+          ModalBottomSheet().partScreen(
+            enableDrag: true,
+            isDismissible: true,
+            isScrollControlled: true,
+            context: context,
+            builder: (context) => const LoadWalletAndPaySheet(),
+          );
+        },
+      );
     } else {
       return LargeElevatedButton(
         buttonText: selectedPayment.isEmpty
             ? 'Add payment method'
             : selectedPaymentText,
         onPressed: () {
-          ref.read(loadingProvider.notifier).state = true;
           var message = OrderHelpers(ref: ref).validateOrder(context);
           if (message != null) {
             OrderHelpers(ref: ref).showInvalidOrderModal(context, message);
           } else {
+            ref.read(loadingProvider.notifier).state = true;
             PaymentsHelper(ref: ref).processPayment(context, user);
           }
         },
@@ -241,6 +275,7 @@ class PaymentsHelper {
 
     final nonce =
         totalInCents + tipTotalInCents == 0 ? null : selectedCard['nonce'];
+    final gan = selectedCard['gan'];
     final paymentMethod =
         totalInCents + tipTotalInCents == 0 ? 'storeCredit' : 'card';
 
@@ -260,6 +295,7 @@ class PaymentsHelper {
       },
       'paymentDetails': {
         'nonce': nonce,
+        'gan': gan,
         'paymentMethod': paymentMethod,
         'externalPaymentType':
             paymentMethod == 'storeCredit' ? 'STORED_BALANCE' : '',
@@ -291,8 +327,8 @@ class PaymentsHelper {
         'pointsEarned': points,
         'pointsRedeemed': pointsInUse,
         'bonusPoints': user.uid == null || !user.isActiveMember!
-            ? points / pointsMultiple
-            : 0,
+            ? 0
+            : (points / pointsMultiple).floor(),
       }
     };
   }

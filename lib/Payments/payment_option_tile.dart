@@ -4,14 +4,14 @@ import 'package:flutter/material.dart';
 class PaymentOptionTile extends StatelessWidget {
   final IconData icon;
   final String title;
-  final Widget subtitle;
+  final Widget? subtitle;
   final VoidCallback onTap;
 
   const PaymentOptionTile({
     Key? key,
     required this.icon,
     required this.title,
-    required this.subtitle,
+    this.subtitle,
     required this.onTap,
   }) : super(key: key);
 

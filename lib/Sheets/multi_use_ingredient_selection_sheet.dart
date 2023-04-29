@@ -9,7 +9,7 @@ import 'package:jus_mobile_order_app/Providers/ProviderWidgets/user_provider_wid
 import 'package:jus_mobile_order_app/Providers/product_providers.dart';
 import 'package:jus_mobile_order_app/Widgets/Buttons/elevated_button_medium.dart';
 import 'package:jus_mobile_order_app/Widgets/Buttons/multi_use_ingredient_quantity_picker.dart';
-import 'package:jus_mobile_order_app/Widgets/Buttons/outline_button_medium.dart';
+import 'package:jus_mobile_order_app/Widgets/Buttons/outlined_button_medium.dart';
 import 'package:jus_mobile_order_app/Widgets/Cards/multi_use_ingredient_selection_cards.dart';
 
 class MultiUseIngredientSelectionSheet extends ConsumerWidget {

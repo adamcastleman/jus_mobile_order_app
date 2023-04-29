@@ -5,7 +5,7 @@ import 'package:jus_mobile_order_app/Helpers/modal_bottom_sheets.dart';
 import 'package:jus_mobile_order_app/Helpers/time.dart';
 import 'package:jus_mobile_order_app/Models/product_model.dart';
 import 'package:jus_mobile_order_app/Providers/order_providers.dart';
-import 'package:jus_mobile_order_app/Sheets/invalid_order_sheet.dart';
+import 'package:jus_mobile_order_app/Sheets/invalid_sheet_double_pop.dart';
 
 import '../Providers/product_providers.dart';
 
@@ -121,7 +121,7 @@ class OrderHelpers {
   void showInvalidOrderModal(BuildContext context, String errorMessage) {
     ModalBottomSheet().partScreen(
       context: context,
-      builder: (context) => InvalidOrderSheet(error: errorMessage),
+      builder: (context) => InvalidSheetDoublePop(error: errorMessage),
     );
   }
 }

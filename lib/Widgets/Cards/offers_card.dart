@@ -73,10 +73,6 @@ class OffersCard extends ConsumerWidget {
               decoration: BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(4.0),
-                border: Border.all(
-                  color: Colors.black,
-                  width: 0.3,
-                ),
               ),
               width: 200,
               child: Padding(

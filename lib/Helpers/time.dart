@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_native_timezone/flutter_native_timezone.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:intl/intl.dart';
+import 'package:jus_mobile_order_app/Helpers/extensions.dart';
 import 'package:jus_mobile_order_app/Helpers/locations.dart';
 import 'package:jus_mobile_order_app/Models/location_model.dart';
 import 'package:jus_mobile_order_app/Providers/location_providers.dart';
@@ -207,24 +208,5 @@ class Time {
     if (selectedDateIso == tomorrow) return 'Tomorrow';
 
     return DateFormat('EEEE MMM. dd').format(selectedDate);
-  }
-
-  String formatDateRange(DateTime startDate, DateTime endDate) {
-    if (startDate.year == endDate.year &&
-        startDate.month == endDate.month &&
-        startDate.day == endDate.day) {
-      return DateFormat('MM/dd/yy').format(startDate);
-    } else {
-      return '${DateFormat('MM/dd/yy').format(startDate)} - ${DateFormat('MM/dd/yy').format(endDate)}';
-    }
-  }
-}
-
-extension DateTimeExt on DateTime {
-  DateTime get earliestRoundedTime {
-    int rounded = minute + 10;
-    int remainder = rounded % 5;
-    int roundedUp = rounded - remainder;
-    return DateTime(year, month, day, hour, roundedUp);
   }
 }

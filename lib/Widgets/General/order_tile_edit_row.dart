@@ -9,6 +9,7 @@ import 'package:jus_mobile_order_app/Helpers/set_standard_ingredients.dart';
 import 'package:jus_mobile_order_app/Models/points_details_model.dart';
 import 'package:jus_mobile_order_app/Models/product_model.dart';
 import 'package:jus_mobile_order_app/Providers/ProviderWidgets/points_details_provider_widget.dart';
+import 'package:jus_mobile_order_app/Providers/ProviderWidgets/product_quantity_limit_provider.dart';
 import 'package:jus_mobile_order_app/Providers/location_providers.dart';
 import 'package:jus_mobile_order_app/Providers/product_providers.dart';
 import 'package:jus_mobile_order_app/Providers/theme_providers.dart';
@@ -29,72 +30,80 @@ class OrderTileEditRow extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final backgroundColor = ref.watch(backgroundColorProvider);
     final currentOrder = ref.watch(currentOrderItemsProvider);
-    return PointsDetailsProviderWidget(
-      builder: (points) => Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          currentProduct.isScheduled
-              ? const SizedBox()
-              : SelectionIncrementer(
-                  verticalPadding: 0,
-                  horizontalPadding: 0,
-                  buttonSpacing: 10,
-                  iconSize: 22,
-                  quantityRadius: 15,
-                  quantity: '${currentOrder[index]['itemQuantity']}x',
-                  onAdd: () {
-                    addSingleQuantityCost(ref, currentProduct, points);
-                    addSingleQuantityItem(ref);
-                  },
-                  onRemove: () {
-                    removeSingleQuantityCost(ref);
-                    removeSingleQuantityItem(ref);
-                  },
-                ),
-          Row(
-            children: [
-              !currentProduct.isScheduled &&
-                      (!currentProduct.isModifiable &&
-                          !currentProduct.hasToppings)
-                  ? const SizedBox()
-                  : Padding(
-                      padding: const EdgeInsets.only(right: 12.0),
-                      child: InkWell(
-                        onTap: () => handleEditTap(context, ref),
-                        child: CircleAvatar(
-                          radius: 16,
-                          backgroundColor: Colors.black,
+    return ProductQuantityLimitProviderWidget(
+      productUID: currentProduct.uid,
+      builder: (quantity) => PointsDetailsProviderWidget(
+        builder: (points) => Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            currentProduct.isScheduled
+                ? const SizedBox()
+                : SelectionIncrementer(
+                    verticalPadding: 0,
+                    horizontalPadding: 0,
+                    buttonSpacing: 10,
+                    iconSize: 22,
+                    quantityRadius: 15,
+                    quantity: '${currentOrder[index]['itemQuantity']}x',
+                    onAdd: () {
+                      if (quantity.quantityLimit == 0 ||
+                          (quantity.quantityLimit != null &&
+                              currentOrder[index]['itemQuantity'] <
+                                  quantity.quantityLimit)) {
+                        addSingleQuantityCost(ref, currentProduct, points);
+                        addSingleQuantityItem(ref);
+                      }
+                    },
+                    onRemove: () {
+                      removeSingleQuantityCost(ref);
+                      removeSingleQuantityItem(ref);
+                    },
+                  ),
+            Row(
+              children: [
+                !currentProduct.isScheduled &&
+                        (!currentProduct.isModifiable &&
+                            !currentProduct.hasToppings)
+                    ? const SizedBox()
+                    : Padding(
+                        padding: const EdgeInsets.only(right: 12.0),
+                        child: InkWell(
+                          onTap: () => handleEditTap(context, ref),
                           child: CircleAvatar(
-                            radius: 15.5,
-                            backgroundColor: backgroundColor,
-                            child: const Icon(
-                              FontAwesomeIcons.pencil,
-                              color: Colors.black,
-                              size: 16,
+                            radius: 16,
+                            backgroundColor: Colors.black,
+                            child: CircleAvatar(
+                              radius: 15.5,
+                              backgroundColor: backgroundColor,
+                              child: const Icon(
+                                FontAwesomeIcons.pencil,
+                                color: Colors.black,
+                                size: 16,
+                              ),
                             ),
                           ),
                         ),
                       ),
-                    ),
-              InkWell(
-                onTap: () => handleDeleteTap(ref),
-                child: CircleAvatar(
-                  radius: 16,
-                  backgroundColor: Colors.red,
+                InkWell(
+                  onTap: () => handleDeleteTap(ref),
                   child: CircleAvatar(
-                    radius: 15.5,
-                    backgroundColor: backgroundColor,
-                    child: const Icon(
-                      CupertinoIcons.trash,
-                      color: Colors.red,
-                      size: 16,
+                    radius: 16,
+                    backgroundColor: Colors.red,
+                    child: CircleAvatar(
+                      radius: 15.5,
+                      backgroundColor: backgroundColor,
+                      child: const Icon(
+                        CupertinoIcons.trash,
+                        color: Colors.red,
+                        size: 16,
+                      ),
                     ),
                   ),
                 ),
-              ),
-            ],
-          ),
-        ],
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }

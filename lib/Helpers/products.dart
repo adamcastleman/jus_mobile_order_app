@@ -49,17 +49,6 @@ class ProductHelpers {
         .addListOfAllergies(favorite.allergies);
   }
 
-  setRecommendedProviders(ProductModel recommended) {
-    ref.read(selectedProductIDProvider.notifier).state = recommended.productID;
-    ref.read(selectedProductUIDProvider.notifier).state = recommended.uid;
-    ref.read(isScheduledProvider.notifier).state = recommended.isScheduled;
-    recommended.isScheduled
-        ? StandardItems(ref: ref).set(recommended)
-        : StandardIngredients(ref: ref).set(recommended);
-
-    ref.read(itemKeyProvider.notifier).state = Formulas().idGenerator();
-  }
-
   currentItem(ProductModel product, PointsDetailsModel points) {
     final standardIngredients = ref.watch(standardIngredientsProvider);
     final selectedIngredients = ref.watch(selectedIngredientsProvider);

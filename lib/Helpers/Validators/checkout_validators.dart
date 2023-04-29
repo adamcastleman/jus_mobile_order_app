@@ -6,6 +6,7 @@ import 'package:jus_mobile_order_app/Providers/auth_providers.dart';
 class CheckoutValidators {
   final WidgetRef ref;
   CheckoutValidators({required this.ref});
+
   void validateForm() {
     final firstName = ref.watch(firstNameProvider);
     final lastName = ref.watch(lastNameProvider);

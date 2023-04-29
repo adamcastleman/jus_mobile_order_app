@@ -19,6 +19,15 @@ class SelectedPaymentTile extends ConsumerWidget {
       leading: const Icon(
         CupertinoIcons.creditcard,
       ),
+      subtitle: selectedPayment['balance'] == null
+          ? null
+          : Padding(
+              padding: const EdgeInsets.only(top: 4.0),
+              child: Text(
+                'Balance: \$${(selectedPayment['balance'] / 100).toStringAsFixed(2)}',
+                style: const TextStyle(fontWeight: FontWeight.bold),
+              ),
+            ),
       title: Text(cardTitle),
       trailing: const ChevronRightIcon(),
       onTap: onTap,

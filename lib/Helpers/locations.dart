@@ -5,6 +5,7 @@ import 'package:jus_mobile_order_app/Helpers/permission_handler.dart';
 import 'package:jus_mobile_order_app/Models/location_model.dart';
 import 'package:jus_mobile_order_app/Models/product_model.dart';
 import 'package:jus_mobile_order_app/Providers/stream_providers.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 import '../Providers/location_providers.dart';
 import '../Views/choose_location_page.dart';
@@ -75,12 +76,18 @@ class LocationHelper {
   }
 
   chooseLocation(BuildContext context, WidgetRef ref) async {
-    await HandlePermissions(context, ref).locationPermission();
-    if (context.mounted) {
-      ModalTopSheet().fullScreen(
-        context: context,
-        child: const ChooseLocationPage(),
-      );
+    final permissionStatus =
+        await HandlePermissions(context, ref).locationPermission();
+
+    if (permissionStatus == PermissionStatus.granted ||
+        permissionStatus == PermissionStatus.limited ||
+        permissionStatus == PermissionStatus.restricted) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        ModalTopSheet().fullScreen(
+          context: context,
+          child: const ChooseLocationPage(),
+        );
+      });
     }
   }
 

@@ -93,6 +93,7 @@ class ReceiptSheet extends ConsumerWidget {
                         element.productID == order.items[itemIndex]['id']);
                     return ListTile(
                       leading: SizedBox(
+                        width: 40,
                         height: 80,
                         child: CachedNetworkImage(
                           imageUrl: currentProduct.image,

@@ -9,10 +9,10 @@ import 'package:jus_mobile_order_app/Providers/ProviderWidgets/products_provider
 import 'package:jus_mobile_order_app/Sheets/receipt_sheet.dart';
 import 'package:jus_mobile_order_app/Widgets/Icons/chevron_right_icon.dart';
 
-class TransactionHistoryTile extends StatelessWidget {
+class OrderHistoryTile extends StatelessWidget {
   final OrderModel order;
   final int tileIndex;
-  const TransactionHistoryTile(
+  const OrderHistoryTile(
       {required this.order, required this.tileIndex, Key? key})
       : super(key: key);
 
@@ -38,7 +38,7 @@ class TransactionHistoryTile extends StatelessWidget {
                               fontSize: 18, fontWeight: FontWeight.bold),
                         ),
                         trailing: Text(
-                            DateFormat('MM/dd/yyyy').format(order.createdAt)),
+                            DateFormat('M/d/yyyy').format(order.createdAt)),
                       ))
                   : const SizedBox(),
               ListTile(
@@ -83,7 +83,7 @@ class TransactionHistoryTile extends StatelessWidget {
                             const Text(' points'),
                           ],
                         ),
-                        Text(DateFormat('M/dd/yyyy').format(order.createdAt)),
+                        Text(DateFormat('M/d/yyyy').format(order.createdAt)),
                       ],
                     ),
                     Spacing().horizontal(10),

@@ -5,15 +5,18 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:intl/intl.dart';
+import 'package:jus_mobile_order_app/Helpers/enums.dart';
 import 'package:jus_mobile_order_app/Helpers/error.dart';
 import 'package:jus_mobile_order_app/Helpers/modal_bottom_sheets.dart';
 import 'package:jus_mobile_order_app/Helpers/payments.dart';
 import 'package:jus_mobile_order_app/Helpers/pricing.dart';
+import 'package:jus_mobile_order_app/Models/payments_model.dart';
 import 'package:jus_mobile_order_app/Models/user_model.dart';
-import 'package:jus_mobile_order_app/Payments/invalid_payment_sheet.dart';
 import 'package:jus_mobile_order_app/Providers/loading_providers.dart';
+import 'package:jus_mobile_order_app/Providers/location_providers.dart';
 import 'package:jus_mobile_order_app/Providers/payments_providers.dart';
 import 'package:jus_mobile_order_app/Services/payment_methods_services.dart';
+import 'package:jus_mobile_order_app/Sheets/invalid_sheet_single_pop.dart';
 import 'package:jus_mobile_order_app/Sheets/order_confirmation_sheet.dart';
 import 'package:jus_mobile_order_app/theme_data.dart';
 import 'package:square_in_app_payments/in_app_payments.dart';
@@ -84,11 +87,15 @@ class PaymentsServices {
     }
   }
 
-  initApplePayWalletLoad(BuildContext context, UserModel user) async {
+  initApplePayWalletLoad(
+      {required BuildContext context,
+      required UserModel user,
+      PaymentsModel? wallet}) async {
     SelectedPaymentMethodNotifier reference =
         ref!.read(selectedPaymentMethodProvider.notifier);
     final loadAmount = ref!.watch(loadAmountsProvider);
     final selectedLoadAmountIndex = ref!.watch(selectedLoadAmountIndexProvider);
+    final walletType = ref!.watch(walletTypeProvider);
     final HttpsCallableResult result = await FirebaseFunctions.instance
         .httpsCallable('secrets')
         .call({'secretKey': 'apple-pay-merchant-id'});
@@ -112,8 +119,15 @@ class PaymentsServices {
               isWallet: false,
               lastFourDigits: result.card.lastFourDigits,
             );
-            createWallet(context, user);
+            if (walletType == WalletType.createWallet) {
+              createWallet(context, user);
+            } else {
+              addFundsToWallet(context, user, wallet!);
+            }
+
             ref!.read(applePayLoadingProvider.notifier).state = false;
+            ref!.invalidate(selectedLoadAmountProvider);
+            ref!.invalidate(selectedLoadAmountIndexProvider);
             await InAppPayments.completeApplePayAuthorization(
                 isSuccess: true, errorMessage: 'There was an error');
           },
@@ -121,13 +135,19 @@ class PaymentsServices {
             await InAppPayments.completeApplePayAuthorization(
                 isSuccess: false, errorMessage: 'There was an error');
             ref!.invalidate(applePayLoadingProvider);
+            ref!.invalidate(selectedLoadAmountProvider);
+            ref!.invalidate(selectedLoadAmountIndexProvider);
           },
           onApplePayComplete: () {
             ref!.invalidate(applePayLoadingProvider);
+            ref!.invalidate(selectedLoadAmountProvider);
+            ref!.invalidate(selectedLoadAmountIndexProvider);
           },
         );
       } on PlatformException catch (ex) {
         ref!.invalidate(applePayLoadingProvider);
+        ref!.invalidate(selectedLoadAmountProvider);
+        ref!.invalidate(selectedLoadAmountIndexProvider);
         throw ex.message.toString();
       }
     }
@@ -158,7 +178,9 @@ class PaymentsServices {
     // in async functions.
     SelectedPaymentMethodNotifier reference =
         ref!.read(selectedPaymentMethodProvider.notifier);
+
     await InAppPayments.startCardEntryFlow(
+        collectPostalCode: false,
         onCardNonceRequestSuccess: (CardDetails result) {
           _onCardEntryCardNonceRequestSuccess(
               reference: reference, result: result, isWallet: false);
@@ -206,15 +228,14 @@ class PaymentsServices {
         lastFourDigits: result.card.lastFourDigits,
         expirationMonth: result.card.expirationMonth,
         expirationYear: result.card.expirationYear,
-        postalCode: result.card.postalCode!,
         isWallet: isWallet,
         firstName: firstName ?? '',
       );
     } else {
-      //if guest is checking out - there is not call to the database,
+      //if guest is checking out - there is not a call to the database,
       //and there is no concept of a default card. Only one payment method can be stored
       //at a time for a guest, and entering a new card will override the previously entered one.
-      //Therefore, the selectedPaymentMethodProvider must be manually updated each time .
+      //Therefore, the selectedPaymentMethod provider must be manually updated each time .
       PaymentMethodsServices().updatePaymentMethod(
         reference: reference,
         cardNickname: firstName,
@@ -224,6 +245,7 @@ class PaymentsServices {
         lastFourDigits: result.card.lastFourDigits,
       );
     }
+
     try {
       await InAppPayments.completeCardEntry(onCardEntryComplete: () {});
     } on Exception catch (ex) {
@@ -242,7 +264,7 @@ class PaymentsServices {
           ref!.invalidate(loadingProvider);
           ModalBottomSheet().partScreen(
             context: context!,
-            builder: (context) => InvalidPaymentSheet(
+            builder: (context) => InvalidSheetSinglePop(
               error: onError.toString(),
             ),
           );
@@ -286,6 +308,8 @@ class PaymentsServices {
         .call({'giftCardMap': giftCardMap});
 
     ref!.read(loadingProvider.notifier).state = false;
+    ref!.invalidate(selectedLoadAmountProvider);
+    ref!.invalidate(selectedLoadAmountIndexProvider);
     WidgetsBinding.instance.addPostFrameCallback((_) {
       Navigator.pop(context);
     });
@@ -317,7 +341,92 @@ class PaymentsServices {
       }
     });
     ref!.read(loadingProvider.notifier).state = false;
+    ref!.invalidate(selectedLoadAmountProvider);
+    ref!.invalidate(selectedLoadAmountIndexProvider);
     return response;
+  }
+
+  void addFundsToWallet(
+      BuildContext context, UserModel user, PaymentsModel wallet) async {
+    final selectedPayment = ref!.watch(selectedPaymentMethodProvider);
+    final selectedWallet = ref!.watch(currentlySelectedWalletProvider);
+    final loadAmount = ref!.watch(loadAmountsProvider);
+    final selectedLoadAmountIndex = ref!.watch(selectedLoadAmountIndexProvider);
+    Map orderMap = {
+      'paymentDetails': {
+        'nonce': selectedPayment['nonce'],
+        'gan': selectedWallet.isEmpty ? wallet.gan : selectedWallet['gan'],
+        'amount': loadAmount[selectedLoadAmountIndex],
+        'currency': 'USD',
+      },
+      'userDetails': {
+        'firstName': user.firstName,
+        'email': user.email,
+      },
+      'metadata': {
+        'walletUID':
+            selectedWallet.isEmpty ? wallet.uid : selectedWallet['uid'],
+      }
+    };
+    try {
+      await FirebaseFunctions.instance
+          .httpsCallable('addFundsToWallet')
+          .call({'orderMap': orderMap});
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        Navigator.pop(context);
+        Navigator.pop(context);
+      });
+    } catch (e) {
+      ModalBottomSheet().partScreen(
+        context: context,
+        builder: (context) => const InvalidSheetSinglePop(
+            error: 'Something went wrong. Please try again later'),
+      );
+    }
+
+    ref!.read(loadingProvider.notifier).state = false;
+    ref!.invalidate(selectedLoadAmountProvider);
+    ref!.invalidate(selectedLoadAmountIndexProvider);
+  }
+
+  void addFundsToWalletAndPay(
+      BuildContext context, UserModel user, PaymentsModel wallet) async {
+    final selectedWallet = ref!.watch(currentlySelectedWalletProvider);
+    final totals = PaymentsHelper(ref: ref).calculatePricingAndTotals(user);
+    final orderMap = PaymentsHelper(ref: ref).generateOrderMap(user, totals);
+    final loadAmount = ref!.watch(loadAmountsProvider);
+    final selectedLoadAmountIndex = ref!.watch(selectedLoadAmountIndexProvider);
+    final selectedLocation = ref!.watch(selectedLocationProvider);
+
+    try {
+      var result = await FirebaseFunctions.instance
+          .httpsCallable('loadMoneyAndPay')
+          .call({
+        'orderMap': orderMap,
+        'metadata': {
+          'paymentDetails': {
+            'walletUID':
+                selectedWallet.isEmpty ? wallet.uid : selectedWallet['uid'],
+            'amount': loadAmount[selectedLoadAmountIndex],
+            'currency': selectedLocation.currency,
+          }
+        }
+      });
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        Navigator.pop(context);
+        handlePaymentResult(context, result);
+      });
+    } catch (e) {
+      ModalBottomSheet().partScreen(
+        context: context,
+        builder: (context) => const InvalidSheetSinglePop(
+            error: 'Something went wrong. Please try again later'),
+      );
+    }
+
+    ref!.read(loadingProvider.notifier).state = false;
+    ref!.invalidate(selectedLoadAmountProvider);
+    ref!.invalidate(selectedLoadAmountIndexProvider);
   }
 
   void _showSuccessModal(BuildContext context) {
@@ -341,7 +450,7 @@ class PaymentsServices {
       isScrollControlled: true,
       isDismissible: true,
       builder: (context) {
-        return InvalidPaymentSheet(
+        return InvalidSheetSinglePop(
           error: SquarePaymentsErrors().getSquareErrorMessage(message),
         );
       },

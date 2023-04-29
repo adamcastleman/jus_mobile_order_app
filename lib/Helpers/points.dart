@@ -109,26 +109,24 @@ class PointsHelper {
         error: (e, _) => '{error}',
         loading: () => '{error}',
         data: (points) {
-          var jusCardPointsValue = points.walletPointsPerDollar;
-          var jusCardMemberPointsValue = points.walletPointsPerDollarMember;
+          var walletPointsValue = points.walletPointsPerDollar;
+          var walletMemberPointsValue = points.walletPointsPerDollarMember;
           var creditCardPointsValue = points.pointsPerDollar;
           var creditCardMemberPointsValue = points.memberPointsPerDollar;
 
-          if (user.uid == null) {
+          if (user.uid == null || selectedPaymentMethod['isWallet'] == null) {
             return 0;
-          }
-
-          if (!user.isActiveMember! &&
-              selectedPaymentMethod['brand'] == 'giftCard') {
-            return jusCardPointsValue * pointsMultiplier;
           } else if (!user.isActiveMember! &&
-              selectedPaymentMethod['brand'] != 'giftCard') {
+              selectedPaymentMethod['isWallet']) {
+            return walletPointsValue * pointsMultiplier;
+          } else if (!user.isActiveMember! &&
+              selectedPaymentMethod['isWallet'] == false) {
             return creditCardPointsValue * pointsMultiplier;
           } else if (user.isActiveMember! &&
-              selectedPaymentMethod['brand'] == 'giftCard') {
-            return jusCardMemberPointsValue * pointsMultiplier;
+              selectedPaymentMethod['isWallet']) {
+            return walletMemberPointsValue * pointsMultiplier;
           } else if (user.isActiveMember! &&
-              selectedPaymentMethod['brand'] != 'giftCard') {
+              selectedPaymentMethod['isWallet'] == false) {
             return creditCardMemberPointsValue * pointsMultiplier;
           }
         },
@@ -148,6 +146,7 @@ class PointsHelper {
         final pointsFromOrder =
             _calculatePointsFromOrder(user, Pricing(ref: ref));
         final pointsMultiple = PointsHelper(ref: ref).determinePointsMultiple();
+
         final earnedPoints = pointsFromOrder * pointsMultiple;
         return earnedPoints.truncate();
       },

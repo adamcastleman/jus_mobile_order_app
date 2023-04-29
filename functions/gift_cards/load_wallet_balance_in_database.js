@@ -1,7 +1,7 @@
 const admin = require("firebase-admin");
 const fetchUserData = require("../users/fetch_user_data");
 
-const updateWalletBalanceInDatabase = async (amount, userID, walletUID) => {
+const loadWalletBalanceInDatabase = async (amount, userID, walletUID) => {
 
     const db = admin.firestore();
     const userData = await fetchUserData(db, userID);
@@ -21,4 +21,4 @@ const updateWalletBalanceInDatabase = async (amount, userID, walletUID) => {
         }
 }
 
-module.exports = updateWalletBalanceInDatabase;
+module.exports = loadWalletBalanceInDatabase;
