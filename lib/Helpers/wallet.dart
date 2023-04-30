@@ -9,6 +9,7 @@ import 'package:jus_mobile_order_app/Models/payments_model.dart';
 import 'package:jus_mobile_order_app/Models/user_model.dart';
 import 'package:jus_mobile_order_app/Payments/add_payment_method_tile.dart';
 import 'package:jus_mobile_order_app/Payments/apple_pay_wallet_tile.dart';
+import 'package:jus_mobile_order_app/Payments/total_price.dart';
 import 'package:jus_mobile_order_app/Providers/ProviderWidgets/points_details_provider_widget.dart';
 import 'package:jus_mobile_order_app/Providers/payments_providers.dart';
 import 'package:jus_mobile_order_app/Services/payments_services.dart';
@@ -18,7 +19,6 @@ import 'package:jus_mobile_order_app/Wallets/select_credit_card_for_wallet_sheet
 import 'package:jus_mobile_order_app/Wallets/select_wallet_tile.dart';
 import 'package:jus_mobile_order_app/Widgets/Buttons/info_button.dart';
 import 'package:jus_mobile_order_app/Widgets/General/category_display_widget.dart';
-import 'package:jus_mobile_order_app/Widgets/General/total_price.dart';
 import 'package:jus_mobile_order_app/Widgets/Icons/chevron_right_icon.dart';
 
 class WalletHelpers {

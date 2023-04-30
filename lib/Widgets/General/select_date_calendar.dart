@@ -7,7 +7,7 @@ import 'package:jus_mobile_order_app/Helpers/modal_bottom_sheets.dart';
 import 'package:jus_mobile_order_app/Providers/ProviderWidgets/location_provider_widget.dart';
 import 'package:jus_mobile_order_app/Providers/location_providers.dart';
 import 'package:jus_mobile_order_app/Providers/order_providers.dart';
-import 'package:jus_mobile_order_app/Sheets/invalid_sheet_double_pop.dart';
+import 'package:jus_mobile_order_app/Sheets/invalid_sheet_single_pop.dart';
 
 class SelectDateCalendar extends ConsumerWidget {
   const SelectDateCalendar({Key? key}) : super(key: key);
@@ -46,7 +46,7 @@ class SelectDateCalendar extends ConsumerWidget {
                   enableDrag: true,
                   isDismissible: true,
                   context: context,
-                  builder: (context) => const InvalidSheetDoublePop(
+                  builder: (context) => const InvalidSheetSinglePop(
                       error:
                           'This date is unavailable for pickup at this location. Please select another date.'));
               return;

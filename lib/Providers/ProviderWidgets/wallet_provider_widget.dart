@@ -15,7 +15,7 @@ class WalletProviderWidget extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final paymentMethod = ref.watch(giftCardPaymentMethods);
+    final paymentMethod = ref.watch(walletPaymentMethodsProvider);
     return paymentMethod.when(
       error: (e, _) =>
           error ??

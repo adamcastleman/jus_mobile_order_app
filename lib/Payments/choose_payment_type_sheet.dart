@@ -44,7 +44,7 @@ class ChoosePaymentTypeSheet extends ConsumerWidget {
                         subtitle: user.uid == null
                             ? null
                             : Text(
-                                'Earn ${PointsHelper(ref: ref).determinePointsMultipleText(isWallet: false)} per \$1'),
+                                'Earn ${PointsHelper(ref: ref).pointsDisplayText(isWallet: false)}/\$1'),
                         onTap: () {
                           HapticFeedback.lightImpact();
 
@@ -64,12 +64,18 @@ class ChoosePaymentTypeSheet extends ConsumerWidget {
                         subtitle: user.uid == null
                             ? const SizedBox()
                             : Text(
-                                'Earn ${PointsHelper(ref: ref).determinePointsMultipleText(isWallet: true)} per \$1'),
+                                'Earn ${PointsHelper(ref: ref).pointsDisplayText(isWallet: true)}/\$1'),
                         onTap: () async {
                           HapticFeedback.lightImpact();
 
                           ref.read(walletTypeProvider.notifier).state =
                               WalletType.createWallet;
+                          if (user.uid == null) {
+                            ModalBottomSheet().fullScreen(
+                              context: context,
+                              builder: (context) => const RegisterPage(),
+                            );
+                          }
                           if (creditCards.isEmpty) {
                             ModalBottomSheet().partScreen(
                               context: context,
@@ -83,9 +89,7 @@ class ChoosePaymentTypeSheet extends ConsumerWidget {
                               isScrollControlled: true,
                               isDismissible: true,
                               context: context,
-                              builder: (context) => user.uid == null
-                                  ? const RegisterPage()
-                                  : const CreateWalletSheet(),
+                              builder: (context) => const CreateWalletSheet(),
                             );
                           }
                         },

@@ -7,6 +7,7 @@ import 'package:jus_mobile_order_app/Helpers/modal_bottom_sheets.dart';
 import 'package:jus_mobile_order_app/Helpers/orders.dart';
 import 'package:jus_mobile_order_app/Helpers/spacing_widgets.dart';
 import 'package:jus_mobile_order_app/Models/user_model.dart';
+import 'package:jus_mobile_order_app/Payments/total_price.dart';
 import 'package:jus_mobile_order_app/Providers/ProviderWidgets/products_provider_widget.dart';
 import 'package:jus_mobile_order_app/Providers/ProviderWidgets/user_provider_widget.dart';
 import 'package:jus_mobile_order_app/Providers/order_providers.dart';
@@ -16,7 +17,6 @@ import 'package:jus_mobile_order_app/Views/checkout_page.dart';
 import 'package:jus_mobile_order_app/Views/empty_cart_page.dart';
 import 'package:jus_mobile_order_app/Widgets/Buttons/elevated_button_large.dart';
 import 'package:jus_mobile_order_app/Widgets/General/category_display_widget.dart';
-import 'package:jus_mobile_order_app/Widgets/General/total_price.dart';
 import 'package:jus_mobile_order_app/Widgets/Lists/display_order_list.dart';
 import 'package:jus_mobile_order_app/Widgets/Tiles/selected_location_tile.dart';
 

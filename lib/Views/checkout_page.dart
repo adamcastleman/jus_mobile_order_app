@@ -37,7 +37,7 @@ import 'package:jus_mobile_order_app/Widgets/Tiles/order_pickup_date_tile.dart';
 import 'package:jus_mobile_order_app/Widgets/Tiles/order_pickup_time_tile.dart';
 import 'package:jus_mobile_order_app/Widgets/Tiles/selected_location_tile.dart';
 
-import '../Widgets/General/total_price.dart';
+import '../Payments/total_price.dart';
 
 class CheckoutPage extends HookConsumerWidget {
   const CheckoutPage({Key? key}) : super(key: key);

@@ -45,12 +45,13 @@ final defaultPaymentMethodProvider = StreamProvider<PaymentsModel>((ref) {
   return PaymentMethodsServices(userID: auth.value?.uid).defaultPaymentCard;
 });
 
-final creditCardPaymentMethods = StreamProvider<List<PaymentsModel>>((ref) {
+final creditCardPaymentMethodsProvider =
+    StreamProvider<List<PaymentsModel>>((ref) {
   final auth = ref.watch(authProvider);
   return PaymentMethodsServices(userID: auth.value?.uid).squareCreditCards;
 });
 
-final giftCardPaymentMethods = StreamProvider<List<PaymentsModel>>((ref) {
+final walletPaymentMethodsProvider = StreamProvider<List<PaymentsModel>>((ref) {
   final auth = ref.watch(authProvider);
   return PaymentMethodsServices(userID: auth.value?.uid).wallets;
 });

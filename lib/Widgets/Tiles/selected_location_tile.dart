@@ -51,7 +51,6 @@ class SelectedLocationTile extends ConsumerWidget {
             return;
           } else {
             HapticFeedback.lightImpact();
-            ref.invalidate(selectedLocationProvider);
             LocationHelper().chooseLocation(context, ref);
           }
         },

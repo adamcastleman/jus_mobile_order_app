@@ -77,7 +77,7 @@ class PaymentSettingsSheet extends ConsumerWidget {
                   Spacing().vertical(20),
                   CategoryWidget(
                       text:
-                          'Wallets - Earn ${PointsHelper(ref: ref).determinePointsMultipleText(isWallet: true)}/\$1'),
+                          'Wallets - Earn ${PointsHelper(ref: ref).pointsDisplayText(isWallet: true)}/\$1'),
                   SavedPaymentsListView(
                     cards: wallets,
                   ),
@@ -113,7 +113,7 @@ class PaymentSettingsSheet extends ConsumerWidget {
                   Spacing().vertical(20),
                   CategoryWidget(
                       text:
-                          'Payment method - Earn ${PointsHelper(ref: ref).determinePointsMultipleText(isWallet: false)}/\$1'),
+                          'Payment method - Earn ${PointsHelper(ref: ref).pointsDisplayText(isWallet: false)}/\$1'),
                   SavedPaymentsListView(
                     cards: creditCards,
                   ),

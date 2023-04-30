@@ -62,6 +62,8 @@ class RedeemOfferCard extends ConsumerWidget {
 
   Widget buildOfferButton(WidgetRef ref, int index, List<OffersModel> offers) {
     final offer = offers[index];
+    final paymentMethod = ref.watch(selectedPaymentMethodProvider);
+    final isWallet = ref.watch(selectedPaymentMethodProvider)['isWallet'];
 
     if (offer.pointsMultiple > 1) {
       return Row(
@@ -77,7 +79,10 @@ class RedeemOfferCard extends ConsumerWidget {
                         color: Colors.green,
                       ),
                       Text(
-                        '${PointsHelper(ref: ref).determinePointsMultipleText(isWallet: ref.watch(selectedPaymentMethodProvider)['isWallet'])}/\$1',
+                        '${PointsHelper(ref: ref).pointsDisplayText(
+                          isWallet: paymentMethod.isEmpty ? false : isWallet,
+                          applyPointsMultiplier: true,
+                        )}/\$1',
                         style: const TextStyle(fontSize: 11),
                       ),
                     ],

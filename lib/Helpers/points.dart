@@ -58,10 +58,12 @@ class PointsHelper {
     return null;
   }
 
-  String determinePointsMultipleText({required bool isWallet}) {
+  String pointsDisplayText(
+      {required bool isWallet, bool applyPointsMultiplier = false}) {
     final currentUser = ref.watch(currentUserProvider);
     final pointsDetails = ref.watch(pointsDetailsProvider);
-    final pointsMultiple = ref.watch(pointsMultiplierProvider);
+    final pointsMultiple =
+        applyPointsMultiplier ? ref.watch(pointsMultiplierProvider) : 1.0;
 
     return currentUser.when(
       error: (e, _) => '{error}',
@@ -73,6 +75,7 @@ class PointsHelper {
           var pointValue = isWallet
               ? points.walletPointsPerDollar * pointsMultiple
               : points.pointsPerDollar * pointsMultiple;
+
           var memberPointsValue = isWallet
               ? points.walletPointsPerDollarMember * pointsMultiple
               : points.memberPointsPerDollar * pointsMultiple;
@@ -109,26 +112,24 @@ class PointsHelper {
         error: (e, _) => '{error}',
         loading: () => '{error}',
         data: (points) {
-          var walletPointsValue = points.walletPointsPerDollar;
-          var walletMemberPointsValue = points.walletPointsPerDollarMember;
-          var creditCardPointsValue = points.pointsPerDollar;
-          var creditCardMemberPointsValue = points.memberPointsPerDollar;
-
-          if (user.uid == null || selectedPaymentMethod['isWallet'] == null) {
+          if (user.uid == null) {
             return 0;
-          } else if (!user.isActiveMember! &&
-              selectedPaymentMethod['isWallet']) {
-            return walletPointsValue * pointsMultiplier;
-          } else if (!user.isActiveMember! &&
-              selectedPaymentMethod['isWallet'] == false) {
-            return creditCardPointsValue * pointsMultiplier;
-          } else if (user.isActiveMember! &&
-              selectedPaymentMethod['isWallet']) {
-            return walletMemberPointsValue * pointsMultiplier;
-          } else if (user.isActiveMember! &&
-              selectedPaymentMethod['isWallet'] == false) {
-            return creditCardMemberPointsValue * pointsMultiplier;
           }
+
+          bool isWallet = selectedPaymentMethod.isNotEmpty &&
+              selectedPaymentMethod['isWallet'] == true;
+          bool isActiveMember = user.isActiveMember ?? false;
+
+          int pointsPerDollar = isActiveMember
+              ? points.memberPointsPerDollar
+              : points.pointsPerDollar;
+          num walletPointsPerDollar = isActiveMember
+              ? points.walletPointsPerDollarMember
+              : points.walletPointsPerDollar;
+
+          return isWallet
+              ? walletPointsPerDollar * pointsMultiplier
+              : pointsPerDollar * pointsMultiplier;
         },
       ),
     );
@@ -145,8 +146,8 @@ class PointsHelper {
       data: (user) {
         final pointsFromOrder =
             _calculatePointsFromOrder(user, Pricing(ref: ref));
-        final pointsMultiple = PointsHelper(ref: ref).determinePointsMultiple();
 
+        final pointsMultiple = PointsHelper(ref: ref).determinePointsMultiple();
         final earnedPoints = pointsFromOrder * pointsMultiple;
         return earnedPoints.truncate();
       },

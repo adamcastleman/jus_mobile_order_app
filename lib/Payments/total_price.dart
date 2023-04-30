@@ -17,7 +17,7 @@ import 'package:jus_mobile_order_app/Views/membership_detail_page.dart';
 import 'package:jus_mobile_order_app/Widgets/Buttons/info_button.dart';
 import 'package:jus_mobile_order_app/Widgets/Icons/member_icon.dart';
 
-import '../../Providers/stream_providers.dart';
+import '../Providers/stream_providers.dart';
 
 class TotalPrice extends ConsumerWidget {
   const TotalPrice({Key? key}) : super(key: key);
@@ -226,8 +226,8 @@ class TotalPrice extends ConsumerWidget {
 
     final isWallet = ref.watch(selectedPaymentMethodProvider)['isWallet'];
 
-    final pointsMultipleText =
-        pointsHelper.determinePointsMultipleText(isWallet: isWallet ?? false);
+    final pointsMultipleText = pointsHelper.pointsDisplayText(
+        isWallet: isWallet ?? false, applyPointsMultiplier: true);
 
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,

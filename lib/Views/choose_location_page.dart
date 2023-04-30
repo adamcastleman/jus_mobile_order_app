@@ -20,13 +20,13 @@ class ChooseLocationPage extends ConsumerWidget {
               color: Colors.grey[100],
               height: MediaQuery.of(context).size.height * 0.1,
               child: Align(
-                  alignment: Alignment.bottomRight,
-                  child: JusCloseButton(
-                    onPressed: () {
-                      ref.invalidate(selectedLocationProvider);
-                      Navigator.pop(context);
-                    },
-                  )),
+                alignment: Alignment.bottomRight,
+                child: JusCloseButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                ),
+              ),
             ),
             const Expanded(
               child: DisplayGoogleMap(),
