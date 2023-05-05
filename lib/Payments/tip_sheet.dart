@@ -114,8 +114,12 @@ class TipSheet extends ConsumerWidget {
 
   _creditCardButton(BuildContext context, WidgetRef ref, UserModel user) {
     final applePaySelected = ref.watch(applePaySelectedProvider);
+    final selectedPaymentMethod = ref.watch(selectedPaymentMethodProvider);
     if (applePaySelected && (Platform.isIOS || Platform.isMacOS)) {
       return const SizedBox();
+    }
+    if (selectedPaymentMethod.isEmpty) {
+      return PaymentsHelper().addPaymentMethodButton(context, ref, user);
     } else {
       return PaymentsHelper().payWithPaymentMethodButton(context, ref, user);
     }

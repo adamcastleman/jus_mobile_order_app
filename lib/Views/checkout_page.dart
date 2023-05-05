@@ -13,7 +13,6 @@ import 'package:jus_mobile_order_app/Helpers/pricing.dart';
 import 'package:jus_mobile_order_app/Helpers/spacing_widgets.dart';
 import 'package:jus_mobile_order_app/Models/user_model.dart';
 import 'package:jus_mobile_order_app/Payments/apple_pay_selected_tile.dart';
-import 'package:jus_mobile_order_app/Payments/choose_payment_type_sheet.dart';
 import 'package:jus_mobile_order_app/Payments/no_charge_payment_tile.dart';
 import 'package:jus_mobile_order_app/Payments/payment_method_selector.dart';
 import 'package:jus_mobile_order_app/Payments/tip_sheet.dart';
@@ -62,7 +61,7 @@ class CheckoutPage extends HookConsumerWidget {
                   actions: [
                     JusCloseButton(
                       onPressed: () {
-                        ref.invalidate(checkOutPageProvider);
+                        ref.read(checkOutPageProvider.notifier).state = false;
                         ref.invalidate(rewardQuantityProvider);
                         ref.invalidate(totalPointsProvider);
                         ref.invalidate(pointsInUseProvider);
@@ -215,10 +214,10 @@ class CheckoutPage extends HookConsumerWidget {
       if (!ref.read(formValidatedProvider)) {
         _scrollToTop(controller);
       } else {
-        _showBottomSheet(context, ref);
+        _showTipSheet(context, ref);
       }
     } else {
-      _showBottomSheet(context, ref);
+      _showTipSheet(context, ref);
     }
   }
 
@@ -230,20 +229,13 @@ class CheckoutPage extends HookConsumerWidget {
     );
   }
 
-  void _showBottomSheet(BuildContext context, WidgetRef ref) {
-    final hasSelectedPaymentMethod =
-        ref.watch(selectedPaymentMethodProvider).isNotEmpty;
-
-    builder(BuildContext context) => hasSelectedPaymentMethod
-        ? const TipSheet()
-        : const ChoosePaymentTypeSheet();
-
+  void _showTipSheet(BuildContext context, WidgetRef ref) {
     ModalBottomSheet().partScreen(
       isScrollControlled: true,
       enableDrag: false,
       isDismissible: true,
       context: context,
-      builder: builder,
+      builder: (context) => const TipSheet(),
     );
   }
 }

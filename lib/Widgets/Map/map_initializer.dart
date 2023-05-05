@@ -34,7 +34,9 @@ class MapInitializers {
 
     mapController.value = controller;
     controller.setMapStyle(mapStyle.value);
-    MapBoundsUpdater(ref).getCurrentBounds(mapController.value!, locations);
+    Future.delayed(const Duration(milliseconds: 100), () {
+      MapBoundsUpdater(ref).getCurrentBounds(mapController.value!, locations);
+    });
   }
 
   void initialize({

@@ -135,6 +135,9 @@ class ProductHelpers {
     if (adjusted[index]['amount'] == 1) {
       return '';
     }
+    if (isBlended == 0 && isTopped == 0) {
+      return '';
+    }
     if (isBlended == null || isTopped == null) {
       if (adjusted[index]['amount'] == 0.5) {
         return 'Light ${ingredient.name}';
@@ -250,6 +253,7 @@ class ProductHelpers {
 
   modifiedStandardItems(int orderIndex) {
     final currentOrder = ref.watch(currentOrderItemsProvider);
+
     final selectedIngredients = currentOrder[orderIndex]['selectedIngredients'];
     final standardIngredientsID = currentOrder[orderIndex]
             ['standardIngredients']

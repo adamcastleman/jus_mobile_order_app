@@ -114,56 +114,69 @@ class PaymentsHelper {
       case 'discoverDiners':
         return 'Diners Club';
       default:
-        return brand;
+        return 'My Card';
     }
+  }
+
+  Widget addPaymentMethodButton(
+      BuildContext context, WidgetRef ref, UserModel user) {
+    return LargeElevatedButton(
+        buttonText: 'Add Payment Method',
+        onPressed: () {
+          PaymentsServices(
+                  context: context,
+                  ref: ref,
+                  userID: user.uid,
+                  firstName: user.firstName)
+              .initSquarePayment();
+        });
   }
 
   Widget payWithPaymentMethodButton(
       BuildContext context, WidgetRef ref, UserModel user) {
     final selectedPayment = ref.watch(selectedPaymentMethodProvider);
     final loading = ref.watch(loadingProvider);
+    var message = OrderHelpers(ref: ref).validateOrder(context);
     final selectedPaymentText =
         'Pay with ${PaymentsHelper().displaySelectedCardTextFromMap(selectedPayment)}';
     final totalPrice = user.uid == null || !user.isActiveMember!
         ? Pricing(ref: ref).orderTotalForNonMembers() * 100
         : Pricing(ref: ref).orderTotalForMembers() * 100;
 
-    if (loading == true) {
+    if (loading) {
       return const LargeElevatedLoadingButton();
     }
 
-    if (selectedPayment['balance'] != null &&
-        totalPrice > selectedPayment['balance']) {
-      return LargeElevatedButton(
-        buttonText: 'Load Money and Pay',
-        onPressed: () {
-          HapticFeedback.lightImpact();
-          ref.read(walletTypeProvider.notifier).state = WalletType.loadAndPay;
-          ModalBottomSheet().partScreen(
-            enableDrag: true,
-            isDismissible: true,
-            isScrollControlled: true,
-            context: context,
-            builder: (context) => const LoadWalletAndPaySheet(),
-          );
-        },
-      );
-    } else {
-      return LargeElevatedButton(
-        buttonText: selectedPayment.isEmpty
-            ? 'Add payment method'
-            : selectedPaymentText,
-        onPressed: () {
-          var message = OrderHelpers(ref: ref).validateOrder(context);
-          if (message != null) {
-            OrderHelpers(ref: ref).showInvalidOrderModal(context, message);
-          } else {
-            ref.read(loadingProvider.notifier).state = true;
-            PaymentsHelper(ref: ref).processPayment(context, user);
-          }
-        },
-      );
+    void handleButtonPress() {
+      if (message != null) {
+        OrderHelpers(ref: ref).showInvalidOrderModal(context, message);
+      } else {
+        ref.read(loadingProvider.notifier).state = true;
+        PaymentsHelper(ref: ref).processPayment(context, user);
+      }
     }
+
+    return selectedPayment['balance'] != null &&
+            totalPrice > selectedPayment['balance']
+        ? LargeElevatedButton(
+            buttonText: 'Load Money and Pay',
+            onPressed: () {
+              HapticFeedback.lightImpact();
+              ref.read(walletTypeProvider.notifier).state =
+                  WalletType.loadAndPay;
+              ModalBottomSheet().partScreen(
+                enableDrag: true,
+                isDismissible: true,
+                isScrollControlled: true,
+                context: context,
+                builder: (context) => const LoadWalletAndPaySheet(),
+              );
+            },
+          )
+        : LargeElevatedButton(
+            buttonText: selectedPaymentText,
+            onPressed: handleButtonPress,
+          );
   }
 
   Widget payWithApplePayButton(

@@ -51,7 +51,6 @@ class MarkerHandler {
             }),
       );
     }
-    await MapBoundsUpdater(ref).getCurrentBounds(mapController, locations);
     return markers;
   }
 }

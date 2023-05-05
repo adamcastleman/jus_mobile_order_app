@@ -15,8 +15,8 @@ class MapBoundsUpdater {
 
     await mapController.getVisibleRegion();
     mapBounds = await mapController.getVisibleRegion();
-    _ref.read(currentMapBoundsProvider.notifier).state = mapBounds;
 
+    _ref.read(currentMapBoundsProvider.notifier).state = mapBounds;
     var listOfVisibleLocations = locations
         .where((element) =>
             mapBounds.contains(LatLng(element.latitude, element.longitude)))

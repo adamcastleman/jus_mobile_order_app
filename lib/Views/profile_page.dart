@@ -130,7 +130,7 @@ class ProfilePage extends ConsumerWidget {
                     ),
                     const Padding(
                       padding: EdgeInsets.symmetric(horizontal: 22.0),
-                      child: Text('v2023.3.28'),
+                      child: Text('v2023.5.1'),
                     ),
                   ],
                 ),
