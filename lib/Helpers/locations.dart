@@ -82,7 +82,7 @@ class LocationHelper {
     if (permissionStatus == PermissionStatus.granted ||
         permissionStatus == PermissionStatus.limited ||
         permissionStatus == PermissionStatus.restricted) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
+      Future.delayed(const Duration(milliseconds: 100), () {
         ModalTopSheet().fullScreen(
           context: context,
           child: const ChooseLocationPage(),
