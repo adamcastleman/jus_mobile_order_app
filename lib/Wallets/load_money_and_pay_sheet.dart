@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:jus_mobile_order_app/Helpers/modal_bottom_sheets.dart';
 import 'package:jus_mobile_order_app/Helpers/orders.dart';
@@ -8,10 +7,10 @@ import 'package:jus_mobile_order_app/Helpers/wallet.dart';
 import 'package:jus_mobile_order_app/Models/payments_model.dart';
 import 'package:jus_mobile_order_app/Models/user_model.dart';
 import 'package:jus_mobile_order_app/Providers/ProviderWidgets/credit_card_provider_widget.dart';
-import 'package:jus_mobile_order_app/Providers/ProviderWidgets/user_provider_widget.dart';
 import 'package:jus_mobile_order_app/Providers/ProviderWidgets/wallet_provider_widget.dart';
 import 'package:jus_mobile_order_app/Providers/loading_providers.dart';
 import 'package:jus_mobile_order_app/Providers/payments_providers.dart';
+import 'package:jus_mobile_order_app/Providers/stream_providers.dart';
 import 'package:jus_mobile_order_app/Services/payments_services.dart';
 import 'package:jus_mobile_order_app/Sheets/invalid_sheet_single_pop.dart';
 import 'package:jus_mobile_order_app/Wallets/select_wallet_load_amount_sheet.dart';
@@ -26,49 +25,47 @@ class LoadWalletAndPaySheet extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return UserProviderWidget(
-      builder: (user) => WalletProviderWidget(
-        builder: (wallets) => CreditCardProviderWidget(
-          builder: (creditCards) {
-            return Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 12.0),
-              child: Wrap(
-                children: [
-                  const Padding(
-                    padding: EdgeInsets.only(bottom: 8.0),
-                    child: SheetNotch(),
+    final user = ref.watch(currentUserProvider).value!;
+    return WalletProviderWidget(
+      builder: (wallets) => CreditCardProviderWidget(
+        builder: (creditCards) {
+          return Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 12.0),
+            child: Wrap(
+              children: [
+                const Padding(
+                  padding: EdgeInsets.only(bottom: 8.0),
+                  child: SheetNotch(),
+                ),
+                WalletHelpers(ref: ref).buildHeader(context),
+                WalletHelpers(ref: ref).buildWalletCategory(),
+                WalletHelpers(ref: ref).buildSelectWalletTile(),
+                WalletHelpers(ref: ref).buildAmountCategory(),
+                _buildInitialBalance(context, ref, user),
+                const Padding(
+                  padding: EdgeInsets.only(
+                    top: 12.0,
                   ),
-                  WalletHelpers(ref: ref).buildHeader(context),
-                  WalletHelpers(ref: ref).buildWalletCategory(),
-                  WalletHelpers(ref: ref).buildSelectWalletTile(),
-                  WalletHelpers(ref: ref).buildAmountCategory(),
-                  _buildInitialBalance(context, ref, user),
-                  const Padding(
-                    padding: EdgeInsets.only(
-                      top: 12.0,
-                    ),
-                    child: CategoryWidget(text: 'Payment Source'),
+                  child: CategoryWidget(text: 'Payment Source'),
+                ),
+                WalletHelpers(ref: ref)
+                    .determineDefaultPayment(context, creditCards),
+                WalletHelpers(ref: ref).determineAddPaymentTile(context, user),
+                const Padding(
+                  padding: EdgeInsets.only(
+                    top: 22.0,
                   ),
-                  WalletHelpers(ref: ref)
-                      .determineDefaultPayment(context, creditCards),
-                  WalletHelpers(ref: ref)
-                      .determineAddPaymentTile(context, user),
-                  const Padding(
-                    padding: EdgeInsets.only(
-                      top: 22.0,
-                    ),
-                    child: CategoryWidget(text: 'Order Total'),
-                  ),
-                  WalletHelpers(ref: ref).displayOrderTotal(user),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 40.0),
-                    child: _determinePaymentButton(context, ref, user),
-                  ),
-                ],
-              ),
-            );
-          },
-        ),
+                  child: CategoryWidget(text: 'Order Total'),
+                ),
+                WalletHelpers(ref: ref).displayOrderTotal(user),
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 40.0),
+                  child: _determinePaymentButton(context, ref, user),
+                ),
+              ],
+            ),
+          );
+        },
       ),
     );
   }
@@ -256,8 +253,6 @@ class LoadWalletAndPaySheet extends ConsumerWidget {
     final paymentsServices = PaymentsServices(ref: ref);
     final message = OrderHelpers(ref: ref).validateOrder(context);
     final walletAmount = WalletHelpers(ref: ref).walletAmount(wallet);
-
-    HapticFeedback.lightImpact();
 
     if (_isBalanceInsufficient(ref, walletAmount, user)) {
       ModalBottomSheet().partScreen(

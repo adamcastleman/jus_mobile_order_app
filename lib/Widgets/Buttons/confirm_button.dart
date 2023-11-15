@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 class ConfirmButton extends StatelessWidget {
   final VoidCallback? onPressed;
@@ -11,6 +12,7 @@ class ConfirmButton extends StatelessWidget {
         iconSize: 25,
         onPressed: onPressed ??
             () {
+              HapticFeedback.lightImpact();
               Navigator.pop(context);
             });
   }

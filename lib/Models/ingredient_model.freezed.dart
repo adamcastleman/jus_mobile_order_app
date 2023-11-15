@@ -23,13 +23,13 @@ mixin _$IngredientModel {
   int get id => throw _privateConstructorUsedError;
   int get price => throw _privateConstructorUsedError;
   int get memberPrice => throw _privateConstructorUsedError;
+  List<dynamic> get allergens => throw _privateConstructorUsedError;
   bool get isModifiable => throw _privateConstructorUsedError;
   bool get isStandardTopping => throw _privateConstructorUsedError;
   bool get isBlended => throw _privateConstructorUsedError;
   bool get isTopping => throw _privateConstructorUsedError;
   bool get isExtraCharge => throw _privateConstructorUsedError;
-  bool get containsDairy => throw _privateConstructorUsedError;
-  bool get containsGluten => throw _privateConstructorUsedError;
+  bool get includeInAllergiesList => throw _privateConstructorUsedError;
 
   @JsonKey(ignore: true)
   $IngredientModelCopyWith<IngredientModel> get copyWith =>
@@ -50,13 +50,13 @@ abstract class $IngredientModelCopyWith<$Res> {
       int id,
       int price,
       int memberPrice,
+      List<dynamic> allergens,
       bool isModifiable,
       bool isStandardTopping,
       bool isBlended,
       bool isTopping,
       bool isExtraCharge,
-      bool containsDairy,
-      bool containsGluten});
+      bool includeInAllergiesList});
 }
 
 /// @nodoc
@@ -79,13 +79,13 @@ class _$IngredientModelCopyWithImpl<$Res, $Val extends IngredientModel>
     Object? id = null,
     Object? price = null,
     Object? memberPrice = null,
+    Object? allergens = null,
     Object? isModifiable = null,
     Object? isStandardTopping = null,
     Object? isBlended = null,
     Object? isTopping = null,
     Object? isExtraCharge = null,
-    Object? containsDairy = null,
-    Object? containsGluten = null,
+    Object? includeInAllergiesList = null,
   }) {
     return _then(_value.copyWith(
       uid: null == uid
@@ -116,6 +116,10 @@ class _$IngredientModelCopyWithImpl<$Res, $Val extends IngredientModel>
           ? _value.memberPrice
           : memberPrice // ignore: cast_nullable_to_non_nullable
               as int,
+      allergens: null == allergens
+          ? _value.allergens
+          : allergens // ignore: cast_nullable_to_non_nullable
+              as List<dynamic>,
       isModifiable: null == isModifiable
           ? _value.isModifiable
           : isModifiable // ignore: cast_nullable_to_non_nullable
@@ -136,24 +140,20 @@ class _$IngredientModelCopyWithImpl<$Res, $Val extends IngredientModel>
           ? _value.isExtraCharge
           : isExtraCharge // ignore: cast_nullable_to_non_nullable
               as bool,
-      containsDairy: null == containsDairy
-          ? _value.containsDairy
-          : containsDairy // ignore: cast_nullable_to_non_nullable
-              as bool,
-      containsGluten: null == containsGluten
-          ? _value.containsGluten
-          : containsGluten // ignore: cast_nullable_to_non_nullable
+      includeInAllergiesList: null == includeInAllergiesList
+          ? _value.includeInAllergiesList
+          : includeInAllergiesList // ignore: cast_nullable_to_non_nullable
               as bool,
     ) as $Val);
   }
 }
 
 /// @nodoc
-abstract class _$$_IngredientModelCopyWith<$Res>
+abstract class _$$IngredientModelImplCopyWith<$Res>
     implements $IngredientModelCopyWith<$Res> {
-  factory _$$_IngredientModelCopyWith(
-          _$_IngredientModel value, $Res Function(_$_IngredientModel) then) =
-      __$$_IngredientModelCopyWithImpl<$Res>;
+  factory _$$IngredientModelImplCopyWith(_$IngredientModelImpl value,
+          $Res Function(_$IngredientModelImpl) then) =
+      __$$IngredientModelImplCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call(
@@ -164,21 +164,21 @@ abstract class _$$_IngredientModelCopyWith<$Res>
       int id,
       int price,
       int memberPrice,
+      List<dynamic> allergens,
       bool isModifiable,
       bool isStandardTopping,
       bool isBlended,
       bool isTopping,
       bool isExtraCharge,
-      bool containsDairy,
-      bool containsGluten});
+      bool includeInAllergiesList});
 }
 
 /// @nodoc
-class __$$_IngredientModelCopyWithImpl<$Res>
-    extends _$IngredientModelCopyWithImpl<$Res, _$_IngredientModel>
-    implements _$$_IngredientModelCopyWith<$Res> {
-  __$$_IngredientModelCopyWithImpl(
-      _$_IngredientModel _value, $Res Function(_$_IngredientModel) _then)
+class __$$IngredientModelImplCopyWithImpl<$Res>
+    extends _$IngredientModelCopyWithImpl<$Res, _$IngredientModelImpl>
+    implements _$$IngredientModelImplCopyWith<$Res> {
+  __$$IngredientModelImplCopyWithImpl(
+      _$IngredientModelImpl _value, $Res Function(_$IngredientModelImpl) _then)
       : super(_value, _then);
 
   @pragma('vm:prefer-inline')
@@ -191,15 +191,15 @@ class __$$_IngredientModelCopyWithImpl<$Res>
     Object? id = null,
     Object? price = null,
     Object? memberPrice = null,
+    Object? allergens = null,
     Object? isModifiable = null,
     Object? isStandardTopping = null,
     Object? isBlended = null,
     Object? isTopping = null,
     Object? isExtraCharge = null,
-    Object? containsDairy = null,
-    Object? containsGluten = null,
+    Object? includeInAllergiesList = null,
   }) {
-    return _then(_$_IngredientModel(
+    return _then(_$IngredientModelImpl(
       uid: null == uid
           ? _value.uid
           : uid // ignore: cast_nullable_to_non_nullable
@@ -228,6 +228,10 @@ class __$$_IngredientModelCopyWithImpl<$Res>
           ? _value.memberPrice
           : memberPrice // ignore: cast_nullable_to_non_nullable
               as int,
+      allergens: null == allergens
+          ? _value._allergens
+          : allergens // ignore: cast_nullable_to_non_nullable
+              as List<dynamic>,
       isModifiable: null == isModifiable
           ? _value.isModifiable
           : isModifiable // ignore: cast_nullable_to_non_nullable
@@ -248,13 +252,9 @@ class __$$_IngredientModelCopyWithImpl<$Res>
           ? _value.isExtraCharge
           : isExtraCharge // ignore: cast_nullable_to_non_nullable
               as bool,
-      containsDairy: null == containsDairy
-          ? _value.containsDairy
-          : containsDairy // ignore: cast_nullable_to_non_nullable
-              as bool,
-      containsGluten: null == containsGluten
-          ? _value.containsGluten
-          : containsGluten // ignore: cast_nullable_to_non_nullable
+      includeInAllergiesList: null == includeInAllergiesList
+          ? _value.includeInAllergiesList
+          : includeInAllergiesList // ignore: cast_nullable_to_non_nullable
               as bool,
     ));
   }
@@ -262,8 +262,8 @@ class __$$_IngredientModelCopyWithImpl<$Res>
 
 /// @nodoc
 
-class _$_IngredientModel implements _IngredientModel {
-  const _$_IngredientModel(
+class _$IngredientModelImpl implements _IngredientModel {
+  const _$IngredientModelImpl(
       {required this.uid,
       required this.name,
       required this.image,
@@ -271,13 +271,14 @@ class _$_IngredientModel implements _IngredientModel {
       required this.id,
       required this.price,
       required this.memberPrice,
+      required final List<dynamic> allergens,
       required this.isModifiable,
       required this.isStandardTopping,
       required this.isBlended,
       required this.isTopping,
       required this.isExtraCharge,
-      required this.containsDairy,
-      required this.containsGluten});
+      required this.includeInAllergiesList})
+      : _allergens = allergens;
 
   @override
   final String uid;
@@ -293,6 +294,14 @@ class _$_IngredientModel implements _IngredientModel {
   final int price;
   @override
   final int memberPrice;
+  final List<dynamic> _allergens;
+  @override
+  List<dynamic> get allergens {
+    if (_allergens is EqualUnmodifiableListView) return _allergens;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_allergens);
+  }
+
   @override
   final bool isModifiable;
   @override
@@ -304,20 +313,18 @@ class _$_IngredientModel implements _IngredientModel {
   @override
   final bool isExtraCharge;
   @override
-  final bool containsDairy;
-  @override
-  final bool containsGluten;
+  final bool includeInAllergiesList;
 
   @override
   String toString() {
-    return 'IngredientModel(uid: $uid, name: $name, image: $image, category: $category, id: $id, price: $price, memberPrice: $memberPrice, isModifiable: $isModifiable, isStandardTopping: $isStandardTopping, isBlended: $isBlended, isTopping: $isTopping, isExtraCharge: $isExtraCharge, containsDairy: $containsDairy, containsGluten: $containsGluten)';
+    return 'IngredientModel(uid: $uid, name: $name, image: $image, category: $category, id: $id, price: $price, memberPrice: $memberPrice, allergens: $allergens, isModifiable: $isModifiable, isStandardTopping: $isStandardTopping, isBlended: $isBlended, isTopping: $isTopping, isExtraCharge: $isExtraCharge, includeInAllergiesList: $includeInAllergiesList)';
   }
 
   @override
   bool operator ==(dynamic other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$_IngredientModel &&
+            other is _$IngredientModelImpl &&
             (identical(other.uid, uid) || other.uid == uid) &&
             (identical(other.name, name) || other.name == name) &&
             (identical(other.image, image) || other.image == image) &&
@@ -327,6 +334,8 @@ class _$_IngredientModel implements _IngredientModel {
             (identical(other.price, price) || other.price == price) &&
             (identical(other.memberPrice, memberPrice) ||
                 other.memberPrice == memberPrice) &&
+            const DeepCollectionEquality()
+                .equals(other._allergens, _allergens) &&
             (identical(other.isModifiable, isModifiable) ||
                 other.isModifiable == isModifiable) &&
             (identical(other.isStandardTopping, isStandardTopping) ||
@@ -337,10 +346,8 @@ class _$_IngredientModel implements _IngredientModel {
                 other.isTopping == isTopping) &&
             (identical(other.isExtraCharge, isExtraCharge) ||
                 other.isExtraCharge == isExtraCharge) &&
-            (identical(other.containsDairy, containsDairy) ||
-                other.containsDairy == containsDairy) &&
-            (identical(other.containsGluten, containsGluten) ||
-                other.containsGluten == containsGluten));
+            (identical(other.includeInAllergiesList, includeInAllergiesList) ||
+                other.includeInAllergiesList == includeInAllergiesList));
   }
 
   @override
@@ -353,19 +360,20 @@ class _$_IngredientModel implements _IngredientModel {
       id,
       price,
       memberPrice,
+      const DeepCollectionEquality().hash(_allergens),
       isModifiable,
       isStandardTopping,
       isBlended,
       isTopping,
       isExtraCharge,
-      containsDairy,
-      containsGluten);
+      includeInAllergiesList);
 
   @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
-  _$$_IngredientModelCopyWith<_$_IngredientModel> get copyWith =>
-      __$$_IngredientModelCopyWithImpl<_$_IngredientModel>(this, _$identity);
+  _$$IngredientModelImplCopyWith<_$IngredientModelImpl> get copyWith =>
+      __$$IngredientModelImplCopyWithImpl<_$IngredientModelImpl>(
+          this, _$identity);
 }
 
 abstract class _IngredientModel implements IngredientModel {
@@ -377,13 +385,13 @@ abstract class _IngredientModel implements IngredientModel {
       required final int id,
       required final int price,
       required final int memberPrice,
+      required final List<dynamic> allergens,
       required final bool isModifiable,
       required final bool isStandardTopping,
       required final bool isBlended,
       required final bool isTopping,
       required final bool isExtraCharge,
-      required final bool containsDairy,
-      required final bool containsGluten}) = _$_IngredientModel;
+      required final bool includeInAllergiesList}) = _$IngredientModelImpl;
 
   @override
   String get uid;
@@ -400,6 +408,8 @@ abstract class _IngredientModel implements IngredientModel {
   @override
   int get memberPrice;
   @override
+  List<dynamic> get allergens;
+  @override
   bool get isModifiable;
   @override
   bool get isStandardTopping;
@@ -410,11 +420,9 @@ abstract class _IngredientModel implements IngredientModel {
   @override
   bool get isExtraCharge;
   @override
-  bool get containsDairy;
-  @override
-  bool get containsGluten;
+  bool get includeInAllergiesList;
   @override
   @JsonKey(ignore: true)
-  _$$_IngredientModelCopyWith<_$_IngredientModel> get copyWith =>
+  _$$IngredientModelImplCopyWith<_$IngredientModelImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }

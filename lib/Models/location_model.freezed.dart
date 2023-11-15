@@ -170,11 +170,11 @@ class _$LocationModelCopyWithImpl<$Res, $Val extends LocationModel>
 }
 
 /// @nodoc
-abstract class _$$_LocationModelCopyWith<$Res>
+abstract class _$$LocationModelImplCopyWith<$Res>
     implements $LocationModelCopyWith<$Res> {
-  factory _$$_LocationModelCopyWith(
-          _$_LocationModel value, $Res Function(_$_LocationModel) then) =
-      __$$_LocationModelCopyWithImpl<$Res>;
+  factory _$$LocationModelImplCopyWith(
+          _$LocationModelImpl value, $Res Function(_$LocationModelImpl) then) =
+      __$$LocationModelImplCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call(
@@ -198,11 +198,11 @@ abstract class _$$_LocationModelCopyWith<$Res>
 }
 
 /// @nodoc
-class __$$_LocationModelCopyWithImpl<$Res>
-    extends _$LocationModelCopyWithImpl<$Res, _$_LocationModel>
-    implements _$$_LocationModelCopyWith<$Res> {
-  __$$_LocationModelCopyWithImpl(
-      _$_LocationModel _value, $Res Function(_$_LocationModel) _then)
+class __$$LocationModelImplCopyWithImpl<$Res>
+    extends _$LocationModelCopyWithImpl<$Res, _$LocationModelImpl>
+    implements _$$LocationModelImplCopyWith<$Res> {
+  __$$LocationModelImplCopyWithImpl(
+      _$LocationModelImpl _value, $Res Function(_$LocationModelImpl) _then)
       : super(_value, _then);
 
   @pragma('vm:prefer-inline')
@@ -226,7 +226,7 @@ class __$$_LocationModelCopyWithImpl<$Res>
     Object? comingSoon = null,
     Object? blackoutDates = null,
   }) {
-    return _then(_$_LocationModel(
+    return _then(_$LocationModelImpl(
       uid: null == uid
           ? _value.uid
           : uid // ignore: cast_nullable_to_non_nullable
@@ -301,8 +301,8 @@ class __$$_LocationModelCopyWithImpl<$Res>
 
 /// @nodoc
 
-class _$_LocationModel implements _LocationModel {
-  const _$_LocationModel(
+class _$LocationModelImpl implements _LocationModel {
+  const _$LocationModelImpl(
       {required this.uid,
       required this.name,
       required this.locationID,
@@ -393,7 +393,7 @@ class _$_LocationModel implements _LocationModel {
   bool operator ==(dynamic other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$_LocationModel &&
+            other is _$LocationModelImpl &&
             (identical(other.uid, uid) || other.uid == uid) &&
             (identical(other.name, name) || other.name == name) &&
             (identical(other.locationID, locationID) ||
@@ -449,8 +449,8 @@ class _$_LocationModel implements _LocationModel {
   @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
-  _$$_LocationModelCopyWith<_$_LocationModel> get copyWith =>
-      __$$_LocationModelCopyWithImpl<_$_LocationModel>(this, _$identity);
+  _$$LocationModelImplCopyWith<_$LocationModelImpl> get copyWith =>
+      __$$LocationModelImplCopyWithImpl<_$LocationModelImpl>(this, _$identity);
 }
 
 abstract class _LocationModel implements LocationModel {
@@ -471,7 +471,7 @@ abstract class _LocationModel implements LocationModel {
       required final bool acceptingOrders,
       required final List<dynamic> unavailableProducts,
       required final bool comingSoon,
-      required final List<dynamic> blackoutDates}) = _$_LocationModel;
+      required final List<dynamic> blackoutDates}) = _$LocationModelImpl;
 
   @override
   String get uid;
@@ -509,6 +509,6 @@ abstract class _LocationModel implements LocationModel {
   List<dynamic> get blackoutDates;
   @override
   @JsonKey(ignore: true)
-  _$$_LocationModelCopyWith<_$_LocationModel> get copyWith =>
+  _$$LocationModelImplCopyWith<_$LocationModelImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }

@@ -28,16 +28,20 @@ class DisplayGoogleMap extends HookConsumerWidget {
 
     return LocationsProviderWidget(
       builder: (locations) {
-        _handleMarkers(ref, mapController, locations, markers);
+        _handleMarkers(context, ref, mapController, locations, markers);
 
         return Stack(
           children: [
-            _buildGoogleMapWidget(
-              ref: ref,
-              markers: Set<Marker>.of(markers.value),
-              mapStyle: mapStyle,
-              mapController: mapController,
-              locations: locations,
+            Padding(
+              padding:
+                  const EdgeInsets.only(bottom: 18.0, left: 12.0, right: 12.0),
+              child: _buildGoogleMapWidget(
+                ref: ref,
+                markers: Set<Marker>.of(markers.value),
+                mapStyle: mapStyle,
+                mapController: mapController,
+                locations: locations,
+              ),
             ),
             const SearchButtonWidget(),
           ],
@@ -47,12 +51,14 @@ class DisplayGoogleMap extends HookConsumerWidget {
   }
 
   void _handleMarkers(
+      BuildContext context,
       WidgetRef ref,
       ValueNotifier<GoogleMapController?> mapController,
       List<LocationModel> locations,
       ValueNotifier<List<Marker>> markers) {
     if (mapController.value != null) {
       MarkerHandler(
+        context: context,
         ref: ref,
         mapController: mapController.value!,
         locations: locations,

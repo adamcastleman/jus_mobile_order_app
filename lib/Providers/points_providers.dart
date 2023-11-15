@@ -1,4 +1,3 @@
-import 'package:flutter/services.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 final pointsInUseProvider = StateProvider<int>((ref) => 0);
@@ -58,7 +57,6 @@ class RewardInUse extends StateNotifier<List<Map<String, int>>> {
         .map((map) => map['points'] ?? 0)
         .reduce((acc, value) => acc + value);
     ref.read(pointsInUseProvider.notifier).state = totalPoints;
-    HapticFeedback.lightImpact();
 
     state = [...rewards];
   }
@@ -86,9 +84,7 @@ class RewardInUse extends StateNotifier<List<Map<String, int>>> {
         .map((map) => map['points'] ?? 0)
         .reduce((acc, value) => acc + value);
     ref.read(pointsInUseProvider.notifier).state = totalPoints;
-    if (firstTimeZero || updatedQuantity > 0) {
-      HapticFeedback.lightImpact();
-    }
+    if (firstTimeZero || updatedQuantity > 0) {}
     state = [...rewards];
   }
 }

@@ -10,8 +10,7 @@ class MembershipDetailsProviderWidget extends ConsumerWidget {
   final dynamic loading;
   final dynamic error;
   const MembershipDetailsProviderWidget(
-      {required this.builder, this.loading, this.error, Key? key})
-      : super(key: key);
+      {required this.builder, this.loading, this.error, super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

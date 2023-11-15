@@ -13,7 +13,7 @@ const createNewGiftCard = async (giftCardMap) => {
       idempotencyKey: uuidv4(),
       locationId: locationID,
       giftCard: {
-        type: 'DIGITAL',
+        type: "DIGITAL",
       },
     });
 
@@ -21,24 +21,22 @@ const createNewGiftCard = async (giftCardMap) => {
 
     const giftCardID = response.gift_card.id;
 
-
-const loadResponse = await client.giftCardActivitiesApi.createGiftCardActivity({
-  idempotencyKey: uuidv4(),
-  giftCardActivity: {
-    type: 'ACTIVATE',
-    locationId: locationID,
-    giftCardId: giftCardID,
-    activateActivityDetails: {
-      amountMoney: {
-        amount: giftCardMap.paymentDetails.amount,
-        currency: 'USD'
-      },
-      buyerPaymentInstrumentIds: [
-                'credit card'
-              ]
-    }
-  }
-});
+    const loadResponse =
+      await client.giftCardActivitiesApi.createGiftCardActivity({
+        idempotencyKey: uuidv4(),
+        giftCardActivity: {
+          type: "ACTIVATE",
+          locationId: locationID,
+          giftCardId: giftCardID,
+          activateActivityDetails: {
+            amountMoney: {
+              amount: giftCardMap.paymentDetails.amount,
+              currency: "USD",
+            },
+            buyerPaymentInstrumentIds: ["credit card"],
+          },
+        },
+      });
     // Return the gift card creation result and the gift card activity result
 
     return JSON.parse(loadResponse.body);

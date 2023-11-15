@@ -2,7 +2,6 @@ const admin = require("firebase-admin");
 const fetchUserData = require("../users/fetch_user_data");
 
 const updatePoints = async (db, orderMap) => {
-
   const userData = await fetchUserData(db, orderMap.userDetails.userID);
   if (!userData) {
     console.log("User document does not exist");
@@ -15,7 +14,10 @@ const updatePoints = async (db, orderMap) => {
   const newPoints = currentPoints + pointsEarned - pointsRedeemed;
 
   try {
-    await db.collection("users").doc(orderMap.userDetails.userID).update({ points: newPoints });
+    await db
+      .collection("users")
+      .doc(orderMap.userDetails.userID)
+      .update({ points: newPoints });
     return { success: true, userData: { ...userData, points: newPoints } };
   } catch (error) {
     return { error: "Error updating points" };

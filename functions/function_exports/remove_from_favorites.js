@@ -11,8 +11,9 @@ exports.removeFromFavorites = functions.https.onCall(async (data, context) => {
   const userID = context.auth.uid;
 
   if (!isAuthenticated(context)) {
-    return  {
-        status: 400, error: "Make sure you are logged in before trying to delete a favorite."
+    return {
+      status: 400,
+      error: "Make sure you are logged in before trying to delete a favorite.",
     };
   }
 

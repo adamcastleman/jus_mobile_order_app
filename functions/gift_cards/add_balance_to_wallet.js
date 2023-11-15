@@ -12,17 +12,15 @@ const addBalanceToWallet = async (gan, amount) => {
         type: "ADJUST_INCREMENT",
         locationId: locationID,
         giftCardGan: gan,
-         adjustIncrementActivityDetails: {
-                amountMoney: {
-                  amount: amount,
-                  currency: 'USD'
-                },
-                reason: 'SUPPORT_ISSUE'
-              }
-
+        adjustIncrementActivityDetails: {
+          amountMoney: {
+            amount: amount,
+            currency: "USD",
+          },
+          reason: "SUPPORT_ISSUE",
+        },
       },
     });
-
 
     return JSON.parse(response.body);
   } catch (error) {

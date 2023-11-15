@@ -15,7 +15,7 @@ if (admin.apps.length === 0) {
 }
 
 exports.createOrder = functions.https.onCall(async (data, context) => {
-
+  // Initialize Firestore and other necessary variables.
   const db = admin.firestore();
   const orderMap = data.orderMap;
   const giftCardMap = {};
@@ -23,34 +23,54 @@ exports.createOrder = functions.https.onCall(async (data, context) => {
   const userID = context.auth?.uid ?? null;
   orderMap.userDetails.userID = userID;
 
-  console.log(gan);
-
-   try {
-
-      if (gan !== null) {
+  try {
+    // If a GAN is provided, try to get the associated Gift Card ID.
+    if (gan !== null) {
       await getGiftCardIDFromGan(orderMap);
-      }
-      const paymentResult = await processPayment(orderMap);
-      updateOrderMapWithPaymentData(orderMap, paymentResult);
-      if(gan !== null) {
+    }
+
+    // Process payment and check the result.
+    const paymentResult = await processPayment(orderMap);
+
+    // Check if paymentResult is valid and contains the payment status
+    if (!paymentResult || !paymentResult.payment || paymentResult.payment.status !== 'COMPLETED') {
+      return {
+        status: paymentResult.status,
+        message: paymentResult.message,
+      };
+    }
+
+    // Update order with payment details if payment is successful.
+    updateOrderMapWithPaymentData(orderMap, paymentResult);
+
+    // If GAN is not null, handle gift card updates and wallet balance.
+    if (gan !== null) {
       console.log('Gan is not null');
       updateGiftCardMapForRedemption(orderMap, giftCardMap);
       updateWalletBalanceInDatabase(db, orderMap, giftCardMap);
       addGiftCardActivityToDatabase(db, giftCardMap, userID);
-      }
-      await addOrderToDatabase(db, orderMap, userID);
-      if(userID !== null) {
-       await updatePoints(db, orderMap);
-       await updateMemberSavings(db, orderMap);
-       }
-
-      return 200;
-    } catch (error) {
-    console.log(error);
-      return {
-        status: 'ERROR',
-        message: error.message
-      };
     }
 
+    // Add the order to the database.
+    await addOrderToDatabase(db, orderMap, userID);
+
+    // If userID is not null, update points and member savings.
+    if (userID !== null) {
+      await updatePoints(db, orderMap);
+      await updateMemberSavings(db, orderMap);
+    }
+
+    // Return a 200 status code on successful completion.
+  return {
+         status: 200,
+         message: 'The order was placed successfully',
+       };
+
+  } catch (error) {
+    console.error(error);
+    return {
+      status: 400,
+      message: error.message
+    };
+  }
 });

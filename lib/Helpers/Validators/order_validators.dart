@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:jus_mobile_order_app/Helpers/locations.dart';
 import 'package:jus_mobile_order_app/Helpers/time.dart';
@@ -16,8 +15,6 @@ class OrderValidators {
   OrderValidators({required this.ref});
 
   String checkValidity(BuildContext context) {
-    HapticFeedback.heavyImpact();
-
     String? errorMessage;
 
     errorMessage = checkScheduledOrder();

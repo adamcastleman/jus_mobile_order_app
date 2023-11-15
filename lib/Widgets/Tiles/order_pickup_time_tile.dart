@@ -85,6 +85,7 @@ class OrderPickupTimeTile extends ConsumerWidget {
 
     final selectedLocation = LocationHelper().selectedLocation(ref);
     if (selectedLocation == null) {
+      HapticFeedback.lightImpact();
       return LocationHelper().chooseLocation(context, ref);
     } else if (!LocationHelper().acceptingOrders(ref)) {
       return;

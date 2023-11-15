@@ -10,7 +10,7 @@ import 'package:jus_mobile_order_app/Widgets/General/allergen_label.dart';
 
 class AllergyInfo extends ConsumerWidget {
   final ProductModel product;
-  const AllergyInfo({required this.product, Key? key}) : super(key: key);
+  const AllergyInfo({required this.product, super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

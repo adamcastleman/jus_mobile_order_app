@@ -12,7 +12,8 @@ exports.deletePaymentMethod = functions.https.onCall(async (data, context) => {
 
   if (!isAuthenticated(context)) {
     return {
-        status: 400, error: "Make sure you are logged in before trying to delete a card."
+      status: 400,
+      error: "Make sure you are logged in before trying to delete a card.",
     };
   }
 

@@ -12,14 +12,7 @@ exports.addToFavorites = functions.https.onCall(async (data, context) => {
 
   const userID = context.auth.uid;
 
-  const {
-    ingredients,
-    toppings,
-    productID,
-    name,
-    size,
-    allergies,
-  } = data;
+  const { ingredients, toppings, productID, name, size, allergies } = data;
 
   try {
     const favoritesCollection = admin

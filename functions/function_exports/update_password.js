@@ -10,7 +10,10 @@ exports.updatePassword = functions.https.onCall(async (data, context) => {
   const uid = context.auth?.uid;
 
   if (!uid) {
-    throw new functions.https.HttpsError("unauthenticated", "User must be authenticated to update password.");
+    throw new functions.https.HttpsError(
+      "unauthenticated",
+      "User must be authenticated to update password.",
+    );
   }
 
   try {
@@ -18,11 +21,15 @@ exports.updatePassword = functions.https.onCall(async (data, context) => {
       password: newPassword,
     });
     return {
-      status: 'SUCCESS',
-      message: 'Password updated successfully.',
+      status: "SUCCESS",
+      message: "Password updated successfully.",
     };
   } catch (error) {
     console.error("Error updating password:", error);
-    throw new functions.https.HttpsError("internal", "Error updating password.", error);
+    throw new functions.https.HttpsError(
+      "internal",
+      "Error updating password.",
+      error,
+    );
   }
 });

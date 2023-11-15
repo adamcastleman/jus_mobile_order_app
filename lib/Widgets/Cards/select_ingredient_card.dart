@@ -7,8 +7,8 @@ import 'package:jus_mobile_order_app/Helpers/modal_bottom_sheets.dart';
 import 'package:jus_mobile_order_app/Helpers/spacing_widgets.dart';
 import 'package:jus_mobile_order_app/Models/ingredient_model.dart';
 import 'package:jus_mobile_order_app/Models/user_model.dart';
-import 'package:jus_mobile_order_app/Providers/ProviderWidgets/user_provider_widget.dart';
 import 'package:jus_mobile_order_app/Providers/product_providers.dart';
+import 'package:jus_mobile_order_app/Providers/stream_providers.dart';
 import 'package:jus_mobile_order_app/Providers/theme_providers.dart';
 import 'package:jus_mobile_order_app/Sheets/multi_use_ingredient_selection_sheet.dart';
 
@@ -19,52 +19,50 @@ class SelectIngredientCard extends ConsumerWidget {
       {required this.ingredients, required this.index, super.key});
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final user = ref.watch(currentUserProvider).value!;
     final selectedIngredients = ref.watch(selectedIngredientsProvider);
     final selectedCardColor = ref.watch(selectedCardColorProvider);
     final selectedCardBorderColor = ref.watch(selectedCardBorderColorProvider);
-    return UserProviderWidget(
-      builder: (user) {
-        Iterable<dynamic> currentSelected = selectedIngredients
-            .where((element) => element['id'] == ingredients[index].id);
 
-        return InkWell(
-          onTap: () {
-            handleIngredientSelection(context, currentSelected, ref, user);
-          },
-          child: Card(
-            color:
-                currentSelected.isNotEmpty ? selectedCardColor : Colors.white,
-            shape: RoundedRectangleBorder(
-              side: BorderSide(
-                color: currentSelected.isNotEmpty
-                    ? selectedCardBorderColor
-                    : Colors.white,
-              ),
-              borderRadius: BorderRadius.circular(4),
-            ),
-            child: Column(
-              children: [
-                SizedBox(
-                  height: 70,
-                  width: 70,
-                  child: CachedNetworkImage(
-                    imageUrl: ingredients[index].image,
-                  ),
-                ),
-                Spacing().vertical(5),
-                AutoSizeText(
-                  ingredients[index].name,
-                  style: const TextStyle(fontSize: 12),
-                  textAlign: TextAlign.center,
-                  maxLines: 2,
-                ),
-                Spacing().vertical(8),
-                determinePricingText(user, ref),
-              ],
-            ),
-          ),
-        );
+    Iterable<dynamic> currentSelected = selectedIngredients
+        .where((element) => element['id'] == ingredients[index].id);
+
+    return InkWell(
+      onTap: () {
+        HapticFeedback.lightImpact();
+        handleIngredientSelection(context, currentSelected, ref, user);
       },
+      child: Card(
+        color: currentSelected.isNotEmpty ? selectedCardColor : Colors.white,
+        shape: RoundedRectangleBorder(
+          side: BorderSide(
+            color: currentSelected.isNotEmpty
+                ? selectedCardBorderColor
+                : Colors.white,
+          ),
+          borderRadius: BorderRadius.circular(4),
+        ),
+        child: Column(
+          children: [
+            SizedBox(
+              height: 70,
+              width: 70,
+              child: CachedNetworkImage(
+                imageUrl: ingredients[index].image,
+              ),
+            ),
+            Spacing().vertical(5),
+            AutoSizeText(
+              ingredients[index].name,
+              style: const TextStyle(fontSize: 12),
+              textAlign: TextAlign.center,
+              maxLines: 2,
+            ),
+            Spacing().vertical(8),
+            determinePricingText(user, ref),
+          ],
+        ),
+      ),
     );
   }
 
@@ -98,7 +96,6 @@ class SelectIngredientCard extends ConsumerWidget {
         .first;
     //Removes an ingredient from the list
     if (currentSelected.isNotEmpty) {
-      HapticFeedback.lightImpact();
       ref
           .read(selectedIngredientsProvider.notifier)
           .removeIngredient(ingredients[index].id, ref, selectedIngredients);
@@ -115,7 +112,6 @@ class SelectIngredientCard extends ConsumerWidget {
       ref.invalidate(currentIngredientToppingProvider);
       ref.invalidate(extraChargeBlendedIngredientQuantityProvider);
       ref.invalidate(extraChargeToppedIngredientQuantityProvider);
-      HapticFeedback.lightImpact();
       ModalBottomSheet().partScreen(
         context: context,
         builder: (context) => const MultiUseIngredientSelectionSheet(),
@@ -124,7 +120,6 @@ class SelectIngredientCard extends ConsumerWidget {
     } else {
       ref.read(currentIngredientExtraChargeProvider.notifier).state =
           currentIngredient.isExtraCharge;
-      HapticFeedback.lightImpact();
       ref.read(selectedIngredientsProvider.notifier).addIngredient(
             ingredients: ingredients,
             index: index,

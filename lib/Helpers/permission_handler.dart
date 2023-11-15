@@ -37,16 +37,16 @@ class HandlePermissions {
   }
 
   calendarPermission() async {
-    if (await Permission.calendar.isDenied) {
-      return Permission.calendar.request();
-    } else if (await Permission.calendar.isDenied) {
+    if (await Permission.calendarFullAccess.isDenied) {
+      return Permission.calendarFullAccess.request();
+    } else if (await Permission.calendarFullAccess.isDenied) {
       if (context.mounted) {
         showDialog(
           context: context,
           builder: (context) => const CalendarPermissionAlertDialog(),
         );
       }
-    } else if (await Permission.calendar.isGranted) {
+    } else if (await Permission.calendarFullAccess.isGranted) {
       return;
     }
   }

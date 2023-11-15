@@ -1,6 +1,7 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:jus_mobile_order_app/Helpers/locations.dart';
 import 'package:jus_mobile_order_app/Helpers/spacing_widgets.dart';
@@ -46,6 +47,7 @@ class EmptyFavoriteCard extends ConsumerWidget {
               SmallElevatedButton(
                   buttonText: 'Order now',
                   onPressed: () {
+                    HapticFeedback.lightImpact();
                     if (ref.read(selectedLocationProvider) == null) {
                       LocationHelper().chooseLocation(context, ref);
                     }

@@ -1,6 +1,5 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:jus_mobile_order_app/Helpers/divider.dart';
 import 'package:jus_mobile_order_app/Helpers/modal_bottom_sheets.dart';
@@ -186,7 +185,6 @@ class Picker {
                                 child: LargeElevatedButton(
                                   buttonText: 'Select',
                                   onPressed: () {
-                                    HapticFeedback.mediumImpact();
                                     Navigator.pop(context);
                                   },
                                 ),

@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:jus_mobile_order_app/Helpers/spacing_widgets.dart';
 import 'package:jus_mobile_order_app/Models/ingredient_model.dart';
 import 'package:jus_mobile_order_app/Models/user_model.dart';
 import 'package:jus_mobile_order_app/Providers/ProviderWidgets/modifiable_ingredients_provider_widget.dart';
-import 'package:jus_mobile_order_app/Providers/ProviderWidgets/user_provider_widget.dart';
 import 'package:jus_mobile_order_app/Providers/product_providers.dart';
+import 'package:jus_mobile_order_app/Providers/stream_providers.dart';
 import 'package:jus_mobile_order_app/Widgets/Buttons/elevated_button_medium.dart';
 import 'package:jus_mobile_order_app/Widgets/Buttons/multi_use_ingredient_quantity_picker.dart';
 import 'package:jus_mobile_order_app/Widgets/Buttons/outlined_button_medium.dart';
@@ -17,95 +16,93 @@ class MultiUseIngredientSelectionSheet extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final user = ref.watch(currentUserProvider).value!;
     final isExtraCharge = ref.watch(currentIngredientExtraChargeProvider);
     final selectedIngredientID = ref.watch(currentIngredientIDProvider);
-    HapticFeedback.lightImpact();
     return ModifiableIngredientsProviderWidget(
-      builder: (ingredients) => UserProviderWidget(
-        builder: (user) {
-          IngredientModel currentIngredient = ingredients
-              .where((element) => element.id == selectedIngredientID)
-              .first;
-          return Wrap(
-            children: [
-              Padding(
-                padding: const EdgeInsets.symmetric(
-                    horizontal: 12.0, vertical: 10.0),
-                child: Text(
-                  currentIngredient.name,
-                  style: const TextStyle(
-                      fontWeight: FontWeight.bold, fontSize: 24),
-                ),
+      builder: (ingredients) {
+        IngredientModel currentIngredient = ingredients
+            .where((element) => element.id == selectedIngredientID)
+            .first;
+        return Wrap(
+          children: [
+            Padding(
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 12.0, vertical: 10.0),
+              child: Text(
+                currentIngredient.name,
+                style:
+                    const TextStyle(fontWeight: FontWeight.bold, fontSize: 24),
               ),
-              Padding(
-                padding: const EdgeInsets.only(bottom: 28.0),
-                child: Column(
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.only(
-                          left: 30.0, right: 30.0, bottom: 30.0, top: 20.0),
-                      child: Column(
-                        children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              const Text(
-                                'Blended',
-                                style: TextStyle(fontSize: 20),
-                              ),
-                              isExtraCharge
-                                  ? MultiUseIngredientQuantityPicker(
-                                      index: 0,
-                                      currentIngredient: currentIngredient)
-                                  : const MultiUseIngredientSelectionCards(
-                                      index: 0,
-                                    ),
-                            ],
-                          ),
-                          Spacing().vertical(22),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              const Text(
-                                'As Topping',
-                                style: TextStyle(fontSize: 20),
-                              ),
-                              isExtraCharge
-                                  ? MultiUseIngredientQuantityPicker(
-                                      index: 1,
-                                      currentIngredient: currentIngredient)
-                                  : const MultiUseIngredientSelectionCards(
-                                      index: 1,
-                                    ),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            ),
+            Padding(
+              padding: const EdgeInsets.only(bottom: 28.0),
+              child: Column(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.only(
+                        left: 30.0, right: 30.0, bottom: 30.0, top: 20.0),
+                    child: Column(
                       children: [
-                        MediumOutlineButton(
-                          buttonText: 'Cancel',
-                          onPressed: () {
-                            Navigator.pop(context);
-                          },
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            const Text(
+                              'Blended',
+                              style: TextStyle(fontSize: 20),
+                            ),
+                            isExtraCharge
+                                ? MultiUseIngredientQuantityPicker(
+                                    index: 0,
+                                    currentIngredient: currentIngredient)
+                                : const MultiUseIngredientSelectionCards(
+                                    index: 0,
+                                  ),
+                          ],
                         ),
-                        MediumElevatedButton(
-                            buttonText: 'Confirm',
-                            onPressed: () {
-                              modifyIngredient(ingredients, user, ref);
-                              Navigator.pop(context);
-                            }),
+                        Spacing().vertical(22),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            const Text(
+                              'As Topping',
+                              style: TextStyle(fontSize: 20),
+                            ),
+                            isExtraCharge
+                                ? MultiUseIngredientQuantityPicker(
+                                    index: 1,
+                                    currentIngredient: currentIngredient)
+                                : const MultiUseIngredientSelectionCards(
+                                    index: 1,
+                                  ),
+                          ],
+                        ),
                       ],
                     ),
-                  ],
-                ),
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      MediumOutlineButton(
+                        buttonText: 'Cancel',
+                        onPressed: () {
+                          Navigator.pop(context);
+                        },
+                      ),
+                      MediumElevatedButton(
+                          buttonText: 'Confirm',
+                          onPressed: () {
+                            modifyIngredient(ingredients, user, ref);
+                            Navigator.pop(context);
+                          }),
+                    ],
+                  ),
+                ],
               ),
-            ],
-          );
-        },
-      ),
+            ),
+          ],
+        );
+      },
     );
   }
 

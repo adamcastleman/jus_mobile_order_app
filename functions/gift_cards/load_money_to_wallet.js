@@ -12,18 +12,15 @@ const loadMoneyToWallet = async (gan, amount) => {
         type: "LOAD",
         locationId: locationID,
         giftCardGan: gan,
-         loadActivityDetails: {
-                 amountMoney: {
-                   amount: amount,
-                   currency: 'USD'
-                 },
-                 buyerPaymentInstrumentIds: [
-                   'credit-card'
-                 ]
-               }
+        loadActivityDetails: {
+          amountMoney: {
+            amount: amount,
+            currency: "USD",
+          },
+          buyerPaymentInstrumentIds: ["credit-card"],
+        },
       },
     });
-
 
     return JSON.parse(response.body);
   } catch (error) {

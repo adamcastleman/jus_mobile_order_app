@@ -7,7 +7,7 @@ import 'package:jus_mobile_order_app/Widgets/Icons/chevron_right_icon.dart';
 
 class SelectedPaymentTile extends ConsumerWidget {
   final VoidCallback onTap;
-  const SelectedPaymentTile({required this.onTap, Key? key}) : super(key: key);
+  const SelectedPaymentTile({required this.onTap, super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

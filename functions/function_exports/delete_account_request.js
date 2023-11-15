@@ -9,7 +9,7 @@ if (admin.apps.length === 0) {
 
 const sendEmailToAdminOnAccountDeleteRequest = async (
   userInfoMap,
-  imageURL
+  imageURL,
 ) => {
   console.log("Inside sendEmailToAdminOnAccountDeleteRequest function");
   const email = await getSecret("support-email");
@@ -57,7 +57,7 @@ exports.deleteAccountRequest = functions.https.onCall(async (data, context) => {
   if (!context.auth) {
     throw new functions.https.HttpsError(
       "unauthenticated",
-      "You must be logged in to perform this function."
+      "You must be logged in to perform this function.",
     );
   }
 
@@ -86,7 +86,7 @@ exports.deleteAccountRequest = functions.https.onCall(async (data, context) => {
     console.error("Error sending email:", error);
     throw new functions.https.HttpsError(
       "internal",
-      "An error occurred. Please email support@jusreno.com to complete this request."
+      "An error occurred. Please email support@jusreno.com to complete this request.",
     );
   }
 });

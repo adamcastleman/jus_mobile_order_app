@@ -5,6 +5,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:jus_mobile_order_app/Models/ingredient_model.dart';
 import 'package:jus_mobile_order_app/Models/product_model.dart';
 import 'package:jus_mobile_order_app/Models/user_model.dart';
+import 'package:jus_mobile_order_app/Providers/controller_providers.dart';
 import 'package:jus_mobile_order_app/Widgets/Cards/animated_list_card.dart';
 
 final tappedCategoryProvider = StateProvider.autoDispose<int>((ref) => 0);
@@ -279,10 +280,17 @@ class ListOfIngredients extends StateNotifier<List<dynamic>> {
       }
     ];
     newList.sort((a, b) => a['id'].compareTo(b['id']));
+    int newItemIndex =
+        newList.indexWhere((element) => element['id'] == ingredients[index].id);
+    double cardWidth = 100.0;
     animatedListKey.currentState!.insertItem(
-      newList.indexWhere((element) => element['id'] == ingredients[index].id),
+      newItemIndex,
       duration: const Duration(milliseconds: 500),
     );
+    ref.read(modifyIngredientsListScrollControllerProvider).animateTo(
+        newItemIndex.toDouble() * cardWidth,
+        duration: const Duration(milliseconds: 500),
+        curve: Curves.linear);
 
     state = newList;
   }

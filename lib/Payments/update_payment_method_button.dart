@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:jus_mobile_order_app/Helpers/modal_bottom_sheets.dart';
 import 'package:jus_mobile_order_app/Models/payments_model.dart';
@@ -11,15 +10,13 @@ import '../Providers/payments_providers.dart';
 
 class UpdatePaymentMethodButton extends ConsumerWidget {
   final PaymentsModel card;
-  const UpdatePaymentMethodButton({required this.card, Key? key})
-      : super(key: key);
+  const UpdatePaymentMethodButton({required this.card, super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return MediumElevatedButton(
       buttonText: 'Save',
       onPressed: () {
-        HapticFeedback.mediumImpact();
         _validateFormAndSaveNicknameToDatabase(context, ref);
         _validateDefaultCheckboxAndUpdateDatabase(context, ref);
       },

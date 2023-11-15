@@ -21,6 +21,8 @@ final currentMapBoundsProvider = StateProvider<LatLngBounds>(
 
 final selectedLocationProvider = StateProvider<dynamic>((ref) => null);
 
+final selectedLocationIndexProvider = StateProvider<int>((ref) => 0);
+
 final selectedLocationOpenTime =
     StateProvider<TimeOfDay>((ref) => const TimeOfDay(hour: 0, minute: 0));
 final selectedLocationCloseTime =

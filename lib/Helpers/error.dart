@@ -60,7 +60,13 @@ enum SquarePaymentsErrorType {
 
 class SquarePaymentsErrors {
   String getSquareErrorMessage(String error) {
-    switch (error) {
+    final errorCode = error
+        .replaceAll('Authorization error: ', '')
+        .replaceAll("'", '') // This will remove single quotes
+        .trim()
+        .replaceAll('\n', '');
+
+    switch (errorCode) {
       case 'ADDRESS_VERIFICATION_FAILURE':
         return 'The card issuer declined the request because the postal code is invalid.';
       case 'CARDHOLDER_INSUFFICIENT_PERMISSIONS':

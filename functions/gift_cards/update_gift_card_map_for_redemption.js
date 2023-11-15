@@ -2,12 +2,11 @@ const admin = require("firebase-admin");
 const { v4: uuidv4 } = require("uuid");
 
 const updateGiftCardMapForRedemption = (orderMap, giftCardMap) => {
-
-  if(!giftCardMap.userDetails) {
-  giftCardMap.userDetails = {};
+  if (!giftCardMap.userDetails) {
+    giftCardMap.userDetails = {};
   }
-  if(!giftCardMap.paymentDetails) {
-  giftCardMap.paymentDetails = {};
+  if (!giftCardMap.paymentDetails) {
+    giftCardMap.paymentDetails = {};
   }
   if (!giftCardMap.cardDetails) {
     giftCardMap.cardDetails = {};
@@ -21,10 +20,11 @@ const updateGiftCardMapForRedemption = (orderMap, giftCardMap) => {
   giftCardMap.cardDetails.activity = "REDEEM";
   giftCardMap.cardDetails.gan = orderMap.paymentDetails.gan;
   giftCardMap.paymentDetails.paymentID = null;
-  giftCardMap.paymentDetails.amount = orderMap.totals.totalAmount + orderMap.totals.tipAmount;
+  giftCardMap.paymentDetails.amount =
+    orderMap.totals.totalAmount + orderMap.totals.tipAmount;
   giftCardMap.paymentDetails.currency = "USD";
   giftCardMap.paymentDetails.createdAt = admin.firestore.Timestamp.fromDate(
-    new Date()
+    new Date(),
   );
 
   return giftCardMap;

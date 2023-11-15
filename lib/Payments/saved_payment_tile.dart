@@ -15,7 +15,7 @@ import '../Services/payment_methods_services.dart';
 
 class SavedPaymentTile extends ConsumerWidget {
   final PaymentsModel card;
-  const SavedPaymentTile({required this.card, Key? key}) : super(key: key);
+  const SavedPaymentTile({required this.card, super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

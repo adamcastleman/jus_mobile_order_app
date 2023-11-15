@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:jus_mobile_order_app/Models/product_model.dart';
 import 'package:jus_mobile_order_app/Providers/ProviderWidgets/product_quantity_limit_provider.dart';
@@ -22,6 +23,7 @@ class QuantityPickerButton extends ConsumerWidget {
             icon: const Icon(CupertinoIcons.minus_circled),
             iconSize: 26,
             onPressed: () {
+              HapticFeedback.lightImpact();
               scheduledPicker
                   ? ref.read(scheduledQuantityProvider.notifier).decrement()
                   : ref.read(itemQuantityProvider.notifier).decrement();

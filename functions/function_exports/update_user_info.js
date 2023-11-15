@@ -14,7 +14,7 @@ exports.updateUserInfo = functions.https.onCall(async (data, context) => {
   if (!uid) {
     throw new functions.https.HttpsError(
       "unauthenticated",
-      "User must be authenticated."
+      "User must be authenticated.",
     );
   }
 
@@ -32,7 +32,7 @@ exports.updateUserInfo = functions.https.onCall(async (data, context) => {
     console.error("Error updating user:", error);
     throw new functions.https.HttpsError(
       "unknown",
-      "An error occurred while updating the user."
+      "An error occurred while updating the user.",
     );
   }
 });

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:jus_mobile_order_app/Helpers/enums.dart';
 import 'package:jus_mobile_order_app/Helpers/modal_bottom_sheets.dart';
@@ -18,6 +19,7 @@ class LoadWalletButton extends ConsumerWidget {
       builder: (creditCards) => MediumOutlineButton(
         buttonText: 'Add Funds',
         onPressed: () {
+          HapticFeedback.lightImpact();
           ref.read(walletTypeProvider.notifier).state = WalletType.addFunds;
           PaymentsHelper(ref: ref)
               .setSelectedPaymentToValidPaymentMethod(creditCards);

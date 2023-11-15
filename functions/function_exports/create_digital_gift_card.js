@@ -11,15 +11,15 @@ if (admin.apps.length === 0) {
   admin.initializeApp();
 }
 
-exports.createDigitalGiftCard = functions.https.onCall(async (data, context) => {
+exports.createDigitalGiftCard = functions.https.onCall(
+  async (data, context) => {
+    const db = admin.firestore();
+    const giftCardMap = data.giftCardMap;
+    const userID = context.auth?.uid ?? null;
+    giftCardMap.userDetails.userID = userID;
+    const nonce = giftCardMap.paymentDetails.nonce;
 
-  const db = admin.firestore();
-  const giftCardMap = data.giftCardMap;
-  const userID = context.auth?.uid ?? null;
-  giftCardMap.userDetails.userID = userID;
-  const nonce = giftCardMap.paymentDetails.nonce;
-
-   try {
+    try {
       const paymentResult = await processGiftCardPayment(giftCardMap);
       updateGiftCardMapWithPaymentData(giftCardMap, paymentResult);
       const createdGiftCard = await createNewGiftCard(giftCardMap);
@@ -29,11 +29,11 @@ exports.createDigitalGiftCard = functions.https.onCall(async (data, context) => 
 
       return 200;
     } catch (error) {
-    console.log(error);
+      console.log(error);
       return {
-        status: 'ERROR',
-        message: error.message
+        status: "ERROR",
+        message: error.message,
       };
     }
-
-});
+  },
+);

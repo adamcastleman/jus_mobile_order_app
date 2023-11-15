@@ -136,9 +136,11 @@ class ThemeManager {
     ),
   );
 
-  Future setIOSCardEntryTheme() async {
+  Future setIOSCardEntryTheme({required bool isMembershipTransfer}) async {
     var themeConfigurationBuilder = IOSThemeBuilder();
-    themeConfigurationBuilder.saveButtonTitle = 'Add Card';
+    themeConfigurationBuilder.saveButtonTitle = isMembershipTransfer
+        ? 'Update Payment Method for Membership'
+        : 'Add Card';
 
     themeConfigurationBuilder.tintColor = RGBAColorBuilder()
       ..r = 0

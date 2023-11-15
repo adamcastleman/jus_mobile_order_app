@@ -3,6 +3,7 @@ import 'package:auto_size_text/auto_size_text.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:jus_mobile_order_app/Helpers/locations.dart';
 import 'package:jus_mobile_order_app/Helpers/products.dart';
@@ -38,6 +39,7 @@ class MenuCard extends ConsumerWidget {
         closedBuilder: (context, close) {
           return InkWell(
             onTap: () async {
+              HapticFeedback.lightImpact();
               if (LocationHelper().selectedLocation(ref) == null) {
                 LocationHelper().chooseLocation(context, ref);
                 null;

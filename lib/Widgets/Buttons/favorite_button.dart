@@ -8,8 +8,8 @@ import 'package:jus_mobile_order_app/Models/favorites_model.dart';
 import 'package:jus_mobile_order_app/Models/product_model.dart';
 import 'package:jus_mobile_order_app/Models/user_model.dart';
 import 'package:jus_mobile_order_app/Providers/ProviderWidgets/favorites_provider_widget.dart';
-import 'package:jus_mobile_order_app/Providers/ProviderWidgets/user_provider_widget.dart';
 import 'package:jus_mobile_order_app/Providers/product_providers.dart';
+import 'package:jus_mobile_order_app/Providers/stream_providers.dart';
 import 'package:jus_mobile_order_app/Services/favorites_services.dart';
 import 'package:jus_mobile_order_app/Sheets/name_favorite_item_sheet.dart';
 import 'package:jus_mobile_order_app/Views/register_page.dart';
@@ -19,13 +19,13 @@ class FavoriteButton extends ConsumerWidget {
   const FavoriteButton({required this.product, super.key});
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return UserProviderWidget(
-      builder: (user) => user.uid == null
-          ? _guestFavoriteButton(context) : FavoritesProviderWidget(
-        builder: (favorites) =>
-             _buildFavoriteButton(context, ref, user, favorites),
-      ),
-    );
+    final user = ref.watch(currentUserProvider).value!;
+    return user.uid == null
+        ? _guestFavoriteButton(context)
+        : FavoritesProviderWidget(
+            builder: (favorites) =>
+                _buildFavoriteButton(context, ref, user, favorites),
+          );
   }
 
   Widget _guestFavoriteButton(BuildContext context) {
@@ -33,7 +33,6 @@ class FavoriteButton extends ConsumerWidget {
       icon: const Icon(FontAwesomeIcons.heart),
       iconSize: 22,
       onPressed: () {
-        HapticFeedback.lightImpact();
         ModalBottomSheet().fullScreen(
           context: context,
           builder: (context) => const RegisterPage(),
@@ -72,7 +71,6 @@ class FavoriteButton extends ConsumerWidget {
         icon: const Icon(FontAwesomeIcons.heart),
         iconSize: 22,
         onPressed: () {
-          HapticFeedback.lightImpact();
           nameFavorite(context, user, ref);
         },
       );

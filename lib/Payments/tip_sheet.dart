@@ -1,58 +1,56 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:jus_mobile_order_app/Helpers/payments.dart';
 import 'package:jus_mobile_order_app/Helpers/pricing.dart';
 import 'package:jus_mobile_order_app/Helpers/spacing_widgets.dart';
 import 'package:jus_mobile_order_app/Models/user_model.dart';
 import 'package:jus_mobile_order_app/Payments/total_price.dart';
-import 'package:jus_mobile_order_app/Providers/ProviderWidgets/user_provider_widget.dart';
 import 'package:jus_mobile_order_app/Providers/order_providers.dart';
 import 'package:jus_mobile_order_app/Providers/payments_providers.dart';
+import 'package:jus_mobile_order_app/Providers/stream_providers.dart';
 import 'package:jus_mobile_order_app/Providers/theme_providers.dart';
 
 class TipSheet extends ConsumerWidget {
-  const TipSheet({Key? key}) : super(key: key);
+  const TipSheet({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final user = ref.watch(currentUserProvider).value!;
     final backgroundColor = ref.watch(backgroundColorProvider);
     List<int> percentAmounts = [0, 10, 15, 20];
 
-    return UserProviderWidget(
-      builder: (user) => Wrap(
-        children: [
-          Container(
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(15),
-              color: backgroundColor,
-            ),
-            padding: const EdgeInsets.only(
-                top: 20.0, bottom: 40.0, left: 12.0, right: 12.0),
-            child: Column(
-              children: [
-                Text(
-                  'Would you like to leave a tip?',
-                  style: Theme.of(context).textTheme.headlineSmall,
-                ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 30.0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: List.generate(
-                        4, (index) => tipContainer(ref, percentAmounts, index)),
-                  ),
-                ),
-                const TotalPrice(),
-                Spacing().vertical(40),
-                _paymentButtons(context, ref, user),
-              ],
-            ),
+    return Wrap(
+      children: [
+        Container(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(15),
+            color: backgroundColor,
           ),
-        ],
-      ),
+          padding: const EdgeInsets.only(
+              top: 20.0, bottom: 40.0, left: 12.0, right: 12.0),
+          child: Column(
+            children: [
+              Text(
+                'Would you like to leave a tip?',
+                style: Theme.of(context).textTheme.headlineSmall,
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 30.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: List.generate(
+                      4, (index) => tipContainer(ref, percentAmounts, index)),
+                ),
+              ),
+              const TotalPrice(),
+              Spacing().vertical(40),
+              _paymentButtons(context, ref, user),
+            ],
+          ),
+        ),
+      ],
     );
   }
 
@@ -64,7 +62,6 @@ class TipSheet extends ConsumerWidget {
 
     return InkWell(
       onTap: () {
-        HapticFeedback.lightImpact();
         ref.read(selectedTipIndexProvider.notifier).state = index;
         ref.read(selectedTipPercentageProvider.notifier).state =
             percentAmounts[index];

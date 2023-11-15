@@ -23,38 +23,48 @@ const extractScheduledItems = (orderMap) => {
     scheduleAllItems,
   } = scheduledData;
 
-  const scheduledItems = items.filter(item => item.isScheduled);
-
-
+  const scheduledItems = items.filter((item) => item.isScheduled);
 
   const scheduledObjects = scheduledItems.map((item, index) => {
     const scheduledObject = {
-      "cleanseDayAmount": item.scheduledQuantity ? item.scheduledQuantity.toString() : "1",
-      "cleanseDayProduction": item.scheduledQuantity ? item.scheduledQuantity : 1,
-      "cleanseOrCustom": "Cleanse",
-      "cleanseQuantityAmount": item.itemQuantity ? item.itemQuantity.toString() : "1",
-      "cleanseQuantityProduction": item.itemQuantity ? item.itemQuantity : 1,
-      "cleanseType": item.name === 'Full Day Cleanse' ? 'Full' : 'JTD',
-      "customerName": `${firstName} ${lastName}`,
-      "customerPhoneNumber": phone,
-      "delivered": false,
-      "didCustomerPay": "Yes",
-      "employeeName": orderSource,
-      "employeeUID": null,
-      "locationID": locationID,
-      "manualEmployeeName": null,
-      "notes": index === 0 && scheduleAllItems
-        ? items
-          .filter(item => !item.isScheduled)
-          .map(item => `+${item.itemQuantity} x ${item.name} - ${item.modifications.join(", ")} ${item.allergies.join(", ")}`)
-          .join(', ')
-        : "",
-      "orderMethod": orderSource,
-      "pickedUp": "No",
-      "pickupDate": pickupDate,
-      "preferredLocationPickup": orderMap.locationDetails.locationName,
-      "totalDays": item.scheduledQuantity * item.itemQuantity,
-      "uid": null,
+      cleanseDayAmount: item.scheduledQuantity
+        ? item.scheduledQuantity.toString()
+        : "1",
+      cleanseDayProduction: item.scheduledQuantity ? item.scheduledQuantity : 1,
+      cleanseOrCustom: "Cleanse",
+      cleanseQuantityAmount: item.itemQuantity
+        ? item.itemQuantity.toString()
+        : "1",
+      cleanseQuantityProduction: item.itemQuantity ? item.itemQuantity : 1,
+      cleanseType: item.name === "Full Day Cleanse" ? "Full" : "JTD",
+      customerName: `${firstName} ${lastName}`,
+      customerPhoneNumber: phone,
+      delivered: false,
+      didCustomerPay: "Yes",
+      employeeName: orderSource,
+      employeeUID: null,
+      locationID: locationID,
+      manualEmployeeName: null,
+      notes:
+        index === 0 && scheduleAllItems
+          ? items
+              .filter((item) => !item.isScheduled)
+              .map(
+                (item) =>
+                  `+${item.itemQuantity} x ${
+                    item.name
+                  } - ${item.modifications.join(", ")} ${item.allergies.join(
+                    ", ",
+                  )}`,
+              )
+              .join(", ")
+          : "",
+      orderMethod: orderSource,
+      pickedUp: "No",
+      pickupDate: pickupDate,
+      preferredLocationPickup: orderMap.locationDetails.locationName,
+      totalDays: item.scheduledQuantity * item.itemQuantity,
+      uid: null,
     };
     return scheduledObject;
   });

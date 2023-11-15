@@ -32,5 +32,3 @@ const sendCleanseInstructionsEmail = async (orderMap) => {
 };
 
 module.exports = sendCleanseInstructionsEmail;
-
-

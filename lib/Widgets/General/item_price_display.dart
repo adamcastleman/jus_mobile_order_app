@@ -7,8 +7,8 @@ import 'package:jus_mobile_order_app/Helpers/pricing.dart';
 import 'package:jus_mobile_order_app/Helpers/spacing_widgets.dart';
 import 'package:jus_mobile_order_app/Models/product_model.dart';
 import 'package:jus_mobile_order_app/Models/user_model.dart';
-import 'package:jus_mobile_order_app/Providers/ProviderWidgets/user_provider_widget.dart';
 import 'package:jus_mobile_order_app/Providers/product_providers.dart';
+import 'package:jus_mobile_order_app/Providers/stream_providers.dart';
 import 'package:jus_mobile_order_app/Views/membership_detail_page.dart';
 import 'package:jus_mobile_order_app/Widgets/Buttons/info_button.dart';
 import 'package:jus_mobile_order_app/Widgets/General/points_amount_display.dart';
@@ -20,42 +20,41 @@ class PriceDisplay extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return UserProviderWidget(
-      builder: (user) => Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          determinePriceRow(ref, user),
-          Spacing().vertical(10),
-          Row(
-            children: [
-              determineSavedAmount(ref, user),
-              Spacing().horizontal(5),
-              const MemberIcon(
-                iconSize: 10,
-              ),
-              Spacing().horizontal(5),
-              user.uid == null || !user.isActiveMember!
-                  ? InfoButton(
-                      onTap: () {
-                        ModalBottomSheet().fullScreen(
-                          context: context,
-                          builder: (context) => const MembershipDetailPage(),
-                        );
-                      },
-                      size: 22,
-                    )
-                  : const SizedBox(),
-            ],
-          ),
-          Spacing().vertical(10),
-          PointsAmountDisplay(
-            padding: 4.0,
-            product: product,
-            fontSize: 14,
-            hasBorder: true,
-          ),
-        ],
-      ),
+    final user = ref.watch(currentUserProvider).value!;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        determinePriceRow(ref, user),
+        Spacing().vertical(10),
+        Row(
+          children: [
+            determineSavedAmount(ref, user),
+            Spacing().horizontal(5),
+            const MemberIcon(
+              iconSize: 10,
+            ),
+            Spacing().horizontal(5),
+            user.uid == null || !user.isActiveMember!
+                ? InfoButton(
+                    onTap: () {
+                      ModalBottomSheet().fullScreen(
+                        context: context,
+                        builder: (context) => const MembershipDetailPage(),
+                      );
+                    },
+                    size: 22,
+                  )
+                : const SizedBox(),
+          ],
+        ),
+        Spacing().vertical(10),
+        PointsAmountDisplay(
+          padding: 4.0,
+          product: product,
+          fontSize: 14,
+          hasBorder: true,
+        ),
+      ],
     );
   }
 

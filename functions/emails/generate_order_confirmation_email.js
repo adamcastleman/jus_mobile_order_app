@@ -1,66 +1,115 @@
-const moment = require('moment-timezone');
-require('dotenv').config();
+const moment = require("moment-timezone");
+require("dotenv").config();
 
 module.exports = (orderMap) => {
-  const { userDetails, locationDetails, paymentDetails, orderDetails, totals, pointsDetails } = orderMap;
+  const {
+    userDetails,
+    locationDetails,
+    paymentDetails,
+    orderDetails,
+    totals,
+    pointsDetails,
+  } = orderMap;
   const { items } = orderDetails;
-  const scheduledItems = items.filter(item => item.isScheduled);
-  const nonScheduledItems = items.filter(item => !item.isScheduled);
+  const scheduledItems = items.filter((item) => item.isScheduled);
+  const nonScheduledItems = items.filter((item) => !item.isScheduled);
   const showScheduledItems = scheduledItems.length > 0;
   const showNonScheduledItems = nonScheduledItems.length > 0;
   const showBothLists = showScheduledItems && showNonScheduledItems;
 
   const formatDate = (timestamp, timezone) => {
     const date = moment(timestamp.toDate()).tz(timezone);
-    return date.format('MM/DD/YYYY');
+    return date.format("MM/DD/YYYY");
   };
 
   const formatTime = (timestamp, timezone) => {
     const date = moment(timestamp.toDate());
-    const formattedDate = date.tz(timezone).format('MM/DD/YYYY');
-    const formattedTime = date.tz(timezone).format('h:mm a');
+    const formattedDate = date.tz(timezone).format("MM/DD/YYYY");
+    const formattedTime = date.tz(timezone).format("h:mm a");
     return `${formattedDate} at ${formattedTime}`;
   };
 
-const renderScheduledItems = () => {
-  return scheduledItems.map(item => `
+  const renderScheduledItems = () => {
+    return scheduledItems
+      .map(
+        (item) => `
 
     <div style="display: flex; align-items: center; margin-bottom: 10px;">
       <div style="width: 70px; height: 70px; display: flex; justify-content: center; align-items: center; margin-right: 10px; text-align: center;">
-        <img src="${item.image}" alt="${item.name}" style="max-width: ${item.imageWidth}px; max-height: 100%; ${item.imageWidth === 70 ? '' : 'object-fit: contain'}; width: 70px;" />
+        <img src="${item.image}" alt="${item.name}" style="max-width: ${
+          item.imageWidth
+        }px; max-height: 100%; ${
+          item.imageWidth === 70 ? "" : "object-fit: contain"
+        }; width: 70px;" />
       </div>
       <div style="flex: 1; font-size: 0.75rem; line-height: 1; max-width: 200px; text-align: left;">
         <p class="item-name" style="margin: 0 0 5px 0;">${item.name}</p>
-        <p style="margin: 0; padding-top: 2px;">Quantity: <span style="margin-left: 5px;">${item.itemQuantity}</span></p>
-        ${item.scheduledDescriptor ? `<p style="margin: 0; padding-top: 2px;">${item.scheduledDescriptor}: <span style="margin-left: 2px;">${item.scheduledQuantity}</span></p>` : ''}
+        <p style="margin: 0; padding-top: 2px;">Quantity: <span style="margin-left: 5px;">${
+          item.itemQuantity
+        }</span></p>
+        ${
+          item.scheduledDescriptor
+            ? `<p style="margin: 0; padding-top: 2px;">${item.scheduledDescriptor}: <span style="margin-left: 2px;">${item.scheduledQuantity}</span></p>`
+            : ""
+        }
       </div>
       <div style="margin-left: auto; text-align: right;">
-        $${((item.price * item.itemQuantity * item.scheduledQuantity) / 100).toFixed(2)}
+        $${(
+          (item.price * item.itemQuantity * item.scheduledQuantity) /
+          100
+        ).toFixed(2)}
       </div>
     </div>
 
-  `).join('');
-};
+  `,
+      )
+      .join("");
+  };
 
-
-const renderUnscheduledItems = (unscheduledItems) => {
-  return unscheduledItems.map((item, index) => `
+  const renderUnscheduledItems = (unscheduledItems) => {
+    return unscheduledItems
+      .map(
+        (item, index) => `
     <div style="display: flex; align-items: center; margin-bottom: 10px;">
       <div style="width: 70px; height: 70px; display: flex; justify-content: center; align-items: center; margin-right: 10px; text-align: center;">
-        <img src="${item.image}" alt="${item.name}" style="max-width: ${item.imageWidth}px; max-height: 100%; ${item.imageWidth === 70 ? '' : 'object-fit: contain'}; margin: 0 auto;" />
+        <img src="${item.image}" alt="${item.name}" style="max-width: ${
+          item.imageWidth
+        }px; max-height: 100%; ${
+          item.imageWidth === 70 ? "" : "object-fit: contain"
+        }; margin: 0 auto;" />
       </div>
       <div style="flex: 1; font-size: 0.75rem; line-height: 1; max-width: 200px; text-align: left;">
         <p class="item-name" style="margin: 0 0 5px 0;">${item.name}</p>
-        ${item.itemQuantity > 1 ? `<p style="margin: 2px 0 0 0;">Quantity: ${item.itemQuantity}</p>` : ''}
-        ${item.size ? `<p style="margin: 2px 0 0 0;">${item.size}</p>` : ''}
-        ${item.modifications.length > 0 ? `<p class="item-modifications" style="margin: 2px 0 0 0;">${item.modifications.join('<br>')}</p>` : ''}
-        ${item.allergies.length > 0 ? `<p style="margin: 2px 0 0 0;"><strong>Allergies: </strong>${item.allergies.join('<br>')}</p>` : ''}
+        ${
+          item.itemQuantity > 1
+            ? `<p style="margin: 2px 0 0 0;">Quantity: ${item.itemQuantity}</p>`
+            : ""
+        }
+        ${item.size ? `<p style="margin: 2px 0 0 0;">${item.size}</p>` : ""}
+        ${
+          item.modifications.length > 0
+            ? `<p class="item-modifications" style="margin: 2px 0 0 0;">${item.modifications.join(
+                "<br>",
+              )}</p>`
+            : ""
+        }
+        ${
+          item.allergies.length > 0
+            ? `<p style="margin: 2px 0 0 0;"><strong>Allergies: </strong>${item.allergies.join(
+                "<br>",
+              )}</p>`
+            : ""
+        }
       </div>
       <div style="margin-left: auto;">
         $${((item.price * item.itemQuantity) / 100).toFixed(2)}
       </div>
     </div>
-    ${index !== unscheduledItems.length - 1 ? '<div style="border-bottom: 1px solid #ddd; margin-bottom: 10px;"></div>' : ''}
+    ${
+      index !== unscheduledItems.length - 1
+        ? '<div style="border-bottom: 1px solid #ddd; margin-bottom: 10px;"></div>'
+        : ""
+    }
     <style>
       @media screen and (min-width: 600px) {
         .item-image-container {
@@ -68,10 +117,12 @@ const renderUnscheduledItems = (unscheduledItems) => {
         }
       }
     </style>
-  `).join('');
-};
+  `,
+      )
+      .join("");
+  };
 
-const emailBody = `
+  const emailBody = `
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
@@ -131,25 +182,40 @@ const emailBody = `
   <div class="center">
     <img src="${process.env.JUS_LOGO}" alt="jusLogo" width="100" />
     <h2>Your order is confirmed.</h2>
-    <p>${formatTime(paymentDetails.createdAt, locationDetails.locationTimezone)}</p>
-    <p>We've received your order #${orderDetails.orderNumber}. Thank you for shopping with us today.</p>
+    <p>${formatTime(
+      paymentDetails.createdAt,
+      locationDetails.locationTimezone,
+    )}</p>
+    <p>We've received your order #${
+      orderDetails.orderNumber
+    }. Thank you for shopping with us today.</p>
   </div>
   <div class="divider"></div>
   <h4>Location: ${locationDetails.locationName}</h4>`;
 
-const nonScheduledSection = showNonScheduledItems ? `
-  <h4 class="item-text">Pickup Time: ${formatTime(orderDetails.pickupTime, locationDetails.locationTimezone)}</h4>
+  const nonScheduledSection = showNonScheduledItems
+    ? `
+  <h4 class="item-text">Pickup Time: ${formatTime(
+    orderDetails.pickupTime,
+    locationDetails.locationTimezone,
+  )}</h4>
   ${renderUnscheduledItems(nonScheduledItems)}
-  ${showBothLists ? '<div class="divider"></div>' : ''}
-` : '';
+  ${showBothLists ? '<div class="divider"></div>' : ""}
+`
+    : "";
 
-const scheduledSection = showScheduledItems ? `
-  <h4 class="item-text">Scheduled: ${formatDate(orderDetails.pickupDate, locationDetails.locationTimezone)}</h4>
+  const scheduledSection = showScheduledItems
+    ? `
+  <h4 class="item-text">Scheduled: ${formatDate(
+    orderDetails.pickupDate,
+    locationDetails.locationTimezone,
+  )}</h4>
   ${renderScheduledItems(scheduledItems)}
-  ${showBothLists ? '<div class="divider"></div>' : ''}
-` : '';
+  ${showBothLists ? '<div class="divider"></div>' : ""}
+`
+    : "";
 
-const footer = `
+  const footer = `
 <div class="email-container">
  <div class="divider"></div>
   <div class="center">
@@ -163,15 +229,30 @@ const footer = `
   </div>
  </div>`;
 
-const totalAmounts = `
+  const totalAmounts = `
 <div style="text-align: right;">
 <div class="divider"></div>
-  ${totals.discountAmount > 0 ? `<p>Original: $${(totals.originalSubtotalAmount / 100).toFixed(2)}</p>` : ''}
-  ${totals.discountAmount > 0 ? `<p>Discounts: -$${(totals.discountAmount / 100).toFixed(2)}</p>` : ''}
+  ${
+    totals.discountAmount > 0
+      ? `<p>Original: $${(totals.originalSubtotalAmount / 100).toFixed(2)}</p>`
+      : ""
+  }
+  ${
+    totals.discountAmount > 0
+      ? `<p>Discounts: -$${(totals.discountAmount / 100).toFixed(2)}</p>`
+      : ""
+  }
   <p>Subtotal: $${(totals.discountedSubtotalAmount / 100).toFixed(2)}</p>
   <p>Taxes: $${(totals.taxAmount / 100).toFixed(2)}</p>
-  ${totals.tipAmount > 0 ? `<p>Tip: $${(totals.tipAmount / 100).toFixed(2)}</p>` : ''}
-  <p style="font-weight: bold;">Total: $${((totals.totalAmount + totals.tipAmount) / 100).toFixed(2)}</p>
+  ${
+    totals.tipAmount > 0
+      ? `<p>Tip: $${(totals.tipAmount / 100).toFixed(2)}</p>`
+      : ""
+  }
+  <p style="font-weight: bold;">Total: $${(
+    (totals.totalAmount + totals.tipAmount) /
+    100
+  ).toFixed(2)}</p>
 </div>
 </div>
 
@@ -179,5 +260,7 @@ const totalAmounts = `
 </html>
 `;
 
-return emailBody + nonScheduledSection + scheduledSection + totalAmounts + footer;
+  return (
+    emailBody + nonScheduledSection + scheduledSection + totalAmounts + footer
+  );
 };

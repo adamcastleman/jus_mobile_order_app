@@ -18,8 +18,7 @@ class ProductQuantityLimitProviderWidget extends ConsumerWidget {
       this.locationID,
       this.loading,
       this.error,
-      Key? key})
-      : super(key: key);
+      super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:jus_mobile_order_app/Helpers/spacing_widgets.dart';
 import 'package:jus_mobile_order_app/Providers/ProviderWidgets/favorites_provider_widget.dart';
@@ -10,7 +11,7 @@ import 'package:jus_mobile_order_app/Widgets/Cards/favorites_card.dart';
 import '../Widgets/Buttons/close_button.dart';
 
 class FavoritesSheet extends ConsumerWidget {
-  const FavoritesSheet({Key? key}) : super(key: key);
+  const FavoritesSheet({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -28,6 +29,7 @@ class FavoritesSheet extends ConsumerWidget {
               alignment: Alignment.topRight,
               child: JusCloseButton(
                 onPressed: () {
+                  HapticFeedback.lightImpact();
                   Navigator.pop(context);
                   ref.invalidate(isFavoritesSheetProvider);
                 },

@@ -141,10 +141,10 @@ class ListOfTaxableProductsByGroup extends HookConsumerWidget {
     return itemHeight;
   }
 
-  ///This function calculates the total scroll offset needed to scroll to
-  ///a selected category. The offset is determined by the height of the
-  ///selected category's header, the height of each row of items, and the
-  ///vertical spacing between each row of items.
+  //This function calculates the total scroll offset needed to scroll to
+  //a selected category. The offset is determined by the height of the
+  //selected category's header, the height of each row of items, and the
+  //vertical spacing between each row of items.
   double _calculateHeaderOffsetFromCategorySelector(BuildContext context,
       WidgetRef ref, List<ProductModel> products, int tappedCategory) {
     // Calculate the height of the selected category's header.
@@ -195,9 +195,9 @@ class ListOfTaxableProductsByGroup extends HookConsumerWidget {
     return totalHeight;
   }
 
-  /// Calculates the vertical offsets of category headers in the grid view
-  /// based on the height of each product card, the spacing between the cards,
-  /// and the height of the category header.
+  // Calculates the vertical offsets of category headers in the grid view
+  // based on the height of each product card, the spacing between the cards,
+  // and the height of the category header.
   List<double> _calculateHeaderOffsetFromUserScrolling(
       BuildContext context, WidgetRef ref, List<ProductModel> products) {
     // Get the height of the category header from the provider

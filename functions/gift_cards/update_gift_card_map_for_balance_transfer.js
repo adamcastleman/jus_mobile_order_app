@@ -11,7 +11,7 @@ const updateGiftCardMapForBalanceTransfer = (giftCardMap, wallet) => {
   giftCardMap.paymentDetails.paymentID = null;
   giftCardMap.paymentDetails.currency = "USD";
   giftCardMap.paymentDetails.createdAt = admin.firestore.Timestamp.fromDate(
-    new Date()
+    new Date(),
   );
 };
 

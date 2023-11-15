@@ -58,20 +58,35 @@ class UserServices {
     }).first;
   }
 
-  Future<void> createUser(
-      {required uid,
-      required String firstName,
-      required String lastName,
-      required String email,
-      required String phone}) async {
+  Future<HttpsCallableResult<dynamic>> createSquareSubscription({
+    required String nonce,
+    required String email,
+    required String startDate,
+  }) async {
+    return await FirebaseFunctions.instance
+        .httpsCallable('createSquareSubscription')
+        .call({
+      'nonce': nonce,
+      'email': email,
+      'startDate': startDate,
+    });
+  }
+
+  Future<void> createUser({
+    required uid,
+    required String firstName,
+    required String lastName,
+    required String email,
+    required String phone,
+    required Map? subscription,
+  }) async {
     await FirebaseFunctions.instance.httpsCallable('createUser').call({
       'firstName': firstName,
       'lastName': lastName,
       'email': email,
       'phone': phone,
-      'points': 0,
       'uid': uid,
-      'isActiveMember': false,
+      'subscription': subscription,
     });
   }
 

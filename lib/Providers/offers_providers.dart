@@ -1,4 +1,3 @@
-import 'package:flutter/services.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:jus_mobile_order_app/Providers/points_providers.dart';
 
@@ -28,13 +27,11 @@ class OffersInUse extends StateNotifier<List<Map>> {
                   'maxQuantity': maxQuantity,
                 }
               : {'quantity': 0, 'maxQuantity': 0});
-      HapticFeedback.lightImpact();
     } else {
       var offer = offers[index];
       offer['maxQuantity'] = maxQuantity;
       if (offer['quantity'] < offer['maxQuantity']) {
         offer['quantity']++;
-        HapticFeedback.lightImpact();
       }
     }
 
@@ -54,7 +51,6 @@ class OffersInUse extends StateNotifier<List<Map>> {
     }
 
     offer['quantity']--;
-    HapticFeedback.lightImpact();
 
     bool allZero = true;
     for (var item in offers) {

@@ -13,9 +13,11 @@ class IngredientGridView extends ConsumerWidget {
   const IngredientGridView({required this.product, super.key});
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final ingredients = ref.watch(product.hasToppings == true
-        ? modifiableIngredientsProvider
-        : blendOnlyIngredientsProvider);
+    final ingredients = ref.watch(
+      product.hasToppings == true
+          ? modifiableIngredientsProvider
+          : blendOnlyIngredientsProvider,
+    );
     return ingredients.when(
       loading: () => const Loading(),
       error: (e, _) => ShowError(error: e.toString()),

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:jus_mobile_order_app/Widgets/Buttons/elevated_button_large.dart';
 
 class InvalidSheetSinglePop extends StatelessWidget {
@@ -28,7 +27,6 @@ class InvalidSheetSinglePop extends StatelessWidget {
               child: LargeElevatedButton(
                 buttonText: 'Close',
                 onPressed: () {
-                  HapticFeedback.lightImpact();
                   Navigator.pop(context);
                 },
               ),

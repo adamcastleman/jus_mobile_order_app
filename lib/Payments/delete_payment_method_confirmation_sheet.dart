@@ -1,14 +1,12 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:jus_mobile_order_app/Helpers/divider.dart';
 import 'package:jus_mobile_order_app/Helpers/spacing_widgets.dart';
 import 'package:jus_mobile_order_app/Services/payment_methods_services.dart';
 
 class DeletePaymentMethodConfirmationSheet extends StatelessWidget {
   final String cardID;
-  const DeletePaymentMethodConfirmationSheet({required this.cardID, Key? key})
-      : super(key: key);
+  const DeletePaymentMethodConfirmationSheet({required this.cardID, super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -34,7 +32,6 @@ class DeletePaymentMethodConfirmationSheet extends StatelessWidget {
               ),
             ),
             onTap: () {
-              HapticFeedback.lightImpact();
               Navigator.pop(context);
             },
           ),
@@ -48,7 +45,6 @@ class DeletePaymentMethodConfirmationSheet extends StatelessWidget {
               ),
             ),
             onTap: () {
-              HapticFeedback.heavyImpact();
               PaymentMethodsServices().deletePaymentMethod(context, cardID);
               Navigator.pop(context);
               Navigator.pop(context);

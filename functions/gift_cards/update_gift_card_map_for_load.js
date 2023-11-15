@@ -2,12 +2,11 @@ const admin = require("firebase-admin");
 const { v4: uuidv4 } = require("uuid");
 
 const updateGiftCardMapForLoad = (orderMap, giftCardMap) => {
-
-  if(!giftCardMap.userDetails) {
-  giftCardMap.userDetails = {};
+  if (!giftCardMap.userDetails) {
+    giftCardMap.userDetails = {};
   }
-  if(!giftCardMap.paymentDetails) {
-  giftCardMap.paymentDetails = {};
+  if (!giftCardMap.paymentDetails) {
+    giftCardMap.paymentDetails = {};
   }
   if (!giftCardMap.cardDetails) {
     giftCardMap.cardDetails = {};

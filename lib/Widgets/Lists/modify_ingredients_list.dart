@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:jus_mobile_order_app/Providers/controller_providers.dart';
 import 'package:jus_mobile_order_app/Widgets/Cards/modify_item_no_toppings_card.dart';
 import 'package:jus_mobile_order_app/Widgets/Cards/modify_item_with_toppings_card.dart';
 
@@ -10,12 +11,14 @@ class ModifyIngredientsList extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final selectedIngredients = ref.watch(selectedIngredientsProvider);
+    final controller = ref.watch(modifyIngredientsListScrollControllerProvider);
 
     final key = ref.watch(animatedListKeyProvider);
     return SizedBox(
       height: 160,
       child: AnimatedList(
         key: key,
+        controller: controller,
         padding: const EdgeInsets.symmetric(horizontal: 8.0),
         scrollDirection: Axis.horizontal,
         initialItemCount: selectedIngredients.length,

@@ -1,7 +1,6 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:jus_mobile_order_app/Helpers/enums.dart';
 import 'package:jus_mobile_order_app/Helpers/modal_bottom_sheets.dart';
@@ -161,7 +160,6 @@ class PaymentsHelper {
         ? LargeElevatedButton(
             buttonText: 'Load Money and Pay',
             onPressed: () {
-              HapticFeedback.lightImpact();
               ref.read(walletTypeProvider.notifier).state =
                   WalletType.loadAndPay;
               ModalBottomSheet().partScreen(
@@ -191,7 +189,6 @@ class PaymentsHelper {
         onPressed: () {
           ref.read(applePaySelectedProvider.notifier).state = true;
           ref.read(applePayLoadingProvider.notifier).state = true;
-          HapticFeedback.mediumImpact();
           final errorMessage = OrderHelpers(ref: ref).validateOrder(context);
           if (errorMessage != null) {
             OrderHelpers(ref: ref).showInvalidOrderModal(context, errorMessage);
@@ -346,12 +343,11 @@ class PaymentsHelper {
     };
   }
 
-  void processPayment(BuildContext context, UserModel user) {
-    PaymentsServices(ref: ref, context: context)
+  void processPayment(BuildContext context, UserModel user) async {
+    await PaymentsServices(ref: ref, context: context)
         .chargeCardAndCreateOrder(user)
-        .then(
-          (result) =>
-              PaymentsServices(ref: ref).handlePaymentResult(context, result),
-        );
+        .then((result) {
+      PaymentsServices(ref: ref).handlePaymentResult(context, result);
+    });
   }
 }

@@ -5,7 +5,7 @@ import 'package:jus_mobile_order_app/Widgets/Icons/chevron_right_icon.dart';
 
 class ApplePayWalletTile extends StatelessWidget {
   final VoidCallback onTap;
-  const ApplePayWalletTile({required this.onTap, Key? key}) : super(key: key);
+  const ApplePayWalletTile({required this.onTap, super.key});
 
   @override
   Widget build(BuildContext context) {

@@ -6,7 +6,7 @@ import 'package:us_states/us_states.dart';
 
 class USStatesPicker extends ConsumerWidget {
   final TextEditingController controller;
-  const USStatesPicker({required this.controller, Key? key}) : super(key: key);
+  const USStatesPicker({required this.controller, super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

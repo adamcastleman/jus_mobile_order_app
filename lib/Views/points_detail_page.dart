@@ -6,7 +6,7 @@ import 'package:jus_mobile_order_app/Helpers/spacing_widgets.dart';
 import 'package:jus_mobile_order_app/Models/points_details_model.dart';
 import 'package:jus_mobile_order_app/Models/user_model.dart';
 import 'package:jus_mobile_order_app/Providers/ProviderWidgets/points_details_provider_widget.dart';
-import 'package:jus_mobile_order_app/Providers/ProviderWidgets/user_provider_widget.dart';
+import 'package:jus_mobile_order_app/Providers/stream_providers.dart';
 import 'package:jus_mobile_order_app/Providers/theme_providers.dart';
 import 'package:jus_mobile_order_app/Views/register_page.dart';
 import 'package:jus_mobile_order_app/Widgets/Buttons/close_button.dart';
@@ -20,79 +20,78 @@ class PointsDetailPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final user = ref.watch(currentUserProvider).value ?? const UserModel();
     final backgroundColor = ref.watch(backgroundColorProvider);
 
-    return UserProviderWidget(
-      builder: (user) => PointsDetailsProviderWidget(
-        builder: (points) => Container(
-          color: backgroundColor,
-          child: ListView(
-            padding: const EdgeInsets.symmetric(vertical: 35.0),
-            children: [
-              closeButton
-                  ? Align(
-                      alignment: Alignment.topRight,
-                      child: Transform.translate(
-                        offset:
-                            const Offset(-5, 5), // Adjust the translation here
-                        child: const JusCloseButton(),
-                      ),
-                    )
-                  : const SizedBox(),
-              Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(
-                    points.name,
-                    style: const TextStyle(
-                        fontSize: 30, fontWeight: FontWeight.bold),
-                  ),
-                  rewardsCard(points, user),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 40.0),
-                    child: ListView.separated(
-                      primary: false,
-                      shrinkWrap: true,
-                      itemCount: points.perks.length,
-                      separatorBuilder: (context, index) => const Padding(
-                        padding: EdgeInsets.symmetric(vertical: 8.0),
-                        child: Divider(
-                          thickness: 0.5,
-                        ),
-                      ),
-                      itemBuilder: (context, index) {
-                        if (index.isEven) {
-                          return PerksDescriptionTileImageRight(
-                              name: points.perks[index]['name'],
-                              description: points.perks[index]['description'],
-                              imageURL: points.perks[index]['image']);
-                        } else {
-                          return PerksDescriptionTileImageLeft(
-                              name: points.perks[index]['name'],
-                              description: points.perks[index]['description'],
-                              imageURL: points.perks[index]['image']);
-                        }
-                      },
+    return PointsDetailsProviderWidget(
+      builder: (points) => Container(
+        color: backgroundColor,
+        child: ListView(
+          padding: const EdgeInsets.symmetric(vertical: 35.0),
+          children: [
+            closeButton
+                ? Align(
+                    alignment: Alignment.topRight,
+                    child: Transform.translate(
+                      offset:
+                          const Offset(-5, 5), // Adjust the translation here
+                      child: const JusCloseButton(),
                     ),
+                  )
+                : const SizedBox(),
+            Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  points.name,
+                  style: const TextStyle(
+                      fontSize: 30, fontWeight: FontWeight.bold),
+                ),
+                rewardsCard(points, user),
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 40.0),
+                  child: ListView.separated(
+                    primary: false,
+                    shrinkWrap: true,
+                    itemCount: points.perks.length,
+                    separatorBuilder: (context, index) => const Padding(
+                      padding: EdgeInsets.symmetric(vertical: 8.0),
+                      child: Divider(
+                        thickness: 0.5,
+                      ),
+                    ),
+                    itemBuilder: (context, index) {
+                      if (index.isEven) {
+                        return PerksDescriptionTileImageRight(
+                            name: points.perks[index]['name'],
+                            description: points.perks[index]['description'],
+                            imageURL: points.perks[index]['image']);
+                      } else {
+                        return PerksDescriptionTileImageLeft(
+                            name: points.perks[index]['name'],
+                            description: points.perks[index]['description'],
+                            imageURL: points.perks[index]['image']);
+                      }
+                    },
                   ),
-                  user.uid == null
-                      ? Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 15.0),
-                          child: LargeElevatedButton(
-                            buttonText: 'Sign up',
-                            onPressed: () {
-                              ModalBottomSheet().fullScreen(
-                                context: context,
-                                builder: (context) => const RegisterPage(),
-                              );
-                            },
-                          ),
-                        )
-                      : const SizedBox(),
-                ],
-              ),
-            ],
-          ),
+                ),
+                user.uid == null
+                    ? Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 15.0),
+                        child: LargeElevatedButton(
+                          buttonText: 'Sign up',
+                          onPressed: () {
+                            ModalBottomSheet().fullScreen(
+                              context: context,
+                              builder: (context) => const RegisterPage(),
+                            );
+                          },
+                        ),
+                      )
+                    : const SizedBox(),
+              ],
+            ),
+          ],
         ),
       ),
     );

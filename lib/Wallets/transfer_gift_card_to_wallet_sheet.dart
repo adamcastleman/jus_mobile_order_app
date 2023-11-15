@@ -9,10 +9,10 @@ import 'package:jus_mobile_order_app/Helpers/payments.dart';
 import 'package:jus_mobile_order_app/Models/payments_model.dart';
 import 'package:jus_mobile_order_app/Models/user_model.dart';
 import 'package:jus_mobile_order_app/Providers/ProviderWidgets/credit_card_provider_widget.dart';
-import 'package:jus_mobile_order_app/Providers/ProviderWidgets/user_provider_widget.dart';
 import 'package:jus_mobile_order_app/Providers/ProviderWidgets/wallet_provider_widget.dart';
 import 'package:jus_mobile_order_app/Providers/loading_providers.dart';
 import 'package:jus_mobile_order_app/Providers/payments_providers.dart';
+import 'package:jus_mobile_order_app/Providers/stream_providers.dart';
 import 'package:jus_mobile_order_app/Providers/theme_providers.dart';
 import 'package:jus_mobile_order_app/Services/payments_services.dart';
 import 'package:jus_mobile_order_app/Sheets/invalid_sheet_single_pop.dart';
@@ -27,62 +27,61 @@ class TransferGiftCardToWalletSheet extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final user = ref.watch(currentUserProvider).value!;
     final backgroundColor = ref.watch(backgroundColorProvider);
     final giftCard = ref.watch(physicalGiftCardBalanceProvider);
-    return UserProviderWidget(
-      builder: (user) => CreditCardProviderWidget(
-        builder: (cards) => WalletProviderWidget(
-          builder: (wallets) {
-            return Container(
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(30),
-                color: backgroundColor,
+    return CreditCardProviderWidget(
+      builder: (cards) => WalletProviderWidget(
+        builder: (wallets) {
+          return Container(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(30),
+              color: backgroundColor,
+            ),
+            child: Padding(
+              padding: const EdgeInsets.only(bottom: 50.0),
+              child: Wrap(
+                children: [
+                  const Padding(
+                    padding: EdgeInsets.only(bottom: 30.0),
+                    child: SheetNotch(),
+                  ),
+                  _buildHeader(),
+                  JusDivider().thin(),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 22.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        giftCard.isEmpty
+                            ? _addGiftCardWidget(context, ref)
+                            : _currentGiftCardWidget(context, ref, giftCard),
+                        const Icon(CupertinoIcons.arrow_right),
+                        wallets.isEmpty
+                            ? _createNewWallet(context, ref, cards)
+                            : _currentWalletSelectedButton(
+                                context, ref, wallets),
+                      ],
+                    ),
+                  ),
+                  const Padding(
+                    padding:
+                        EdgeInsets.only(left: 10.0, right: 10.0, bottom: 30.0),
+                    child: Text(
+                      'Please note that this action will transfer the full '
+                      'balance from your physical gift card to your digital wallet. '
+                      'After the transfer, the balance on your physical card will '
+                      'become zero.',
+                      style: TextStyle(fontSize: 12),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                  _transferBalanceButton(context, ref, wallets),
+                ],
               ),
-              child: Padding(
-                padding: const EdgeInsets.only(bottom: 50.0),
-                child: Wrap(
-                  children: [
-                    const Padding(
-                      padding: EdgeInsets.only(bottom: 30.0),
-                      child: SheetNotch(),
-                    ),
-                    _buildHeader(),
-                    JusDivider().thin(),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 22.0),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: [
-                          giftCard.isEmpty
-                              ? _addGiftCardWidget(context, ref)
-                              : _currentGiftCardWidget(context, ref, giftCard),
-                          const Icon(CupertinoIcons.arrow_right),
-                          wallets.isEmpty
-                              ? _createNewWallet(context, ref, cards)
-                              : _currentWalletSelectedButton(
-                                  context, ref, wallets),
-                        ],
-                      ),
-                    ),
-                    const Padding(
-                      padding: EdgeInsets.only(
-                          left: 10.0, right: 10.0, bottom: 30.0),
-                      child: Text(
-                        'Please note that this action will transfer the full '
-                        'balance from your physical gift card to your digital wallet. '
-                        'After the transfer, the balance on your physical card will '
-                        'become zero.',
-                        style: TextStyle(fontSize: 12),
-                        textAlign: TextAlign.center,
-                      ),
-                    ),
-                    _transferBalanceButton(context, ref, wallets),
-                  ],
-                ),
-              ),
-            );
-          },
-        ),
+            ),
+          );
+        },
       ),
     );
   }
@@ -221,6 +220,7 @@ class TransferGiftCardToWalletSheet extends ConsumerWidget {
 
   _transferBalanceButton(
       BuildContext context, WidgetRef ref, List<PaymentsModel> wallets) {
+    final user = ref.watch(currentUserProvider).value!;
     final loading = ref.watch(loadingProvider);
 
     if (loading) {
@@ -228,14 +228,12 @@ class TransferGiftCardToWalletSheet extends ConsumerWidget {
         child: LargeElevatedLoadingButton(),
       );
     } else {
-      return UserProviderWidget(
-        builder: (user) => Center(
-          child: LargeElevatedButton(
-            buttonText: 'Transfer Balance',
-            onPressed: () {
-              _handleBalanceTransferTap(context, ref, user, wallets);
-            },
-          ),
+      return Center(
+        child: LargeElevatedButton(
+          buttonText: 'Transfer Balance',
+          onPressed: () {
+            _handleBalanceTransferTap(context, ref, user, wallets);
+          },
         ),
       );
     }

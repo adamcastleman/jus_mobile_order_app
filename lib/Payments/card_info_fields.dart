@@ -6,7 +6,7 @@ import 'package:jus_mobile_order_app/Providers/payments_providers.dart';
 
 class CardInfoFields extends ConsumerWidget {
   final PaymentsModel card;
-  const CardInfoFields({required this.card, Key? key}) : super(key: key);
+  const CardInfoFields({required this.card, super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

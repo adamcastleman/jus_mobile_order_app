@@ -8,7 +8,6 @@ import 'package:jus_mobile_order_app/Helpers/points.dart';
 import 'package:jus_mobile_order_app/Helpers/pricing.dart';
 import 'package:jus_mobile_order_app/Helpers/spacing_widgets.dart';
 import 'package:jus_mobile_order_app/Models/user_model.dart';
-import 'package:jus_mobile_order_app/Providers/ProviderWidgets/user_provider_widget.dart';
 import 'package:jus_mobile_order_app/Providers/discounts_provider.dart';
 import 'package:jus_mobile_order_app/Providers/order_providers.dart';
 import 'package:jus_mobile_order_app/Providers/payments_providers.dart';
@@ -20,44 +19,43 @@ import 'package:jus_mobile_order_app/Widgets/Icons/member_icon.dart';
 import '../Providers/stream_providers.dart';
 
 class TotalPrice extends ConsumerWidget {
-  const TotalPrice({Key? key}) : super(key: key);
+  const TotalPrice({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return UserProviderWidget(
-      builder: (user) => Padding(
-        padding: const EdgeInsets.only(top: 8.0),
-        child: Column(
-          children: [
-            buildOriginalSubtotalRow(ref, user),
-            ref.watch(discountTotalProvider).isEmpty
-                ? const SizedBox()
-                : Column(
-                    children: [
-                      Spacing().vertical(10),
-                      buildDiscountRow(ref, user),
-                      Spacing().vertical(10),
-                      buildSubtotalWithDiscountRow(ref, user),
-                    ],
-                  ),
-            Spacing().vertical(10),
-            buildTaxesRow(ref, user),
-            ref.watch(selectedTipIndexProvider) == 0
-                ? const SizedBox()
-                : Spacing().vertical(10),
-            ref.watch(selectedTipIndexProvider) == 0
-                ? const SizedBox()
-                : buildTipRow(ref, user),
-            user.uid != null ? Spacing().vertical(10) : const SizedBox(),
-            user.uid != null ? buildPointsRow(ref) : const SizedBox(),
-            Spacing().vertical(30),
-            buildOrderTotalRow(ref, user),
-            Spacing().vertical(20),
-            Pricing(ref: ref).discountedSubtotalForNonMembers() <= 0.0
-                ? const SizedBox()
-                : buildSavedAmountRow(context, ref, user),
-          ],
-        ),
+    final user = ref.watch(currentUserProvider).value!;
+    return Padding(
+      padding: const EdgeInsets.only(top: 8.0),
+      child: Column(
+        children: [
+          buildOriginalSubtotalRow(ref, user),
+          ref.watch(discountTotalProvider).isEmpty
+              ? const SizedBox()
+              : Column(
+                  children: [
+                    Spacing().vertical(10),
+                    buildDiscountRow(ref, user),
+                    Spacing().vertical(10),
+                    buildSubtotalWithDiscountRow(ref, user),
+                  ],
+                ),
+          Spacing().vertical(10),
+          buildTaxesRow(ref, user),
+          ref.watch(selectedTipIndexProvider) == 0
+              ? const SizedBox()
+              : Spacing().vertical(10),
+          ref.watch(selectedTipIndexProvider) == 0
+              ? const SizedBox()
+              : buildTipRow(ref, user),
+          user.uid != null ? Spacing().vertical(10) : const SizedBox(),
+          user.uid != null ? buildPointsRow(ref) : const SizedBox(),
+          Spacing().vertical(30),
+          buildOrderTotalRow(ref, user),
+          Spacing().vertical(20),
+          Pricing(ref: ref).discountedSubtotalForNonMembers() <= 0.0
+              ? const SizedBox()
+              : buildSavedAmountRow(context, ref, user),
+        ],
       ),
     );
   }

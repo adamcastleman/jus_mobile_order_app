@@ -8,8 +8,8 @@ class OrderPage extends ConsumerWidget {
   const OrderPage({super.key});
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return Column(
-      children: const [
+    return const Column(
+      children: [
         SelectedLocationTile(),
         Padding(
           padding: EdgeInsets.only(top: 8.0, bottom: 18.0),

@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:cloud_functions/cloud_functions.dart';
@@ -36,6 +37,30 @@ class PaymentsServices {
         .call({'secretKey': 'square-application-id-sandbox'});
     final String squareAppID = result.data;
     await InAppPayments.setSquareApplicationId(squareAppID);
+  }
+
+  Future<String?> enterPaymentMethodForMembershipMigration(
+      {required VoidCallback onCardEntryCancel}) async {
+    var completer = Completer<String?>();
+    if (Platform.isIOS) {
+      ThemeManager().setIOSCardEntryTheme(isMembershipTransfer: true);
+    }
+    await InAppPayments.startCardEntryFlow(
+      collectPostalCode: false,
+      onCardNonceRequestSuccess: (CardDetails result) async {
+        completer.complete(result.nonce);
+        try {
+          await InAppPayments.completeCardEntry(onCardEntryComplete: () {});
+        } on Exception catch (ex) {
+          InAppPayments.showCardNonceProcessingError(ex.toString());
+        }
+      },
+      onCardEntryCancel: () {
+        completer.complete(null);
+        onCardEntryCancel();
+      },
+    );
+    return completer.future;
   }
 
   initApplePayPayment(BuildContext context, UserModel user) async {
@@ -155,14 +180,14 @@ class PaymentsServices {
 
   initSquarePayment() async {
     if (Platform.isIOS) {
-      ThemeManager().setIOSCardEntryTheme();
+      ThemeManager().setIOSCardEntryTheme(isMembershipTransfer: false);
     }
     _inputCreditCard();
   }
 
   initSquareGiftCardPayment() {
     if (Platform.isIOS) {
-      ThemeManager().setIOSCardEntryTheme();
+      ThemeManager().setIOSCardEntryTheme(isMembershipTransfer: false);
     }
     _inputGiftCard();
   }
@@ -274,9 +299,7 @@ class PaymentsServices {
   }
 
   void handlePaymentResult(BuildContext context, dynamic result) async {
-    final status = result.data;
-
-    if (status == 200) {
+    if (result.data['status'] == 200) {
       _showSuccessModal(context);
       await InAppPayments.completeApplePayAuthorization(
           isSuccess: true, errorMessage: 'There was an error');
@@ -433,7 +456,6 @@ class PaymentsServices {
     ref!.invalidate(loadingProvider);
     Navigator.pop(context);
     Navigator.pop(context);
-    HapticFeedback.heavyImpact();
 
     ModalBottomSheet().fullScreen(
       context: context,

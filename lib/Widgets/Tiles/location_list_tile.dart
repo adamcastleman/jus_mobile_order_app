@@ -5,6 +5,7 @@ import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:jus_mobile_order_app/Helpers/formulas.dart';
+import 'package:jus_mobile_order_app/Helpers/locations.dart';
 import 'package:jus_mobile_order_app/Helpers/modal_bottom_sheets.dart';
 import 'package:jus_mobile_order_app/Helpers/spacing_widgets.dart';
 import 'package:jus_mobile_order_app/Helpers/time.dart';
@@ -12,11 +13,14 @@ import 'package:jus_mobile_order_app/Models/location_model.dart';
 import 'package:jus_mobile_order_app/Providers/location_providers.dart';
 import 'package:jus_mobile_order_app/Providers/theme_providers.dart';
 import 'package:jus_mobile_order_app/Sheets/store_details_sheet.dart';
+import 'package:jus_mobile_order_app/constants.dart';
 
 class LocationListTile extends ConsumerWidget {
+  final ScrollController scrollController;
   final int index;
 
-  const LocationListTile({required this.index, super.key});
+  const LocationListTile(
+      {required this.scrollController, required this.index, super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -24,80 +28,86 @@ class LocationListTile extends ConsumerWidget {
     final currentLocation = ref.watch(currentLocationLatLongProvider);
     final selectedLocation = ref.watch(selectedLocationProvider);
     final mapController = ref.read(googleMapControllerProvider);
+    final tileWidth = AppConstants.tileHeight(context);
 
-    return ListTile(
-      shape: OutlineInputBorder(
-        borderSide: BorderSide(
+    return Container(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(4),
+        border: Border.all(
             color:
                 determineBorderColor(ref, selectedLocation, visibleLocations),
             width: 0.5),
+        color: determineTileColor(ref, selectedLocation, visibleLocations),
       ),
-      tileColor: determineTileColor(ref, selectedLocation, visibleLocations),
-      isThreeLine: true,
-      title: Row(
-        children: [
-          Text(
-            visibleLocations[index].name,
-            style: Theme.of(context).textTheme.titleLarge,
-          ),
-          visibleLocations[index].comingSoon
-              ? Text(
-                  ' - Coming Soon',
-                  style: Theme.of(context).textTheme.titleLarge,
-                )
-              : const SizedBox(),
-        ],
-      ),
-      subtitle: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            '${visibleLocations[index].address['streetNumber']} ${visibleLocations[index].address['streetName']} ${visibleLocations[index].address['city']}',
-            overflow: TextOverflow.ellipsis,
-            maxLines: 1,
-          ),
-          Row(
-            children: [
-              Text(
-                  '${getDistanceFromCurrentLocation(visibleLocations[index], currentLocation)} mi. away'),
-              Spacing().horizontal(10),
-              openOrClosedText(ref, visibleLocations),
-            ],
-          ),
-          Spacing().vertical(10),
-          acceptingOrdersText(visibleLocations, context, ref),
-        ],
-      ),
-      trailing: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          visibleLocations[index].comingSoon
-              ? const SizedBox()
-              : IconButton(
-                  icon: const Icon(
-                    FontAwesomeIcons.ellipsisVertical,
+      width: tileWidth,
+      child: ListTile(
+        isThreeLine: true,
+        title: Row(
+          children: [
+            Text(
+              visibleLocations[index].name,
+              style: Theme.of(context).textTheme.titleLarge,
+            ),
+            visibleLocations[index].comingSoon
+                ? Text(
+                    ' - Coming Soon',
+                    style: Theme.of(context).textTheme.titleLarge,
+                  )
+                : const SizedBox(),
+          ],
+        ),
+        subtitle: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              '${visibleLocations[index].address['streetNumber']} ${visibleLocations[index].address['streetName']} ${visibleLocations[index].address['city']}',
+              overflow: TextOverflow.ellipsis,
+              maxLines: 1,
+            ),
+            Row(
+              children: [
+                Text(
+                    '${getDistanceFromCurrentLocation(visibleLocations[index], currentLocation)} mi. away'),
+                Spacing().horizontal(10),
+                openOrClosedText(ref, visibleLocations),
+              ],
+            ),
+            Spacing().vertical(10),
+            acceptingOrdersText(visibleLocations, context, ref),
+          ],
+        ),
+        trailing: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            visibleLocations[index].comingSoon
+                ? const SizedBox()
+                : IconButton(
+                    icon: const Icon(
+                      FontAwesomeIcons.ellipsisVertical,
+                    ),
+                    onPressed: () {
+                      var location = visibleLocations[index];
+                      setLocationData(ref, location);
+                      ModalBottomSheet().partScreen(
+                        context: context,
+                        enableDrag: true,
+                        isDismissible: true,
+                        builder: (context) => const StoreDetailsSheet(),
+                      );
+                    },
                   ),
-                  onPressed: () {
-                    var location = visibleLocations[index];
-                    setLocationData(ref, location);
-                    ModalBottomSheet().partScreen(
-                      context: context,
-                      enableDrag: true,
-                      isDismissible: true,
-                      builder: (context) => const StoreDetailsSheet(),
-                    );
-                  },
-                ),
-        ],
+          ],
+        ),
+        onTap: () {
+          HapticFeedback.lightImpact();
+          var location = visibleLocations[index];
+          ref.read(currentLocationLatLongProvider.notifier).state =
+              LatLng(location.latitude, location.longitude);
+          setLocationData(ref, location);
+          _animateCameraToMarker(ref, mapController!);
+          LocationHelper().calculateListScroll(context, ref, index, tileWidth);
+        },
       ),
-      onTap: () {
-        HapticFeedback.lightImpact();
-        var location = visibleLocations[index];
-        ref.read(currentLocationLatLongProvider.notifier).state =
-            LatLng(location.latitude, location.longitude);
-        setLocationData(ref, location);
-        _animateCameraToMarker(ref, mapController!);
-      },
     );
   }
 

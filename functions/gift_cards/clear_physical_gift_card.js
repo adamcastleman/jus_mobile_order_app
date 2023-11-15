@@ -9,22 +9,22 @@ const clearPhysicalGiftCardBalance = async (gan, amount) => {
     const response = await client.giftCardActivitiesApi.createGiftCardActivity({
       idempotencyKey: uuidv4(),
       giftCardActivity: {
-        type: 'ADJUST_DECREMENT',
+        type: "ADJUST_DECREMENT",
         locationId: locationID,
         giftCardGan: gan,
         adjustDecrementActivityDetails: {
           amountMoney: {
             amount: amount,
-            currency: 'USD'
+            currency: "USD",
           },
-          reason: 'SUPPORT_ISSUE'
-        }
-      }
+          reason: "SUPPORT_ISSUE",
+        },
+      },
     });
 
     return 200;
   } catch (error) {
-    console.log('We failed here');
+    console.log("We failed here");
     console.log(error);
     return error.message;
   }

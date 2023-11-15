@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:jus_mobile_order_app/Helpers/spacing_widgets.dart';
-import 'package:jus_mobile_order_app/Providers/ProviderWidgets/modifiable_ingredients_provider_widget.dart';
+import 'package:jus_mobile_order_app/Providers/ProviderWidgets/allergen_ingredients_provider_widget.dart';
 import 'package:jus_mobile_order_app/Providers/product_providers.dart';
 import 'package:jus_mobile_order_app/Providers/theme_providers.dart';
 import 'package:jus_mobile_order_app/Widgets/Buttons/close_button.dart';
@@ -9,12 +10,12 @@ import 'package:jus_mobile_order_app/Widgets/Buttons/confirm_button.dart';
 import 'package:jus_mobile_order_app/Widgets/Cards/select_multiple_ingredients_card.dart';
 
 class AllergiesSheet extends ConsumerWidget {
-  const AllergiesSheet({Key? key}) : super(key: key);
+  const AllergiesSheet({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final backgroundColor = ref.watch(backgroundColorProvider);
-    return ModifiableIngredientsProviderWidget(
+    return AllergenIngredientsProviderWidget(
       builder: (ingredients) => Container(
         color: backgroundColor,
         child: ListView(
@@ -28,6 +29,7 @@ class AllergiesSheet extends ConsumerWidget {
                 JusCloseButton(
                   removePadding: true,
                   onPressed: () {
+                    HapticFeedback.lightImpact();
                     ref.invalidate(selectedAllergiesProvider);
                     Navigator.pop(context);
                   },

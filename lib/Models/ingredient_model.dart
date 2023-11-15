@@ -12,12 +12,12 @@ class IngredientModel with _$IngredientModel {
     required int id,
     required int price,
     required int memberPrice,
+    required List allergens,
     required bool isModifiable,
     required bool isStandardTopping,
     required bool isBlended,
     required bool isTopping,
     required bool isExtraCharge,
-    required bool containsDairy,
-    required bool containsGluten,
+    required bool includeInAllergiesList,
   }) = _IngredientModel;
 }

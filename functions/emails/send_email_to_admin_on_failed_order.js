@@ -18,7 +18,7 @@ const sendEmailToAdminOnFailedOrder = async (orderMap) => {
   // send mail with defined transport object
   let info = await transporter.sendMail({
     from: email,
-    to: 'adam@jusreno.com',
+    to: "adam@jusreno.com",
     subject: "Failed Order Notification",
     text: `Order #${orderMap.orderDetails.orderNumber} has failed. It is possible the card was still charged. Please take appropriate action.`,
   });

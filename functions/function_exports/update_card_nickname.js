@@ -11,8 +11,10 @@ exports.updateCardNickname = functions.https.onCall(async (data, context) => {
   const userID = context.auth.uid;
 
   if (!isAuthenticated(context)) {
-    return  {
-        status: 400, error: "Make sure you are logged in before trying to update a card nickname."
+    return {
+      status: 400,
+      error:
+        "Make sure you are logged in before trying to update a card nickname.",
     };
   }
 

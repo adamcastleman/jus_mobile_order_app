@@ -22,6 +22,15 @@ class IngredientServices {
         .map(getIngredientsFromDatabase);
   }
 
+  Stream<List<IngredientModel>> get allergenIngredients {
+    return ingredientCollection
+        .where('includeInAllergiesList', isEqualTo: true)
+        .orderBy('categoryOrder')
+        .orderBy('id')
+        .snapshots()
+        .map(getIngredientsFromDatabase);
+  }
+
   Stream<List<IngredientModel>> get blendOnlyIngredients {
     return ingredientCollection
         .where('isModifiable', isEqualTo: true)
@@ -51,13 +60,13 @@ class IngredientServices {
         id: data['id'],
         price: data['price'],
         memberPrice: data['memberPrice'],
+        allergens: data['allergens'],
         isModifiable: data['isModifiable'],
         isStandardTopping: data['isStandardTopping'],
         isExtraCharge: data['isExtraCharge'],
         isBlended: data['isBlended'],
         isTopping: data['isTopping'],
-        containsDairy: data['containsDairy'],
-        containsGluten: data['containsGluten'],
+        includeInAllergiesList: data['includeInAllergiesList'],
       );
     }).toList();
   }

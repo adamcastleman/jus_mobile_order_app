@@ -1,6 +1,7 @@
 const admin = require("firebase-admin");
 const functions = require("firebase-functions");
-const addSavedPaymentToDatabase = require('../function_exports/add_saved_payment_to_database').addSavedPaymentToDatabase;
+const addSavedPaymentToDatabase =
+  require("../function_exports/add_saved_payment_to_database").addSavedPaymentToDatabase;
 
 if (admin.apps.length === 0) {
   admin.initializeApp();
@@ -9,7 +10,7 @@ if (admin.apps.length === 0) {
 const addGiftCardAsSavedPayment = async (db, giftCardMap, userID) => {
   const data = {
     nonce: null,
-    brand: 'wallet',
+    brand: "wallet",
     lastFourDigits: giftCardMap.cardDetails.gan.slice(-4),
     expirationMonth: null,
     expirationYear: null,

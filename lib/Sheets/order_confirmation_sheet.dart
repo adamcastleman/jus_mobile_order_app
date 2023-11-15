@@ -29,7 +29,7 @@ import 'package:jus_mobile_order_app/Widgets/Buttons/close_button.dart';
 import 'package:jus_mobile_order_app/Widgets/Tiles/order_tile.dart';
 
 class OrderConfirmationSheet extends HookConsumerWidget {
-  const OrderConfirmationSheet({Key? key}) : super(key: key);
+  const OrderConfirmationSheet({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -42,10 +42,8 @@ class OrderConfirmationSheet extends HookConsumerWidget {
             if (controller.state == ConfettiControllerState.playing) {
               controller.stop();
               controller.play();
-              HapticFeedback.heavyImpact();
             } else {
               controller.play();
-              HapticFeedback.heavyImpact();
             }
           },
         );
@@ -65,7 +63,9 @@ class OrderConfirmationSheet extends HookConsumerWidget {
                       child: JusCloseButton(
                         removePadding: true,
                         onPressed: () {
+                          HapticFeedback.lightImpact();
                           invalidateAllProviders(context, ref);
+                          Navigator.pop(context);
                         },
                       ),
                     ),
@@ -281,6 +281,5 @@ class OrderConfirmationSheet extends HookConsumerWidget {
     ref.invalidate(selectedTipIndexProvider);
     ref.invalidate(checkOutPageProvider);
     ref.invalidate(locationsProvider);
-    Navigator.pop(context);
   }
 }

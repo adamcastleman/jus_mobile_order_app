@@ -1,6 +1,5 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:jus_mobile_order_app/Helpers/locations.dart';
@@ -112,7 +111,6 @@ class OrderTileEditRow extends ConsumerWidget {
     BuildContext context,
     WidgetRef ref,
   ) {
-    HapticFeedback.lightImpact();
     if (ref.read(selectedLocationProvider) == null) {
       LocationHelper().chooseLocation(context, ref);
     } else {

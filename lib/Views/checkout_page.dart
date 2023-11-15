@@ -16,13 +16,13 @@ import 'package:jus_mobile_order_app/Payments/apple_pay_selected_tile.dart';
 import 'package:jus_mobile_order_app/Payments/no_charge_payment_tile.dart';
 import 'package:jus_mobile_order_app/Payments/payment_method_selector.dart';
 import 'package:jus_mobile_order_app/Payments/tip_sheet.dart';
-import 'package:jus_mobile_order_app/Providers/ProviderWidgets/user_provider_widget.dart';
 import 'package:jus_mobile_order_app/Providers/auth_providers.dart';
 import 'package:jus_mobile_order_app/Providers/discounts_provider.dart';
 import 'package:jus_mobile_order_app/Providers/offers_providers.dart';
 import 'package:jus_mobile_order_app/Providers/order_providers.dart';
 import 'package:jus_mobile_order_app/Providers/payments_providers.dart';
 import 'package:jus_mobile_order_app/Providers/points_providers.dart';
+import 'package:jus_mobile_order_app/Providers/stream_providers.dart';
 import 'package:jus_mobile_order_app/Providers/theme_providers.dart';
 import 'package:jus_mobile_order_app/Sheets/invalid_sheet_single_pop.dart';
 import 'package:jus_mobile_order_app/Widgets/Buttons/close_button.dart';
@@ -43,94 +43,91 @@ class CheckoutPage extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final user = ref.watch(currentUserProvider).value!;
     final controller = useScrollController();
-    return UserProviderWidget(
-      builder: (user) => Container(
-        color: ref.watch(backgroundColorProvider),
-        padding:
-            EdgeInsets.only(top: MediaQuery.of(context).size.height * 0.05),
-        child: Stack(
-          children: [
-            Scaffold(
-              backgroundColor: ref.watch(backgroundColorProvider),
-              appBar: AppBar(
-                  automaticallyImplyLeading: false,
-                  title: Text('Finish your order',
-                      style: Theme.of(context).textTheme.headlineSmall),
-                  // centerTitle: false,
-                  actions: [
-                    JusCloseButton(
-                      onPressed: () {
-                        ref.read(checkOutPageProvider.notifier).state = false;
-                        ref.invalidate(rewardQuantityProvider);
-                        ref.invalidate(totalPointsProvider);
-                        ref.invalidate(pointsInUseProvider);
-                        ref.invalidate(discountTotalProvider);
-                        ref.invalidate(selectedPickupDateProvider);
-                        ref.invalidate(scheduleAllItemsProvider);
-                        ref.invalidate(selectedTipIndexProvider);
-                        ref.invalidate(selectedTipPercentageProvider);
-                        ref.invalidate(pointsMultiplierProvider);
-                        ref.invalidate(applePaySelectedProvider);
-                        Navigator.pop(context);
-                      },
-                    ),
-                  ]),
-              body: ListView(
-                shrinkWrap: true,
-                controller: controller,
-                padding:
-                    const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16),
-                children: [
-                  Spacing().vertical(30),
-                  const CategoryWidget(text: 'Order Details'),
-                  const SelectedLocationTile(),
-                  OrderHelpers(ref: ref).scheduledItems().isNotEmpty
-                      ? const OrderPickupDateTile()
-                      : const SizedBox(),
-                  OrderHelpers(ref: ref).nonScheduledItems().isNotEmpty &&
-                          ref.watch(scheduleAllItemsProvider) == false
-                      ? const OrderPickupTimeTile()
-                      : const SizedBox(),
-                  _determinePaymentMethodTile(ref, user),
-                  Spacing().vertical(20),
-                  const CategoryWidget(
-                    text: 'Your Order',
+    return Container(
+      color: ref.watch(backgroundColorProvider),
+      padding: EdgeInsets.only(top: MediaQuery.of(context).size.height * 0.05),
+      child: Stack(
+        children: [
+          Scaffold(
+            backgroundColor: ref.watch(backgroundColorProvider),
+            appBar: AppBar(
+                automaticallyImplyLeading: false,
+                title: Text('Finish your order',
+                    style: Theme.of(context).textTheme.headlineSmall),
+                // centerTitle: false,
+                actions: [
+                  JusCloseButton(
+                    onPressed: () {
+                      HapticFeedback.lightImpact();
+                      ref.read(checkOutPageProvider.notifier).state = false;
+                      ref.invalidate(rewardQuantityProvider);
+                      ref.invalidate(totalPointsProvider);
+                      ref.invalidate(pointsInUseProvider);
+                      ref.invalidate(discountTotalProvider);
+                      ref.invalidate(selectedPickupDateProvider);
+                      ref.invalidate(scheduleAllItemsProvider);
+                      ref.invalidate(selectedTipIndexProvider);
+                      ref.invalidate(selectedTipPercentageProvider);
+                      ref.invalidate(pointsMultiplierProvider);
+                      ref.invalidate(applePaySelectedProvider);
+                      Navigator.pop(context);
+                    },
                   ),
-                  const DisplayOrderList(),
-                  const AvailableOffersList(),
-                  const CategoryWidget(
-                    text: 'Rewards',
+                ]),
+            body: ListView(
+              shrinkWrap: true,
+              controller: controller,
+              padding:
+                  const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16),
+              children: [
+                Spacing().vertical(30),
+                const CategoryWidget(text: 'Order Details'),
+                const SelectedLocationTile(),
+                OrderHelpers(ref: ref).scheduledItems().isNotEmpty
+                    ? const OrderPickupDateTile()
+                    : const SizedBox(),
+                OrderHelpers(ref: ref).nonScheduledItems().isNotEmpty &&
+                        ref.watch(scheduleAllItemsProvider) == false
+                    ? const OrderPickupTimeTile()
+                    : const SizedBox(),
+                _determinePaymentMethodTile(ref, user),
+                Spacing().vertical(20),
+                const CategoryWidget(
+                  text: 'Your Order',
+                ),
+                const DisplayOrderList(),
+                const AvailableOffersList(),
+                const CategoryWidget(
+                  text: 'Rewards',
+                ),
+                const RewardsList(),
+                JusDivider().thick(),
+                const Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 8.0),
+                  child: TotalPrice(),
+                ),
+                Spacing().vertical(40),
+                Center(
+                  child: LargeElevatedButton(
+                    buttonText: 'Checkout',
+                    onPressed: () {
+                      _validateCheckoutData(context, ref, user, controller);
+                    },
                   ),
-                  const RewardsList(),
-                  JusDivider().thick(),
-                  const Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 8.0),
-                    child: TotalPrice(),
-                  ),
-                  Spacing().vertical(40),
-                  Center(
-                    child: LargeElevatedButton(
-                      buttonText: 'Checkout',
-                      onPressed: () {
-                        HapticFeedback.mediumImpact();
-                        _validateCheckoutData(context, ref, user, controller);
-                      },
-                    ),
-                  ),
-                  Spacing().vertical(40),
-                ],
-              ),
+                ),
+                Spacing().vertical(40),
+              ],
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
 
   _validateCheckoutData(BuildContext context, WidgetRef ref, UserModel user,
       ScrollController controller) {
-    HapticFeedback.mediumImpact();
     String? validationResult =
         OrderValidators(ref: ref).checkPickupTime(context);
 
@@ -159,22 +156,22 @@ class CheckoutPage extends HookConsumerWidget {
                 children: [
                   Spacing().vertical(10),
                   user.uid == null
-                      ? JusTextField(ref: ref).firstName()
+                      ? JusTextField(ref: ref).firstName(user: user)
                       : const SizedBox(),
                   JusTextField(ref: ref).error(firstNameError),
                   Spacing().vertical(10),
                   user.uid == null
-                      ? JusTextField(ref: ref).lastName()
+                      ? JusTextField(ref: ref).lastName(user: user)
                       : const SizedBox(),
                   JusTextField(ref: ref).error(lastNameError),
                   Spacing().vertical(10),
                   user.uid == null
-                      ? JusTextField(ref: ref).phone()
+                      ? JusTextField(ref: ref).phone(user: user)
                       : const SizedBox(),
                   JusTextField(ref: ref).error(phoneError),
                   Spacing().vertical(10),
                   user.uid == null
-                      ? JusTextField(ref: ref).email()
+                      ? JusTextField(ref: ref).email(user: user)
                       : const SizedBox(),
                   JusTextField(ref: ref).error(emailError),
                   Spacing().vertical(10),

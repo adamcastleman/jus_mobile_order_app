@@ -219,11 +219,11 @@ class _$ProductModelCopyWithImpl<$Res, $Val extends ProductModel>
 }
 
 /// @nodoc
-abstract class _$$_ProductModelCopyWith<$Res>
+abstract class _$$ProductModelImplCopyWith<$Res>
     implements $ProductModelCopyWith<$Res> {
-  factory _$$_ProductModelCopyWith(
-          _$_ProductModel value, $Res Function(_$_ProductModel) then) =
-      __$$_ProductModelCopyWithImpl<$Res>;
+  factory _$$ProductModelImplCopyWith(
+          _$ProductModelImpl value, $Res Function(_$ProductModelImpl) then) =
+      __$$ProductModelImplCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call(
@@ -254,11 +254,11 @@ abstract class _$$_ProductModelCopyWith<$Res>
 }
 
 /// @nodoc
-class __$$_ProductModelCopyWithImpl<$Res>
-    extends _$ProductModelCopyWithImpl<$Res, _$_ProductModel>
-    implements _$$_ProductModelCopyWith<$Res> {
-  __$$_ProductModelCopyWithImpl(
-      _$_ProductModel _value, $Res Function(_$_ProductModel) _then)
+class __$$ProductModelImplCopyWithImpl<$Res>
+    extends _$ProductModelCopyWithImpl<$Res, _$ProductModelImpl>
+    implements _$$ProductModelImplCopyWith<$Res> {
+  __$$ProductModelImplCopyWithImpl(
+      _$ProductModelImpl _value, $Res Function(_$ProductModelImpl) _then)
       : super(_value, _then);
 
   @pragma('vm:prefer-inline')
@@ -289,7 +289,7 @@ class __$$_ProductModelCopyWithImpl<$Res>
     Object? scheduledProductLimit = freezed,
     Object? scheduledProductType = freezed,
   }) {
-    return _then(_$_ProductModel(
+    return _then(_$ProductModelImpl(
       uid: null == uid
           ? _value.uid
           : uid // ignore: cast_nullable_to_non_nullable
@@ -392,8 +392,8 @@ class __$$_ProductModelCopyWithImpl<$Res>
 
 /// @nodoc
 
-class _$_ProductModel implements _ProductModel {
-  const _$_ProductModel(
+class _$ProductModelImpl implements _ProductModel {
+  const _$ProductModelImpl(
       {required this.uid,
       required this.name,
       required this.category,
@@ -505,7 +505,7 @@ class _$_ProductModel implements _ProductModel {
   bool operator ==(dynamic other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$_ProductModel &&
+            other is _$ProductModelImpl &&
             (identical(other.uid, uid) || other.uid == uid) &&
             (identical(other.name, name) || other.name == name) &&
             (identical(other.category, category) ||
@@ -581,8 +581,8 @@ class _$_ProductModel implements _ProductModel {
   @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
-  _$$_ProductModelCopyWith<_$_ProductModel> get copyWith =>
-      __$$_ProductModelCopyWithImpl<_$_ProductModel>(this, _$identity);
+  _$$ProductModelImplCopyWith<_$ProductModelImpl> get copyWith =>
+      __$$ProductModelImplCopyWithImpl<_$ProductModelImpl>(this, _$identity);
 }
 
 abstract class _ProductModel implements ProductModel {
@@ -610,7 +610,7 @@ abstract class _ProductModel implements ProductModel {
       required final int servingsFruit,
       required final int servingsVeggie,
       final int? scheduledProductLimit,
-      final String? scheduledProductType}) = _$_ProductModel;
+      final String? scheduledProductType}) = _$ProductModelImpl;
 
   @override
   String get uid;
@@ -662,7 +662,7 @@ abstract class _ProductModel implements ProductModel {
   String? get scheduledProductType;
   @override
   @JsonKey(ignore: true)
-  _$$_ProductModelCopyWith<_$_ProductModel> get copyWith =>
+  _$$ProductModelImplCopyWith<_$ProductModelImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }
 
@@ -767,11 +767,11 @@ class _$ProductQuantityModelCopyWithImpl<$Res,
 }
 
 /// @nodoc
-abstract class _$$_ProductQuantityModelCopyWith<$Res>
+abstract class _$$ProductQuantityModelImplCopyWith<$Res>
     implements $ProductQuantityModelCopyWith<$Res> {
-  factory _$$_ProductQuantityModelCopyWith(_$_ProductQuantityModel value,
-          $Res Function(_$_ProductQuantityModel) then) =
-      __$$_ProductQuantityModelCopyWithImpl<$Res>;
+  factory _$$ProductQuantityModelImplCopyWith(_$ProductQuantityModelImpl value,
+          $Res Function(_$ProductQuantityModelImpl) then) =
+      __$$ProductQuantityModelImplCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call(
@@ -787,11 +787,11 @@ abstract class _$$_ProductQuantityModelCopyWith<$Res>
 }
 
 /// @nodoc
-class __$$_ProductQuantityModelCopyWithImpl<$Res>
-    extends _$ProductQuantityModelCopyWithImpl<$Res, _$_ProductQuantityModel>
-    implements _$$_ProductQuantityModelCopyWith<$Res> {
-  __$$_ProductQuantityModelCopyWithImpl(_$_ProductQuantityModel _value,
-      $Res Function(_$_ProductQuantityModel) _then)
+class __$$ProductQuantityModelImplCopyWithImpl<$Res>
+    extends _$ProductQuantityModelCopyWithImpl<$Res, _$ProductQuantityModelImpl>
+    implements _$$ProductQuantityModelImplCopyWith<$Res> {
+  __$$ProductQuantityModelImplCopyWithImpl(_$ProductQuantityModelImpl _value,
+      $Res Function(_$ProductQuantityModelImpl) _then)
       : super(_value, _then);
 
   @pragma('vm:prefer-inline')
@@ -807,7 +807,7 @@ class __$$_ProductQuantityModelCopyWithImpl<$Res>
     Object? toppingsDescriptor = freezed,
     Object? toppingsQuantityLimit = freezed,
   }) {
-    return _then(_$_ProductQuantityModel(
+    return _then(_$ProductQuantityModelImpl(
       uid: null == uid
           ? _value.uid
           : uid // ignore: cast_nullable_to_non_nullable
@@ -850,8 +850,8 @@ class __$$_ProductQuantityModelCopyWithImpl<$Res>
 
 /// @nodoc
 
-class _$_ProductQuantityModel implements _ProductQuantityModel {
-  const _$_ProductQuantityModel(
+class _$ProductQuantityModelImpl implements _ProductQuantityModel {
+  const _$ProductQuantityModelImpl(
       {required this.uid,
       required this.locationID,
       required this.productType,
@@ -890,7 +890,7 @@ class _$_ProductQuantityModel implements _ProductQuantityModel {
   bool operator ==(dynamic other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$_ProductQuantityModel &&
+            other is _$ProductQuantityModelImpl &&
             (identical(other.uid, uid) || other.uid == uid) &&
             (identical(other.locationID, locationID) ||
                 other.locationID == locationID) &&
@@ -928,9 +928,10 @@ class _$_ProductQuantityModel implements _ProductQuantityModel {
   @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
-  _$$_ProductQuantityModelCopyWith<_$_ProductQuantityModel> get copyWith =>
-      __$$_ProductQuantityModelCopyWithImpl<_$_ProductQuantityModel>(
-          this, _$identity);
+  _$$ProductQuantityModelImplCopyWith<_$ProductQuantityModelImpl>
+      get copyWith =>
+          __$$ProductQuantityModelImplCopyWithImpl<_$ProductQuantityModelImpl>(
+              this, _$identity);
 }
 
 abstract class _ProductQuantityModel implements ProductQuantityModel {
@@ -943,7 +944,7 @@ abstract class _ProductQuantityModel implements ProductQuantityModel {
       final int? scheduledQuantityLimit,
       final String? scheduledProductDescriptor,
       final String? toppingsDescriptor,
-      final int? toppingsQuantityLimit}) = _$_ProductQuantityModel;
+      final int? toppingsQuantityLimit}) = _$ProductQuantityModelImpl;
 
   @override
   String get uid;
@@ -965,8 +966,8 @@ abstract class _ProductQuantityModel implements ProductQuantityModel {
   int? get toppingsQuantityLimit;
   @override
   @JsonKey(ignore: true)
-  _$$_ProductQuantityModelCopyWith<_$_ProductQuantityModel> get copyWith =>
-      throw _privateConstructorUsedError;
+  _$$ProductQuantityModelImplCopyWith<_$ProductQuantityModelImpl>
+      get copyWith => throw _privateConstructorUsedError;
 }
 
 /// @nodoc
@@ -1018,22 +1019,22 @@ class _$QuantityLimitParamsCopyWithImpl<$Res, $Val extends QuantityLimitParams>
 }
 
 /// @nodoc
-abstract class _$$_QuantityLimitParamsCopyWith<$Res>
+abstract class _$$QuantityLimitParamsImplCopyWith<$Res>
     implements $QuantityLimitParamsCopyWith<$Res> {
-  factory _$$_QuantityLimitParamsCopyWith(_$_QuantityLimitParams value,
-          $Res Function(_$_QuantityLimitParams) then) =
-      __$$_QuantityLimitParamsCopyWithImpl<$Res>;
+  factory _$$QuantityLimitParamsImplCopyWith(_$QuantityLimitParamsImpl value,
+          $Res Function(_$QuantityLimitParamsImpl) then) =
+      __$$QuantityLimitParamsImplCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call({String productUID, int locationID});
 }
 
 /// @nodoc
-class __$$_QuantityLimitParamsCopyWithImpl<$Res>
-    extends _$QuantityLimitParamsCopyWithImpl<$Res, _$_QuantityLimitParams>
-    implements _$$_QuantityLimitParamsCopyWith<$Res> {
-  __$$_QuantityLimitParamsCopyWithImpl(_$_QuantityLimitParams _value,
-      $Res Function(_$_QuantityLimitParams) _then)
+class __$$QuantityLimitParamsImplCopyWithImpl<$Res>
+    extends _$QuantityLimitParamsCopyWithImpl<$Res, _$QuantityLimitParamsImpl>
+    implements _$$QuantityLimitParamsImplCopyWith<$Res> {
+  __$$QuantityLimitParamsImplCopyWithImpl(_$QuantityLimitParamsImpl _value,
+      $Res Function(_$QuantityLimitParamsImpl) _then)
       : super(_value, _then);
 
   @pragma('vm:prefer-inline')
@@ -1042,7 +1043,7 @@ class __$$_QuantityLimitParamsCopyWithImpl<$Res>
     Object? productUID = null,
     Object? locationID = null,
   }) {
-    return _then(_$_QuantityLimitParams(
+    return _then(_$QuantityLimitParamsImpl(
       productUID: null == productUID
           ? _value.productUID
           : productUID // ignore: cast_nullable_to_non_nullable
@@ -1057,8 +1058,8 @@ class __$$_QuantityLimitParamsCopyWithImpl<$Res>
 
 /// @nodoc
 
-class _$_QuantityLimitParams implements _QuantityLimitParams {
-  const _$_QuantityLimitParams(
+class _$QuantityLimitParamsImpl implements _QuantityLimitParams {
+  const _$QuantityLimitParamsImpl(
       {required this.productUID, required this.locationID});
 
   @override
@@ -1075,7 +1076,7 @@ class _$_QuantityLimitParams implements _QuantityLimitParams {
   bool operator ==(dynamic other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$_QuantityLimitParams &&
+            other is _$QuantityLimitParamsImpl &&
             (identical(other.productUID, productUID) ||
                 other.productUID == productUID) &&
             (identical(other.locationID, locationID) ||
@@ -1088,15 +1089,15 @@ class _$_QuantityLimitParams implements _QuantityLimitParams {
   @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
-  _$$_QuantityLimitParamsCopyWith<_$_QuantityLimitParams> get copyWith =>
-      __$$_QuantityLimitParamsCopyWithImpl<_$_QuantityLimitParams>(
+  _$$QuantityLimitParamsImplCopyWith<_$QuantityLimitParamsImpl> get copyWith =>
+      __$$QuantityLimitParamsImplCopyWithImpl<_$QuantityLimitParamsImpl>(
           this, _$identity);
 }
 
 abstract class _QuantityLimitParams implements QuantityLimitParams {
   const factory _QuantityLimitParams(
       {required final String productUID,
-      required final int locationID}) = _$_QuantityLimitParams;
+      required final int locationID}) = _$QuantityLimitParamsImpl;
 
   @override
   String get productUID;
@@ -1104,6 +1105,6 @@ abstract class _QuantityLimitParams implements QuantityLimitParams {
   int get locationID;
   @override
   @JsonKey(ignore: true)
-  _$$_QuantityLimitParamsCopyWith<_$_QuantityLimitParams> get copyWith =>
+  _$$QuantityLimitParamsImplCopyWith<_$QuantityLimitParamsImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }

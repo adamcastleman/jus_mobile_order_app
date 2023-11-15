@@ -2,7 +2,6 @@ import 'package:cloud_functions/cloud_functions.dart';
 import 'package:firebase_auth/firebase_auth.dart' as auth;
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:jus_mobile_order_app/Models/user_model.dart';
-import 'package:jus_mobile_order_app/Services/user_services.dart';
 
 class AuthServices {
   final auth.FirebaseAuth _auth = auth.FirebaseAuth.instance;
@@ -16,27 +15,15 @@ class AuthServices {
   }
 
   Future registerWithEmailAndPassword(
-      {required String email,
-      required String password,
-      required firstName,
-      required lastName,
-      required phone}) async {
+    String email,
+    String password,
+  ) async {
     try {
       auth.UserCredential result = await _auth.createUserWithEmailAndPassword(
           email: email, password: password);
       auth.User? user = result.user;
 
-      if (user != null) {
-        UserServices(uid: user.uid).createUser(
-          uid: user.uid,
-          email: email,
-          firstName: firstName,
-          lastName: lastName,
-          phone: phone,
-        );
-      } else {
-        throw 'There was a problem creating your account. Please try again later.';
-      }
+      return user;
     } on auth.FirebaseAuthException catch (e) {
       switch (e.code) {
         case 'email-already-in-use':

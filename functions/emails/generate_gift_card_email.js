@@ -1,8 +1,7 @@
 require("dotenv").config();
 
 function generateGiftCardEmail(giftCardMap) {
-
-const footer = `
+  const footer = `
 <div class="email-container">
  <div class="divider"></div>
   <div class="center">
@@ -15,7 +14,6 @@ const footer = `
    </p>
   </div>
  </div>`;
-
 
   return `
     <html>
@@ -37,13 +35,14 @@ const footer = `
          <img src="${process.env.JUS_LOGO}" alt="jusLogo" width="100" />
         <br/><br/>
 
-       Your Wallet has been loaded with $${giftCardMap.paymentDetails.amount / 100}.
+       Your Wallet has been loaded with $${
+         giftCardMap.paymentDetails.amount / 100
+       }.
        <br>
        ${footer}
         </body>
         </html>
         `;
-
 }
 
 module.exports = generateGiftCardEmail;

@@ -8,12 +8,12 @@ class PaymentOptionTile extends StatelessWidget {
   final VoidCallback onTap;
 
   const PaymentOptionTile({
-    Key? key,
+    super.key,
     required this.icon,
     required this.title,
     this.subtitle,
     required this.onTap,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

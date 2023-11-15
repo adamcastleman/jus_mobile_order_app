@@ -37,7 +37,11 @@ final productsProvider =
 
 final currentUserProvider = StreamProvider<UserModel>((ref) {
   final auth = ref.watch(authProvider);
-  return UserServices(uid: auth.value?.uid).user;
+  return UserServices(
+      uid: auth.maybeWhen(
+    data: (userModel) => userModel?.uid,
+    orElse: () => null,
+  )).user;
 });
 
 final defaultPaymentMethodProvider = StreamProvider<PaymentsModel>((ref) {
@@ -61,6 +65,10 @@ final ingredientsProvider = StreamProvider<List<IngredientModel>>(
 
 final modifiableIngredientsProvider = StreamProvider<List<IngredientModel>>(
   (ref) => IngredientServices().modifiableIngredients,
+);
+
+final allergenIngredientsProvider = StreamProvider<List<IngredientModel>>(
+  (ref) => IngredientServices().allergenIngredients,
 );
 
 final blendOnlyIngredientsProvider = StreamProvider<List<IngredientModel>>(

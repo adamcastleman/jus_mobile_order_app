@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'package:jus_mobile_order_app/Helpers/modal_bottom_sheets.dart';
 import 'package:jus_mobile_order_app/Helpers/spacing_widgets.dart';
@@ -22,6 +23,7 @@ class OrderHistoryTile extends StatelessWidget {
       builder: (locations) => ProductsProviderWidget(
         builder: (products) => InkWell(
           onTap: () {
+            HapticFeedback.lightImpact();
             ModalBottomSheet().fullScreen(
                 context: context,
                 builder: (context) => ReceiptSheet(order: order));

@@ -1,11 +1,11 @@
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:jus_mobile_order_app/Helpers/modal_bottom_sheets.dart';
 import 'package:jus_mobile_order_app/Models/ingredient_model.dart';
 import 'package:jus_mobile_order_app/Models/product_model.dart';
 import 'package:jus_mobile_order_app/Providers/ProviderWidgets/modifiable_ingredients_provider_widget.dart';
+import 'package:jus_mobile_order_app/Providers/controller_providers.dart';
 import 'package:jus_mobile_order_app/Providers/product_providers.dart';
 import 'package:jus_mobile_order_app/Sheets/invalid_modification_sheet.dart';
 import 'package:jus_mobile_order_app/Widgets/Buttons/elevated_button_medium.dart';
@@ -31,7 +31,6 @@ class SelectModifierOptions extends ConsumerWidget {
                 buttonText: 'Confirm',
                 onPressed: () {
                   checkForRequiredIngredients(context, ref, ingredients);
-                  HapticFeedback.mediumImpact();
                 },
               ),
             ],
@@ -55,6 +54,7 @@ class SelectModifierOptions extends ConsumerWidget {
       buttonText: 'Reset',
       onPressed: () {
         ref.read(selectedIngredientsProvider.notifier).replaceIngredients(ref);
+        ref.read(modifyIngredientsListScrollControllerProvider).jumpTo(0);
       },
     );
   }

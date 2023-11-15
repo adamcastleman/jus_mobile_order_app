@@ -5,13 +5,11 @@ const getGiftCardIDFromGan = async (orderMap) => {
   const client = await createSquareClient();
 
   try {
-
     const cardResponse = await client.giftCardsApi.retrieveGiftCardFromGAN({
-            gan: orderMap.paymentDetails.gan
+      gan: orderMap.paymentDetails.gan,
     });
 
     const response = JSON.parse(cardResponse.body);
-
 
     const giftCardID = response.gift_card.id;
 

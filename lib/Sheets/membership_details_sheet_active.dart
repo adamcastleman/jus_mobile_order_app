@@ -78,18 +78,18 @@ class ActiveMembershipDetailsSheet extends StatelessWidget {
                         width: 0.5,
                       ),
                     ),
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0),
+                    child: const Padding(
+                      padding: EdgeInsets.all(8.0),
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          const Icon(
+                          Icon(
                             CupertinoIcons.money_dollar_circle,
                             size: 60,
                           ),
                           Column(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: const [
+                            children: [
                               Text(
                                 'Began:',
                                 style: TextStyle(fontSize: 18),
@@ -102,7 +102,7 @@ class ActiveMembershipDetailsSheet extends StatelessWidget {
                           ),
                           Column(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: const [
+                            children: [
                               Text(
                                 'Paused:',
                                 style: TextStyle(fontSize: 18),

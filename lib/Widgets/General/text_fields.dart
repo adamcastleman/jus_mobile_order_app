@@ -3,7 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:jus_mobile_order_app/Helpers/error.dart';
 import 'package:jus_mobile_order_app/Helpers/modal_bottom_sheets.dart';
-import 'package:jus_mobile_order_app/Providers/ProviderWidgets/user_provider_widget.dart';
+import 'package:jus_mobile_order_app/Models/user_model.dart';
 import 'package:jus_mobile_order_app/Providers/auth_providers.dart';
 import 'package:jus_mobile_order_app/Sheets/us_states_picker.dart';
 
@@ -14,70 +14,61 @@ class JusTextField {
     required this.ref,
   });
 
-  email({bool? autofocus}) {
-    return UserProviderWidget(
-      builder: (user) => TextFormField(
-        autofocus: autofocus ?? false,
-        initialValue: user.uid == null ? null : user.email,
-        onChanged: (value) => ref.read(emailProvider.notifier).state = value,
-        decoration: const InputDecoration(
-          hintText: 'Email',
-        ),
-        autocorrect: false,
-        keyboardType: TextInputType.emailAddress,
-        inputFormatters: [
-          FilteringTextInputFormatter.deny(RegExp(r'\s')),
-        ],
+  email({required UserModel user, bool? autofocus}) {
+    return TextFormField(
+      autofocus: autofocus ?? false,
+      initialValue: user.uid == null ? null : user.email,
+      onChanged: (value) => ref.read(emailProvider.notifier).state = value,
+      decoration: const InputDecoration(
+        hintText: 'Email',
       ),
+      autocorrect: false,
+      keyboardType: TextInputType.emailAddress,
+      inputFormatters: [
+        FilteringTextInputFormatter.deny(RegExp(r'\s')),
+      ],
     );
   }
 
-  phone({bool? autofocus}) {
-    return UserProviderWidget(
-      builder: (user) => TextFormField(
-        initialValue: user.uid == null ? null : user.phone,
-        autofocus: autofocus ?? false,
-        onChanged: (value) => ref.read(phoneProvider.notifier).state = value,
-        decoration: const InputDecoration(
-          hintText: 'Phone #',
-        ),
-        keyboardType: TextInputType.phone,
-        textInputAction: TextInputAction.done,
-        inputFormatters: [
-          FilteringTextInputFormatter.allow(RegExp(r'[0-9]')),
-        ],
+  phone({required UserModel user, bool? autofocus}) {
+    return TextFormField(
+      initialValue: user.uid == null ? null : user.phone,
+      autofocus: autofocus ?? false,
+      onChanged: (value) => ref.read(phoneProvider.notifier).state = value,
+      decoration: const InputDecoration(
+        hintText: 'Phone #',
       ),
+      keyboardType: TextInputType.phone,
+      textInputAction: TextInputAction.done,
+      inputFormatters: [
+        FilteringTextInputFormatter.allow(RegExp(r'[0-9]')),
+      ],
     );
   }
 
-  lastName({bool? autofocus}) {
-    return UserProviderWidget(
-      builder: (user) => TextFormField(
-        initialValue: user.uid == null ? null : user.lastName,
-        autofocus: autofocus ?? false,
-        onChanged: (value) => ref.read(lastNameProvider.notifier).state = value,
-        decoration: const InputDecoration(
-          hintText: 'Last Name',
-        ),
-        autocorrect: true,
-        textCapitalization: TextCapitalization.words,
+  lastName({required UserModel user, bool? autofocus}) {
+    return TextFormField(
+      initialValue: user.uid == null ? null : user.lastName,
+      autofocus: autofocus ?? false,
+      onChanged: (value) => ref.read(lastNameProvider.notifier).state = value,
+      decoration: const InputDecoration(
+        hintText: 'Last Name',
       ),
+      autocorrect: true,
+      textCapitalization: TextCapitalization.words,
     );
   }
 
-  firstName({bool? autofocus}) {
-    return UserProviderWidget(
-      builder: (user) => TextFormField(
-        initialValue: user.uid == null ? null : user.firstName,
-        autofocus: autofocus ?? false,
-        onChanged: (value) =>
-            ref.read(firstNameProvider.notifier).state = value,
-        decoration: const InputDecoration(
-          hintText: 'First name',
-        ),
-        autocorrect: true,
-        textCapitalization: TextCapitalization.words,
+  firstName({required UserModel user, bool? autofocus}) {
+    return TextFormField(
+      initialValue: user.uid == null ? null : user.firstName,
+      autofocus: autofocus ?? false,
+      onChanged: (value) => ref.read(firstNameProvider.notifier).state = value,
+      decoration: const InputDecoration(
+        hintText: 'First name',
       ),
+      autocorrect: true,
+      textCapitalization: TextCapitalization.words,
     );
   }
 

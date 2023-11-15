@@ -1,8 +1,9 @@
 const admin = require("firebase-admin");
 
 const updateWalletBalanceInDatabase = async (db, orderMap, giftCardMap) => {
-
-  const savedPaymentsSnapshot = await db.collection("users").doc(orderMap.userDetails.userID)
+  const savedPaymentsSnapshot = await db
+    .collection("users")
+    .doc(orderMap.userDetails.userID)
     .collection("squarePaymentMethods")
     .where("gan", "==", giftCardMap.cardDetails.gan)
     .get();
@@ -13,7 +14,8 @@ const updateWalletBalanceInDatabase = async (db, orderMap, giftCardMap) => {
   }
 
   const savedPayment = savedPaymentsSnapshot.docs[0];
-  const orderAmount = parseInt(orderMap.totals.totalAmount + orderMap.totals.tipAmount) || 0;
+  const orderAmount =
+    parseInt(orderMap.totals.totalAmount + orderMap.totals.tipAmount) || 0;
   const originalBalance = parseInt(savedPayment.data().balance) || 0;
 
   try {

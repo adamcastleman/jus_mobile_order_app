@@ -6,8 +6,7 @@ import 'package:jus_mobile_order_app/Payments/saved_payment_tile.dart';
 
 class SavedPaymentsListView extends ConsumerWidget {
   final List<PaymentsModel> cards;
-  const SavedPaymentsListView({required this.cards, Key? key})
-      : super(key: key);
+  const SavedPaymentsListView({required this.cards, super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

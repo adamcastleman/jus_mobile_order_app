@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:jus_mobile_order_app/Models/ingredient_model.dart';
 import 'package:jus_mobile_order_app/Providers/product_providers.dart';
@@ -23,6 +24,7 @@ class MultiUseIngredientQuantityPicker extends ConsumerWidget {
         IconButton(
           icon: const Icon(CupertinoIcons.minus_circle),
           onPressed: () {
+            HapticFeedback.lightImpact();
             determineDecrementItem(ref);
           },
         ),

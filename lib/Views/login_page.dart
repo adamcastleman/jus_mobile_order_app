@@ -6,6 +6,7 @@ import 'package:jus_mobile_order_app/Helpers/error.dart';
 import 'package:jus_mobile_order_app/Helpers/modal_bottom_sheets.dart';
 import 'package:jus_mobile_order_app/Helpers/spacing_widgets.dart';
 import 'package:jus_mobile_order_app/Providers/auth_providers.dart';
+import 'package:jus_mobile_order_app/Providers/stream_providers.dart';
 import 'package:jus_mobile_order_app/Services/auth_services.dart';
 import 'package:jus_mobile_order_app/Views/forgot_password_page.dart';
 import 'package:jus_mobile_order_app/Views/register_page.dart';
@@ -20,6 +21,7 @@ class LoginPage extends ConsumerWidget {
   const LoginPage({super.key});
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final user = ref.watch(currentUserProvider).value!;
     final email = ref.watch(emailProvider);
     final password = ref.watch(passwordProvider);
     final loading = ref.watch(loadingProvider);
@@ -39,36 +41,40 @@ class LoginPage extends ConsumerWidget {
             Padding(
               padding: EdgeInsets.symmetric(
                   horizontal: MediaQuery.of(context).size.width * 0.05,
-                  vertical: MediaQuery.of(context).size.width * 0.05),
+                  vertical: MediaQuery.of(context).size.width * 0.08),
               child: SingleChildScrollView(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    const Align(
-                      alignment: Alignment.topRight,
-                      child: JusCloseButton(
-                        removePadding: true,
-                      ),
-                    ),
-                    Text(
-                      'Sign in',
-                      style: Theme.of(context).textTheme.headlineSmall,
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          'Sign in',
+                          style: Theme.of(context).textTheme.headlineSmall,
+                        ),
+                        const JusCloseButton(
+                          removePadding: true,
+                        ),
+                      ],
                     ),
                     Spacing().vertical(15),
                     const Text(
                       'Sign in to collect and redeem points, access your member code, save favorites and more.',
                     ),
-                    Spacing().vertical(15),
+                    Spacing().vertical(10),
                     const Text(
-                      'If you had a registered account on our legacy website, '
-                      'you must create a new account.',
+                      'If you belong to our legacy points or membership program, '
+                      'or you had an account of any kind on our legacy website, you must create '
+                      'a new account.',
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
+                        fontSize: 12,
                       ),
                     ),
                     Spacing().vertical(25),
-                    JusTextField(ref: ref).email(autofocus: true),
+                    JusTextField(ref: ref).email(user: user, autofocus: true),
                     JusTextField(ref: ref).error(emailError),
                     Spacing().vertical(15),
                     Stack(

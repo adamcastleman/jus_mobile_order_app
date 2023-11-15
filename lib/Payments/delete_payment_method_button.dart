@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:jus_mobile_order_app/Helpers/modal_bottom_sheets.dart';
 import 'package:jus_mobile_order_app/Models/payments_model.dart';
@@ -13,8 +12,7 @@ class DeletePaymentMethodButton extends ConsumerWidget {
   final String cardID;
   final bool defaultPayment;
   const DeletePaymentMethodButton(
-      {required this.cardID, required this.defaultPayment, Key? key})
-      : super(key: key);
+      {required this.cardID, required this.defaultPayment, super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -23,7 +21,6 @@ class DeletePaymentMethodButton extends ConsumerWidget {
         builder: (creditCards) => MediumOutlineButton(
           buttonText: 'Delete Card',
           onPressed: () {
-            HapticFeedback.mediumImpact();
             _determineDeletePayment(context, wallets, creditCards);
           },
         ),

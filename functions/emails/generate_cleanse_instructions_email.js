@@ -94,7 +94,6 @@ function generateCleanseInstructionsEmail() {
         </body>
         </html>
         `;
-
 }
 
 module.exports = generateCleanseInstructionsEmail;

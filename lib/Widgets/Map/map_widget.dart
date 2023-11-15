@@ -24,7 +24,7 @@ class GoogleMapWidget extends StatelessWidget {
         target: initialLocation,
       ),
       myLocationEnabled: true,
-      myLocationButtonEnabled: true,
+      myLocationButtonEnabled: false,
       mapToolbarEnabled: false,
       markers: markers,
       onMapCreated: (controller) => onMapCreated(controller),

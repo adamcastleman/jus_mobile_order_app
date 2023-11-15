@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:jus_mobile_order_app/Helpers/modal_bottom_sheets.dart';
 import 'package:jus_mobile_order_app/Helpers/spacing_widgets.dart';
 import 'package:jus_mobile_order_app/Views/register_page.dart';
@@ -8,7 +9,7 @@ import 'package:jus_mobile_order_app/Widgets/Buttons/info_button.dart';
 import '../../Views/points_detail_page.dart';
 
 class RewardsGuestCheckout extends StatelessWidget {
-  const RewardsGuestCheckout({Key? key}) : super(key: key);
+  const RewardsGuestCheckout({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -27,6 +28,7 @@ class RewardsGuestCheckout extends StatelessWidget {
                 Spacing().horizontal(5),
                 InfoButton(
                   onTap: () {
+                    HapticFeedback.lightImpact();
                     ModalBottomSheet().fullScreen(
                       context: context,
                       builder: (context) =>

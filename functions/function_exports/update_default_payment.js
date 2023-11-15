@@ -10,7 +10,7 @@ exports.updateDefaultPayment = functions.https.onCall(async (data, context) => {
   if (!isAuthenticated(context)) {
     throw new functions.https.HttpsError(
       "unauthenticated",
-      "You must create an account to update a default payment."
+      "You must create an account to update a default payment.",
     );
   }
 

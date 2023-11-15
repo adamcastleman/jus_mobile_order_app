@@ -26,7 +26,7 @@ const updateMemberSavings = async (db, orderMap) => {
           totalSaved: admin.firestore.FieldValue.increment(savedThisOrder),
           bonusPoints: admin.firestore.FieldValue.increment(bonusPoints),
         },
-        { merge: true }
+        { merge: true },
       );
 
       return 200;
