@@ -23,7 +23,7 @@ class FavoritesCardGuest extends ConsumerWidget {
               'Your favorites are waiting.',
               style: Theme.of(context).textTheme.headlineSmall,
             ),
-            Spacing().vertical(25),
+            Spacing.vertical(25),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 22.0),
               child: Text(
@@ -32,7 +32,7 @@ class FavoritesCardGuest extends ConsumerWidget {
                 textAlign: TextAlign.center,
               ),
             ),
-            Spacing().vertical(25),
+            Spacing.vertical(25),
             SmallElevatedButton(
               buttonText: 'Create Account',
               onPressed: () {

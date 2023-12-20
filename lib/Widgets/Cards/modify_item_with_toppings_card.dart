@@ -18,8 +18,7 @@ import '../General/multi_use_ingredient_edit_row.dart';
 class ModifyItemWithToppingsCard extends HookConsumerWidget {
   final int index;
 
-  const ModifyItemWithToppingsCard({required this.index, Key? key})
-      : super(key: key);
+  const ModifyItemWithToppingsCard({required this.index, super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

@@ -8,19 +8,8 @@ import 'package:jus_mobile_order_app/Widgets/Map/map_bounds_manager.dart';
 import 'package:jus_mobile_order_app/constants.dart';
 
 class MarkerHandler {
-  final BuildContext context;
-  final WidgetRef ref;
-  final GoogleMapController mapController;
-  final List<LocationModel> locations;
-
-  MarkerHandler({
-    required this.context,
-    required this.ref,
-    required this.mapController,
-    required this.locations,
-  });
-
-  Future<List<Marker>> createMarkers() async {
+  Future<List<Marker>> createMarkers(WidgetRef ref,
+      List<LocationModel> locations, GoogleMapController controller) async {
     List<Marker> markers = [];
 
     for (var location in locations) {
@@ -44,22 +33,21 @@ class MarkerHandler {
               location.longitude,
             ),
             onTap: () async {
-              if (!selectedLocation.comingSoon) {
+              if (selectedLocation.status != AppConstants.comingSoon) {
                 ref.read(selectedLocationProvider.notifier).state =
                     selectedLocation;
                 // The following code is what controls the scrolling to the location
                 //tile when tapping on the marker
                 final index = locations.indexOf(selectedLocation);
-                final tileWidth = AppConstants.tileHeight(context);
+                final tileWidth = AppConstants.tileWidth;
                 ref.read(selectedLocationIndexProvider.notifier).state = index;
                 LocationHelper().calculateListScroll(
-                  context,
                   ref,
                   index,
                   tileWidth,
                 );
                 await MapBoundsUpdater(ref)
-                    .getCurrentBounds(mapController, locations);
+                    .getCurrentBounds(controller, locations);
               }
             }),
       );

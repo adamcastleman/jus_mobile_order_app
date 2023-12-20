@@ -10,7 +10,7 @@ class CalendarPermissionAlertDialog extends StatelessWidget {
       title: const Text('Turn on calendar permissions'),
       content: Column(
         children: [
-          Spacing().vertical(10),
+          Spacing.vertical(10),
           const Text(
               'By allowing us access to your calendar, we can add a reminder for you to pick up this order on your selected date'),
         ],

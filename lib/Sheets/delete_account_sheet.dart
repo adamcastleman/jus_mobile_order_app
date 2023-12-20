@@ -56,7 +56,7 @@ class DeleteAccountSheet extends StatelessWidget {
                     textAlign: TextAlign.center,
                   ),
                 ),
-                Spacing().vertical(30),
+                Spacing.vertical(30),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 22.0),
                   child: Text(
@@ -68,7 +68,7 @@ class DeleteAccountSheet extends StatelessWidget {
                 ),
               ],
             ),
-            Spacing().vertical(40),
+            Spacing.vertical(40),
             Center(
               child: MediumElevatedButton(
                 buttonText: 'Request Account Deletion',

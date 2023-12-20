@@ -14,7 +14,7 @@ import 'package:jus_mobile_order_app/Providers/ProviderWidgets/timezone_provider
 import 'package:jus_mobile_order_app/Providers/order_providers.dart';
 
 class OrderPickupDateTile extends ConsumerWidget {
-  const OrderPickupDateTile({Key? key}) : super(key: key);
+  const OrderPickupDateTile({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -33,7 +33,7 @@ class OrderPickupDateTile extends ConsumerWidget {
                     'Your cart contains items that must be scheduled in advance.',
                     style: TextStyle(fontSize: 12),
                   ),
-                  Spacing().vertical(
+                  Spacing.vertical(
                       ref.watch(selectedPickupDateProvider) == null ? 0 : 10),
                   Row(
                     children: [
@@ -41,7 +41,7 @@ class OrderPickupDateTile extends ConsumerWidget {
                         Time().displayPickupDate(ref),
                         style: const TextStyle(fontWeight: FontWeight.bold),
                       ),
-                      Spacing().horizontal(5),
+                      Spacing.horizontal(5),
                       determineTimezoneAbbreviation(ref, deviceTimezone),
                     ],
                   ),

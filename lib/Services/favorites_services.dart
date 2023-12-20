@@ -2,10 +2,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:jus_mobile_order_app/Helpers/modal_bottom_sheets.dart';
 import 'package:jus_mobile_order_app/Models/favorites_model.dart';
 import 'package:jus_mobile_order_app/Providers/product_providers.dart';
-import 'package:jus_mobile_order_app/Sheets/invalid_sheet_single_pop.dart';
 
 class FavoritesServices {
   final WidgetRef? ref;
@@ -37,8 +35,12 @@ class FavoritesServices {
     }).toList();
   }
 
-  addToFavorites(BuildContext context, List<dynamic> currentIngredients,
-      List<dynamic> currentToppings) async {
+  addToFavorites({
+    required BuildContext context,
+    required List<dynamic> currentIngredients,
+    required List<dynamic> currentToppings,
+    required Function(String) onError,
+  }) async {
     try {
       await FirebaseFunctions.instance.httpsCallable('addToFavorites').call({
         'productID': ref!.watch(selectedProductIDProvider),
@@ -49,28 +51,20 @@ class FavoritesServices {
         'allergies': ref!.watch(selectedAllergiesProvider),
       });
     } catch (e) {
-      ModalBottomSheet().partScreen(
-        context: context,
-        builder: (context) => InvalidSheetSinglePop(
-          error: e.toString(),
-        ),
-      );
+      onError(e.toString());
     }
   }
 
   deleteFromFavorites(
-      {required BuildContext context, required String docID}) async {
+      {required BuildContext context,
+      required String docID,
+      required Function(String) onError}) async {
     try {
       await FirebaseFunctions.instance
           .httpsCallable('removeFromFavorites')
           .call({'docID': docID});
     } catch (e) {
-      ModalBottomSheet().partScreen(
-        context: context,
-        builder: (context) => InvalidSheetSinglePop(
-          error: e.toString(),
-        ),
-      );
+      onError(e.toString());
     }
   }
 }

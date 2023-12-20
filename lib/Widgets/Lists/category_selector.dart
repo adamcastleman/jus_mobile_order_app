@@ -1,22 +1,21 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:jus_mobile_order_app/Helpers/error.dart';
 import 'package:jus_mobile_order_app/Helpers/loading.dart';
+import 'package:jus_mobile_order_app/Helpers/utilities.dart';
 import 'package:jus_mobile_order_app/Models/product_model.dart';
 import 'package:jus_mobile_order_app/Providers/product_providers.dart';
 import 'package:jus_mobile_order_app/Providers/stream_providers.dart';
 import 'package:jus_mobile_order_app/Providers/theme_providers.dart';
 
 class CategorySelector extends HookConsumerWidget {
-  const CategorySelector({Key? key}) : super(key: key);
+  const CategorySelector({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final backgroundColor = ref.watch(backgroundColorProvider);
-    final products = Platform.isIOS || Platform.isAndroid
+    final products = PlatformUtils.isIOS() || PlatformUtils.isAndroid()
         ? ref.watch(taxableProductsProvider)
         : ref.watch(productsProvider);
     final currentCategory = ref.watch(currentCategoryProvider);

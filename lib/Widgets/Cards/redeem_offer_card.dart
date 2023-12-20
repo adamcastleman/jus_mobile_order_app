@@ -17,8 +17,7 @@ import '../../Providers/discounts_provider.dart';
 class RedeemOfferCard extends ConsumerWidget {
   final int index;
   final List<OffersModel> offers;
-  const RedeemOfferCard({required this.index, required this.offers, Key? key})
-      : super(key: key);
+  const RedeemOfferCard({required this.index, required this.offers, super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -89,7 +88,7 @@ class RedeemOfferCard extends ConsumerWidget {
                   ),
                 )
               : const SizedBox(),
-          Spacing().horizontal(8.0),
+          Spacing.horizontal(8.0),
           Padding(
             padding: const EdgeInsets.only(right: 6.0),
             child: InkWell(

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:jus_mobile_order_app/Helpers/locations.dart';
 import 'package:jus_mobile_order_app/Helpers/orders.dart';
@@ -15,17 +16,16 @@ import 'package:jus_mobile_order_app/Widgets/Buttons/elevated_button_medium.dart
 import 'package:jus_mobile_order_app/Widgets/Buttons/outlined_button_medium.dart';
 import 'package:jus_mobile_order_app/Widgets/Buttons/untappable_elevated_button_large.dart';
 
-class AddToCartRow extends ConsumerWidget {
+class AddToBagRow extends ConsumerWidget {
   final ProductModel product;
   final Function close;
-  const AddToCartRow({required this.product, required this.close, Key? key})
-      : super(key: key);
+  const AddToBagRow({required this.product, required this.close, super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final isModifiable = ref.watch(isModifiableProductProvider);
     final selectedLocation = LocationHelper().selectedLocation(ref);
-    final isProductInStock = LocationHelper().productInStock(ref, product);
+    final isProductInStock = LocationHelper().isProductInStock(ref, product);
     final isLocationAcceptingOrders = LocationHelper().acceptingOrders(ref);
     final isTimeAcceptingOrders = Time().acceptingOrders(context, ref);
 
@@ -43,7 +43,7 @@ class AddToCartRow extends ConsumerWidget {
         !isTimeAcceptingOrders && !product.isScheduled) {
       return LargeUntappableButton(
           buttonText:
-              '${LocationHelper().name(ref)} is not accepting pickup orders');
+              '${LocationHelper().locationName(ref)} is not accepting pickup orders');
     }
 
     return isModifiable
@@ -60,6 +60,7 @@ class AddToCartRow extends ConsumerWidget {
           buttonText: 'Customize',
           buttonColor: Colors.white,
           onPressed: () {
+            HapticFeedback.lightImpact();
             StandardIngredients(ref: ref).add();
             close();
           },
@@ -68,9 +69,10 @@ class AddToCartRow extends ConsumerWidget {
           productUID: product.uid,
           builder: (quantityLimit) => PointsDetailsProviderWidget(
             builder: (points) => MediumElevatedButton(
-              buttonText: editOrder ? 'Update' : 'Add to Cart',
+              buttonText: editOrder ? 'Update' : 'Add to Bag',
               onPressed: () {
-                _addToCartAndUpdateCosts(context, ref, points, quantityLimit);
+                _addToBagAndUpdateCosts(context, ref, points, quantityLimit);
+                HapticFeedback.lightImpact();
                 Navigator.pop(context);
               },
             ),
@@ -89,9 +91,10 @@ class AddToCartRow extends ConsumerWidget {
       productUID: product.uid,
       builder: (quantityLimit) => PointsDetailsProviderWidget(
         builder: (points) => LargeElevatedButton(
-          buttonText: editOrder ? 'Update' : 'Add to Cart',
+          buttonText: editOrder ? 'Update' : 'Add to Bag',
           onPressed: () {
-            _addToCartAndUpdateCosts(context, ref, points, quantityLimit);
+            _addToBagAndUpdateCosts(context, ref, points, quantityLimit);
+            HapticFeedback.lightImpact();
             Navigator.pop(context);
           },
         ),
@@ -99,7 +102,7 @@ class AddToCartRow extends ConsumerWidget {
     );
   }
 
-  void _addToCartAndUpdateCosts(
+  void _addToBagAndUpdateCosts(
     BuildContext context,
     WidgetRef ref,
     PointsDetailsModel points,
@@ -110,9 +113,9 @@ class AddToCartRow extends ConsumerWidget {
       OrderHelpers(ref: ref).setScheduledLimitProviders(quantityLimit);
     }
     if (editOrder) {
-      ProductHelpers(ref: ref).editItemInCart(product, points);
+      ProductHelpers(ref: ref).editItemInBag(product, points);
     } else {
-      ProductHelpers(ref: ref).addToCart(product, points);
+      ProductHelpers(ref: ref).addToBag(product, points);
     }
     ProductHelpers(ref: ref).addCost(product, points);
   }

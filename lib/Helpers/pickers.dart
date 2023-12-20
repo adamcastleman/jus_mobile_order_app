@@ -87,10 +87,10 @@ class Picker {
                             Text('Schedule your pickup date',
                                 style:
                                     Theme.of(context).textTheme.headlineSmall),
-                            Spacing().vertical(10),
+                            Spacing.vertical(10),
                             Text(
                                 'These items require at least ${quantityLimit.hoursNotice} hours\' notice:'),
-                            Spacing().vertical(10),
+                            Spacing.vertical(10),
                             Flexible(
                               child: SizedBox(
                                 height: 60,
@@ -152,9 +152,9 @@ class Picker {
                                     true
                                 ? Column(
                                     children: [
-                                      Spacing().vertical(12.0),
+                                      Spacing.vertical(12.0),
                                       JusDivider().thick(),
-                                      Spacing().vertical(4.0),
+                                      Spacing.vertical(4.0),
                                       Consumer(
                                         builder: (context, ref, child) =>
                                             CheckboxListTile(
@@ -176,7 +176,7 @@ class Picker {
                                     ],
                                   )
                                 : const SizedBox(),
-                            Spacing().vertical(8.0),
+                            Spacing.vertical(8.0),
                             JusDivider().thick(),
                             Padding(
                               padding: const EdgeInsets.only(

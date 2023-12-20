@@ -8,7 +8,6 @@ import 'package:jus_mobile_order_app/Helpers/modal_bottom_sheets.dart';
 import 'package:jus_mobile_order_app/Helpers/spacing_widgets.dart';
 import 'package:jus_mobile_order_app/Providers/auth_providers.dart';
 import 'package:jus_mobile_order_app/Providers/loading_providers.dart';
-import 'package:jus_mobile_order_app/Providers/stream_providers.dart';
 import 'package:jus_mobile_order_app/Sheets/invalid_sheet_single_pop.dart';
 import 'package:jus_mobile_order_app/Widgets/Buttons/close_button.dart';
 import 'package:jus_mobile_order_app/Widgets/Buttons/elevated_button_medium.dart';
@@ -21,7 +20,6 @@ class DeleteAccountFormSheet extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final user = ref.watch(currentUserProvider).value!;
     final loading = ref.watch(loadingProvider);
     final addressLine1Error = ref.watch(addressLine1ErrorProvider);
     final addressLine2Error = ref.watch(addressLine2ErrorProvider);
@@ -61,10 +59,10 @@ class DeleteAccountFormSheet extends HookConsumerWidget {
                 children: [
                   JusTextField(ref: ref).addressLine1(),
                   JusTextField(ref: ref).error(addressLine1Error),
-                  Spacing().vertical(15),
+                  Spacing.vertical(15),
                   JusTextField(ref: ref).addressLine2(),
                   JusTextField(ref: ref).error(addressLine2Error),
-                  Spacing().vertical(15),
+                  Spacing.vertical(15),
                   Row(
                     children: [
                       Expanded(
@@ -75,7 +73,7 @@ class DeleteAccountFormSheet extends HookConsumerWidget {
                           ],
                         ),
                       ),
-                      Spacing().horizontal(20),
+                      Spacing.horizontal(20),
                       SizedBox(
                         width: MediaQuery.of(context).size.width * 0.2,
                         child: Column(
@@ -88,10 +86,10 @@ class DeleteAccountFormSheet extends HookConsumerWidget {
                       ),
                     ],
                   ),
-                  Spacing().vertical(15),
+                  Spacing.vertical(15),
                   JusTextField(ref: ref).zipCode(),
                   JusTextField(ref: ref).error(zipCodeError),
-                  Spacing().vertical(40),
+                  Spacing.vertical(40),
                   loading
                       ? const MediumElevatedLoadingButton()
                       : MediumElevatedButton(
@@ -103,12 +101,25 @@ class DeleteAccountFormSheet extends HookConsumerWidget {
                                 validate.validateCity() &&
                                 validate.validateStateName() &&
                                 validate.validateZipCode()) {
-                              handleAccountDeletionRequest(context, ref, () {
+                              handleAccountDeletionRequest(context, ref,
+                                  onCompleted: () {
                                 Navigator.pop(context);
                                 Navigator.pop(context);
                                 Navigator.pop(context);
                                 ToastHelper().showToast(
                                     message: 'We have received your request');
+                              }, onError: (error) {
+                                ModalBottomSheet().partScreen(
+                                    enableDrag: false,
+                                    isScrollControlled: false,
+                                    isDismissible: false,
+                                    context: context,
+                                    builder: (context) =>
+                                        const InvalidSheetSinglePop(
+                                            error:
+                                                'There was an error sending this request. Please try again.'));
+                                ref.read(loadingProvider.notifier).state =
+                                    false;
                               });
                               ref.read(loadingProvider.notifier).state = false;
                             } else {
@@ -126,8 +137,9 @@ class DeleteAccountFormSheet extends HookConsumerWidget {
     );
   }
 
-  void handleAccountDeletionRequest(
-      BuildContext context, WidgetRef ref, VoidCallback onCompleted) async {
+  void handleAccountDeletionRequest(BuildContext context, WidgetRef ref,
+      {required VoidCallback onCompleted,
+      required Function(String) onError}) async {
     try {
       await callDeleteAccountRequest(ref);
       ref.read(loadingProvider.notifier).state = false;
@@ -138,15 +150,7 @@ class DeleteAccountFormSheet extends HookConsumerWidget {
       ref.invalidate(usStateNameProvider);
       ref.invalidate(zipCodeProvider);
     } catch (error) {
-      ModalBottomSheet().partScreen(
-          enableDrag: false,
-          isScrollControlled: false,
-          isDismissible: false,
-          context: context,
-          builder: (context) => const InvalidSheetSinglePop(
-              error:
-                  'There was an error sending this request. Please try again.'));
-      ref.read(loadingProvider.notifier).state = false;
+      onError(error.toString());
     }
   }
 

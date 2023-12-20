@@ -34,6 +34,8 @@ class ProductDetailPage extends ConsumerWidget {
     return Scaffold(
       extendBodyBehindAppBar: true,
       appBar: AppBar(
+        elevation: 0.0,
+        scrolledUnderElevation: 0.0,
         backgroundColor: Colors.transparent,
         leading: editOrder != true
             ? FavoriteButton(product: product)
@@ -60,8 +62,8 @@ class ProductDetailPage extends ConsumerWidget {
         tappable: false,
         openColor: backgroundColor,
         closedColor: backgroundColor,
-        closedElevation: 2,
-        openElevation: 2,
+        closedElevation: 0,
+        openElevation: 0,
         transitionDuration: const Duration(milliseconds: 900),
         transitionType: ContainerTransitionType.fadeThrough,
         closedShape: RoundedRectangleBorder(
@@ -93,12 +95,12 @@ class ProductDetailPage extends ConsumerWidget {
                       ),
                     ),
                   ),
-                  Spacing().vertical(40),
+                  Spacing.vertical(40),
                   Text(
                     product.name,
                     style: Theme.of(context).textTheme.headlineSmall,
                   ),
-                  Spacing().vertical(20),
+                  Spacing.vertical(20),
                   determineSizeSelector(),
                   PriceDisplay(product: product),
                   determineIngredientGrid(context, ref, close),
@@ -140,7 +142,7 @@ class ProductDetailPage extends ConsumerWidget {
                   '${product.isModifiable ? 'Current ' : ''}${product.isScheduled ? 'Items' : 'Ingredients'}',
                   style: Theme.of(context).textTheme.titleLarge,
                 ),
-                Spacing().vertical(15),
+                Spacing.vertical(15),
                 InkWell(
                   onTap: () {
                     determineModificationPageNavigation(ref, close);
@@ -167,6 +169,7 @@ class ProductDetailPage extends ConsumerWidget {
 
   determineModificationPageNavigation(WidgetRef ref, Function close) {
     if (product.isModifiable) {
+      HapticFeedback.lightImpact();
       StandardIngredients(ref: ref).add();
       close();
     } else {

@@ -5,7 +5,7 @@ import 'package:jus_mobile_order_app/Providers/ProviderWidgets/new_products_prov
 import 'package:jus_mobile_order_app/Widgets/Cards/new_product_card.dart';
 
 class NewProductList extends ConsumerWidget {
-  const NewProductList({Key? key}) : super(key: key);
+  const NewProductList({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -33,8 +33,7 @@ class NewProductList extends ConsumerWidget {
                   primary: false,
                   padding: const EdgeInsets.symmetric(horizontal: 12.0),
                   scrollDirection: Axis.horizontal,
-                  separatorBuilder: (context, index) =>
-                      Spacing().horizontal(15),
+                  separatorBuilder: (context, index) => Spacing.horizontal(15),
                   itemCount: products.isEmpty ? 0 : products.length,
                   itemBuilder: (context, index) => NewProductCard(index: index),
                 ),

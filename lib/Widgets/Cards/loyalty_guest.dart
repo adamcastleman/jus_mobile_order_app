@@ -28,7 +28,7 @@ class LoyaltyCardGuest extends ConsumerWidget {
               'Get Free Stuff.',
               style: Theme.of(context).textTheme.headlineSmall,
             ),
-            Spacing().vertical(25),
+            Spacing.vertical(25),
             Text(
               'Collect points',
               style: Theme.of(context).textTheme.bodyMedium,
@@ -37,7 +37,7 @@ class LoyaltyCardGuest extends ConsumerWidget {
               'and redeem for free items.',
               style: Theme.of(context).textTheme.bodyMedium,
             ),
-            Spacing().vertical(20),
+            Spacing.vertical(20),
             SmallOutlineButton(
               buttonText: 'How Rewards Work',
               onPressed: () {
@@ -49,7 +49,7 @@ class LoyaltyCardGuest extends ConsumerWidget {
                 );
               },
             ),
-            Spacing().vertical(5),
+            Spacing.vertical(5),
             SmallElevatedButton(
               buttonText: 'Join Now',
               onPressed: () {

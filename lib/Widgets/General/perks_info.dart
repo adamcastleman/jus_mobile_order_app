@@ -4,7 +4,7 @@ import 'package:jus_mobile_order_app/Models/product_model.dart';
 
 class PerksInfo extends ConsumerWidget {
   final ProductModel product;
-  const PerksInfo({required this.product, Key? key}) : super(key: key);
+  const PerksInfo({required this.product, super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

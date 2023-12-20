@@ -1,5 +1,6 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:jus_mobile_order_app/Helpers/modal_bottom_sheets.dart';
@@ -16,7 +17,7 @@ import 'package:jus_mobile_order_app/Widgets/Icons/member_icon.dart';
 
 class PriceDisplay extends ConsumerWidget {
   final ProductModel product;
-  const PriceDisplay({required this.product, Key? key}) : super(key: key);
+  const PriceDisplay({required this.product, super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -25,18 +26,19 @@ class PriceDisplay extends ConsumerWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         determinePriceRow(ref, user),
-        Spacing().vertical(10),
+        Spacing.vertical(10),
         Row(
           children: [
             determineSavedAmount(ref, user),
-            Spacing().horizontal(5),
+            Spacing.horizontal(5),
             const MemberIcon(
               iconSize: 10,
             ),
-            Spacing().horizontal(5),
+            Spacing.horizontal(5),
             user.uid == null || !user.isActiveMember!
                 ? InfoButton(
                     onTap: () {
+                      HapticFeedback.lightImpact();
                       ModalBottomSheet().fullScreen(
                         context: context,
                         builder: (context) => const MembershipDetailPage(),
@@ -47,7 +49,7 @@ class PriceDisplay extends ConsumerWidget {
                 : const SizedBox(),
           ],
         ),
-        Spacing().vertical(10),
+        Spacing.vertical(10),
         PointsAmountDisplay(
           padding: 4.0,
           product: product,

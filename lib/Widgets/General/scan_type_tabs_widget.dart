@@ -3,7 +3,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:jus_mobile_order_app/Providers/scan_providers.dart';
 
 class ScanTypeTabsWidget extends ConsumerWidget {
-  const ScanTypeTabsWidget({Key? key}) : super(key: key);
+  const ScanTypeTabsWidget({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

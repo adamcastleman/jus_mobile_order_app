@@ -66,61 +66,55 @@ module.exports = (orderMap) => {
       .join("");
   };
 
-  const renderUnscheduledItems = (unscheduledItems) => {
-    return unscheduledItems
-      .map(
-        (item, index) => `
-    <div style="display: flex; align-items: center; margin-bottom: 10px;">
-      <div style="width: 70px; height: 70px; display: flex; justify-content: center; align-items: center; margin-right: 10px; text-align: center;">
-        <img src="${item.image}" alt="${item.name}" style="max-width: ${
-          item.imageWidth
-        }px; max-height: 100%; ${
-          item.imageWidth === 70 ? "" : "object-fit: contain"
-        }; margin: 0 auto;" />
-      </div>
-      <div style="flex: 1; font-size: 0.75rem; line-height: 1; max-width: 200px; text-align: left;">
-        <p class="item-name" style="margin: 0 0 5px 0;">${item.name}</p>
-        ${
-          item.itemQuantity > 1
-            ? `<p style="margin: 2px 0 0 0;">Quantity: ${item.itemQuantity}</p>`
-            : ""
-        }
-        ${item.size ? `<p style="margin: 2px 0 0 0;">${item.size}</p>` : ""}
-        ${
-          item.modifications.length > 0
-            ? `<p class="item-modifications" style="margin: 2px 0 0 0;">${item.modifications.join(
-                "<br>",
-              )}</p>`
-            : ""
-        }
-        ${
-          item.allergies.length > 0
-            ? `<p style="margin: 2px 0 0 0;"><strong>Allergies: </strong>${item.allergies.join(
-                "<br>",
-              )}</p>`
-            : ""
-        }
-      </div>
-      <div style="margin-left: auto;">
-        $${((item.price * item.itemQuantity) / 100).toFixed(2)}
-      </div>
-    </div>
-    ${
-      index !== unscheduledItems.length - 1
-        ? '<div style="border-bottom: 1px solid #ddd; margin-bottom: 10px;"></div>'
-        : ""
-    }
-    <style>
-      @media screen and (min-width: 600px) {
-        .item-image-container {
-          width: 120px;
-        }
-      }
-    </style>
-  `,
-      )
-      .join("");
-  };
+ const renderUnscheduledItems = (unscheduledItems) => {
+   return unscheduledItems
+     .map(
+       (item, index) => {
+         // Parse and format modifications
+         const formattedModifications = item.modifications.map(modString => {
+           try {
+             const mod = JSON.parse(modString);
+             const price = parseInt(mod.price);
+             // Check if price is greater than 0 before appending price string
+             const priceString = price > 0 ? ` +\$${(price / 100).toFixed(2)}` : '';
+             return `${mod.name}${priceString}`;
+           } catch (e) {
+             console.error('Error parsing modification:', e);
+             return ''; // Return an empty string or some default value in case of error
+           }
+         }).join('<br>');
+
+         // Return the HTML for each item
+         return `
+           <div style="display: flex; align-items: center; margin-bottom: 10px;">
+             <div style="width: 70px; height: 70px; display: flex; justify-content: center; align-items: center; margin-right: 10px; text-align: center;">
+               <img src="${item.image}" alt="${item.name}" style="max-width: ${item.imageWidth}px; max-height: 100%; ${item.imageWidth === 70 ? "" : "object-fit: contain"}; margin: 0 auto;" />
+             </div>
+             <div style="flex: 1; font-size: 0.75rem; line-height: 1; max-width: 200px; text-align: left;">
+               <p class="item-name" style="margin: 0 0 5px 0;">${item.name}</p>
+               ${item.itemQuantity > 1 ? `<p style="margin: 2px 0 0 0;">Quantity: ${item.itemQuantity}</p>` : ""}
+               ${item.size ? `<p style="margin: 2px 0 0 0;">${item.size}</p>` : ""}
+               ${formattedModifications.length > 0 ? `<p class="item-modifications" style="margin: 2px 0 0 0;">${formattedModifications}</p>` : ""}
+               ${item.allergies.length > 0 ? `<p style="margin: 2px 0 0 0;"><strong>Allergies: </strong>${item.allergies.join("<br>")}</p>` : ""}
+             </div>
+             <div style="margin-left: auto;">
+               $${((item.price * item.itemQuantity) / 100).toFixed(2)}
+             </div>
+           </div>
+           ${index !== unscheduledItems.length - 1 ? '<div style="border-bottom: 1px solid #ddd; margin-bottom: 10px;"></div>' : ""}
+           <style>
+             @media screen and (min-width: 600px) {
+               .item-image-container {
+                 width: 120px;
+               }
+             }
+           </style>
+         `;
+       }
+     )
+     .join("");
+ };
+
 
   const emailBody = `
 <html lang="en">

@@ -34,7 +34,7 @@ class SelectProductOptions extends ConsumerWidget {
                     children: [
                       _buildQuantityRow(context),
                       _buildScheduledRow(context, quantityLimit),
-                      AddToCartRow(
+                      AddToBagRow(
                         product: product,
                         close: close,
                       ),

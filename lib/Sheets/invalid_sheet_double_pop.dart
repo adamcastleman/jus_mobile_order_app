@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:jus_mobile_order_app/Providers/loading_providers.dart';
 import 'package:jus_mobile_order_app/Widgets/Buttons/elevated_button_large.dart';
 
-class InvalidSheetDoublePop extends StatelessWidget {
+class InvalidSheetDoublePop extends ConsumerWidget {
   final String error;
   const InvalidSheetDoublePop({required this.error, super.key});
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 22.0),
       height: MediaQuery.of(context).size.height * 0.33,
@@ -26,6 +28,8 @@ class InvalidSheetDoublePop extends StatelessWidget {
               child: LargeElevatedButton(
                 buttonText: 'Close',
                 onPressed: () {
+                  ref.read(loadingProvider.notifier).state = false;
+                  ref.invalidate(applePayLoadingProvider);
                   Navigator.pop(context);
                   Navigator.pop(context);
                 },

@@ -6,7 +6,7 @@ import 'package:jus_mobile_order_app/Models/product_model.dart';
 import 'package:jus_mobile_order_app/Providers/ProviderWidgets/taxable_products_provider_widget.dart';
 import 'package:jus_mobile_order_app/Providers/product_providers.dart';
 import 'package:jus_mobile_order_app/Providers/theme_providers.dart';
-import 'package:jus_mobile_order_app/Widgets/Cards/menu_card.dart';
+import 'package:jus_mobile_order_app/Widgets/Cards/menu_card_mobile.dart';
 import 'package:simple_grouped_listview/simple_grouped_listview.dart';
 
 class ListOfTaxableProductsByGroup extends HookConsumerWidget {
@@ -110,7 +110,7 @@ class ListOfTaxableProductsByGroup extends HookConsumerWidget {
       ifAbsent: () => 1,
     );
 
-    return MenuCard(index: itemIndexInOriginalList);
+    return MenuCard(product: product);
   }
 
   double _calculateSelectedHeaderHeight(WidgetRef ref) {

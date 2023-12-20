@@ -1,13 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:jus_mobile_order_app/Helpers/divider.dart';
+import 'package:jus_mobile_order_app/Helpers/modal_bottom_sheets.dart';
 import 'package:jus_mobile_order_app/Helpers/spacing_widgets.dart';
 import 'package:jus_mobile_order_app/Models/user_model.dart';
-import 'package:jus_mobile_order_app/Payments/payment_method_selector.dart';
 import 'package:jus_mobile_order_app/Providers/ProviderWidgets/points_details_provider_widget.dart';
 import 'package:jus_mobile_order_app/Providers/stream_providers.dart';
 import 'package:jus_mobile_order_app/Providers/theme_providers.dart';
 import 'package:jus_mobile_order_app/Views/points_detail_page.dart';
+import 'package:jus_mobile_order_app/Widgets/Buttons/info_button.dart';
+import 'package:jus_mobile_order_app/Widgets/General/payment_method_selector.dart';
 import 'package:jus_mobile_order_app/Widgets/General/points_multiple_text_widget.dart';
 import 'package:jus_mobile_order_app/Widgets/General/qr_code_display.dart';
 import 'package:jus_mobile_order_app/Widgets/General/scan_descriptor_widget.dart';
@@ -17,7 +20,7 @@ import 'package:jus_mobile_order_app/Widgets/General/user_points_status_display.
 import '../Providers/scan_providers.dart';
 
 class ScanPage extends HookConsumerWidget {
-  const ScanPage({Key? key}) : super(key: key);
+  const ScanPage({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -35,20 +38,43 @@ class ScanPage extends HookConsumerWidget {
           child: Column(
             children: [
               const ScanTypeTabsWidget(),
-              Spacing().vertical(15),
+              Spacing.vertical(15),
               UserPointsStatusWidget(
                 user: user,
                 points: points,
               ),
-              Spacing().vertical(50),
+              Spacing.vertical(50),
               ScanDescriptorWidget(
-                  isScanAndPay: categoryIndex == 0 ? true : false,
-                  isActiveMember: user.isActiveMember!),
-              Spacing().vertical(30),
+                isScanAndPay: categoryIndex == 0 ? true : false,
+                isActiveMember:
+                    user.isActiveMember == null ? false : user.isActiveMember!,
+              ),
+              Spacing.vertical(30),
               const QrCodeDisplay(),
-              Spacing().vertical(30),
-              const PointsMultipleText(),
-              Spacing().vertical(20),
+              Spacing.vertical(30),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const PointsMultipleText(
+                    textStyle: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  Spacing.horizontal(5),
+                  InfoButton(
+                    size: 20,
+                    onTap: () {
+                      HapticFeedback.lightImpact();
+                      ModalBottomSheet().fullScreen(
+                          context: context,
+                          builder: (context) =>
+                              const PointsDetailPage(closeButton: true));
+                    },
+                  )
+                ],
+              ),
+              Spacing.vertical(20),
               categoryIndex == 0 ? JusDivider().thin() : const SizedBox(),
               categoryIndex == 0
                   ? const PaymentMethodSelector()

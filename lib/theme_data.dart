@@ -6,6 +6,7 @@ import 'package:square_in_app_payments/models.dart';
 
 class ThemeManager {
   final ThemeData theme = ThemeData(
+    useMaterial3: false,
     scaffoldBackgroundColor: const Color(0xffF5F5F7),
     cupertinoOverrideTheme: CupertinoThemeData(
       textTheme: CupertinoTextThemeData(
@@ -89,14 +90,17 @@ class ThemeManager {
     textSelectionTheme: const TextSelectionThemeData(
       cursorColor: Colors.black,
     ),
-    iconTheme: const IconThemeData(color: Colors.black, size: 25),
+    iconTheme: const IconThemeData(
+      color: Colors.black,
+      size: 25,
+    ),
     inputDecorationTheme: InputDecorationTheme(
       contentPadding: const EdgeInsets.all(8),
       constraints: BoxConstraints(
-          maxWidth: MediaQueryData.fromWindow(WidgetsBinding.instance.window)
-                  .size
-                  .width *
-              0.9),
+        maxWidth: WidgetsBinding
+                .instance.platformDispatcher.views.first.physicalSize.width *
+            0.9,
+      ),
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(8),
         borderSide: const BorderSide(color: Colors.transparent, width: 0),
@@ -136,9 +140,9 @@ class ThemeManager {
     ),
   );
 
-  Future setIOSCardEntryTheme({required bool isMembershipTransfer}) async {
+  Future setIOSCardEntryTheme({required bool isMembershipMigration}) async {
     var themeConfigurationBuilder = IOSThemeBuilder();
-    themeConfigurationBuilder.saveButtonTitle = isMembershipTransfer
+    themeConfigurationBuilder.saveButtonTitle = isMembershipMigration
         ? 'Update Payment Method for Membership'
         : 'Add Card';
 

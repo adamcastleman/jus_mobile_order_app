@@ -15,8 +15,7 @@ import 'package:jus_mobile_order_app/Widgets/General/perks_description_tile.dart
 
 class PointsDetailPage extends ConsumerWidget {
   final bool closeButton;
-  const PointsDetailPage({required this.closeButton, Key? key})
-      : super(key: key);
+  const PointsDetailPage({required this.closeButton, super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -117,7 +116,7 @@ class PointsDetailPage extends ConsumerWidget {
         primary: false,
         shrinkWrap: true,
         itemCount: points.rewardsAmounts.length,
-        separatorBuilder: (context, index) => Spacing().vertical(10),
+        separatorBuilder: (context, index) => Spacing.vertical(10),
         itemBuilder: (context, index) => rewardsAmountTile(points, index),
       ),
     );

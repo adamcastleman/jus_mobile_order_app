@@ -49,16 +49,16 @@ class ForgotPasswordPage extends ConsumerWidget {
                         Navigator.pop(context);
                       },
                     ),
-                    Spacing().vertical(25),
+                    Spacing.vertical(25),
                     Text(
                       'Forgot Password',
                       style: Theme.of(context).textTheme.headlineSmall,
                     ),
-                    Spacing().vertical(15),
+                    Spacing.vertical(15),
                     const Text(
                       'Enter your email and we will send you a link to reset your password.',
                     ),
-                    Spacing().vertical(25),
+                    Spacing.vertical(25),
                     TextFormField(
                       initialValue: email,
                       decoration: const InputDecoration(
@@ -82,16 +82,16 @@ class ForgotPasswordPage extends ConsumerWidget {
                             ),
                           ),
                     firebaseError == null
-                        ? Spacing().vertical(30)
-                        : Spacing().vertical(20),
+                        ? Spacing.vertical(30)
+                        : Spacing.vertical(20),
                     firebaseError != null
                         ? ShowError(
                             error: firebaseError,
                           )
                         : const SizedBox(),
                     firebaseError == null
-                        ? Spacing().vertical(0)
-                        : Spacing().vertical(20),
+                        ? Spacing.vertical(0)
+                        : Spacing.vertical(20),
                     loading == true
                         ? const LargeElevatedLoadingButton()
                         : LargeElevatedButton(
@@ -104,7 +104,7 @@ class ForgotPasswordPage extends ConsumerWidget {
                               ref.read(loadingProvider.notifier).state = false;
                             },
                           ),
-                    Spacing().vertical(10),
+                    Spacing.vertical(10),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [

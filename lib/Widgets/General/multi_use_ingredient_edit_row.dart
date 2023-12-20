@@ -11,8 +11,7 @@ class MultiUseIngredientEditRow extends ConsumerWidget {
   final IngredientModel currentIngredient;
   final int index;
   const MultiUseIngredientEditRow(
-      {required this.currentIngredient, required this.index, Key? key})
-      : super(key: key);
+      {required this.currentIngredient, required this.index, super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

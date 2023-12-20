@@ -1,5 +1,4 @@
 const admin = require("firebase-admin");
-const { customAlphabet } = require("nanoid");
 const convertDatesToTimestamps = require("../orders/convert_dates_to_timestamps");
 const addFailedOrderToDatabase = require("../orders/add_failed_order_to_database");
 const sendScheduledItems = require("../orders/send_scheduled_items");
@@ -9,23 +8,21 @@ const sendCleanseInstructionsEmail = require("../emails/send_cleanse_instruction
 const sendEmailToAdminOnFailedOrder = require("../emails/send_email_to_admin_on_failed_order");
 
 const addOrderToDatabase = async (db, orderMap, userID) => {
-  const orderWithoutNonce = { ...orderMap };
-  const alphabet = "0123456789ABCDEF";
-  const nanoid = customAlphabet(alphabet, 10);
+  const orderWithoutCardSource = { ...orderMap };
 
   try {
-    delete orderWithoutNonce.paymentDetails.nonce;
-    delete orderWithoutNonce.paymentDetails.gan;
-    delete orderWithoutNonce.paymentDetails.giftCardID;
+    delete orderWithoutCardSource.paymentDetails.cardId;
+    delete orderWithoutCardSource.paymentDetails.gan;
+    delete orderWithoutCardSource.paymentDetails.giftCardID;
+    orderWithoutCardSource.orderDetails
 
-    convertDatesToTimestamps(orderWithoutNonce);
+    convertDatesToTimestamps(orderWithoutCardSource);
 
     const newOrderRef = db.collection("orders").doc();
-    orderWithoutNonce.uid = newOrderRef.id;
-    orderWithoutNonce.orderDetails.orderStatus = "RECEIVED";
-    orderWithoutNonce.orderDetails.orderNumber = nanoid();
+    orderWithoutCardSource.uid = newOrderRef.id;
+    orderWithoutCardSource.orderDetails.orderStatus = "RECEIVED";
 
-    await newOrderRef.set(orderWithoutNonce);
+    await newOrderRef.set(orderWithoutCardSource);
 
     const scheduledItems = extractScheduledItems(orderMap);
 
@@ -33,10 +30,10 @@ const addOrderToDatabase = async (db, orderMap, userID) => {
        sendScheduledItems(scheduledItems);
    }
 
-    await sendOrderConfirmationEmail(orderWithoutNonce);
+    await sendOrderConfirmationEmail(orderWithoutCardSource);
 
-    for (let j = 0; j < orderWithoutNonce.orderDetails.items.length; j++) {
-      const item = orderWithoutNonce.orderDetails.items[j];
+    for (let j = 0; j < orderWithoutCardSource.orderDetails.items.length; j++) {
+      const item = orderWithoutCardSource.orderDetails.items[j];
 
       if (
         item.name === "Full Day Cleanse" ||
@@ -47,10 +44,10 @@ const addOrderToDatabase = async (db, orderMap, userID) => {
       }
     }
 
-    return orderWithoutNonce;
+    return orderWithoutCardSource;
   } catch (error) {
-    await addFailedOrderToDatabase(db, orderWithoutNonce);
-    await sendEmailToAdminOnFailedOrder(orderWithoutNonce);
+    await addFailedOrderToDatabase(db, orderWithoutCardSource);
+    await sendEmailToAdminOnFailedOrder(orderWithoutCardSource);
     console.error("Error adding order to database:", error);
     return 400;
   }

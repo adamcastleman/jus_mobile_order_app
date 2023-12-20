@@ -2,16 +2,17 @@ import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:jus_mobile_order_app/Helpers/modal_bottom_sheets.dart';
-import 'package:jus_mobile_order_app/Models/points_details_model.dart';
-import 'package:jus_mobile_order_app/Models/user_model.dart';
+import 'package:jus_mobile_order_app/Helpers/spacing_widgets.dart';
 import 'package:jus_mobile_order_app/Providers/ProviderWidgets/points_details_provider_widget.dart';
 import 'package:jus_mobile_order_app/Providers/stream_providers.dart';
 import 'package:jus_mobile_order_app/Widgets/General/determine_user_status.dart';
+import 'package:jus_mobile_order_app/Widgets/General/points_multiple_text_widget.dart';
+import 'package:jus_mobile_order_app/Widgets/Icons/chevron_right_icon.dart';
 
 import '../../Views/points_detail_page.dart';
 
 class LoyaltyCard extends ConsumerWidget {
-  const LoyaltyCard({Key? key}) : super(key: key);
+  const LoyaltyCard({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -30,7 +31,7 @@ class LoyaltyCard extends ConsumerWidget {
             ),
           ),
           SizedBox(
-            height: 100,
+            height: 110,
             width: MediaQuery.of(context).size.width * 0.95,
             child: Container(
               padding: const EdgeInsets.all(12.0),
@@ -80,12 +81,17 @@ class LoyaltyCard extends ConsumerWidget {
                               const PointsDetailPage(closeButton: true),
                         );
                       },
-                      child: Text(
-                        '${determinePointsMultiple(user, points)}x points/\$1 >',
-                        style: const TextStyle(
-                          fontSize: 16,
-                          color: Colors.black,
-                        ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          const PointsMultipleText(
+                            textStyle: TextStyle(
+                              fontSize: 16,
+                            ),
+                          ),
+                          Spacing.horizontal(5),
+                          const ChevronRightIcon(),
+                        ],
                       ),
                     ),
                   ),
@@ -96,13 +102,5 @@ class LoyaltyCard extends ConsumerWidget {
         ],
       ),
     );
-  }
-
-  determinePointsMultiple(UserModel user, PointsDetailsModel points) {
-    if (user.uid == null || !user.isActiveMember!) {
-      return '${points.pointsPerDollar}';
-    } else {
-      return '${points.memberPointsPerDollar}';
-    }
   }
 }

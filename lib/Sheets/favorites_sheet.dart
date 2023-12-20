@@ -39,7 +39,7 @@ class FavoritesSheet extends ConsumerWidget {
               'Favorites',
               style: Theme.of(context).textTheme.headlineSmall,
             ),
-            Spacing().vertical(30),
+            Spacing.vertical(30),
             favorites.isEmpty
                 ? const Center(
                     child: SizedBox(

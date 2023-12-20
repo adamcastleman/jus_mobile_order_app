@@ -9,7 +9,7 @@ import 'package:jus_mobile_order_app/Providers/auth_providers.dart';
 import 'package:jus_mobile_order_app/Providers/loading_providers.dart';
 import 'package:jus_mobile_order_app/Providers/stream_providers.dart';
 import 'package:jus_mobile_order_app/Services/auth_services.dart';
-import 'package:jus_mobile_order_app/Services/payments_services.dart';
+import 'package:jus_mobile_order_app/Services/payments_services_square.dart';
 import 'package:jus_mobile_order_app/Services/subscription_services.dart';
 import 'package:jus_mobile_order_app/Services/user_services.dart';
 import 'package:jus_mobile_order_app/Views/login_page.dart';
@@ -39,8 +39,7 @@ class RegisterPage extends ConsumerWidget {
     final loading = ref.watch(loadingProvider);
     return Container(
       padding: EdgeInsets.only(
-        top:
-            MediaQueryData.fromView(WidgetsBinding.instance.window).padding.top,
+        top: MediaQuery.of(context).padding.top,
       ),
       color: Colors.white,
       child: Scaffold(
@@ -68,42 +67,42 @@ class RegisterPage extends ConsumerWidget {
                     ),
                   ],
                 ),
-                Spacing().vertical(15),
+                Spacing.vertical(15),
                 const Text(
                   'Join now to collect points to redeem for free items, save '
                   'favorite items, and more.',
                 ),
-                Spacing().vertical(10),
+                Spacing.vertical(10),
                 const Text(
                   'To transfer your points or membership from our legacy programs, register with '
                   'the same phone number and email, respectively. You can update your data later if needed.',
                   style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
                 ),
-                Spacing().vertical(25),
+                Spacing.vertical(25),
                 JusTextField(ref: ref).firstName(user: user),
                 JusTextField(ref: ref).error(firstNameError),
-                Spacing().vertical(15),
+                Spacing.vertical(15),
                 JusTextField(ref: ref).lastName(user: user),
                 JusTextField(ref: ref).error(lastNameError),
-                Spacing().vertical(15),
+                Spacing.vertical(15),
                 JusTextField(ref: ref).phone(user: user),
                 JusTextField(ref: ref).error(phoneError),
-                Spacing().vertical(15),
+                Spacing.vertical(15),
                 JusTextField(ref: ref).email(user: user),
                 JusTextField(ref: ref).error(emailError),
-                Spacing().vertical(15),
+                Spacing.vertical(15),
                 JusTextField(ref: ref).password(),
                 JusTextField(ref: ref).error(passwordError),
-                Spacing().vertical(15),
+                Spacing.vertical(15),
                 JusTextField(ref: ref).confirmPassword(),
                 JusTextField(ref: ref).error(confirmPasswordError),
                 firebaseError == null
-                    ? Spacing().vertical(40)
-                    : Spacing().vertical(20),
+                    ? Spacing.vertical(40)
+                    : Spacing.vertical(20),
                 ShowError(error: firebaseError),
                 firebaseError == null
-                    ? Spacing().vertical(0)
-                    : Spacing().vertical(20),
+                    ? Spacing.vertical(0)
+                    : Spacing.vertical(20),
                 loading == true
                     ? const LargeElevatedLoadingButton()
                     : LargeElevatedButton(
@@ -129,7 +128,7 @@ class RegisterPage extends ConsumerWidget {
                           );
                         },
                       ),
-                Spacing().vertical(10),
+                Spacing.vertical(10),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
@@ -160,8 +159,8 @@ class RegisterPage extends ConsumerWidget {
     var result = await SubscriptionServices()
         .isRegisteringUserLegacyMember(email: email);
     if (result.data['status'] == 'active') {
-      String? nonce = await PaymentsServices()
-          .enterPaymentMethodForMembershipMigration(onCardEntryCancel: () {
+      String? nonce = await SquarePaymentServices()
+          .inputSquareCreditCardForMembershipMigration(onCardEntryCancel: () {
         ref.read(loadingProvider.notifier).state = false;
       });
 

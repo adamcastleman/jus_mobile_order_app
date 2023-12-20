@@ -30,8 +30,8 @@ class UnmodifiableIngredientCard extends ConsumerWidget {
             child: Column(
               children: [
                 SizedBox(
-                  height: product.isScheduled ? 50 : 70,
-                  width: product.isScheduled ? 50 : 70,
+                  height: product.isScheduled ? 45 : 70,
+                  width: product.isScheduled ? 48 : 70,
                   child: product.isScheduled
                       ? Center(
                           child: Text(
@@ -58,7 +58,7 @@ class UnmodifiableIngredientCard extends ConsumerWidget {
                     maxLines: 2,
                   ),
                 ),
-                Spacing().vertical(5),
+                Spacing.vertical(5),
                 product.isScheduled
                     ? determineItemDescription(products, ref)
                     : determineIngredientAmountDescription(ingredients, ref),

@@ -23,7 +23,7 @@ import '../../Providers/ProviderWidgets/products_provider_widget.dart';
 class OrderTile extends ConsumerWidget {
   final int orderIndex;
 
-  const OrderTile({required this.orderIndex, Key? key}) : super(key: key);
+  const OrderTile({required this.orderIndex, super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -75,7 +75,7 @@ class OrderTile extends ConsumerWidget {
                             crossAxisAlignment: CrossAxisAlignment.end,
                             children: [
                               determinePriceDisplay(ref, currentProduct),
-                              Spacing().vertical(10),
+                              Spacing.vertical(10),
                               determineDiscountTagDisplay(ref),
                             ],
                           ),
@@ -100,12 +100,12 @@ class OrderTile extends ConsumerWidget {
                                   currentProduct: currentProduct,
                                   orderIndex: orderIndex,
                                 ),
-                                Spacing().vertical(3),
+                                Spacing.vertical(3),
                                 OrderTileDisplayModifications(
                                   currentProduct: currentProduct,
                                   orderIndex: orderIndex,
                                 ),
-                                Spacing().vertical(7),
+                                Spacing.vertical(7),
                                 Padding(
                                   padding: EdgeInsets.only(
                                     top: user.uid == null ||
@@ -158,7 +158,7 @@ class OrderTile extends ConsumerWidget {
               color: Colors.grey,
             ),
           ),
-          Spacing().horizontal(5),
+          Spacing.horizontal(5),
           Text(
             Pricing(ref: ref)
                 .orderTileProductPriceForMembers(currentProduct, orderIndex),
@@ -198,7 +198,7 @@ class OrderTile extends ConsumerWidget {
               const Icon(
                 CupertinoIcons.tags,
               ),
-              Spacing().horizontal(2),
+              Spacing.horizontal(2),
               matchingIndex['value'] < 2
                   ? const SizedBox()
                   : Text(

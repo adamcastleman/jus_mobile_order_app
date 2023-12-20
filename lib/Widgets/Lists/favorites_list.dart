@@ -5,7 +5,7 @@ import 'package:jus_mobile_order_app/Widgets/Cards/favorite_card_empty.dart';
 import 'package:jus_mobile_order_app/Widgets/Cards/favorites_card.dart';
 
 class FavoritesList extends StatelessWidget {
-  const FavoritesList({Key? key}) : super(key: key);
+  const FavoritesList({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -33,8 +33,7 @@ class FavoritesList extends StatelessWidget {
                   primary: false,
                   padding: const EdgeInsets.symmetric(horizontal: 12.0),
                   scrollDirection: Axis.horizontal,
-                  separatorBuilder: (context, index) =>
-                      Spacing().horizontal(15),
+                  separatorBuilder: (context, index) => Spacing.horizontal(15),
                   itemCount: favorites.isEmpty ? 1 : favorites.length,
                   itemBuilder: (context, index) => favorites.isEmpty
                       ? const EmptyFavoriteCard(

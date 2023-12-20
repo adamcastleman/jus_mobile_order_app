@@ -10,6 +10,12 @@ final selectedCardColorProvider =
 final selectedCardBorderColorProvider =
     Provider<Color>((ref) => Colors.blueGrey);
 
+final titleStyleProvider = Provider<TextStyle>(
+    (ref) => const TextStyle(fontSize: 14, fontWeight: FontWeight.bold));
+
+final subtitleStyleProvider =
+    Provider<TextStyle>((ref) => const TextStyle(fontSize: 12));
+
 final priceBoldProvider = Provider<TextStyle>(
   (ref) => const TextStyle(
     fontWeight: FontWeight.bold,
@@ -27,10 +33,16 @@ final priceGreenStyleProvider = Provider<TextStyle>(
   ),
 );
 
-final priceLineThroughStyle = Provider<TextStyle>(
+final priceLineThroughStyleProvider = Provider<TextStyle>(
   (ref) => const TextStyle(
     fontSize: 14,
     decoration: TextDecoration.lineThrough,
     color: Colors.grey,
   ),
 );
+
+final webNavigationButtonTextStyleProvider =
+    Provider.family<TextStyle, double>((ref, fontSize) => TextStyle(
+          fontSize: fontSize,
+          fontWeight: FontWeight.bold,
+        ));

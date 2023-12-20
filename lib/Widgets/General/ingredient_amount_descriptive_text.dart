@@ -7,8 +7,7 @@ class IngredientAmountDescriptiveText extends ConsumerWidget {
   final int index;
   final IngredientModel currentIngredient;
   const IngredientAmountDescriptiveText(
-      {required this.index, required this.currentIngredient, Key? key})
-      : super(key: key);
+      {required this.index, required this.currentIngredient, super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

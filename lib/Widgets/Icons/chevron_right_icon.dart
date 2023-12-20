@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
 
 class ChevronRightIcon extends StatelessWidget {
-  const ChevronRightIcon({Key? key}) : super(key: key);
+  const ChevronRightIcon({super.key});
 
   @override
   Widget build(BuildContext context) {

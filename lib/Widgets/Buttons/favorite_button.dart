@@ -11,6 +11,7 @@ import 'package:jus_mobile_order_app/Providers/ProviderWidgets/favorites_provide
 import 'package:jus_mobile_order_app/Providers/product_providers.dart';
 import 'package:jus_mobile_order_app/Providers/stream_providers.dart';
 import 'package:jus_mobile_order_app/Services/favorites_services.dart';
+import 'package:jus_mobile_order_app/Sheets/invalid_sheet_single_pop.dart';
 import 'package:jus_mobile_order_app/Sheets/name_favorite_item_sheet.dart';
 import 'package:jus_mobile_order_app/Views/register_page.dart';
 
@@ -81,7 +82,16 @@ class FavoriteButton extends ConsumerWidget {
         onPressed: () {
           HapticFeedback.lightImpact();
           FavoritesServices().deleteFromFavorites(
-              context: context, docID: matchingFavorite.first.uid);
+              context: context,
+              docID: matchingFavorite.first.uid,
+              onError: (error) {
+                ModalBottomSheet().partScreen(
+                  context: context,
+                  builder: (context) => InvalidSheetSinglePop(
+                    error: error,
+                  ),
+                );
+              });
         },
       );
     }

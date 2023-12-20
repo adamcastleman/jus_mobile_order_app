@@ -13,6 +13,7 @@ import 'package:jus_mobile_order_app/Providers/location_providers.dart';
 import 'package:jus_mobile_order_app/Providers/product_providers.dart';
 import 'package:jus_mobile_order_app/Providers/theme_providers.dart';
 import 'package:jus_mobile_order_app/Widgets/General/selection_incrementor.dart';
+import 'package:jus_mobile_order_app/constants.dart';
 
 class OrderTileEditRow extends ConsumerWidget {
   final int index;
@@ -22,8 +23,7 @@ class OrderTileEditRow extends ConsumerWidget {
       {required this.index,
       required this.currentProduct,
       required this.close,
-      Key? key})
-      : super(key: key);
+      super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -134,17 +134,26 @@ class OrderTileEditRow extends ConsumerWidget {
         .fold(0, (sum, item) => sum + double.tryParse(item['price'] ?? 0.0));
     final extraChargeMembers = currentOrder[index]['selectedIngredients'].fold(
         0, (sum, item) => sum + double.tryParse(item['memberPrice'] ?? 0.0));
+    final nonMemberVariations = currentProduct.variations
+        .where(
+            (element) => element['customerType'] == AppConstants.nonMemberType)
+        .toList();
+    final memberVariations = currentProduct.variations
+        .where((element) => element['customerType'] == AppConstants.memberType)
+        .toList();
+    final nonMemberAmount =
+        nonMemberVariations[currentOrder[index]['itemSize']]['amount'];
+    final memberAmount =
+        memberVariations[currentOrder[index]['itemSize']]['amount'];
 
     return ref.read(currentOrderCostProvider.notifier).addCost({
-      'price': currentProduct.price[currentOrder[index]['itemSize']]['amount'] +
-          extraCharge,
+      'itemPriceNonMember': nonMemberAmount + extraCharge,
+      'itemPriceMember': memberAmount + extraChargeMembers,
       'points': PointsHelper(ref: ref)
           .getPointValue(currentProduct.productID, points.rewardsAmounts),
       'itemKey': currentOrder[index]['itemKey'],
       'productID': currentOrder[index]['productID'],
-      'memberPrice': currentProduct.memberPrice[currentOrder[index]['itemSize']]
-              ['amount'] +
-          extraChargeMembers,
+      'memberPrice': memberAmount + extraChargeMembers,
       'itemQuantity': 1,
       'scheduledQuantity': currentOrder[index]['scheduledQuantity'],
     });
@@ -231,13 +240,16 @@ class OrderTileEditRow extends ConsumerWidget {
   nonMemberCostTotal(WidgetRef ref) {
     final currentOrderItem = ref.watch(currentOrderItemsProvider);
     double extraCharge = 0.0;
+    final nonMemberAmount = currentProduct.variations.firstWhere(
+            (element) => element['customerType'] == AppConstants.nonMemberType)[
+        currentOrderItem[index]['itemSize']]['amount'];
+
     for (var item in currentOrderItem[index]['selectedIngredients']) {
       item.isEmpty
           ? extraCharge = extraCharge
           : extraCharge = extraCharge + double.parse(item['price']);
     }
-    final price =
-        currentProduct.price[currentOrderItem[index]['itemSize']]['amount'];
+    final price = nonMemberAmount;
     final itemQuantity = currentOrderItem[index]['itemQuantity'];
     final scheduledQuantity = currentOrderItem[index]['scheduledQuantity'];
     return (price + extraCharge) * itemQuantity * scheduledQuantity;
@@ -246,13 +258,16 @@ class OrderTileEditRow extends ConsumerWidget {
   memberCostTotal(WidgetRef ref) {
     final currentOrderItem = ref.watch(currentOrderItemsProvider);
     double extraCharge = 0.0;
+    final memberAmount = currentProduct.variations.firstWhere((element) =>
+        element['customerType'] ==
+        AppConstants.memberType)[currentOrderItem[index]['itemSize']]['amount'];
+
     for (var item in currentOrderItem[index]['selectedIngredients']) {
       item.isEmpty
           ? extraCharge = extraCharge
           : extraCharge = extraCharge + double.parse(item['memberPrice']);
     }
-    final price = currentProduct
-        .memberPrice[currentOrderItem[index]['itemSize']]['amount'];
+    final price = memberAmount;
     final itemQuantity = currentOrderItem[index]['itemQuantity'];
     final scheduledQuantity = currentOrderItem[index]['scheduledQuantity'];
     return price * itemQuantity * scheduledQuantity;

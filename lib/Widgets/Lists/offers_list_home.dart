@@ -4,7 +4,7 @@ import 'package:jus_mobile_order_app/Providers/ProviderWidgets/offers_provider_w
 import 'package:jus_mobile_order_app/Widgets/Cards/offers_card.dart';
 
 class OffersList extends StatelessWidget {
-  const OffersList({Key? key}) : super(key: key);
+  const OffersList({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -32,8 +32,7 @@ class OffersList extends StatelessWidget {
                   primary: false,
                   padding: const EdgeInsets.symmetric(horizontal: 12.0),
                   scrollDirection: Axis.horizontal,
-                  separatorBuilder: (context, index) =>
-                      Spacing().horizontal(15),
+                  separatorBuilder: (context, index) => Spacing.horizontal(15),
                   itemCount: offers.isEmpty ? 0 : offers.length,
                   itemBuilder: (context, index) => OffersCard(index: index),
                 ),

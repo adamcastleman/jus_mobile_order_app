@@ -22,6 +22,7 @@ mixin _$UserModel {
   String? get email => throw _privateConstructorUsedError;
   String? get phone => throw _privateConstructorUsedError;
   bool? get isActiveMember => throw _privateConstructorUsedError;
+  String? get squareCustomerId => throw _privateConstructorUsedError;
   int? get points => throw _privateConstructorUsedError;
 
   @JsonKey(ignore: true)
@@ -41,6 +42,7 @@ abstract class $UserModelCopyWith<$Res> {
       String? email,
       String? phone,
       bool? isActiveMember,
+      String? squareCustomerId,
       int? points});
 }
 
@@ -63,6 +65,7 @@ class _$UserModelCopyWithImpl<$Res, $Val extends UserModel>
     Object? email = freezed,
     Object? phone = freezed,
     Object? isActiveMember = freezed,
+    Object? squareCustomerId = freezed,
     Object? points = freezed,
   }) {
     return _then(_value.copyWith(
@@ -90,6 +93,10 @@ class _$UserModelCopyWithImpl<$Res, $Val extends UserModel>
           ? _value.isActiveMember
           : isActiveMember // ignore: cast_nullable_to_non_nullable
               as bool?,
+      squareCustomerId: freezed == squareCustomerId
+          ? _value.squareCustomerId
+          : squareCustomerId // ignore: cast_nullable_to_non_nullable
+              as String?,
       points: freezed == points
           ? _value.points
           : points // ignore: cast_nullable_to_non_nullable
@@ -113,6 +120,7 @@ abstract class _$$UserModelImplCopyWith<$Res>
       String? email,
       String? phone,
       bool? isActiveMember,
+      String? squareCustomerId,
       int? points});
 }
 
@@ -133,6 +141,7 @@ class __$$UserModelImplCopyWithImpl<$Res>
     Object? email = freezed,
     Object? phone = freezed,
     Object? isActiveMember = freezed,
+    Object? squareCustomerId = freezed,
     Object? points = freezed,
   }) {
     return _then(_$UserModelImpl(
@@ -160,6 +169,10 @@ class __$$UserModelImplCopyWithImpl<$Res>
           ? _value.isActiveMember
           : isActiveMember // ignore: cast_nullable_to_non_nullable
               as bool?,
+      squareCustomerId: freezed == squareCustomerId
+          ? _value.squareCustomerId
+          : squareCustomerId // ignore: cast_nullable_to_non_nullable
+              as String?,
       points: freezed == points
           ? _value.points
           : points // ignore: cast_nullable_to_non_nullable
@@ -178,6 +191,7 @@ class _$UserModelImpl implements _UserModel {
       this.email,
       this.phone,
       this.isActiveMember,
+      this.squareCustomerId,
       this.points});
 
   @override
@@ -193,11 +207,13 @@ class _$UserModelImpl implements _UserModel {
   @override
   final bool? isActiveMember;
   @override
+  final String? squareCustomerId;
+  @override
   final int? points;
 
   @override
   String toString() {
-    return 'UserModel(uid: $uid, firstName: $firstName, lastName: $lastName, email: $email, phone: $phone, isActiveMember: $isActiveMember, points: $points)';
+    return 'UserModel(uid: $uid, firstName: $firstName, lastName: $lastName, email: $email, phone: $phone, isActiveMember: $isActiveMember, squareCustomerId: $squareCustomerId, points: $points)';
   }
 
   @override
@@ -214,12 +230,14 @@ class _$UserModelImpl implements _UserModel {
             (identical(other.phone, phone) || other.phone == phone) &&
             (identical(other.isActiveMember, isActiveMember) ||
                 other.isActiveMember == isActiveMember) &&
+            (identical(other.squareCustomerId, squareCustomerId) ||
+                other.squareCustomerId == squareCustomerId) &&
             (identical(other.points, points) || other.points == points));
   }
 
   @override
   int get hashCode => Object.hash(runtimeType, uid, firstName, lastName, email,
-      phone, isActiveMember, points);
+      phone, isActiveMember, squareCustomerId, points);
 
   @JsonKey(ignore: true)
   @override
@@ -236,6 +254,7 @@ abstract class _UserModel implements UserModel {
       final String? email,
       final String? phone,
       final bool? isActiveMember,
+      final String? squareCustomerId,
       final int? points}) = _$UserModelImpl;
 
   @override
@@ -250,6 +269,8 @@ abstract class _UserModel implements UserModel {
   String? get phone;
   @override
   bool? get isActiveMember;
+  @override
+  String? get squareCustomerId;
   @override
   int? get points;
   @override

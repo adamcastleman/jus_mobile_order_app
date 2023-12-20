@@ -12,7 +12,7 @@ import 'package:jus_mobile_order_app/Widgets/Buttons/outlined_button_medium.dart
 import 'package:jus_mobile_order_app/Widgets/Cards/multi_use_ingredient_selection_cards.dart';
 
 class MultiUseIngredientSelectionSheet extends ConsumerWidget {
-  const MultiUseIngredientSelectionSheet({Key? key}) : super(key: key);
+  const MultiUseIngredientSelectionSheet({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -60,7 +60,7 @@ class MultiUseIngredientSelectionSheet extends ConsumerWidget {
                                   ),
                           ],
                         ),
-                        Spacing().vertical(22),
+                        Spacing.vertical(22),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [

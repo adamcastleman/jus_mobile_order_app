@@ -11,6 +11,7 @@ class JusCloseButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return IconButton(
+        hoverColor: Colors.transparent,
         constraints: removePadding == true ? const BoxConstraints() : null,
         icon: const Icon(CupertinoIcons.clear_circled),
         iconSize: iconSize ?? 25,

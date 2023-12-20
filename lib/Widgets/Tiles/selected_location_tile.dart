@@ -4,9 +4,13 @@ import 'package:flutter/services.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:jus_mobile_order_app/Helpers/locations.dart';
+import 'package:jus_mobile_order_app/Helpers/utilities.dart';
 import 'package:jus_mobile_order_app/Models/location_model.dart';
 import 'package:jus_mobile_order_app/Providers/ProviderWidgets/location_provider_widget.dart';
+import 'package:jus_mobile_order_app/Providers/controller_providers.dart';
 import 'package:jus_mobile_order_app/Providers/location_providers.dart';
+import 'package:jus_mobile_order_app/Providers/navigation_providers.dart';
+import 'package:jus_mobile_order_app/constants.dart';
 
 import '../../Providers/order_providers.dart';
 
@@ -47,6 +51,14 @@ class SelectedLocationTile extends ConsumerWidget {
                 size: 20,
               ),
         onTap: () {
+          if (PlatformUtils.isWeb()) {
+            ref.read(webNavigationProvider.notifier).state =
+                AppConstants.locationPageWeb;
+            ref
+                .read(webNavigationPageControllerProvider)
+                .jumpToPage(AppConstants.locationPageWeb);
+            return;
+          }
           if (isCheckoutPage) {
             return;
           } else {

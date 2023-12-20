@@ -10,7 +10,7 @@ import 'package:jus_mobile_order_app/Providers/order_providers.dart';
 import 'package:jus_mobile_order_app/Sheets/invalid_sheet_single_pop.dart';
 
 class SelectDateCalendar extends ConsumerWidget {
-  const SelectDateCalendar({Key? key}) : super(key: key);
+  const SelectDateCalendar({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

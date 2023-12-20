@@ -4,6 +4,7 @@ import 'package:jus_mobile_order_app/Models/user_model.dart';
 import 'package:jus_mobile_order_app/Providers/discounts_provider.dart';
 import 'package:jus_mobile_order_app/Providers/order_providers.dart';
 import 'package:jus_mobile_order_app/Providers/product_providers.dart';
+import 'package:jus_mobile_order_app/constants.dart';
 
 import '../Models/product_model.dart';
 
@@ -17,9 +18,14 @@ class Pricing {
   ) {
     final selectedSize = ref!.watch(itemSizeProvider);
     final scheduledQuantity = ref!.watch(scheduledQuantityProvider);
+    final nonMemberItems = product.variations
+        .where(
+          (element) => element['customerType'] == AppConstants.nonMemberType,
+        )
+        .toList();
+    final amount = nonMemberItems[selectedSize]['amount'];
 
-    return (product.price[selectedSize]['amount'] / 100 +
-            totalCostForExtraChargeIngredientsForNonMembers()) *
+    return (amount / 100 + totalCostForExtraChargeIngredientsForNonMembers()) *
         scheduledQuantity;
   }
 
@@ -28,19 +34,30 @@ class Pricing {
   ) {
     final selectedSize = ref!.watch(itemSizeProvider);
     final scheduledQuantity = ref!.watch(scheduledQuantityProvider);
+    final memberItems = product.variations
+        .where(
+          (element) => element['customerType'] == AppConstants.memberType,
+        )
+        .toList();
+    final amount = memberItems[selectedSize]['amount'];
 
-    return (product.memberPrice[selectedSize]['amount'] / 100 +
-            totalCostForExtraChargeIngredientsForMembers()) *
+    return (amount / 100 + totalCostForExtraChargeIngredientsForMembers()) *
         scheduledQuantity;
   }
 
   String orderTileProductPriceForNonMembers(
       ProductModel currentProduct, int index) {
     final currentOrder = ref!.watch(currentOrderItemsProvider);
-    double price =
-        currentProduct.price[currentOrder[index]['itemSize']]['amount'] / 100 +
-            extraChargeIngredientOnSingleItemForNonMembers(
-                currentOrder[index]['selectedIngredients']);
+    final nonMemberVariations = currentProduct.variations
+        .where(
+            (element) => element['customerType'] == AppConstants.nonMemberType)
+        .toList();
+    final amount =
+        nonMemberVariations[currentOrder[index]['itemSize']]['amount'];
+
+    double price = amount / 100 +
+        extraChargeIngredientOnSingleItemForNonMembers(
+            currentOrder[index]['selectedIngredients']);
     price *= currentOrder[index]['scheduledQuantity'];
     String priceString = price.toStringAsFixed(2);
     String unit = currentOrder[index]['itemQuantity'] > 1 ? '/ea' : '';
@@ -50,9 +67,12 @@ class Pricing {
   String orderTileProductPriceForMembers(
       ProductModel currentProduct, int index) {
     final currentOrder = ref!.watch(currentOrderItemsProvider);
-    double price = (currentProduct.memberPrice[currentOrder[index]['itemSize']]
-                    ['amount'] /
-                100 +
+    final memberVariations = currentProduct.variations
+        .where((element) => element['customerType'] == AppConstants.memberType)
+        .toList();
+    final amount = memberVariations[currentOrder[index]['itemSize']]['amount'];
+
+    double price = (amount / 100 +
             extraChargeIngredientOnSingleItemForMembers(
                 currentOrder[index]['selectedIngredients'])) *
         currentOrder[index]['scheduledQuantity'];
@@ -90,10 +110,22 @@ class Pricing {
     final quantity = ref!.watch(itemQuantityProvider);
     final scheduledQuantity = ref!.watch(scheduledQuantityProvider);
     final selectedSize = ref!.watch(itemSizeProvider);
+    final memberItems = product.variations
+        .where(
+          (element) => element['customerType'] == AppConstants.memberType,
+        )
+        .toList();
+    final nonMemberItems = product.variations
+        .where(
+          (element) => element['customerType'] == AppConstants.nonMemberType,
+        )
+        .toList();
+    final nonMemberAmount = nonMemberItems[selectedSize]['amount'];
+    final memberAmount = memberItems[selectedSize]['amount'];
 
-    return (product.price[selectedSize]['amount'] / 100 +
+    return (nonMemberAmount / 100 +
             totalCostForExtraChargeIngredientsForNonMembers() -
-            product.memberPrice[selectedSize]['amount'] / 100 +
+            memberAmount / 100 +
             Pricing(ref: ref).totalCostForExtraChargeIngredientsForMembers()) *
         quantity *
         scheduledQuantity;
@@ -161,7 +193,10 @@ class Pricing {
     var subtotal = 0.0;
     final totalCost = ref!.watch(currentOrderCostProvider);
     for (var price in totalCost) {
-      subtotal = subtotal + price['price'];
+      var totalItemPrice =
+          price['itemPriceNonMember'] + (price['modifierPriceNonMember'] ?? 0);
+
+      subtotal = subtotal + totalItemPrice;
     }
 
     return subtotal / 100;
@@ -171,7 +206,9 @@ class Pricing {
     var subtotal = 0.0;
     final totalCost = ref!.watch(currentOrderCostProvider);
     for (var price in totalCost) {
-      subtotal = subtotal + price['memberPrice'];
+      var totalItemPrice =
+          price['itemPriceMember'] + (price['modifierPriceMember'] ?? 0);
+      subtotal = subtotal + totalItemPrice;
     }
 
     return subtotal / 100;

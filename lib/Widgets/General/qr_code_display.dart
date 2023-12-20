@@ -5,7 +5,7 @@ import 'package:jus_mobile_order_app/Providers/stream_providers.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 
 class QrCodeDisplay extends ConsumerWidget {
-  const QrCodeDisplay({Key? key}) : super(key: key);
+  const QrCodeDisplay({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

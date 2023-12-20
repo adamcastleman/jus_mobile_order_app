@@ -5,7 +5,7 @@ import 'package:jus_mobile_order_app/Providers/ProviderWidgets/recommended_produ
 import 'package:jus_mobile_order_app/Widgets/Cards/recommended_card.dart';
 
 class RecommendedList extends ConsumerWidget {
-  const RecommendedList({Key? key}) : super(key: key);
+  const RecommendedList({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -33,11 +33,11 @@ class RecommendedList extends ConsumerWidget {
                   primary: false,
                   padding: const EdgeInsets.symmetric(horizontal: 12.0),
                   scrollDirection: Axis.horizontal,
-                  separatorBuilder: (context, index) =>
-                      Spacing().horizontal(15),
+                  separatorBuilder: (context, index) => Spacing.horizontal(15),
                   itemCount: recommended.isEmpty ? 0 : recommended.length,
-                  itemBuilder: (context, index) =>
-                      RecommendedCard(index: index),
+                  itemBuilder: (context, index) => RecommendedCardMobile(
+                    recommended: recommended[index],
+                  ),
                 ),
               ),
             ),

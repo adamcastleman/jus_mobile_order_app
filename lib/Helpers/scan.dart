@@ -19,7 +19,7 @@ class ScanHelpers {
         var message = {
           'type': 'SUB',
           'member': user.isActiveMember,
-          'nonce': ref.watch(selectedPaymentMethodProvider)['nonce'],
+          'cardId': ref.watch(selectedPaymentMethodProvider)['cardId'],
           'time': ref.watch(qrTimestampProvider),
         }.toString();
         var encrypted = Encryptor.encryptText(message).base64;

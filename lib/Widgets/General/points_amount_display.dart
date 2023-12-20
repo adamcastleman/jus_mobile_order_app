@@ -12,8 +12,7 @@ class PointsAmountDisplay extends StatelessWidget {
       required this.fontSize,
       required this.padding,
       required this.hasBorder,
-      Key? key})
-      : super(key: key);
+      super.key});
 
   @override
   Widget build(BuildContext context) {

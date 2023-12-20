@@ -2,7 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class AddPaymentMethodIcon extends StatelessWidget {
-  const AddPaymentMethodIcon({Key? key}) : super(key: key);
+  const AddPaymentMethodIcon({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -14,7 +14,7 @@ class AddPaymentMethodIcon extends StatelessWidget {
 }
 
 class PaymentMethodIcon extends StatelessWidget {
-  const PaymentMethodIcon({Key? key}) : super(key: key);
+  const PaymentMethodIcon({super.key});
 
   @override
   Widget build(BuildContext context) {

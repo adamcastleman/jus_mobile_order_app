@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class NoRewardsTile extends StatelessWidget {
-  const NoRewardsTile({Key? key}) : super(key: key);
+  const NoRewardsTile({super.key});
 
   @override
   Widget build(BuildContext context) {

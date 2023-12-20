@@ -35,7 +35,7 @@ class ProductModifierPage extends StatelessWidget {
                   padding: EdgeInsets.only(top: 25.0),
                   child: ModifyIngredientsList(),
                 ),
-                Spacing().vertical(10),
+                Spacing.vertical(10),
                 const Divider(
                   thickness: 0.5,
                   color: Colors.black,

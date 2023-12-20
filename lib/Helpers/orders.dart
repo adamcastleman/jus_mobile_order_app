@@ -51,7 +51,7 @@ class OrderHelpers {
       final product =
           products.firstWhere((p) => p.productID == item['productID']);
       return {
-        'name': product.name,
+        'name': product.locationName,
         'productUID': product.uid,
         'scheduledQuantity': item['scheduledQuantity'],
         'scheduledProductDescriptor': item['scheduledProductDescriptor'],

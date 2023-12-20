@@ -11,7 +11,7 @@ import 'package:jus_mobile_order_app/Sheets/membership_details_sheet_inactive.da
 import 'package:jus_mobile_order_app/Widgets/Buttons/close_button.dart';
 
 class MembershipDetailPage extends ConsumerWidget {
-  const MembershipDetailPage({Key? key}) : super(key: key);
+  const MembershipDetailPage({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -23,7 +23,7 @@ class MembershipDetailPage extends ConsumerWidget {
         child: ListView(
           primary: false,
           children: [
-            Spacing().vertical(MediaQuery.of(context).size.height * 0.05),
+            Spacing.vertical(MediaQuery.of(context).size.height * 0.05),
             Padding(
               padding: const EdgeInsets.only(left: 12.0),
               child: Row(

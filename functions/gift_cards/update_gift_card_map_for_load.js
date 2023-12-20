@@ -17,8 +17,8 @@ const updateGiftCardMapForLoad = (orderMap, giftCardMap) => {
   giftCardMap.cardDetails.activityID = uuidv4();
   giftCardMap.cardDetails.activity = "LOAD";
   giftCardMap.cardDetails.gan = orderMap.paymentDetails.gan;
+  giftCardMap.paymentDetails.paymentID = orderMap.paymentDetails.paymentId;
   giftCardMap.paymentDetails.amount = orderMap.paymentDetails.amount;
-  giftCardMap.paymentDetails.paymentID = orderMap.paymentDetails.paymentID;
   giftCardMap.paymentDetails.currency = "USD";
 
   return giftCardMap;

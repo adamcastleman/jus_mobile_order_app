@@ -12,7 +12,7 @@ const updateOrderMapWithPaymentData = (orderMap, paymentResult) => {
           "SQUARE_GIFT_CARD"
         ? "WALLET"
         : paymentResult.payment.card_details.card.card_brand.toUpperCase();
-    orderMap.paymentDetails.lastFourDigits =
+    orderMap.paymentDetails.last4 =
       sourceType === "EXTERNAL" || sourceType === "CASH"
         ? null
         : paymentResult.payment.card_details.card.last_4;
@@ -25,7 +25,7 @@ const updateOrderMapWithPaymentData = (orderMap, paymentResult) => {
     orderMap.paymentDetails.paymentStatus = "COMPLETED";
     orderMap.paymentDetails.cardBrand =
       sourceType === "EXTERNAL" || sourceType === "CASH" ? null : "NON-CARD";
-    orderMap.paymentDetails.lastFourDigits =
+    orderMap.paymentDetails.last4 =
       sourceType === "EXTERNAL" || sourceType === "CASH" ? null : "";
     orderMap.paymentDetails.createdAt = admin.firestore.Timestamp.fromDate(
       new Date(),

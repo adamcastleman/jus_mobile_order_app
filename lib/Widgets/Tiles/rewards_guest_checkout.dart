@@ -25,7 +25,7 @@ class RewardsGuestCheckout extends StatelessWidget {
                   'Earn points. Get free stuff.',
                   style: TextStyle(fontSize: 18),
                 ),
-                Spacing().horizontal(5),
+                Spacing.horizontal(5),
                 InfoButton(
                   onTap: () {
                     HapticFeedback.lightImpact();
@@ -39,7 +39,7 @@ class RewardsGuestCheckout extends StatelessWidget {
                 ),
               ],
             ),
-            Spacing().vertical(20),
+            Spacing.vertical(20),
             SmallElevatedButton(
               buttonText: 'Join Rewards',
               onPressed: () {

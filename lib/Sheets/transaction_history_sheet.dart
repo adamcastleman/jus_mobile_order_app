@@ -6,7 +6,7 @@ import 'package:jus_mobile_order_app/Widgets/Buttons/close_button.dart';
 import 'package:jus_mobile_order_app/Widgets/Lists/transaction_history_list_view.dart';
 
 class TransactionHistorySheet extends ConsumerWidget {
-  const TransactionHistorySheet({Key? key}) : super(key: key);
+  const TransactionHistorySheet({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -29,9 +29,9 @@ class TransactionHistorySheet extends ConsumerWidget {
               'Transaction History',
               style: Theme.of(context).textTheme.headlineSmall,
             ),
-            Spacing().vertical(15),
+            Spacing.vertical(15),
             const TransactionHistoryListView(),
-            Spacing().vertical(5),
+            Spacing.vertical(5),
             const Center(
               child: Text(
                 'That\'s all (from the last 120 days)',

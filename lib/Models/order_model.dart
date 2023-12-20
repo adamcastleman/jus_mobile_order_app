@@ -15,7 +15,7 @@ class OrderModel with _$OrderModel {
     DateTime? pickupDate,
     DateTime? pickupTime,
     String? cardBrand,
-    String? lastFourDigits,
+    String? last4,
     required int totalAmount,
     required int originalSubtotalAmount,
     required int discountedSubtotalAmount,

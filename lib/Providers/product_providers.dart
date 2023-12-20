@@ -602,12 +602,13 @@ class CurrentOrderCost extends StateNotifier<List<Map<String, dynamic>>> {
     int itemQuantity = item['itemQuantity'];
     int scheduledQuantity = item['scheduledQuantity'];
     int totalMaps = itemQuantity * scheduledQuantity;
-
     List<Map<String, dynamic>> maps = List.generate(
         totalMaps,
         (_) => {
-              'price': item['price'],
-              'memberPrice': item['memberPrice'],
+              'itemPriceNonMember': item['itemPriceNonMember'],
+              'itemPriceMember': item['itemPriceMember'],
+              'modifierPriceNonMember': item['modifierPriceNonMember'],
+              'modifierPriceMember': item['modifierPriceMember'],
               'points': item['points'],
               'itemKey': item['itemKey'],
               'productID': item['productID'],

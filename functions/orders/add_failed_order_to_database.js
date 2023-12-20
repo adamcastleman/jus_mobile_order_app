@@ -3,16 +3,18 @@ const admin = require("firebase-admin");
 const addFailedOrderToDatabase = async (db, orderMap) => {
   console.log("Inside addFailedOrderToDatabase function");
 
-  const orderWithoutNonce = { ...orderMap };
-  delete orderWithoutNonce.nonce;
+  const orderWithoutCardSource = { ...orderMap };
+
+  console.log(`Order Map: ${orderMap}`);
+  delete orderWithoutCardSource.cardId;
 
   const newOrderRef = db.collection("failedOrders").doc();
 
-  orderWithoutNonce.uid = newOrderRef.id;
-  orderWithoutNonce.orderID = newOrderRef.id;
-  orderWithoutNonce.orderStatus = "failed";
+  orderWithoutCardSource.uid = newOrderRef.id;
+  orderWithoutCardSource.orderID = newOrderRef.id;
+  orderWithoutCardSource.orderStatus = "failed";
 
-  await newOrderRef.set(orderWithoutNonce);
+  await newOrderRef.set(orderWithoutCardSource);
   console.log("Failed Order added to database successfully");
 
   return true;

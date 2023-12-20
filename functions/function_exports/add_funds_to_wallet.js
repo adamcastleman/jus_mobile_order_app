@@ -1,5 +1,6 @@
 const functions = require("firebase-functions");
 const admin = require("firebase-admin");
+const createSquareGiftCardOrder = require("../orders/create_square_gift_card_order");
 const processGiftCardPayment = require("../payments/process_gift_card_payment");
 const loadMoneyToWallet = require("../gift_cards/load_money_to_wallet");
 const updateGiftCardMapForLoad = require("../gift_cards/update_gift_card_map_for_load");
@@ -18,21 +19,34 @@ exports.addFundsToWallet = functions.https.onCall(async (data, context) => {
   const giftCardMap = {};
   giftCardMap.userDetails = {};
   giftCardMap.userDetails.userID = userID;
-  const nonce = orderMap.paymentDetails.nonce;
+  const cardId = orderMap.paymentDetails.cardId;
 
   try {
+    const giftCardOrder = await createSquareGiftCardOrder(orderMap);
+
+    orderMap.paymentDetails.orderId = giftCardOrder.order.id;
+    orderMap.paymentDetails.lineItemUid = giftCardOrder.order.line_items[0].uid;
+
     const paymentResult = await processGiftCardPayment(orderMap);
+
+    orderMap.paymentDetails.paymentId = paymentResult.payment.id;
+
     updateGiftCardMapWithPaymentData(giftCardMap, paymentResult);
+
     await loadMoneyToWallet(
       orderMap.paymentDetails.gan,
-      orderMap.paymentDetails.amount,
+      orderMap.paymentDetails.orderId,
+      orderMap.paymentDetails.lineItemUid
     );
+
     updateGiftCardMapForLoad(orderMap, giftCardMap);
+
     loadWalletBalanceInDatabase(
       orderMap.paymentDetails.amount,
       userID,
       orderMap.metadata.walletUID,
     );
+
     await addGiftCardActivityToDatabase(db, giftCardMap, userID);
 
     return 200;

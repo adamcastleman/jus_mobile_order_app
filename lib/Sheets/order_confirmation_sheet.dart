@@ -12,10 +12,10 @@ import 'package:jus_mobile_order_app/Helpers/permission_handler.dart';
 import 'package:jus_mobile_order_app/Helpers/spacing_widgets.dart';
 import 'package:jus_mobile_order_app/Hooks/confetti_controller.dart';
 import 'package:jus_mobile_order_app/Models/product_model.dart';
-import 'package:jus_mobile_order_app/Payments/total_price.dart';
 import 'package:jus_mobile_order_app/Providers/ProviderWidgets/products_provider_widget.dart';
 import 'package:jus_mobile_order_app/Providers/auth_providers.dart';
 import 'package:jus_mobile_order_app/Providers/discounts_provider.dart';
+import 'package:jus_mobile_order_app/Providers/loading_providers.dart';
 import 'package:jus_mobile_order_app/Providers/location_providers.dart';
 import 'package:jus_mobile_order_app/Providers/navigation_providers.dart';
 import 'package:jus_mobile_order_app/Providers/offers_providers.dart';
@@ -26,6 +26,8 @@ import 'package:jus_mobile_order_app/Providers/product_providers.dart';
 import 'package:jus_mobile_order_app/Providers/stream_providers.dart';
 import 'package:jus_mobile_order_app/Providers/theme_providers.dart';
 import 'package:jus_mobile_order_app/Widgets/Buttons/close_button.dart';
+import 'package:jus_mobile_order_app/Widgets/Dialogs/open_app_settings_calendar.dart';
+import 'package:jus_mobile_order_app/Widgets/General/total_price.dart';
 import 'package:jus_mobile_order_app/Widgets/Tiles/order_tile.dart';
 
 class OrderConfirmationSheet extends HookConsumerWidget {
@@ -65,6 +67,8 @@ class OrderConfirmationSheet extends HookConsumerWidget {
                         onPressed: () {
                           HapticFeedback.lightImpact();
                           invalidateAllProviders(context, ref);
+                          Navigator.pop(context);
+                          Navigator.pop(context);
                           Navigator.pop(context);
                         },
                       ),
@@ -128,7 +132,7 @@ class OrderConfirmationSheet extends HookConsumerWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                'Location: ${location.name}',
+                'Location: ${location.locationName}',
                 style: const TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 18,
@@ -143,7 +147,7 @@ class OrderConfirmationSheet extends HookConsumerWidget {
                   Launcher().launchMaps(
                       latitude: location.latitude,
                       longitude: location.longitude,
-                      label: location.name);
+                      label: location.locationName);
                 },
               ),
             ],
@@ -171,12 +175,12 @@ class OrderConfirmationSheet extends HookConsumerWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisSize: MainAxisSize.min,
       children: [
-        Spacing().vertical(10),
+        Spacing.vertical(10),
         Text(
           'Pickup Time: $dateDisplay',
           style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
         ),
-        Spacing().vertical(20),
+        Spacing.vertical(20),
         ListView.separated(
           shrinkWrap: true,
           primary: false,
@@ -216,7 +220,13 @@ class OrderConfirmationSheet extends HookConsumerWidget {
               ),
               InkWell(
                 onTap: () {
-                  HandlePermissions(context, ref).calendarPermission();
+                  PermissionHandler().calendarPermission(isDenied: () {
+                    showDialog(
+                      context: context,
+                      builder: (context) =>
+                          const CalendarPermissionAlertDialog(),
+                    );
+                  });
                   Launcher().launchCalendar(ref);
                 },
                 child: const Text(
@@ -260,6 +270,11 @@ class OrderConfirmationSheet extends HookConsumerWidget {
   }
 
   invalidateAllProviders(BuildContext context, WidgetRef ref) {
+    ref.invalidate(applePayLoadingProvider);
+    ref.invalidate(applePaySelectedProvider);
+    ref.read(loadingProvider.notifier).state = false;
+    ref.invalidate(selectedLoadAmountProvider);
+    ref.invalidate(selectedLoadAmountIndexProvider);
     ref.read(bottomNavigationProvider.notifier).state = 0;
     ref.invalidate(currentOrderItemsProvider);
     ref.invalidate(currentOrderItemsIndexProvider);

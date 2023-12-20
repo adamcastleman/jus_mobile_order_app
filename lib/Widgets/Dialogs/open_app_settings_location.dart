@@ -10,7 +10,7 @@ class LocationPermissionAlertDialog extends StatelessWidget {
       title: const Text('Turn on location permissions'),
       content: Column(
         children: [
-          Spacing().vertical(10),
+          Spacing.vertical(10),
           const Text(
               'We use your location to find stores near you, and allow you to select a location to order from. Turn on location permission in settings to begin an order.'),
         ],

@@ -58,16 +58,16 @@ class AccountInfoSheet extends ConsumerWidget {
                 ),
                 JusTextField(ref: ref).firstName(user: user),
                 JusTextField(ref: ref).error(firstNameError),
-                Spacing().vertical(15),
+                Spacing.vertical(15),
                 JusTextField(ref: ref).lastName(user: user),
                 JusTextField(ref: ref).error(lastNameError),
-                Spacing().vertical(15),
+                Spacing.vertical(15),
                 JusTextField(ref: ref).phone(user: user),
                 JusTextField(ref: ref).error(phoneError),
-                Spacing().vertical(15),
+                Spacing.vertical(15),
                 JusTextField(ref: ref).email(user: user),
                 JusTextField(ref: ref).error(emailError),
-                Spacing().vertical(15),
+                Spacing.vertical(15),
                 const Padding(
                   padding: EdgeInsets.only(
                       left: 14.0, right: 14.0, top: 5.0, bottom: 10.0),
@@ -78,7 +78,7 @@ class AccountInfoSheet extends ConsumerWidget {
                   builder: (context, ref, _) =>
                       JusTextField(ref: ref).error(passwordError),
                 ),
-                Spacing().vertical(15),
+                Spacing.vertical(15),
                 Consumer(
                   builder: (context, ref, _) =>
                       JusTextField(ref: ref).confirmPassword(),
@@ -92,7 +92,7 @@ class AccountInfoSheet extends ConsumerWidget {
                   padding: const EdgeInsets.symmetric(horizontal: 14),
                   child: JusDivider().thick(),
                 ),
-                Spacing().vertical(20),
+                Spacing.vertical(20),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
@@ -118,7 +118,7 @@ class AccountInfoSheet extends ConsumerWidget {
                           ),
                   ],
                 ),
-                Spacing().vertical(20),
+                Spacing.vertical(20),
                 TextButton(
                   child: const Text(
                     'Delete Account',

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class OffersInUseTile extends StatelessWidget {
-  const OffersInUseTile({Key? key}) : super(key: key);
+  const OffersInUseTile({super.key});
 
   @override
   Widget build(BuildContext context) {

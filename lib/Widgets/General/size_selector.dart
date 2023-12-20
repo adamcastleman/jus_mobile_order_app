@@ -4,24 +4,28 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:jus_mobile_order_app/Helpers/spacing_widgets.dart';
 import 'package:jus_mobile_order_app/Models/product_model.dart';
 import 'package:jus_mobile_order_app/Providers/product_providers.dart';
-import 'package:jus_mobile_order_app/Providers/stream_providers.dart';
 import 'package:jus_mobile_order_app/Providers/theme_providers.dart';
+import 'package:jus_mobile_order_app/constants.dart';
 
 class SizeSelector extends ConsumerWidget {
   final ProductModel product;
   const SizeSelector({required this.product, super.key});
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final user = ref.watch(currentUserProvider).value!;
     final selectedSize = ref.watch(itemSizeProvider);
     final selectedCardColor = ref.watch(selectedCardColorProvider);
     final selectedCardBorderColor = ref.watch(selectedCardBorderColorProvider);
+    var variations = product.variations
+        .where(
+            (element) => element['customerType'] == AppConstants.nonMemberType)
+        .toList();
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Row(
           children: List.generate(
-            product.price.length,
+            product.variations.length ~/ 2,
             (index) => InkWell(
               onTap: () {
                 HapticFeedback.lightImpact();
@@ -44,14 +48,14 @@ class SizeSelector extends ConsumerWidget {
                         width: 0.5),
                   ),
                   child: Center(
-                    child: Text('${product.price[index]['name']}'),
+                    child: Text('${variations[index]['name']}'),
                   ),
                 ),
               ),
             ),
           ),
         ),
-        Spacing().vertical(25),
+        Spacing.vertical(25),
         //
       ],
     );

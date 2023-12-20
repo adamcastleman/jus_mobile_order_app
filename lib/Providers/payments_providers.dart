@@ -1,6 +1,7 @@
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:jus_mobile_order_app/Helpers/enums.dart';
 import 'package:jus_mobile_order_app/Models/payments_model.dart';
+import 'package:jus_mobile_order_app/Providers/loading_providers.dart';
 import 'package:jus_mobile_order_app/Providers/stream_providers.dart';
 
 final pageTypeProvider =
@@ -14,6 +15,8 @@ final defaultPaymentCheckboxProvider =
     StateProvider.autoDispose<bool?>((ref) => null);
 
 final applePaySelectedProvider = StateProvider<bool>((ref) => false);
+
+final isApplePayCompletedProvider = StateProvider<bool>((ref) => false);
 
 final physicalGiftCardBalanceProvider =
     StateProvider.autoDispose<Map>((ref) => {});
@@ -36,10 +39,10 @@ class SelectedPaymentMethodNotifier extends StateNotifier<Map> {
       if (_defaultPaymentCardStreamProvider.hasValue) {
         state = {
           'cardNickname': payment.cardNickname,
-          'nonce': payment.nonce,
+          'cardId': payment.cardId,
           'balance': payment.balance,
           'gan': payment.gan,
-          'lastFourDigits': payment.lastFourDigits,
+          'last4': payment.last4,
           'brand': payment.brand,
           'isWallet': payment.isWallet,
         };
@@ -55,10 +58,10 @@ class SelectedPaymentMethodNotifier extends StateNotifier<Map> {
   updateSelectedPaymentMethod({required Map card}) {
     state = {
       'cardNickname': card['cardNickname'],
-      'nonce': card['nonce'],
+      'cardId': card['cardId'],
       'gan': card['gan'],
       'balance': card['balance'],
-      'lastFourDigits': card['lastFourDigits'],
+      'last4': card['last4'],
       'brand': card['brand'],
       'isWallet': card['isWallet'],
     };
@@ -74,7 +77,7 @@ final selectedLoadAmountIndexProvider = StateProvider<int>((ref) => 3);
 final selectedLoadAmountProvider =
     StateProvider.autoDispose<int?>((ref) => null);
 
-final loadAmountsProvider = Provider<List<int>>((ref) => [
+final walletLoadAmountsProvider = Provider<List<int>>((ref) => [
       1000,
       1500,
       2000,
@@ -111,3 +114,8 @@ final loadAmountsProvider = Provider<List<int>>((ref) => [
       47500,
       50000,
     ]);
+
+void invalidateWalletProviders(WidgetRef ref) {
+  ref.read(loadingProvider.notifier).state = false;
+  ref.read(applePayLoadingProvider.notifier).state = false;
+}

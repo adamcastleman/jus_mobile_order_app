@@ -5,7 +5,7 @@ import 'package:jus_mobile_order_app/Providers/ProviderWidgets/membership_detail
 import 'package:jus_mobile_order_app/Widgets/General/perks_description_tile.dart';
 
 class InactiveMembershipDetailsSheet extends StatelessWidget {
-  const InactiveMembershipDetailsSheet({Key? key}) : super(key: key);
+  const InactiveMembershipDetailsSheet({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -23,7 +23,7 @@ class InactiveMembershipDetailsSheet extends StatelessWidget {
             ],
           ),
           membershipPriceCard(membership),
-          Spacing().vertical(15),
+          Spacing.vertical(15),
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 20.0),
             child: ListView.separated(
@@ -52,7 +52,7 @@ class InactiveMembershipDetailsSheet extends StatelessWidget {
             membership.signUpText,
             style: const TextStyle(fontSize: 18),
           ),
-          Spacing().vertical(50),
+          Spacing.vertical(50),
         ],
       ),
     );
@@ -77,7 +77,7 @@ class InactiveMembershipDetailsSheet extends StatelessWidget {
             style: const TextStyle(fontSize: 18),
             textAlign: TextAlign.center,
           ),
-          Spacing().vertical(30),
+          Spacing.vertical(30),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
@@ -110,7 +110,7 @@ class InactiveMembershipDetailsSheet extends StatelessWidget {
               ),
             ],
           ),
-          Spacing().vertical(10),
+          Spacing.vertical(10),
         ],
       ),
     );

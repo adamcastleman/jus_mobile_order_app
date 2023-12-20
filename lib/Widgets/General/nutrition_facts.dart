@@ -7,7 +7,7 @@ import 'package:jus_mobile_order_app/Providers/product_providers.dart';
 
 class NutritionFacts extends ConsumerWidget {
   final ProductModel product;
-  const NutritionFacts({required this.product, Key? key}) : super(key: key);
+  const NutritionFacts({required this.product, super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -69,7 +69,7 @@ class NutritionFacts extends ConsumerWidget {
             ),
           ),
         ),
-        Spacing().vertical(5),
+        Spacing.vertical(5),
         !product.isScheduled
             ? AutoSizeText(
                 'Servings of fruit: ${product.servingsFruit} | Servings of veggies: ${product.servingsVeggie}',

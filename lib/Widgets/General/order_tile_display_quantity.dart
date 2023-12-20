@@ -4,8 +4,7 @@ import 'package:jus_mobile_order_app/Providers/product_providers.dart';
 
 class OrderTileDisplayQuantity extends ConsumerWidget {
   final int orderIndex;
-  const OrderTileDisplayQuantity({required this.orderIndex, Key? key})
-      : super(key: key);
+  const OrderTileDisplayQuantity({required this.orderIndex, super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

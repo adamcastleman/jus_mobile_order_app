@@ -9,7 +9,7 @@ import 'package:jus_mobile_order_app/Views/register_page.dart';
 import 'package:jus_mobile_order_app/Widgets/Buttons/elevated_button_medium.dart';
 
 class SignedOutProfilePage extends ConsumerWidget {
-  const SignedOutProfilePage({Key? key}) : super(key: key);
+  const SignedOutProfilePage({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -37,7 +37,7 @@ class SignedOutProfilePage extends ConsumerWidget {
                       style: const TextStyle(
                           fontSize: 30, fontWeight: FontWeight.bold),
                     ),
-                    Spacing().vertical(10),
+                    Spacing.vertical(10),
                     AutoSizeText(
                       image.data().containsKey('description')
                           ? image['description']

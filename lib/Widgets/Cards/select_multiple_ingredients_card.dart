@@ -15,8 +15,7 @@ class SelectMultipleIngredientsCard extends ConsumerWidget {
   final IngredientModel ingredient;
   final bool isAllergy;
   const SelectMultipleIngredientsCard(
-      {required this.ingredient, required this.isAllergy, Key? key})
-      : super(key: key);
+      {required this.ingredient, required this.isAllergy, super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -44,7 +43,7 @@ class SelectMultipleIngredientsCard extends ConsumerWidget {
                     imageUrl: ingredient.image,
                   ),
                 ),
-                Spacing().vertical(5),
+                Spacing.vertical(5),
                 AutoSizeText(
                   ingredient.name,
                   style: const TextStyle(fontSize: 12),
@@ -54,7 +53,7 @@ class SelectMultipleIngredientsCard extends ConsumerWidget {
                 AllergenLabel(
                   ingredient: ingredient,
                 ),
-                Spacing().vertical(8),
+                Spacing.vertical(8),
               ],
             ),
           ),

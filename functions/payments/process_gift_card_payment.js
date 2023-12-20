@@ -8,6 +8,7 @@ const processGiftCardPayment = async (giftCardMap) => {
   try {
     const response = await client.paymentsApi.createPayment({
       sourceId: "cnon:card-nonce-ok",
+      orderId: giftCardMap.paymentDetails.orderId,
       idempotencyKey: uuidv4(),
       amountMoney: {
         amount: giftCardMap.paymentDetails.amount,

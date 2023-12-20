@@ -2,9 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:jus_mobile_order_app/Models/location_model.dart';
+import 'package:jus_mobile_order_app/constants.dart';
 
-final currentLocationLatLongProvider =
-    StateProvider<LatLng>((ref) => const LatLng(0.0, 0.0));
+final currentLocationLatLongProvider = StateProvider<LatLng>(
+  (ref) => AppConstants.centerOfUS,
+);
 
 final locationsWithinMapBoundsProvider =
     StateProvider<List<LocationModel>>((ref) => []);

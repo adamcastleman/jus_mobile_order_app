@@ -18,7 +18,7 @@ import 'package:jus_mobile_order_app/Services/location_services.dart';
 import 'package:jus_mobile_order_app/Services/membership_details_services.dart';
 import 'package:jus_mobile_order_app/Services/offers_services.dart';
 import 'package:jus_mobile_order_app/Services/order_services.dart';
-import 'package:jus_mobile_order_app/Services/payment_methods_services.dart';
+import 'package:jus_mobile_order_app/Services/payment_method_database_services.dart';
 import 'package:jus_mobile_order_app/Services/points_details_services.dart';
 import 'package:jus_mobile_order_app/Services/product_services.dart';
 import 'package:jus_mobile_order_app/Services/user_services.dart';
@@ -46,18 +46,20 @@ final currentUserProvider = StreamProvider<UserModel>((ref) {
 
 final defaultPaymentMethodProvider = StreamProvider<PaymentsModel>((ref) {
   final auth = ref.watch(authProvider);
-  return PaymentMethodsServices(userID: auth.value?.uid).defaultPaymentCard;
+  return PaymentMethodDatabaseServices(userID: auth.value?.uid)
+      .defaultPaymentCard;
 });
 
 final creditCardPaymentMethodsProvider =
     StreamProvider<List<PaymentsModel>>((ref) {
   final auth = ref.watch(authProvider);
-  return PaymentMethodsServices(userID: auth.value?.uid).squareCreditCards;
+  return PaymentMethodDatabaseServices(userID: auth.value?.uid)
+      .squareCreditCards;
 });
 
 final walletPaymentMethodsProvider = StreamProvider<List<PaymentsModel>>((ref) {
   final auth = ref.watch(authProvider);
-  return PaymentMethodsServices(userID: auth.value?.uid).wallets;
+  return PaymentMethodDatabaseServices(userID: auth.value?.uid).wallets;
 });
 
 final ingredientsProvider = StreamProvider<List<IngredientModel>>(
@@ -125,7 +127,7 @@ final ordersProvider = StreamProvider.family<List<OrderModel>, String>(
 
 final walletActivitiesProvider =
     StreamProvider.family<List<WalletActivitiesModel>, String>((ref, userID) {
-  return PaymentMethodsServices(userID: userID).walletActivities;
+  return PaymentMethodDatabaseServices(userID: userID).walletActivities;
 });
 
 final memberStatsProvider = StreamProvider.family<MembershipStatsModel, String>(

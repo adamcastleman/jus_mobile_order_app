@@ -5,7 +5,7 @@ import 'package:jus_mobile_order_app/Providers/product_providers.dart';
 import 'package:jus_mobile_order_app/Widgets/Tiles/order_tile.dart';
 
 class DisplayOrderList extends ConsumerWidget {
-  const DisplayOrderList({Key? key}) : super(key: key);
+  const DisplayOrderList({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

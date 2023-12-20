@@ -2,25 +2,19 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:jus_mobile_order_app/Helpers/enums.dart';
 import 'package:jus_mobile_order_app/Helpers/modal_bottom_sheets.dart';
-import 'package:jus_mobile_order_app/Helpers/orders.dart';
 import 'package:jus_mobile_order_app/Helpers/points.dart';
 import 'package:jus_mobile_order_app/Helpers/pricing.dart';
 import 'package:jus_mobile_order_app/Helpers/products.dart';
 import 'package:jus_mobile_order_app/Models/payments_model.dart';
 import 'package:jus_mobile_order_app/Models/user_model.dart';
 import 'package:jus_mobile_order_app/Providers/auth_providers.dart';
-import 'package:jus_mobile_order_app/Providers/loading_providers.dart';
 import 'package:jus_mobile_order_app/Providers/location_providers.dart';
 import 'package:jus_mobile_order_app/Providers/order_providers.dart';
 import 'package:jus_mobile_order_app/Providers/payments_providers.dart';
 import 'package:jus_mobile_order_app/Providers/points_providers.dart';
-import 'package:jus_mobile_order_app/Services/payments_services.dart';
-import 'package:jus_mobile_order_app/Wallets/load_money_and_pay_sheet.dart';
-import 'package:jus_mobile_order_app/Widgets/Buttons/elevated_button_large.dart';
-import 'package:jus_mobile_order_app/Widgets/Buttons/elevated_button_large_loading.dart';
-import 'package:jus_mobile_order_app/Widgets/Buttons/large_apple_pay_button.dart';
+import 'package:jus_mobile_order_app/Sheets/invalid_sheet_single_pop.dart';
+import 'package:jus_mobile_order_app/Sheets/order_confirmation_sheet.dart';
 
 class PaymentsHelper {
   final WidgetRef? ref;
@@ -30,19 +24,19 @@ class PaymentsHelper {
 
   Map setSelectedPaymentMap({
     String? cardNickname,
-    required String lastFourDigits,
+    required String last4,
     required String brand,
     required bool isWallet,
-    String? nonce,
+    String? cardId,
     String? gan,
     int? balance,
   }) {
     return {
       'cardNickname': cardNickname,
-      'nonce': nonce,
+      'cardId': cardId,
       'gan': gan,
       'balance': balance,
-      'lastFourDigits': lastFourDigits,
+      'last4': last4,
       'brand': brand,
       'isWallet': isWallet,
     };
@@ -60,13 +54,14 @@ class PaymentsHelper {
           .read(selectedPaymentMethodProvider.notifier)
           .updateSelectedPaymentMethod(
             card: PaymentsHelper().setSelectedPaymentMap(
-                cardNickname: eligibleCard.cardNickname,
-                isWallet: eligibleCard.isWallet,
-                nonce: eligibleCard.nonce,
-                gan: eligibleCard.gan,
-                brand: eligibleCard.brand,
-                balance: eligibleCard.balance,
-                lastFourDigits: eligibleCard.lastFourDigits),
+              cardNickname: eligibleCard.cardNickname,
+              isWallet: eligibleCard.isWallet,
+              cardId: eligibleCard.cardId,
+              gan: eligibleCard.gan,
+              brand: eligibleCard.brand,
+              balance: eligibleCard.balance,
+              last4: eligibleCard.last4,
+            ),
           );
     }
   }
@@ -79,146 +74,48 @@ class PaymentsHelper {
         ? ''
         : selectedPayment['isWallet']
             ? 'Wallet'
-            : getBrandName(selectedPayment['brand']);
-    final lastFourDigits = ' x${selectedPayment['lastFourDigits']}';
+            : displayBrandName(selectedPayment['brand']);
+    final last4 = ' x${selectedPayment['last4']}';
 
-    return [cardNickname, brandName, lastFourDigits].join().trim();
+    return [cardNickname, brandName, last4].join().trim();
   }
 
   String displaySelectedCardTextFromPaymentModel(PaymentsModel card) {
     final cardNickname =
         card.cardNickname.isEmpty ? '' : '${card.cardNickname} ';
-    final brandName = card.isWallet ? '' : '- ${getBrandName(card.brand)} ';
-    final lastFourDigits = 'x${card.lastFourDigits}';
+    final brandName = card.isWallet ? '' : '- ${displayBrandName(card.brand)} ';
+    final last4 = 'x${card.last4}';
 
-    return [cardNickname, brandName, lastFourDigits].join().trim();
+    return [cardNickname, brandName, last4].join().trim();
   }
 
-  String getBrandName(String brand) {
-    switch (brand) {
+  String displayBrandName(String brand) {
+    var normalizedBrand =
+        brand.toLowerCase().replaceAll('_', '').replaceAll(' ', '');
+
+    switch (normalizedBrand) {
       case 'visa':
         return 'Visa';
       case 'mastercard':
         return 'Mastercard';
-      case 'americanExpress':
+      case 'amex':
+        return 'AmEx';
+      case 'americanexpress':
         return 'AmEx';
       case 'discover':
         return 'Discover';
       case 'jcb':
         return 'JCB';
-      case 'china_union_pay':
+      case 'chinaunionpay':
         return 'China UnionPay';
       case 'interac':
         return 'Interac';
-      case 'discoverDiners':
+      case 'dinersclub':
+        return 'Diners Club';
+      case 'discoverdiners':
         return 'Diners Club';
       default:
         return 'My Card';
-    }
-  }
-
-  Widget addPaymentMethodButton(
-      BuildContext context, WidgetRef ref, UserModel user) {
-    return LargeElevatedButton(
-        buttonText: 'Add Payment Method',
-        onPressed: () {
-          PaymentsServices(
-                  context: context,
-                  ref: ref,
-                  userID: user.uid,
-                  firstName: user.firstName)
-              .initSquarePayment();
-        });
-  }
-
-  Widget payWithPaymentMethodButton(
-      BuildContext context, WidgetRef ref, UserModel user) {
-    final selectedPayment = ref.watch(selectedPaymentMethodProvider);
-    final loading = ref.watch(loadingProvider);
-    var message = OrderHelpers(ref: ref).validateOrder(context);
-    final selectedPaymentText =
-        'Pay with ${PaymentsHelper().displaySelectedCardTextFromMap(selectedPayment)}';
-    final totalPrice = user.uid == null || !user.isActiveMember!
-        ? Pricing(ref: ref).orderTotalForNonMembers() * 100
-        : Pricing(ref: ref).orderTotalForMembers() * 100;
-
-    if (loading) {
-      return const LargeElevatedLoadingButton();
-    }
-
-    void handleButtonPress() {
-      if (message != null) {
-        OrderHelpers(ref: ref).showInvalidOrderModal(context, message);
-      } else {
-        ref.read(loadingProvider.notifier).state = true;
-        PaymentsHelper(ref: ref).processPayment(context, user);
-      }
-    }
-
-    return selectedPayment['balance'] != null &&
-            totalPrice > selectedPayment['balance']
-        ? LargeElevatedButton(
-            buttonText: 'Load Money and Pay',
-            onPressed: () {
-              ref.read(walletTypeProvider.notifier).state =
-                  WalletType.loadAndPay;
-              ModalBottomSheet().partScreen(
-                enableDrag: true,
-                isDismissible: true,
-                isScrollControlled: true,
-                context: context,
-                builder: (context) => const LoadWalletAndPaySheet(),
-              );
-            },
-          )
-        : LargeElevatedButton(
-            buttonText: selectedPaymentText,
-            onPressed: handleButtonPress,
-          );
-  }
-
-  Widget payWithApplePayButton(
-      BuildContext context, WidgetRef ref, UserModel user) {
-    final loading = ref.watch(applePayLoadingProvider);
-
-    if (Platform.isIOS) {
-      if (loading == true) {
-        return const LargeElevatedLoadingButton();
-      }
-      return LargeApplePayButton(
-        onPressed: () {
-          ref.read(applePaySelectedProvider.notifier).state = true;
-          ref.read(applePayLoadingProvider.notifier).state = true;
-          final errorMessage = OrderHelpers(ref: ref).validateOrder(context);
-          if (errorMessage != null) {
-            OrderHelpers(ref: ref).showInvalidOrderModal(context, errorMessage);
-          } else {
-            PaymentsServices(ref: ref).initApplePayPayment(context, user);
-          }
-        },
-      );
-    } else {
-      return const SizedBox();
-    }
-  }
-
-  Widget noChargeButton(BuildContext context, WidgetRef ref, UserModel user) {
-    final loading = ref.watch(loadingProvider);
-    if (loading) {
-      return const LargeElevatedLoadingButton();
-    } else {
-      return LargeElevatedButton(
-        buttonText: 'No Charge - Finish Checkout',
-        onPressed: () {
-          ref.read(loadingProvider.notifier).state = true;
-          var message = OrderHelpers(ref: ref).validateOrder(context);
-          if (message != null) {
-            OrderHelpers(ref: ref).showInvalidOrderModal(context, message);
-          } else {
-            PaymentsHelper(ref: ref).processPayment(context, user);
-          }
-        },
-      );
     }
   }
 
@@ -283,8 +180,8 @@ class PaymentsHelper {
     final int totalInCents = totals['totalInCents'] ?? 0;
     final int tipTotalInCents = totals['tipTotalInCents'] ?? 0;
 
-    final nonce =
-        totalInCents + tipTotalInCents == 0 ? null : selectedCard['nonce'];
+    final cardId =
+        totalInCents + tipTotalInCents == 0 ? null : selectedCard['cardId'];
     final gan = selectedCard['gan'];
     final paymentMethod =
         totalInCents + tipTotalInCents == 0 ? 'storeCredit' : 'card';
@@ -295,16 +192,19 @@ class PaymentsHelper {
         'firstName': user.uid == null ? firstName : user.firstName,
         'lastName': user.uid == null ? lastName : user.lastName,
         'email': user.uid == null ? email : user.email,
+        'squareCustomerId': user.uid == null ? '' : user.squareCustomerId,
         'phone': user.uid == null ? phone : user.phone,
         'memberSavings': totals['totalSavedInCents']
       },
       'locationDetails': {
         'locationID': selectedLocation.locationID,
-        'locationName': selectedLocation.name,
+        'squareLocationId': selectedLocation.squareLocationId,
+        'locationTaxRate': selectedLocation.salesTaxRate,
+        'locationName': selectedLocation.locationName,
         'locationTimezone': selectedLocation.timezone,
       },
       'paymentDetails': {
-        'nonce': nonce,
+        'cardId': cardId,
         'gan': gan,
         'paymentMethod': paymentMethod,
         'externalPaymentType':
@@ -343,11 +243,17 @@ class PaymentsHelper {
     };
   }
 
-  void processPayment(BuildContext context, UserModel user) async {
-    await PaymentsServices(ref: ref, context: context)
-        .chargeCardAndCreateOrder(user)
-        .then((result) {
-      PaymentsServices(ref: ref).handlePaymentResult(context, result);
-    });
+  void showPaymentSuccessModal(BuildContext context) {
+    ModalBottomSheet().fullScreen(
+      context: context,
+      builder: (context) => const OrderConfirmationSheet(),
+    );
+  }
+
+  void showPaymentErrorModal(BuildContext context, String error) {
+    ModalBottomSheet().fullScreen(
+      context: context,
+      builder: (context) => InvalidSheetSinglePop(error: error),
+    );
   }
 }

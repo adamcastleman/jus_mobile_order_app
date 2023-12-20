@@ -11,8 +11,7 @@ import 'package:jus_mobile_order_app/Widgets/Buttons/elevated_button_small.dart'
 
 class EmptyFavoriteCard extends ConsumerWidget {
   final bool isFavoriteSheet;
-  const EmptyFavoriteCard({required this.isFavoriteSheet, Key? key})
-      : super(key: key);
+  const EmptyFavoriteCard({required this.isFavoriteSheet, super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -35,7 +34,7 @@ class EmptyFavoriteCard extends ConsumerWidget {
                     style: TextStyle(fontSize: 20.0),
                     maxLines: 1,
                   ),
-                  Spacing().vertical(5),
+                  Spacing.vertical(5),
                   const AutoSizeText(
                     'Tap the heart on the product detail page to save your favorites here for fast reordering',
                     style: TextStyle(fontSize: 12),

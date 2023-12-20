@@ -22,19 +22,19 @@ class CancelMembershipConfirmationSheet extends ConsumerWidget {
         child: Wrap(
           children: [
             const SheetNotch(),
-            Spacing().vertical(35),
+            Spacing.vertical(35),
             const Text(
               'Cancel Membership?',
               style: TextStyle(fontSize: 23),
             ),
-            Spacing().vertical(
+            Spacing.vertical(
               60,
             ),
             Text(
               'You\'ve saved \$${(stats.totalSaved! / 100).toStringAsFixed(2)}, and earned an extra ${stats.bonusPoints} bonus points since you\'ve joined.',
               style: const TextStyle(fontSize: 16),
             ),
-            Spacing().vertical(
+            Spacing.vertical(
               60,
             ),
             JusDivider().thin(),
@@ -69,7 +69,7 @@ class CancelMembershipConfirmationSheet extends ConsumerWidget {
                 ),
               ],
             ),
-            Spacing().vertical(
+            Spacing.vertical(
               160,
             ),
           ],

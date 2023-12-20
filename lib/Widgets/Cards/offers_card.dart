@@ -11,7 +11,7 @@ import 'package:qr_flutter/qr_flutter.dart';
 
 class OffersCard extends ConsumerWidget {
   final int index;
-  const OffersCard({required this.index, Key? key}) : super(key: key);
+  const OffersCard({required this.index, super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -38,14 +38,14 @@ class OffersCard extends ConsumerWidget {
                   alignment: Alignment.topRight,
                   child: JusCloseButton(),
                 ),
-                Spacing().vertical(20),
+                Spacing.vertical(20),
                 AutoSizeText(
                   offers[index].name,
                   maxLines: 1,
                   style: const TextStyle(
                       fontSize: 30, fontWeight: FontWeight.bold),
                 ),
-                Spacing().vertical(20),
+                Spacing.vertical(20),
                 AutoSizeText(
                   offers[index].description,
                   maxLines: 2,
@@ -53,7 +53,7 @@ class OffersCard extends ConsumerWidget {
                   overflow: TextOverflow.ellipsis,
                   style: const TextStyle(fontSize: 18),
                 ),
-                Spacing().vertical(60),
+                Spacing.vertical(60),
                 Center(
                   child: SizedBox(
                     height: 200,

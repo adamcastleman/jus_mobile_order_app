@@ -14,8 +14,7 @@ class OrderHistoryTile extends StatelessWidget {
   final OrderModel order;
   final int tileIndex;
   const OrderHistoryTile(
-      {required this.order, required this.tileIndex, Key? key})
-      : super(key: key);
+      {required this.order, required this.tileIndex, super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -54,7 +53,7 @@ class OrderHistoryTile extends StatelessWidget {
                   children: [
                     Text(order.totalAmount <= 0
                         ? 'No charge'
-                        : '${order.cardBrand} x${order.lastFourDigits}'),
+                        : '${order.cardBrand} x${order.last4}'),
                     Text(locations
                         .firstWhere(
                             (element) => element.locationID == order.locationID)
@@ -88,7 +87,7 @@ class OrderHistoryTile extends StatelessWidget {
                         Text(DateFormat('M/d/yyyy').format(order.createdAt)),
                       ],
                     ),
-                    Spacing().horizontal(10),
+                    Spacing.horizontal(10),
                     const ChevronRightIcon(),
                   ],
                 ),

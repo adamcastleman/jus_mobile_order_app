@@ -17,7 +17,7 @@ import '../../Helpers/time.dart';
 import '../../Providers/future_providers.dart';
 
 class OrderPickupTimeTile extends ConsumerWidget {
-  const OrderPickupTimeTile({Key? key}) : super(key: key);
+  const OrderPickupTimeTile({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -56,7 +56,7 @@ class OrderPickupTimeTile extends ConsumerWidget {
                 '${Time().formatPickupTime(ref)} @ ${DateFormat('h:mm a').format(selectedTime ?? Time().earliestPickUpTime(ref))}',
                 style: const TextStyle(fontWeight: FontWeight.bold),
               ),
-              Spacing().horizontal(4),
+              Spacing.horizontal(4),
               selectedLocation.timezone != data
                   ? Text(
                       Time().locationTimezoneAbbreviation(

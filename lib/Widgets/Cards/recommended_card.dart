@@ -1,22 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:jus_mobile_order_app/Helpers/products.dart';
-import 'package:jus_mobile_order_app/Providers/ProviderWidgets/recommended_products_provider_widget.dart';
-import 'package:jus_mobile_order_app/Widgets/Cards/menu_card_small.dart';
+import 'package:jus_mobile_order_app/Models/product_model.dart';
+import 'package:jus_mobile_order_app/Widgets/Cards/menu_card_small_mobile.dart';
 
-class RecommendedCard extends ConsumerWidget {
-  final int index;
+class RecommendedCardMobile extends ConsumerWidget {
+  final ProductModel recommended;
 
-  const RecommendedCard({required this.index, Key? key}) : super(key: key);
+  const RecommendedCardMobile({required this.recommended, super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return RecommendedProductsProviderWidget(
-      builder: (recommended) => MenuCardSmall(
-        product: recommended[index],
-        providerFunction: () =>
-            ProductHelpers(ref: ref).setProductProviders(recommended[index]),
-      ),
+    return MenuCardSmallMobile(
+      product: recommended,
+      providerFunction: () =>
+          ProductHelpers(ref: ref).setProductProviders(recommended),
     );
   }
 }

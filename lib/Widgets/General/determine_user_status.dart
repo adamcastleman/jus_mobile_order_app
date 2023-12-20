@@ -4,7 +4,7 @@ import 'package:jus_mobile_order_app/Providers/ProviderWidgets/points_details_pr
 import 'package:jus_mobile_order_app/Providers/stream_providers.dart';
 
 class DetermineUserStatus extends ConsumerWidget {
-  const DetermineUserStatus({Key? key}) : super(key: key);
+  const DetermineUserStatus({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

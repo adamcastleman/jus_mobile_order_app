@@ -9,9 +9,9 @@ if (admin.apps.length === 0) {
 
 const addGiftCardAsSavedPayment = async (db, giftCardMap, userID) => {
   const data = {
-    nonce: null,
+    cardId: null,
     brand: "wallet",
-    lastFourDigits: giftCardMap.cardDetails.gan.slice(-4),
+    last4: giftCardMap.cardDetails.gan.slice(-4),
     expirationMonth: null,
     expirationYear: null,
     postalCode: null,

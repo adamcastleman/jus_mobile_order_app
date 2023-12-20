@@ -11,7 +11,7 @@ import 'package:jus_mobile_order_app/Widgets/Cards/redeem_offer_card.dart';
 import 'package:jus_mobile_order_app/Widgets/General/category_display_widget.dart';
 
 class AvailableOffersList extends ConsumerWidget {
-  const AvailableOffersList({Key? key}) : super(key: key);
+  const AvailableOffersList({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -55,7 +55,7 @@ class AvailableOffersList extends ConsumerWidget {
                           scrollDirection: Axis.horizontal,
                           itemCount: qualifyingOffers(ref, offers).length,
                           separatorBuilder: (context, index) =>
-                              Spacing().horizontal(10),
+                              Spacing.horizontal(10),
                           itemBuilder: (context, index) {
                             return RedeemOfferCard(
                                 index: index,

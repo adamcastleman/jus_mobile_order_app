@@ -59,11 +59,11 @@ class LoginPage extends ConsumerWidget {
                         ),
                       ],
                     ),
-                    Spacing().vertical(15),
+                    Spacing.vertical(15),
                     const Text(
                       'Sign in to collect and redeem points, access your member code, save favorites and more.',
                     ),
-                    Spacing().vertical(10),
+                    Spacing.vertical(10),
                     const Text(
                       'If you belong to our legacy points or membership program, '
                       'or you had an account of any kind on our legacy website, you must create '
@@ -73,10 +73,10 @@ class LoginPage extends ConsumerWidget {
                         fontSize: 12,
                       ),
                     ),
-                    Spacing().vertical(25),
+                    Spacing.vertical(25),
                     JusTextField(ref: ref).email(user: user, autofocus: true),
                     JusTextField(ref: ref).error(emailError),
-                    Spacing().vertical(15),
+                    Spacing.vertical(15),
                     Stack(
                       children: [
                         JusTextField(ref: ref).password(),
@@ -111,16 +111,16 @@ class LoginPage extends ConsumerWidget {
                     ),
                     JusTextField(ref: ref).error(passwordError),
                     loginError == null
-                        ? Spacing().vertical(40)
-                        : Spacing().vertical(20),
+                        ? Spacing.vertical(40)
+                        : Spacing.vertical(20),
                     loginError != null
                         ? ShowError(
                             error: loginError,
                           )
                         : const SizedBox(),
                     loginError == null
-                        ? Spacing().vertical(0)
-                        : Spacing().vertical(20),
+                        ? Spacing.vertical(0)
+                        : Spacing.vertical(20),
                     loading == true
                         ? const LargeElevatedLoadingButton()
                         : LargeElevatedButton(
@@ -132,7 +132,7 @@ class LoginPage extends ConsumerWidget {
                               loginUser(context: context, ref: ref);
                             },
                           ),
-                    Spacing().vertical(5),
+                    Spacing.vertical(5),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [

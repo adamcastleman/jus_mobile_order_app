@@ -33,6 +33,7 @@ class UserServices {
         email: data['email'],
         phone: data['phone'],
         isActiveMember: data['isActiveMember'],
+        squareCustomerId: data['squareCustomerId'],
         points: data['points'],
       );
     } else {
@@ -43,6 +44,7 @@ class UserServices {
         email: null,
         phone: null,
         isActiveMember: null,
+        squareCustomerId: null,
         points: null,
       );
     }

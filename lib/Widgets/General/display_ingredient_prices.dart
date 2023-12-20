@@ -5,8 +5,7 @@ import 'package:jus_mobile_order_app/Providers/stream_providers.dart';
 
 class DisplayPremiumIngredientPrices extends ConsumerWidget {
   final int index;
-  const DisplayPremiumIngredientPrices({required this.index, Key? key})
-      : super(key: key);
+  const DisplayPremiumIngredientPrices({required this.index, super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

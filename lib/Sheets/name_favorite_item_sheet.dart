@@ -1,17 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:jus_mobile_order_app/Helpers/modal_bottom_sheets.dart';
 import 'package:jus_mobile_order_app/Models/product_model.dart';
 import 'package:jus_mobile_order_app/Models/user_model.dart';
 import 'package:jus_mobile_order_app/Providers/product_providers.dart';
 import 'package:jus_mobile_order_app/Providers/stream_providers.dart';
 import 'package:jus_mobile_order_app/Services/favorites_services.dart';
+import 'package:jus_mobile_order_app/Sheets/invalid_sheet_single_pop.dart';
 import 'package:jus_mobile_order_app/Widgets/Buttons/elevated_button_medium.dart';
 import 'package:jus_mobile_order_app/Widgets/Buttons/outlined_button_medium.dart';
 
 class NameFavoriteItemSheet extends ConsumerWidget {
   final ProductModel currentProduct;
-  const NameFavoriteItemSheet({required this.currentProduct, Key? key})
-      : super(key: key);
+  const NameFavoriteItemSheet({required this.currentProduct, super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -64,8 +65,18 @@ class NameFavoriteItemSheet extends ConsumerWidget {
   }
 
   _addItemToFavorites(BuildContext context, WidgetRef ref, UserModel user) {
-    FavoritesServices(ref: ref)
-        .addToFavorites(context, addIngredients(ref), addToppings(ref));
+    FavoritesServices(ref: ref).addToFavorites(
+        context: context,
+        currentIngredients: addIngredients(ref),
+        currentToppings: addToppings(ref),
+        onError: (error) {
+          ModalBottomSheet().partScreen(
+            context: context,
+            builder: (context) => InvalidSheetSinglePop(
+              error: error,
+            ),
+          );
+        });
   }
 
   addIngredients(WidgetRef ref) {

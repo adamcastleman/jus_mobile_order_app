@@ -9,7 +9,7 @@ import 'package:jus_mobile_order_app/Widgets/Cards/offers_card.dart';
 import '../Widgets/Buttons/close_button.dart';
 
 class OffersSheet extends ConsumerWidget {
-  const OffersSheet({Key? key}) : super(key: key);
+  const OffersSheet({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -31,7 +31,7 @@ class OffersSheet extends ConsumerWidget {
               'Offers',
               style: Theme.of(context).textTheme.headlineSmall,
             ),
-            Spacing().vertical(40),
+            Spacing.vertical(40),
             offers.isEmpty
                 ? const Center(
                     child: AutoSizeText(

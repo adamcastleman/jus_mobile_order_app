@@ -15,7 +15,7 @@ import '../../Providers/discounts_provider.dart';
 
 class AvailableRewardCard extends ConsumerWidget {
   final int index;
-  const AvailableRewardCard({required this.index, Key? key}) : super(key: key);
+  const AvailableRewardCard({required this.index, super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -34,7 +34,7 @@ class AvailableRewardCard extends ConsumerWidget {
             ),
             child: Padding(
               padding: const EdgeInsets.only(
-                  left: 8.0, right: 8.0, top: 8.0, bottom: 18.0),
+                  left: 8.0, right: 8.0, top: 8.0, bottom: 15.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -46,7 +46,7 @@ class AvailableRewardCard extends ConsumerWidget {
                         PointsHelper(ref: ref).availableRewards()[index]
                             ['name'],
                         style: const TextStyle(
-                            fontSize: 16, fontWeight: FontWeight.bold),
+                            fontSize: 15, fontWeight: FontWeight.bold),
                         maxLines: 3,
                       ),
                       Padding(
@@ -183,8 +183,8 @@ class AvailableRewardCard extends ConsumerWidget {
       );
 
       result.add({
-        'price': orderCost['price'],
-        'memberPrice': orderCost['memberPrice'],
+        'price': orderCost['itemPriceNonMember'],
+        'memberPrice': orderCost['itemPriceMember'],
         'itemKey': orderCost['itemKey'],
         'productID': orderItem['productID'],
         'itemQuantity':

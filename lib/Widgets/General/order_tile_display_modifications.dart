@@ -14,15 +14,14 @@ class OrderTileDisplayModifications extends ConsumerWidget {
   final ProductModel currentProduct;
 
   const OrderTileDisplayModifications(
-      {required this.orderIndex, required this.currentProduct, Key? key})
-      : super(key: key);
+      {required this.orderIndex, required this.currentProduct, super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final user = ref.watch(currentUserProvider).value!;
     final currentOrder = ref.watch(currentOrderItemsProvider);
     TextStyle style = TextStyle(
-      fontSize: 12,
+      fontSize: 11,
       overflow: TextOverflow.visible,
       color: Colors.grey,
       fontFamily: GoogleFonts.quicksand().fontFamily,
@@ -56,7 +55,7 @@ class OrderTileDisplayModifications extends ConsumerWidget {
                         (element) => element.id == selectedToppings[index]);
                     return Text('+${ingredient.name}',
                         style: const TextStyle(
-                          fontSize: 12,
+                          fontSize: 11,
                         ));
                   }),
             ),
@@ -122,7 +121,7 @@ class OrderTileDisplayModifications extends ConsumerWidget {
                             TextSpan(text: ' ${ingredient.name}'),
                             TextSpan(
                               text: ProductHelpers(ref: ref)
-                                  .extraChargeQuantity(
+                                  .extraChargeIngredientQuantity(
                                       added, addedIngredientIndex),
                             ),
                             TextSpan(
@@ -130,7 +129,7 @@ class OrderTileDisplayModifications extends ConsumerWidget {
                                   ' ${ProductHelpers(ref: ref).determineModifierPriceText(user, added, addedIngredientIndex)}',
                               style: const TextStyle(
                                 color: Colors.black,
-                                fontSize: 12,
+                                fontSize: 11,
                               ),
                             ),
                           ]),
@@ -141,7 +140,7 @@ class OrderTileDisplayModifications extends ConsumerWidget {
                 },
               ),
             ),
-            Spacing().vertical(2),
+            Spacing.vertical(2),
             allergies.isEmpty
                 ? const SizedBox()
                 : Row(
@@ -151,7 +150,7 @@ class OrderTileDisplayModifications extends ConsumerWidget {
                         child: Text(
                           'Allergies: ${List.generate(allergies.length, (index) => ingredients.firstWhere((element) => element.id == allergies[index]).name).join(', ')}',
                           style: const TextStyle(
-                            fontSize: 12,
+                            fontSize: 11,
                             fontWeight: FontWeight.bold,
                           ),
                           overflow: TextOverflow.visible,

@@ -56,7 +56,7 @@ class OrderValidators {
     bool notValidScheduleDate = !_isScheduleDateValid();
 
     if (!isScheduledOrder && notAcceptingOrders && notValidScheduleDate) {
-      return 'Please schedule your pickup date for ${LocationHelper().selectedLocation(ref).name}, which is not accepting pickup orders right now.';
+      return 'Please schedule your pickup date for ${LocationHelper().selectedLocation(ref).locationName}, which is not accepting pickup orders right now.';
     }
 
     return null;
@@ -91,7 +91,7 @@ class OrderValidators {
     var unavailableItems = getUnavailableItemsMessage();
 
     if (unavailableItems.isNotEmpty) {
-      return '$unavailableItems at ${LocationHelper().selectedLocation(ref).name} right now. Please remove this item from your cart before continuing.';
+      return '$unavailableItems at ${LocationHelper().selectedLocation(ref).locationName} right now. Please remove this item from your cart before continuing.';
     }
 
     return null;

@@ -20,8 +20,7 @@ class SelectionIncrementer extends StatelessWidget {
       required this.horizontalPadding,
       required this.iconSize,
       required this.buttonSpacing,
-      Key? key})
-      : super(key: key);
+      super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -37,7 +36,7 @@ class SelectionIncrementer extends StatelessWidget {
               size: iconSize,
             ),
           ),
-          Spacing().horizontal(5),
+          Spacing.horizontal(5),
           InkWell(
             onTap: onAdd,
             child: Icon(
@@ -45,7 +44,7 @@ class SelectionIncrementer extends StatelessWidget {
               size: iconSize,
             ),
           ),
-          Spacing().horizontal(buttonSpacing),
+          Spacing.horizontal(buttonSpacing),
           CircleAvatar(
             radius: quantityRadius,
             backgroundColor: Colors.black,

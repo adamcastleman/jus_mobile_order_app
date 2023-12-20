@@ -5,8 +5,7 @@ import 'package:jus_mobile_order_app/Providers/product_providers.dart';
 
 class MultiUseIngredientSelectionCards extends ConsumerWidget {
   final int index;
-  const MultiUseIngredientSelectionCards({required this.index, Key? key})
-      : super(key: key);
+  const MultiUseIngredientSelectionCards({required this.index, super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

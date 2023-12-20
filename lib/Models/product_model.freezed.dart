@@ -25,8 +25,7 @@ mixin _$ProductModel {
   List<dynamic> get ingredients => throw _privateConstructorUsedError;
   String get image => throw _privateConstructorUsedError;
   bool get isActive => throw _privateConstructorUsedError;
-  List<dynamic> get memberPrice => throw _privateConstructorUsedError;
-  List<dynamic> get price => throw _privateConstructorUsedError;
+  List<dynamic> get variations => throw _privateConstructorUsedError;
   bool get taxable => throw _privateConstructorUsedError;
   bool get isNew => throw _privateConstructorUsedError;
   bool get isRecommended => throw _privateConstructorUsedError;
@@ -62,8 +61,7 @@ abstract class $ProductModelCopyWith<$Res> {
       List<dynamic> ingredients,
       String image,
       bool isActive,
-      List<dynamic> memberPrice,
-      List<dynamic> price,
+      List<dynamic> variations,
       bool taxable,
       bool isNew,
       bool isRecommended,
@@ -101,8 +99,7 @@ class _$ProductModelCopyWithImpl<$Res, $Val extends ProductModel>
     Object? ingredients = null,
     Object? image = null,
     Object? isActive = null,
-    Object? memberPrice = null,
-    Object? price = null,
+    Object? variations = null,
     Object? taxable = null,
     Object? isNew = null,
     Object? isRecommended = null,
@@ -154,13 +151,9 @@ class _$ProductModelCopyWithImpl<$Res, $Val extends ProductModel>
           ? _value.isActive
           : isActive // ignore: cast_nullable_to_non_nullable
               as bool,
-      memberPrice: null == memberPrice
-          ? _value.memberPrice
-          : memberPrice // ignore: cast_nullable_to_non_nullable
-              as List<dynamic>,
-      price: null == price
-          ? _value.price
-          : price // ignore: cast_nullable_to_non_nullable
+      variations: null == variations
+          ? _value.variations
+          : variations // ignore: cast_nullable_to_non_nullable
               as List<dynamic>,
       taxable: null == taxable
           ? _value.taxable
@@ -236,8 +229,7 @@ abstract class _$$ProductModelImplCopyWith<$Res>
       List<dynamic> ingredients,
       String image,
       bool isActive,
-      List<dynamic> memberPrice,
-      List<dynamic> price,
+      List<dynamic> variations,
       bool taxable,
       bool isNew,
       bool isRecommended,
@@ -273,8 +265,7 @@ class __$$ProductModelImplCopyWithImpl<$Res>
     Object? ingredients = null,
     Object? image = null,
     Object? isActive = null,
-    Object? memberPrice = null,
-    Object? price = null,
+    Object? variations = null,
     Object? taxable = null,
     Object? isNew = null,
     Object? isRecommended = null,
@@ -326,13 +317,9 @@ class __$$ProductModelImplCopyWithImpl<$Res>
           ? _value.isActive
           : isActive // ignore: cast_nullable_to_non_nullable
               as bool,
-      memberPrice: null == memberPrice
-          ? _value._memberPrice
-          : memberPrice // ignore: cast_nullable_to_non_nullable
-              as List<dynamic>,
-      price: null == price
-          ? _value._price
-          : price // ignore: cast_nullable_to_non_nullable
+      variations: null == variations
+          ? _value._variations
+          : variations // ignore: cast_nullable_to_non_nullable
               as List<dynamic>,
       taxable: null == taxable
           ? _value.taxable
@@ -403,8 +390,7 @@ class _$ProductModelImpl implements _ProductModel {
       required final List<dynamic> ingredients,
       required this.image,
       required this.isActive,
-      required final List<dynamic> memberPrice,
-      required final List<dynamic> price,
+      required final List<dynamic> variations,
       required this.taxable,
       required this.isNew,
       required this.isRecommended,
@@ -419,8 +405,7 @@ class _$ProductModelImpl implements _ProductModel {
       this.scheduledProductLimit,
       this.scheduledProductType})
       : _ingredients = ingredients,
-        _memberPrice = memberPrice,
-        _price = price,
+        _variations = variations,
         _nutrition = nutrition;
 
   @override
@@ -447,20 +432,12 @@ class _$ProductModelImpl implements _ProductModel {
   final String image;
   @override
   final bool isActive;
-  final List<dynamic> _memberPrice;
+  final List<dynamic> _variations;
   @override
-  List<dynamic> get memberPrice {
-    if (_memberPrice is EqualUnmodifiableListView) return _memberPrice;
+  List<dynamic> get variations {
+    if (_variations is EqualUnmodifiableListView) return _variations;
     // ignore: implicit_dynamic_type
-    return EqualUnmodifiableListView(_memberPrice);
-  }
-
-  final List<dynamic> _price;
-  @override
-  List<dynamic> get price {
-    if (_price is EqualUnmodifiableListView) return _price;
-    // ignore: implicit_dynamic_type
-    return EqualUnmodifiableListView(_price);
+    return EqualUnmodifiableListView(_variations);
   }
 
   @override
@@ -498,7 +475,7 @@ class _$ProductModelImpl implements _ProductModel {
 
   @override
   String toString() {
-    return 'ProductModel(uid: $uid, name: $name, category: $category, categoryOrder: $categoryOrder, productID: $productID, description: $description, ingredients: $ingredients, image: $image, isActive: $isActive, memberPrice: $memberPrice, price: $price, taxable: $taxable, isNew: $isNew, isRecommended: $isRecommended, isFeatured: $isFeatured, isModifiable: $isModifiable, isScheduled: $isScheduled, hasToppings: $hasToppings, nutrition: $nutrition, perks: $perks, servingsFruit: $servingsFruit, servingsVeggie: $servingsVeggie, scheduledProductLimit: $scheduledProductLimit, scheduledProductType: $scheduledProductType)';
+    return 'ProductModel(uid: $uid, name: $name, category: $category, categoryOrder: $categoryOrder, productID: $productID, description: $description, ingredients: $ingredients, image: $image, isActive: $isActive, variations: $variations, taxable: $taxable, isNew: $isNew, isRecommended: $isRecommended, isFeatured: $isFeatured, isModifiable: $isModifiable, isScheduled: $isScheduled, hasToppings: $hasToppings, nutrition: $nutrition, perks: $perks, servingsFruit: $servingsFruit, servingsVeggie: $servingsVeggie, scheduledProductLimit: $scheduledProductLimit, scheduledProductType: $scheduledProductType)';
   }
 
   @override
@@ -522,8 +499,7 @@ class _$ProductModelImpl implements _ProductModel {
             (identical(other.isActive, isActive) ||
                 other.isActive == isActive) &&
             const DeepCollectionEquality()
-                .equals(other._memberPrice, _memberPrice) &&
-            const DeepCollectionEquality().equals(other._price, _price) &&
+                .equals(other._variations, _variations) &&
             (identical(other.taxable, taxable) || other.taxable == taxable) &&
             (identical(other.isNew, isNew) || other.isNew == isNew) &&
             (identical(other.isRecommended, isRecommended) ||
@@ -561,8 +537,7 @@ class _$ProductModelImpl implements _ProductModel {
         const DeepCollectionEquality().hash(_ingredients),
         image,
         isActive,
-        const DeepCollectionEquality().hash(_memberPrice),
-        const DeepCollectionEquality().hash(_price),
+        const DeepCollectionEquality().hash(_variations),
         taxable,
         isNew,
         isRecommended,
@@ -596,8 +571,7 @@ abstract class _ProductModel implements ProductModel {
       required final List<dynamic> ingredients,
       required final String image,
       required final bool isActive,
-      required final List<dynamic> memberPrice,
-      required final List<dynamic> price,
+      required final List<dynamic> variations,
       required final bool taxable,
       required final bool isNew,
       required final bool isRecommended,
@@ -631,9 +605,7 @@ abstract class _ProductModel implements ProductModel {
   @override
   bool get isActive;
   @override
-  List<dynamic> get memberPrice;
-  @override
-  List<dynamic> get price;
+  List<dynamic> get variations;
   @override
   bool get taxable;
   @override

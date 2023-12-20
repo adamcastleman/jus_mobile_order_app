@@ -8,7 +8,7 @@ import 'package:jus_mobile_order_app/Providers/product_providers.dart';
 import '../Cards/select_multiple_ingredients_card.dart';
 
 class SelectToppingsGridView extends ConsumerWidget {
-  const SelectToppingsGridView({Key? key}) : super(key: key);
+  const SelectToppingsGridView({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -26,7 +26,7 @@ class SelectToppingsGridView extends ConsumerWidget {
                 fontSize: 18,
               ),
             ),
-            Spacing().vertical(10),
+            Spacing.vertical(10),
             Flexible(
               child: GridView.builder(
                 padding: const EdgeInsets.all(0.0),

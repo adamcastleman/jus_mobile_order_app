@@ -6,23 +6,23 @@ class ScanDescriptorWidget extends StatelessWidget {
   final bool isActiveMember;
 
   const ScanDescriptorWidget({
-    Key? key,
+    super.key,
     required this.isScanAndPay,
     required this.isActiveMember,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
     return Column(
       children: [
         Text(
-          isScanAndPay ? 'One scan for everything.' : 'Scan before you pay',
+          isScanAndPay ? 'Earn points and pay' : 'Scan to earn points',
           style: const TextStyle(
             fontSize: 20,
             fontWeight: FontWeight.bold,
           ),
         ),
-        Spacing().vertical(5),
+        Spacing.vertical(5),
         Text(
           _displayDescriptorText(),
           style: const TextStyle(fontSize: 14),
@@ -36,13 +36,13 @@ class ScanDescriptorWidget extends StatelessWidget {
       if (isActiveMember) {
         return 'Check-in to Membership, earn points, and pay.';
       } else {
-        return 'Earn points and pay.';
+        return '';
       }
     } else {
       if (isActiveMember) {
         return 'Check-in to Membership and earn points.';
       } else {
-        return 'Scan to earn points.';
+        return 'Scan before paying.';
       }
     }
   }

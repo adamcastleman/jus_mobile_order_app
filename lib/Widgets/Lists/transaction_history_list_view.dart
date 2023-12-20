@@ -5,12 +5,12 @@ import 'package:jus_mobile_order_app/Models/order_model.dart';
 import 'package:jus_mobile_order_app/Models/wallet_activities_model.dart';
 import 'package:jus_mobile_order_app/Providers/ProviderWidgets/orders_provider_widget.dart';
 import 'package:jus_mobile_order_app/Providers/ProviderWidgets/wallet_activities_provider_widget.dart';
-import 'package:jus_mobile_order_app/Wallets/wallet_history_tile.dart';
 import 'package:jus_mobile_order_app/Widgets/Tiles/order_history_tile.dart';
+import 'package:jus_mobile_order_app/Widgets/Tiles/wallet_history_tile.dart';
 import 'package:simple_grouped_listview/simple_grouped_listview.dart';
 
 class TransactionHistoryListView extends StatelessWidget {
-  const TransactionHistoryListView({Key? key}) : super(key: key);
+  const TransactionHistoryListView({super.key});
 
   @override
   Widget build(BuildContext context) {

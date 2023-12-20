@@ -4,12 +4,12 @@ import 'package:jus_mobile_order_app/Helpers/products.dart';
 import 'package:jus_mobile_order_app/Providers/ProviderWidgets/favorites_provider_widget.dart';
 import 'package:jus_mobile_order_app/Providers/ProviderWidgets/ingredients_provider_widget.dart';
 import 'package:jus_mobile_order_app/Providers/ProviderWidgets/products_provider_widget.dart';
-import 'package:jus_mobile_order_app/Widgets/Cards/menu_card_small.dart';
+import 'package:jus_mobile_order_app/Widgets/Cards/menu_card_small_mobile.dart';
 
 class FavoritesCard extends ConsumerWidget {
   final int index;
 
-  const FavoritesCard({required this.index, Key? key}) : super(key: key);
+  const FavoritesCard({required this.index, super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -19,7 +19,7 @@ class FavoritesCard extends ConsumerWidget {
           builder: (favorites) {
             final currentProduct = products.firstWhere(
                 (element) => element.productID == favorites[index].productID);
-            return MenuCardSmall(
+            return MenuCardSmallMobile(
               product: currentProduct,
               favoriteName: favorites[index].name,
               providerFunction: () => ProductHelpers(ref: ref)

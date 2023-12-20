@@ -3,7 +3,7 @@ import 'package:jus_mobile_order_app/Helpers/divider.dart';
 
 class CategoryWidget extends StatelessWidget {
   final String text;
-  const CategoryWidget({required this.text, Key? key}) : super(key: key);
+  const CategoryWidget({required this.text, super.key});
 
   @override
   Widget build(BuildContext context) {

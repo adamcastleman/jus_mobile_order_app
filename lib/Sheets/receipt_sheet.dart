@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -15,7 +17,7 @@ import '../Helpers/spacing_widgets.dart';
 
 class ReceiptSheet extends ConsumerWidget {
   final OrderModel order;
-  const ReceiptSheet({required this.order, Key? key}) : super(key: key);
+  const ReceiptSheet({required this.order, super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -39,14 +41,14 @@ class ReceiptSheet extends ConsumerWidget {
                   'Receipt',
                   style: Theme.of(context).textTheme.headlineSmall,
                 ),
-                Spacing().vertical(25),
+                Spacing.vertical(25),
                 Text(
                   DateFormat('M/dd/yyyy @ h:mm a')
                       .format(order.createdAt)
                       .toLowerCase(),
                   style: const TextStyle(fontSize: 16),
                 ),
-                Spacing().vertical(20),
+                Spacing.vertical(20),
                 const CategoryWidget(
                   text: 'Order Details',
                 ),
@@ -57,7 +59,7 @@ class ReceiptSheet extends ConsumerWidget {
                 Text(
                   order.totalAmount <= 0
                       ? 'No charge'
-                      : '${order.cardBrand} x${order.lastFourDigits}',
+                      : '${order.cardBrand} x${order.last4}',
                   style: const TextStyle(fontSize: 16),
                 ),
                 Text(
@@ -79,7 +81,7 @@ class ReceiptSheet extends ConsumerWidget {
                         'Scheduled Pickup: ${DateFormat('M/dd/yyyy').format(order.pickupDate!).toLowerCase()}',
                         style: const TextStyle(fontSize: 16),
                       ),
-                Spacing().vertical(20),
+                Spacing.vertical(20),
                 const CategoryWidget(text: 'Items'),
                 ListView.separated(
                   padding: const EdgeInsets.symmetric(vertical: 12.0),
@@ -106,7 +108,7 @@ class ReceiptSheet extends ConsumerWidget {
                             style: const TextStyle(
                                 fontSize: 14, fontWeight: FontWeight.bold),
                           ),
-                          Spacing().horizontal(5),
+                          Spacing.horizontal(5),
                           currentProduct.isScheduled ||
                                   order.items[itemIndex]['itemQuantity'] == 1
                               ? const SizedBox()
@@ -156,20 +158,42 @@ class ReceiptSheet extends ConsumerWidget {
                                 ? const SizedBox()
                                 : Flexible(
                                     child: ListView.builder(
-                                      primary: false,
-                                      shrinkWrap: true,
-                                      physics:
-                                          const NeverScrollableScrollPhysics(),
-                                      itemCount: order
-                                          .items[itemIndex]['modifications']
-                                          .length,
-                                      itemBuilder: (context, index) => Text(
-                                        order.items[itemIndex]['modifications']
-                                            [index],
+                                    primary: false,
+                                    shrinkWrap: true,
+                                    physics:
+                                        const NeverScrollableScrollPhysics(),
+                                    itemCount: order
+                                        .items[itemIndex]['modifications']
+                                        .length,
+                                    itemBuilder: (context, index) {
+                                      String formattedPrice;
+                                      // Get the modification as a JSON string
+                                      String modificationJsonString =
+                                          order.items[itemIndex]
+                                              ['modifications'][index];
+
+                                      // Decode the JSON
+                                      var modification =
+                                          jsonDecode(modificationJsonString);
+
+                                      try {
+                                        int priceInCents =
+                                            int.parse(modification['price']);
+                                        double priceInDollars =
+                                            priceInCents / 100;
+                                        formattedPrice =
+                                            priceInDollars.toStringAsFixed(2);
+                                      } catch (e) {
+                                        formattedPrice =
+                                            ''; // Default value if parsing fails
+                                      }
+
+                                      return Text(
+                                        '${modification['name']} ${formattedPrice == '0.00' ? '' : '+\$$formattedPrice'}',
                                         style: const TextStyle(fontSize: 12),
-                                      ),
-                                    ),
-                                  ),
+                                      );
+                                    },
+                                  )),
                             order.items[itemIndex]['allergies'].isEmpty
                                 ? const SizedBox()
                                 : SizedBox(
@@ -195,7 +219,7 @@ class ReceiptSheet extends ConsumerWidget {
                     );
                   },
                 ),
-                Spacing().vertical(20),
+                Spacing.vertical(20),
                 JusDivider().thick(),
                 Padding(
                   padding: const EdgeInsets.all(14.0),
@@ -330,7 +354,7 @@ class ReceiptSheet extends ConsumerWidget {
                                 ),
                               ],
                             ),
-                      Spacing().vertical(15),
+                      Spacing.vertical(15),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [

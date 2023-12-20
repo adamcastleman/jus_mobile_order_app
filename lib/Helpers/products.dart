@@ -11,8 +11,10 @@ import 'package:jus_mobile_order_app/Models/ingredient_model.dart';
 import 'package:jus_mobile_order_app/Models/points_details_model.dart';
 import 'package:jus_mobile_order_app/Models/product_model.dart';
 import 'package:jus_mobile_order_app/Models/user_model.dart';
+import 'package:jus_mobile_order_app/Providers/discounts_provider.dart';
 import 'package:jus_mobile_order_app/Providers/product_providers.dart';
 import 'package:jus_mobile_order_app/Providers/stream_providers.dart';
+import 'package:jus_mobile_order_app/constants.dart';
 
 class ProductHelpers {
   final WidgetRef ref;
@@ -79,7 +81,7 @@ class ProductHelpers {
     };
   }
 
-  addToCart(
+  addToBag(
     ProductModel product,
     PointsDetailsModel points,
   ) {
@@ -88,7 +90,7 @@ class ProductHelpers {
         .addItem(currentItem(product, points));
   }
 
-  editItemInCart(
+  editItemInBag(
     ProductModel product,
     PointsDetailsModel points,
   ) {
@@ -101,12 +103,23 @@ class ProductHelpers {
     final itemQuantity = ref.watch(itemQuantityProvider);
     final scheduledQuantity = ref.watch(scheduledQuantityProvider);
     final itemSize = ref.watch(itemSizeProvider);
+    final nonMemberVariations = product.variations
+        .where(
+            (element) => element['customerType'] == AppConstants.nonMemberType)
+        .toList();
+    final memberVariations = product.variations
+        .where((element) => element['customerType'] == AppConstants.memberType)
+        .toList();
+    final nonMemberAmount = nonMemberVariations[itemSize]['amount'];
+    final memberAmount = memberVariations[itemSize]['amount'];
 
     ref.read(currentOrderCostProvider.notifier).addCost({
-      'price': product.price[itemSize]['amount'] +
+      'itemPriceNonMember': nonMemberAmount,
+      'modifierPriceNonMember':
           (Pricing(ref: ref).totalCostForExtraChargeIngredientsForNonMembers() *
               100),
-      'memberPrice': product.memberPrice[itemSize]['amount'] +
+      'itemPriceMember': memberAmount,
+      'modifierPriceMember':
           Pricing(ref: ref).totalCostForExtraChargeIngredientsForMembers(),
       'points': PointsHelper(ref: ref)
           .getPointValue(product.productID, points.rewardsAmounts),
@@ -205,7 +218,7 @@ class ProductHelpers {
     return description;
   }
 
-  String extraChargeQuantity(List<dynamic> added, int index) {
+  String extraChargeIngredientQuantity(List<dynamic> added, int index) {
     var item = added[index];
     if (item['isExtraCharge'] != true) return '';
     if (item['blended'] == null && item['topping'] == null) {
@@ -283,26 +296,23 @@ class ProductHelpers {
   }
 
   generateProductList() {
-    final currentUser = ref.watch(currentUserProvider);
+    final currentUser = ref.watch(currentUserProvider).value!;
     final currentOrder = ref.watch(currentOrderItemsProvider);
     final currentOrderCosts = ref.watch(currentOrderCostProvider);
+    final listOfDiscounts = ref.watch(discountTotalProvider);
     final products = ref.watch(productsProvider);
     final ingredients = ref.watch(ingredientsProvider);
 
-    return currentUser.when(
+    return ingredients.when(
       error: (e, _) => ShowError(error: e.toString()),
       loading: () => const Loading(),
-      data: (user) => ingredients.when(
+      data: (ingredients) => products.when(
         error: (e, _) => ShowError(error: e.toString()),
         loading: () => const Loading(),
-        data: (ingredients) => products.when(
-          error: (e, _) => ShowError(error: e.toString()),
-          loading: () => const Loading(),
-          data: (product) {
-            return _buildFinalList(
-                user, currentOrder, currentOrderCosts, product, ingredients);
-          },
-        ),
+        data: (product) {
+          return _buildFinalList(currentUser, currentOrder, currentOrderCosts,
+              listOfDiscounts, product, ingredients);
+        },
       ),
     );
   }
@@ -311,37 +321,41 @@ class ProductHelpers {
       UserModel user,
       List currentOrder,
       List currentOrderCosts,
+      List listOfDiscounts,
       List<ProductModel> product,
       List<IngredientModel> ingredients) {
     List finalList = [];
 
     for (var index = 0; index < currentOrder.length; index++) {
+      final productId = currentOrder[index]['productID'];
       final currentProduct =
-          _findProduct(currentOrder[index]['productID'], product);
+          product.firstWhere((element) => element.productID == productId);
       final itemMap = _buildItemMap(user, currentOrder, currentOrderCosts,
-          index, currentProduct, product, ingredients);
+          listOfDiscounts, index, currentProduct, product, ingredients);
       finalList.add(itemMap);
     }
 
     return finalList;
   }
 
-  ProductModel _findProduct(int productID, List<ProductModel> product) {
-    return product.firstWhere((element) => element.productID == productID);
-  }
-
   Map _buildItemMap(
     UserModel user,
     List currentOrder,
     List currentOrderCosts,
+    List listOfDiscounts,
     int index,
     ProductModel currentProduct,
     List<ProductModel> product,
     List<IngredientModel> ingredients,
   ) {
+    int itemDiscount = 0;
+    double itemDiscountNonMember = 0.00;
+    double itemDiscountMember = 0.00;
     int productID = currentProduct.productID;
     String productName = currentProduct.name;
+    String category = currentProduct.category;
     String image = currentProduct.image;
+    String itemKey = currentOrder[index]['itemKey'];
     int itemQuantity = currentOrder[index]['itemQuantity'];
     bool isScheduled = currentProduct.isScheduled;
     int? scheduledQuantity = currentProduct.isScheduled
@@ -350,23 +364,50 @@ class ProductHelpers {
     String? scheduledDescriptor = currentProduct.isScheduled
         ? currentOrder[index]['scheduledDescriptor']
         : null;
+    final nonMemberVariations = currentProduct.variations
+        .where(
+            (element) => element['customerType'] == AppConstants.nonMemberType)
+        .toList();
     String? itemSize =
         !currentProduct.isScheduled && currentProduct.isModifiable
-            ? currentProduct.price[currentOrder[index]['itemSize']]['name']
+            ? nonMemberVariations[currentOrder[index]['itemSize']]['name']
             : null;
 
     int itemPriceNonMember = currentOrderCosts
-        .firstWhere((element) =>
-            element['itemKey'] == currentOrder[index]['itemKey'])['price']
+        .firstWhere(
+            (element) => element['itemKey'] == itemKey)['itemPriceNonMember']
         .toInt();
     int itemPriceMember = currentOrderCosts
-        .firstWhere((element) =>
-            element['itemKey'] == currentOrder[index]['itemKey'])['memberPrice']
+        .firstWhere(
+            (element) => element['itemKey'] == itemKey)['itemPriceMember']
+        .toInt();
+    int modifierPriceNonMember = currentOrderCosts
+        .firstWhere((element) => element['itemKey'] == itemKey)[
+            'modifierPriceNonMember']
+        .toInt();
+    int modifierPriceMember = currentOrderCosts
+        .firstWhere(
+            (element) => element['itemKey'] == itemKey)['modifierPriceMember']
         .toInt();
 
+    if (listOfDiscounts.isNotEmpty) {
+      var discountElement = listOfDiscounts.firstWhere(
+          (element) => element['itemKey'] == itemKey,
+          orElse: () => null);
+
+      if (discountElement != null) {
+        itemDiscountNonMember = discountElement['itemPriceNonMember'] ?? 0;
+        itemDiscountMember = discountElement['itemPriceMember'] ?? 0;
+      }
+    }
+
+    itemDiscount = (user.uid == null || user.isActiveMember == false)
+        ? itemDiscountNonMember.toInt()
+        : itemDiscountMember.toInt();
     List selectedToppingsList =
         _buildSelectedToppingsList(currentOrder[index], ingredients);
-    List addedList = _buildAddedList(currentOrder[index], ingredients, index);
+    List addedList =
+        _buildAddedList(currentOrder[index], ingredients, user, index);
     List adjustedList =
         _buildAdjustedList(currentOrder[index], ingredients, index);
     List removedList =
@@ -383,7 +424,9 @@ class ProductHelpers {
     return {
       'name': productName,
       'image': image,
+      'category': category,
       'id': productID,
+      'itemDiscount': itemDiscount,
       'itemQuantity': itemQuantity,
       'size': itemSize,
       'isScheduled': isScheduled,
@@ -391,9 +434,12 @@ class ProductHelpers {
       'scheduledDescriptor': scheduledDescriptor,
       'modifications': ingredientModificationList,
       'allergies': allergiesList,
-      'price': user.uid == null || !user.isActiveMember!
+      'price': user.uid == null || user.isActiveMember == false
           ? itemPriceNonMember
           : itemPriceMember,
+      'modifierPrice': user.uid == null || user.isActiveMember == false
+          ? modifierPriceNonMember
+          : modifierPriceMember,
     };
   }
 
@@ -404,28 +450,37 @@ class ProductHelpers {
 
     for (var id in selectedToppings) {
       final ingredient = ingredients.firstWhere((element) => element.id == id);
-      selectedToppingsList.add('+${ingredient.name}');
+      selectedToppingsList.add('{"name": "+${ingredient.name}", "price": "0"}');
     }
 
     return selectedToppingsList;
   }
 
   List<String> _buildAddedList(
-      Map order, List<IngredientModel> ingredients, int index) {
+      Map order, List<IngredientModel> ingredients, UserModel user, int index) {
     List<String> addedList = [];
     List added = addedItems(index);
 
     for (var addedIngredient in added) {
       final ingredient = ingredients
           .firstWhere((element) => element.id == addedIngredient['id']);
+      final selectedIngredient = order['selectedIngredients']
+          .firstWhere((element) => element['id'] == ingredient.id);
+
+      int premiumIngredientPrice = double.parse(
+              user.isActiveMember == null || user.isActiveMember == false
+                  ? (selectedIngredient['price'])
+                  : (selectedIngredient['memberPrice']))
+          .toInt();
       String blendedOrTopping = blendedOrToppingDescription(
           added, ingredient, index, added.indexOf(addedIngredient));
       var amount = modifiedIngredientAmount(
           added, ingredient, added.indexOf(addedIngredient));
-      var extraChargeAmount =
-          extraChargeQuantity(added, added.indexOf(addedIngredient));
-      addedList
-          .add('$blendedOrTopping ${ingredient.name}$amount$extraChargeAmount');
+      var extraChargeIngredientAmount =
+          extraChargeIngredientQuantity(added, added.indexOf(addedIngredient));
+
+      addedList.add(
+          '{"name": "$blendedOrTopping ${ingredient.name}$amount$extraChargeIngredientAmount", "price": "$premiumIngredientPrice"}');
     }
 
     return addedList;
@@ -441,7 +496,7 @@ class ProductHelpers {
           .firstWhere((element) => element.id == adjustedIngredient['id']);
       String adjustedDescriptor = getBlendedAndToppedStandardIngredientAmount(
           adjusted, ingredient, adjusted.indexOf(adjustedIngredient));
-      adjustedList.add(adjustedDescriptor);
+      adjustedList.add('{"name": "$adjustedDescriptor", "price": "0"}');
     }
 
     return adjustedList;
@@ -455,7 +510,8 @@ class ProductHelpers {
     for (var removedIngredient in removed) {
       final ingredient =
           ingredients.firstWhere((element) => element.id == removedIngredient);
-      removedList.add('No ${ingredient.name}');
+
+      removedList.add('{"name": "No ${ingredient.name}",  "price": "0"}');
     }
 
     return removedList;

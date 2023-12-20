@@ -1,12 +1,13 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
+import 'package:jus_mobile_order_app/Helpers/utilities.dart';
 
 class EmptyLocationTile extends StatelessWidget {
   const EmptyLocationTile({super.key});
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 4.0),
+      padding: EdgeInsets.all(PlatformUtils.isWeb() ? 30.0 : 0.0),
       color: Colors.white,
       width: MediaQuery.of(context).size.width * 0.9,
       child: Column(
@@ -21,7 +22,7 @@ class EmptyLocationTile extends StatelessWidget {
             padding: EdgeInsets.symmetric(vertical: 8.0),
             child: AutoSizeText(
               'It looks like we don\'t currently have any stores within this area, or we can\'t display them right now.',
-              maxLines: 2,
+              maxLines: 4,
               style: TextStyle(fontSize: 13),
             ),
           ),

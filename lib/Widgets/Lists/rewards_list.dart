@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:jus_mobile_order_app/Helpers/modal_bottom_sheets.dart';
@@ -14,7 +15,7 @@ import 'package:jus_mobile_order_app/Widgets/Tiles/offer_in_use_tile.dart';
 import 'package:jus_mobile_order_app/Widgets/Tiles/rewards_guest_checkout.dart';
 
 class RewardsList extends ConsumerWidget {
-  const RewardsList({Key? key}) : super(key: key);
+  const RewardsList({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -38,9 +39,10 @@ class RewardsList extends ConsumerWidget {
                             'Points: ${NumberFormat('#,###').format(pointsInUse)} / ${NumberFormat('#,###').format(user.points!)}',
                             style: const TextStyle(fontSize: 16),
                           ),
-                    Spacing().horizontal(5),
+                    Spacing.horizontal(5),
                     InfoButton(
                       onTap: () {
+                        HapticFeedback.lightImpact();
                         ModalBottomSheet().fullScreen(
                           context: context,
                           builder: (context) =>
@@ -72,7 +74,7 @@ class RewardsList extends ConsumerWidget {
                                     .availableRewards()
                                     .length,
                                 separatorBuilder: (context, index) =>
-                                    Spacing().horizontal(15),
+                                    Spacing.horizontal(15),
                                 itemBuilder: (context, index) =>
                                     AvailableRewardCard(index: index),
                               ),

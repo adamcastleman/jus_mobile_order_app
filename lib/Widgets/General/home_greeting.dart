@@ -2,11 +2,12 @@ import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_emoji/flutter_emoji.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:jus_mobile_order_app/Helpers/utilities.dart';
 import 'package:jus_mobile_order_app/Models/user_model.dart';
 import 'package:jus_mobile_order_app/Providers/stream_providers.dart';
 
-class HomeGreeting extends ConsumerWidget {
-  const HomeGreeting({super.key});
+class MobileHomeGreeting extends ConsumerWidget {
+  const MobileHomeGreeting({super.key});
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final user = ref.watch(currentUserProvider).value;
@@ -43,6 +44,9 @@ class HomeGreeting extends ConsumerWidget {
 
   dayPartEmoji() {
     final now = DateTime.now();
+    if (!PlatformUtils.isIOS() && !PlatformUtils.isAndroid()) {
+      return '';
+    }
     if (now.hour >= 4 && now.hour < 12) {
       return EmojiParser().emojify(':coffee:');
     } else if (now.hour >= 12 && now.hour < 16) {

@@ -22,7 +22,7 @@ class AllergiesSheet extends ConsumerWidget {
           padding: const EdgeInsets.symmetric(horizontal: 15),
           shrinkWrap: true,
           children: [
-            Spacing().vertical(60),
+            Spacing.vertical(60),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -38,22 +38,22 @@ class AllergiesSheet extends ConsumerWidget {
                 const ConfirmButton(),
               ],
             ),
-            Spacing().vertical(10),
+            Spacing.vertical(10),
             const Text(
               'Select allergies:',
               style: TextStyle(fontSize: 20),
             ),
-            Spacing().vertical(10),
+            Spacing.vertical(10),
             const Text(
               'These are the ingredients we use in our stores.',
               style: TextStyle(fontSize: 12),
             ),
-            Spacing().vertical(5),
+            Spacing.vertical(5),
             const Text(
               'If your allergy isn\'t listed, it\'s not a concern for this item.',
               style: TextStyle(fontSize: 12),
             ),
-            Spacing().vertical(20),
+            Spacing.vertical(20),
             GridView.builder(
               shrinkWrap: true,
               primary: false,

@@ -3,7 +3,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:jus_mobile_order_app/Providers/ProviderWidgets/announcements_provider_widget.dart';
 
 class AnnouncementTile extends ConsumerWidget {
-  const AnnouncementTile({Key? key}) : super(key: key);
+  const AnnouncementTile({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

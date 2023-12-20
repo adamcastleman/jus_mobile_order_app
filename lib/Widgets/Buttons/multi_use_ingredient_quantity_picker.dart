@@ -9,8 +9,7 @@ class MultiUseIngredientQuantityPicker extends ConsumerWidget {
   final int index;
   final IngredientModel currentIngredient;
   const MultiUseIngredientQuantityPicker(
-      {required this.index, required this.currentIngredient, Key? key})
-      : super(key: key);
+      {required this.index, required this.currentIngredient, super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

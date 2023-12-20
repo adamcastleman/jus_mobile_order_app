@@ -9,7 +9,7 @@ import 'package:jus_mobile_order_app/Widgets/Buttons/elevated_button_large.dart'
 import 'package:jus_mobile_order_app/Widgets/Buttons/elevated_button_small.dart';
 
 class ActiveMembershipDetailsSheet extends StatelessWidget {
-  const ActiveMembershipDetailsSheet({Key? key}) : super(key: key);
+  const ActiveMembershipDetailsSheet({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -32,7 +32,7 @@ class ActiveMembershipDetailsSheet extends StatelessWidget {
               'Membership',
               style: Theme.of(context).textTheme.headlineSmall,
             ),
-            Spacing().vertical(15),
+            Spacing.vertical(15),
             Container(
               padding: const EdgeInsets.all(8.0),
               decoration: BoxDecoration(
@@ -56,7 +56,7 @@ class ActiveMembershipDetailsSheet extends StatelessWidget {
                 ],
               ),
             ),
-            Spacing().vertical(15),
+            Spacing.vertical(15),
             SizedBox(
               height: 200,
               child: GridView(
@@ -197,7 +197,7 @@ class ActiveMembershipDetailsSheet extends StatelessWidget {
                 ),
               ),
             ),
-            Spacing().vertical(30),
+            Spacing.vertical(30),
             Center(
               child: LargeElevatedButton(
                 buttonText: 'Cancel Membership',

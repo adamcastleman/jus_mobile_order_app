@@ -9,8 +9,9 @@ const processPayment = async (orderMap) => {
     const giftCardID = orderMap.paymentDetails.giftCardID ?? null;
 
     const response = await client.paymentsApi.createPayment({
-      sourceId: giftCardID === null ? 'cnon:card-nonce-ok' : 'cnon:gift-card-nonce-ok',
+      sourceId: giftCardID === null ? 'cnon:card-nonce-ok' : giftCardID,
       idempotencyKey: uuidv4(),
+      orderId: orderMap.orderDetails.orderNumber,
       externalDetails: {
         source: orderMap.paymentDetails.paymentMethod,
         type: orderMap.paymentDetails.externalPaymentType,

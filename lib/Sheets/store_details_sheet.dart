@@ -40,18 +40,18 @@ class StoreDetailsSheet extends ConsumerWidget {
                       location.name,
                       style: Theme.of(context).textTheme.headlineSmall,
                     ),
-                    Spacing().vertical(20),
+                    Spacing.vertical(20),
                     const Text(
                       'Address:',
                       style: TextStyle(fontSize: 16),
                     ),
-                    Spacing().vertical(5),
+                    Spacing.vertical(5),
                     InkWell(
                       onTap: () {
                         Launcher().launchMaps(
                             latitude: location.latitude,
                             longitude: location.longitude,
-                            label: location.name);
+                            label: location.locationName);
                       },
                       child: Text(
                         '${location.address['streetNumber']} ${location.address['streetName']}',
@@ -64,7 +64,7 @@ class StoreDetailsSheet extends ConsumerWidget {
                         Launcher().launchMaps(
                             latitude: location.latitude,
                             longitude: location.longitude,
-                            label: location.name);
+                            label: location.locationName);
                       },
                       child: Text(
                         '${location.address['city']}, ${location.address['state']} ${location.address['zip']}',
@@ -72,12 +72,12 @@ class StoreDetailsSheet extends ConsumerWidget {
                             decoration: TextDecoration.underline),
                       ),
                     ),
-                    Spacing().vertical(20),
+                    Spacing.vertical(20),
                     const Text(
                       'Phone:',
                       style: TextStyle(fontSize: 16),
                     ),
-                    Spacing().vertical(5),
+                    Spacing.vertical(5),
                     InkWell(
                       onTap: () {
                         Launcher().launchPhone(number: location.phone);
@@ -88,12 +88,12 @@ class StoreDetailsSheet extends ConsumerWidget {
                             decoration: TextDecoration.underline),
                       ),
                     ),
-                    Spacing().vertical(20),
+                    Spacing.vertical(20),
                     const Text(
                       'Store Hours:',
                       style: TextStyle(fontSize: 16),
                     ),
-                    Spacing().vertical(5),
+                    Spacing.vertical(5),
                     displayStoreHours(data, ref),
                   ],
                 ),

@@ -26,7 +26,6 @@ class OrderServices {
     return snapshot.docs.map(
       (doc) {
         final dynamic data = doc.data();
-
         return OrderModel(
           userID: data['userDetails']['userID'],
           locationID: data['locationDetails']['locationID'],
@@ -40,7 +39,7 @@ class OrderServices {
           paymentMethod: data['paymentDetails']['paymentMethod'],
           createdAt: data['paymentDetails']['createdAt'].toDate(),
           cardBrand: data['paymentDetails']['cardBrand'],
-          lastFourDigits: data['paymentDetails']['lastFourDigits'],
+          last4: data['paymentDetails']['last4'],
           totalAmount: data['totals']['totalAmount'],
           originalSubtotalAmount: data['totals']['originalSubtotalAmount'],
           discountedSubtotalAmount: data['totals']['discountedSubtotalAmount'],
