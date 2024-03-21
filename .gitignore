@@ -46,3 +46,7 @@ app.*.map.json
 
 # FVM Version Cache
 .fvm/
+
+# Google Cloud SDK specific
+google-cloud-sdk/data/cli/gcloud.json
+google-cloud-sdk/bin/anthoscli
