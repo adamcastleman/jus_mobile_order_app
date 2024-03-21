@@ -11,5 +11,6 @@ class MembershipDetailsModel with _$MembershipDetailsModel {
     required String description,
     required String signUpText,
     required String name,
+    required String termsOfService,
   }) = _MembershipDetailsModel;
 }

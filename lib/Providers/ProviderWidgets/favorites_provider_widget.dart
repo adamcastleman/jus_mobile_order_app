@@ -16,11 +16,12 @@ class FavoritesProviderWidget extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final favorites = ref.watch(favoritesProvider);
     return favorites.when(
-      error: (e, _) =>
-          error ??
-          ShowError(
-            error: e.toString(),
-          ),
+      error: (e, _) {
+        return error ??
+            ShowError(
+              error: e.toString(),
+            );
+      },
       loading: () => loading ?? const Loading(),
       data: (favorites) => builder(favorites),
     );

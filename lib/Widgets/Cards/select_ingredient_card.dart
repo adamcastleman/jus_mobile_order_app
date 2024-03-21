@@ -3,8 +3,10 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:jus_mobile_order_app/Helpers/modal_bottom_sheets.dart';
+import 'package:jus_mobile_order_app/Helpers/enums.dart';
+import 'package:jus_mobile_order_app/Helpers/navigation.dart';
 import 'package:jus_mobile_order_app/Helpers/spacing_widgets.dart';
+import 'package:jus_mobile_order_app/Helpers/utilities.dart';
 import 'package:jus_mobile_order_app/Models/ingredient_model.dart';
 import 'package:jus_mobile_order_app/Models/user_model.dart';
 import 'package:jus_mobile_order_app/Providers/product_providers.dart';
@@ -33,6 +35,7 @@ class SelectIngredientCard extends ConsumerWidget {
         handleIngredientSelection(context, currentSelected, ref, user);
       },
       child: Card(
+        elevation: 0.0,
         color: currentSelected.isNotEmpty ? selectedCardColor : Colors.white,
         shape: RoundedRectangleBorder(
           side: BorderSide(
@@ -40,13 +43,13 @@ class SelectIngredientCard extends ConsumerWidget {
                 ? selectedCardBorderColor
                 : Colors.white,
           ),
-          borderRadius: BorderRadius.circular(4),
+          borderRadius: BorderRadius.circular(25),
         ),
         child: Column(
           children: [
             SizedBox(
-              height: 70,
-              width: 70,
+              height: ResponsiveLayout.isWeb(context) ? 90 : 80,
+              width: ResponsiveLayout.isWeb(context) ? 90 : 80,
               child: CachedNetworkImage(
                 imageUrl: ingredients[index].image,
               ),
@@ -54,7 +57,8 @@ class SelectIngredientCard extends ConsumerWidget {
             Spacing.vertical(5),
             AutoSizeText(
               ingredients[index].name,
-              style: const TextStyle(fontSize: 12),
+              style: TextStyle(
+                  fontSize: ResponsiveLayout.isWeb(context) ? 14 : 12),
               textAlign: TextAlign.center,
               maxLines: 2,
             ),
@@ -75,7 +79,7 @@ class SelectIngredientCard extends ConsumerWidget {
 
     final price = (ingredient.price / 100).toStringAsFixed(2);
 
-    if (user.isActiveMember == true) {
+    if (user.subscriptionStatus == SubscriptionStatus.active) {
       return const Text(
         'Free for members',
         style: TextStyle(
@@ -105,24 +109,24 @@ class SelectIngredientCard extends ConsumerWidget {
         currentIngredient.isTopping) {
       ref.read(currentIngredientExtraChargeProvider.notifier).state =
           currentIngredient.isExtraCharge;
-      ref.read(currentIngredientIDProvider.notifier).state =
+      ref.read(currentIngredientIdProvider.notifier).state =
           ingredients[index].id;
       ref.read(currentIngredientIndexProvider.notifier).state = index;
       ref.invalidate(currentIngredientBlendedProvider);
       ref.invalidate(currentIngredientToppingProvider);
       ref.invalidate(extraChargeBlendedIngredientQuantityProvider);
       ref.invalidate(extraChargeToppedIngredientQuantityProvider);
-      ModalBottomSheet().partScreen(
-        context: context,
-        builder: (context) => const MultiUseIngredientSelectionSheet(),
+      NavigationHelpers.navigateToPartScreenSheetOrDialog(
+        context,
+        const MultiUseIngredientSelectionSheet(),
       );
+
       //Adds ingredient to list that cannot be both blended and topped
     } else {
       ref.read(currentIngredientExtraChargeProvider.notifier).state =
           currentIngredient.isExtraCharge;
       ref.read(selectedIngredientsProvider.notifier).addIngredient(
-            ingredients: ingredients,
-            index: index,
+            ingredient: ingredients[index],
             isExtraCharge: ref.watch(currentIngredientExtraChargeProvider),
             ref: ref,
             user: user,

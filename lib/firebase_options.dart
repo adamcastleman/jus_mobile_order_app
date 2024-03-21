@@ -67,7 +67,8 @@ class DefaultFirebaseOptions {
     messagingSenderId: '375720547393',
     projectId: 'jusmobileorderapp',
     storageBucket: 'jusmobileorderapp.appspot.com',
-    iosClientId: '375720547393-oi3l9cfkgkn9rjid3aodh5raig5n2e8b.apps.googleusercontent.com',
+    iosClientId:
+        '375720547393-oi3l9cfkgkn9rjid3aodh5raig5n2e8b.apps.googleusercontent.com',
     iosBundleId: 'com.jusreno.jusMobileOrderApp',
   );
 
@@ -77,7 +78,8 @@ class DefaultFirebaseOptions {
     messagingSenderId: '375720547393',
     projectId: 'jusmobileorderapp',
     storageBucket: 'jusmobileorderapp.appspot.com',
-    iosClientId: '375720547393-oi3l9cfkgkn9rjid3aodh5raig5n2e8b.apps.googleusercontent.com',
+    iosClientId:
+        '375720547393-oi3l9cfkgkn9rjid3aodh5raig5n2e8b.apps.googleusercontent.com',
     iosBundleId: 'com.jusreno.jusMobileOrderApp',
   );
 }

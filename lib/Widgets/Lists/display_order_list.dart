@@ -15,7 +15,7 @@ class DisplayOrderList extends ConsumerWidget {
       physics: const NeverScrollableScrollPhysics(),
       primary: false,
       itemCount: currentOrder.length,
-      separatorBuilder: (context, index) => JusDivider().thin(),
+      separatorBuilder: (context, index) => JusDivider.thin(),
       itemBuilder: (context, index) => OrderTile(
         orderIndex: index,
       ),

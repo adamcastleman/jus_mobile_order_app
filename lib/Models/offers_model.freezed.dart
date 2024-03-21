@@ -12,7 +12,7 @@ part of 'offers_model.dart';
 T _$identity<T>(T value) => value;
 
 final _privateConstructorUsedError = UnsupportedError(
-    'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#custom-getters-and-methods');
+    'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models');
 
 /// @nodoc
 mixin _$OffersModel {
@@ -25,6 +25,7 @@ mixin _$OffersModel {
   List<dynamic> get qualifyingProducts => throw _privateConstructorUsedError;
   bool get isMemberOnly => throw _privateConstructorUsedError;
   bool get isActive => throw _privateConstructorUsedError;
+  List<dynamic> get qualifyingUsers => throw _privateConstructorUsedError;
 
   @JsonKey(ignore: true)
   $OffersModelCopyWith<OffersModel> get copyWith =>
@@ -46,7 +47,8 @@ abstract class $OffersModelCopyWith<$Res> {
       double pointsMultiple,
       List<dynamic> qualifyingProducts,
       bool isMemberOnly,
-      bool isActive});
+      bool isActive,
+      List<dynamic> qualifyingUsers});
 }
 
 /// @nodoc
@@ -71,6 +73,7 @@ class _$OffersModelCopyWithImpl<$Res, $Val extends OffersModel>
     Object? qualifyingProducts = null,
     Object? isMemberOnly = null,
     Object? isActive = null,
+    Object? qualifyingUsers = null,
   }) {
     return _then(_value.copyWith(
       uid: null == uid
@@ -109,6 +112,10 @@ class _$OffersModelCopyWithImpl<$Res, $Val extends OffersModel>
           ? _value.isActive
           : isActive // ignore: cast_nullable_to_non_nullable
               as bool,
+      qualifyingUsers: null == qualifyingUsers
+          ? _value.qualifyingUsers
+          : qualifyingUsers // ignore: cast_nullable_to_non_nullable
+              as List<dynamic>,
     ) as $Val);
   }
 }
@@ -130,7 +137,8 @@ abstract class _$$OffersModelImplCopyWith<$Res>
       double pointsMultiple,
       List<dynamic> qualifyingProducts,
       bool isMemberOnly,
-      bool isActive});
+      bool isActive,
+      List<dynamic> qualifyingUsers});
 }
 
 /// @nodoc
@@ -153,6 +161,7 @@ class __$$OffersModelImplCopyWithImpl<$Res>
     Object? qualifyingProducts = null,
     Object? isMemberOnly = null,
     Object? isActive = null,
+    Object? qualifyingUsers = null,
   }) {
     return _then(_$OffersModelImpl(
       uid: null == uid
@@ -191,6 +200,10 @@ class __$$OffersModelImplCopyWithImpl<$Res>
           ? _value.isActive
           : isActive // ignore: cast_nullable_to_non_nullable
               as bool,
+      qualifyingUsers: null == qualifyingUsers
+          ? _value._qualifyingUsers
+          : qualifyingUsers // ignore: cast_nullable_to_non_nullable
+              as List<dynamic>,
     ));
   }
 }
@@ -207,8 +220,10 @@ class _$OffersModelImpl implements _OffersModel {
       required this.pointsMultiple,
       required final List<dynamic> qualifyingProducts,
       required this.isMemberOnly,
-      required this.isActive})
-      : _qualifyingProducts = qualifyingProducts;
+      required this.isActive,
+      required final List<dynamic> qualifyingUsers})
+      : _qualifyingProducts = qualifyingProducts,
+        _qualifyingUsers = qualifyingUsers;
 
   @override
   final String uid;
@@ -235,14 +250,21 @@ class _$OffersModelImpl implements _OffersModel {
   final bool isMemberOnly;
   @override
   final bool isActive;
-
+  final List<dynamic> _qualifyingUsers;
   @override
-  String toString() {
-    return 'OffersModel(uid: $uid, name: $name, description: $description, itemLimit: $itemLimit, discount: $discount, pointsMultiple: $pointsMultiple, qualifyingProducts: $qualifyingProducts, isMemberOnly: $isMemberOnly, isActive: $isActive)';
+  List<dynamic> get qualifyingUsers {
+    if (_qualifyingUsers is EqualUnmodifiableListView) return _qualifyingUsers;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_qualifyingUsers);
   }
 
   @override
-  bool operator ==(dynamic other) {
+  String toString() {
+    return 'OffersModel(uid: $uid, name: $name, description: $description, itemLimit: $itemLimit, discount: $discount, pointsMultiple: $pointsMultiple, qualifyingProducts: $qualifyingProducts, isMemberOnly: $isMemberOnly, isActive: $isActive, qualifyingUsers: $qualifyingUsers)';
+  }
+
+  @override
+  bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$OffersModelImpl &&
@@ -261,7 +283,9 @@ class _$OffersModelImpl implements _OffersModel {
             (identical(other.isMemberOnly, isMemberOnly) ||
                 other.isMemberOnly == isMemberOnly) &&
             (identical(other.isActive, isActive) ||
-                other.isActive == isActive));
+                other.isActive == isActive) &&
+            const DeepCollectionEquality()
+                .equals(other._qualifyingUsers, _qualifyingUsers));
   }
 
   @override
@@ -275,7 +299,8 @@ class _$OffersModelImpl implements _OffersModel {
       pointsMultiple,
       const DeepCollectionEquality().hash(_qualifyingProducts),
       isMemberOnly,
-      isActive);
+      isActive,
+      const DeepCollectionEquality().hash(_qualifyingUsers));
 
   @JsonKey(ignore: true)
   @override
@@ -294,7 +319,8 @@ abstract class _OffersModel implements OffersModel {
       required final double pointsMultiple,
       required final List<dynamic> qualifyingProducts,
       required final bool isMemberOnly,
-      required final bool isActive}) = _$OffersModelImpl;
+      required final bool isActive,
+      required final List<dynamic> qualifyingUsers}) = _$OffersModelImpl;
 
   @override
   String get uid;
@@ -314,6 +340,8 @@ abstract class _OffersModel implements OffersModel {
   bool get isMemberOnly;
   @override
   bool get isActive;
+  @override
+  List<dynamic> get qualifyingUsers;
   @override
   @JsonKey(ignore: true)
   _$$OffersModelImplCopyWith<_$OffersModelImpl> get copyWith =>

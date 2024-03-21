@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:jus_mobile_order_app/Helpers/enums.dart';
-import 'package:jus_mobile_order_app/Helpers/modal_bottom_sheets.dart';
+import 'package:jus_mobile_order_app/Helpers/modal_sheets.dart';
+import 'package:jus_mobile_order_app/Helpers/pricing.dart';
 import 'package:jus_mobile_order_app/Models/payments_model.dart';
 import 'package:jus_mobile_order_app/Providers/ProviderWidgets/wallet_provider_widget.dart';
 import 'package:jus_mobile_order_app/Providers/payments_providers.dart';
@@ -13,7 +14,7 @@ class SelectWalletTile extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final selectedWallet = ref.watch(currentlySelectedWalletProvider);
+    final selectedWallet = ref.watch(selectedWalletProvider);
     final walletType = ref.watch(walletTypeProvider);
     return WalletProviderWidget(
       builder: (wallets) => ListTile(
@@ -22,7 +23,7 @@ class SelectWalletTile extends ConsumerWidget {
           style: const TextStyle(fontWeight: FontWeight.bold),
         ),
         subtitle: Text(
-          _buildSubtitleText(selectedWallet, wallets.first),
+          _buildSubtitleText(selectedWallet),
           style: const TextStyle(fontWeight: FontWeight.bold),
         ),
         trailing: walletType == WalletType.loadAndPay
@@ -43,11 +44,11 @@ class SelectWalletTile extends ConsumerWidget {
     );
   }
 
-  String _buildTitleText(Map selectedWallet, PaymentsModel wallet) {
-    return '${selectedWallet.isEmpty ? wallet.cardNickname : selectedWallet['cardNickname']} - x${selectedWallet.isEmpty ? wallet.gan!.substring(wallet.gan!.length - 4) : selectedWallet['gan'].substring(wallet.gan!.length - 4)}';
+  String _buildTitleText(PaymentsModel? selectedWallet, PaymentsModel wallet) {
+    return '${selectedWallet == null ? '' : selectedWallet.cardNickname} - x${selectedWallet == null ? '' : selectedWallet.gan!.substring(wallet.gan!.length - 4)}';
   }
 
-  String _buildSubtitleText(Map selectedWallet, PaymentsModel wallet) {
-    return 'Balance: \$${(selectedWallet.isEmpty ? (wallet.balance! / 100) : (selectedWallet['balance'] / 100)).toStringAsFixed(2)}';
+  String _buildSubtitleText(PaymentsModel? selectedWallet) {
+    return 'Balance: \$${PricingHelpers.formatAsCurrency((selectedWallet == null ? 0 : selectedWallet.balance ?? 0) / 100)}';
   }
 }

@@ -1,66 +1,39 @@
-import 'package:auto_size_text/auto_size_text.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:jus_mobile_order_app/Helpers/modal_bottom_sheets.dart';
-import 'package:jus_mobile_order_app/Helpers/spacing_widgets.dart';
-import 'package:jus_mobile_order_app/Providers/ProviderWidgets/sign_in_image_provider_widget.dart';
-import 'package:jus_mobile_order_app/Views/register_page.dart';
-import 'package:jus_mobile_order_app/Widgets/Buttons/elevated_button_medium.dart';
+import 'package:jus_mobile_order_app/Helpers/navigation.dart';
+import 'package:jus_mobile_order_app/Helpers/utilities.dart';
+import 'package:jus_mobile_order_app/Providers/ProviderWidgets/display_images_provider_widget.dart';
+import 'package:jus_mobile_order_app/Providers/theme_providers.dart';
+import 'package:jus_mobile_order_app/Widgets/General/banner_call_to_action.dart';
 
 class SignedOutProfilePage extends ConsumerWidget {
-  const SignedOutProfilePage({super.key});
+  final bool? showCloseButton;
+  const SignedOutProfilePage({this.showCloseButton, super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return SignInImageProviderWidget(
-      builder: (image) => Center(
-        child: SingleChildScrollView(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              SizedBox(
-                height: 300,
-                child: CachedNetworkImage(
-                  fit: BoxFit.fitWidth,
-                  imageUrl: image.data().containsKey('url') ? image['url'] : '',
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.symmetric(
-                    vertical: 44.0, horizontal: 15.0),
-                child: Column(
-                  children: [
-                    AutoSizeText(
-                      image.data().containsKey('title') ? image['title'] : '',
-                      maxLines: 1,
-                      style: const TextStyle(
-                          fontSize: 30, fontWeight: FontWeight.bold),
-                    ),
-                    Spacing.vertical(10),
-                    AutoSizeText(
-                      image.data().containsKey('description')
-                          ? image['description']
-                          : '',
-                      maxLines: 2,
-                      textAlign: TextAlign.center,
-                    ),
-                  ],
-                ),
-              ),
-              Center(
-                child: MediumElevatedButton(
-                  buttonText: 'Create Account',
-                  onPressed: () {
-                    ModalBottomSheet().fullScreen(
-                      context: context,
-                      builder: (context) => const RegisterPage(),
-                    );
-                  },
-                ),
-              ),
-            ],
-          ),
+    final pastelTan = ref.watch(pastelTanProvider);
+    return DisplayImagesProviderWidget(
+      builder: (images) => Container(
+        height: double.infinity,
+        color: pastelTan,
+        child: CallToActionBanner(
+          imagePath: images['images'][21]['url'],
+          backgroundColor: pastelTan,
+          callToActionText: PlatformUtils.isWeb() ? 'Sign in' : 'Sign up',
+          callToActionOnPressed: () {
+            HapticFeedback.lightImpact();
+            NavigationHelpers.authNavigation(context);
+          },
+          titleMaxLines: 1,
+          title: PlatformUtils.isWeb()
+              ? 'Continue to the sweetest adventure'
+              : 'Join the sweetest adventure',
+          description: PlatformUtils.isWeb()
+              ? 'Sign in to collect points to redeem for free items, save favorite items, and more.'
+              : 'Join now to collect points to redeem for free items, save favorite items, and more.',
+          isImageOnRight: true,
         ),
       ),
     );

@@ -8,8 +8,8 @@ import 'package:jus_mobile_order_app/Helpers/set_standard_ingredients.dart';
 import 'package:jus_mobile_order_app/Helpers/time.dart';
 import 'package:jus_mobile_order_app/Models/points_details_model.dart';
 import 'package:jus_mobile_order_app/Models/product_model.dart';
-import 'package:jus_mobile_order_app/Providers/ProviderWidgets/points_details_provider_widget.dart';
 import 'package:jus_mobile_order_app/Providers/ProviderWidgets/product_quantity_limit_provider.dart';
+import 'package:jus_mobile_order_app/Providers/points_providers.dart';
 import 'package:jus_mobile_order_app/Providers/product_providers.dart';
 import 'package:jus_mobile_order_app/Widgets/Buttons/elevated_button_large.dart';
 import 'package:jus_mobile_order_app/Widgets/Buttons/elevated_button_medium.dart';
@@ -18,7 +18,7 @@ import 'package:jus_mobile_order_app/Widgets/Buttons/untappable_elevated_button_
 
 class AddToBagRow extends ConsumerWidget {
   final ProductModel product;
-  final Function close;
+  final Function? close;
   const AddToBagRow({required this.product, required this.close, super.key});
 
   @override
@@ -53,28 +53,42 @@ class AddToBagRow extends ConsumerWidget {
 
   _buildCustomizableRow(BuildContext context, WidgetRef ref) {
     final editOrder = ref.watch(editOrderProvider);
+    final points = ref.watch(pointsInformationProvider);
     return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceAround,
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        MediumOutlineButton(
-          buttonText: 'Customize',
-          buttonColor: Colors.white,
-          onPressed: () {
-            HapticFeedback.lightImpact();
-            StandardIngredients(ref: ref).add();
-            close();
-          },
-        ),
-        ProductQuantityLimitProviderWidget(
-          productUID: product.uid,
-          builder: (quantityLimit) => PointsDetailsProviderWidget(
-            builder: (points) => MediumElevatedButton(
-              buttonText: editOrder ? 'Update' : 'Add to Bag',
+        Expanded(
+          child: Padding(
+            padding: const EdgeInsets.only(right: 8.0),
+            child: MediumOutlineButton(
+              buttonText: 'Customize',
+              buttonColor: Colors.white,
               onPressed: () {
-                _addToBagAndUpdateCosts(context, ref, points, quantityLimit);
                 HapticFeedback.lightImpact();
-                Navigator.pop(context);
+                StandardIngredients(ref: ref).add();
+                if (close == null) {
+                  return;
+                } else {
+                  close!();
+                }
               },
+            ),
+          ),
+        ),
+        Expanded(
+          child: Padding(
+            padding: const EdgeInsets.only(
+                left: 8.0), // Adds padding between buttons
+            child: ProductQuantityLimitProviderWidget(
+              productUID: product.uid,
+              builder: (quantityLimit) => MediumElevatedButton(
+                buttonText: editOrder ? 'Update' : 'Add to Bag',
+                onPressed: () {
+                  _addToBagAndUpdateCosts(context, ref, points, quantityLimit);
+                  HapticFeedback.lightImpact();
+                  Navigator.pop(context);
+                },
+              ),
             ),
           ),
         ),
@@ -87,17 +101,16 @@ class AddToBagRow extends ConsumerWidget {
     WidgetRef ref,
   ) {
     final editOrder = ref.watch(editOrderProvider);
+    final points = ref.watch(pointsInformationProvider);
     return ProductQuantityLimitProviderWidget(
       productUID: product.uid,
-      builder: (quantityLimit) => PointsDetailsProviderWidget(
-        builder: (points) => LargeElevatedButton(
-          buttonText: editOrder ? 'Update' : 'Add to Bag',
-          onPressed: () {
-            _addToBagAndUpdateCosts(context, ref, points, quantityLimit);
-            HapticFeedback.lightImpact();
-            Navigator.pop(context);
-          },
-        ),
+      builder: (quantityLimit) => LargeElevatedButton(
+        buttonText: editOrder ? 'Update' : 'Add to Bag',
+        onPressed: () {
+          _addToBagAndUpdateCosts(context, ref, points, quantityLimit);
+          HapticFeedback.lightImpact();
+          Navigator.pop(context);
+        },
       ),
     );
   }
@@ -109,14 +122,15 @@ class AddToBagRow extends ConsumerWidget {
     ProductQuantityModel quantityLimit,
   ) {
     final editOrder = ref.watch(editOrderProvider);
+    final ProductHelpers productHelpers = ProductHelpers();
     if (product.isScheduled) {
-      OrderHelpers(ref: ref).setScheduledLimitProviders(quantityLimit);
+      OrderHelpers.setScheduledLimitProviders(ref, quantityLimit);
     }
     if (editOrder) {
-      ProductHelpers(ref: ref).editItemInBag(product, points);
+      productHelpers.editItemInBag(ref, product, points);
     } else {
-      ProductHelpers(ref: ref).addToBag(product, points);
+      productHelpers.addToBag(ref, product, points);
     }
-    ProductHelpers(ref: ref).addCost(product, points);
+    productHelpers.addCost(ref, product, points);
   }
 }

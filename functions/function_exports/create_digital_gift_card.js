@@ -3,11 +3,10 @@ const admin = require("firebase-admin");
 const createSquareGiftCardOrder = require("../orders/create_square_gift_card_order");
 const processGiftCardPayment = require("../payments/process_gift_card_payment");
 const createNewGiftCard = require("../gift_cards/create_new_gift_card");
-const updateGiftCardMapWithCardData = require("../gift_cards/update_gift_card_map_with_card_data");
-const updateGiftCardMapWithPaymentData = require("../gift_cards/update_gift_card_map_with_payment_data");
+const updateOrderMapWithCardData = require("../gift_cards/update_order_map_with_card_data");
+const updateOrderMapWithPaymentData = require("../gift_cards/update_order_map_with_payment_data");
 const addGiftCardActivityToDatabase = require("../gift_cards/add_gift_card_activity_to_database");
 const addGiftCardAsSavedPayment = require("../gift_cards/add_gift_card_as_saved_payment");
-
 
 if (admin.apps.length === 0) {
   admin.initializeApp();
@@ -16,28 +15,48 @@ if (admin.apps.length === 0) {
 exports.createDigitalGiftCard = functions.https.onCall(
   async (data, context) => {
     const db = admin.firestore();
-    const giftCardMap = data.giftCardMap;
-    const userID = context.auth?.uid ?? null;
-    giftCardMap.userDetails.userID = userID;
-    const cardId = giftCardMap.paymentDetails.cardId;
+    const orderMap = data.orderMap;
+    const userId = context.auth?.uid ?? null;
+    orderMap.userDetails.userId = userId;
+    const cardId = orderMap.paymentDetails.cardId;
+    orderMap.orderDetails = {};
+    const amount = parseInt(orderMap.paymentDetails.amount, 10);
+
+    if (amount > 50000) {
+      return {
+        status: "ERROR",
+        message:
+          "There was a serious error when attempting this request. Please try again later.",
+      };
+    }
 
     try {
-      const giftCardOrder = await createSquareGiftCardOrder(giftCardMap);
+      const giftCardOrder = await createSquareGiftCardOrder(
+        orderMap,
+        "New Wallet",
+      );
 
-      giftCardMap.paymentDetails.orderId = giftCardOrder.order.id;
-      giftCardMap.paymentDetails.lineItemUid = giftCardOrder.order.line_items[0].uid;
+      orderMap.orderDetails.orderNumber = giftCardOrder.order.id;
+      orderMap.orderDetails.lineItemUid = giftCardOrder.order.line_items[0].uid;
 
-      const paymentResult = await processGiftCardPayment(giftCardMap);
+      const paymentResult = await processGiftCardPayment(orderMap);
 
-      updateGiftCardMapWithPaymentData(giftCardMap, paymentResult);
+      //Square payments require a String type for amount, but the database expects an int type.
+      //Therefore, we need to convert the String to int after the payment is processed
+      orderMap.paymentDetails.amount = parseInt(
+        orderMap.paymentDetails.amount,
+        10,
+      );
 
-      const createdGiftCard = await createNewGiftCard(giftCardMap);
+      updateOrderMapWithPaymentData(orderMap, paymentResult);
 
-      updateGiftCardMapWithCardData(giftCardMap, createdGiftCard);
+      const createdGiftCard = await createNewGiftCard(orderMap);
 
-      await addGiftCardActivityToDatabase(db, giftCardMap, userID);
+      updateOrderMapWithCardData(orderMap, createdGiftCard);
 
-      await addGiftCardAsSavedPayment(db, giftCardMap, userID);
+      await addGiftCardActivityToDatabase(db, orderMap);
+
+      await addGiftCardAsSavedPayment(db, orderMap);
 
       return 200;
     } catch (error) {

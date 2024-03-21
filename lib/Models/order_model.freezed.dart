@@ -12,21 +12,17 @@ part of 'order_model.dart';
 T _$identity<T>(T value) => value;
 
 final _privateConstructorUsedError = UnsupportedError(
-    'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#custom-getters-and-methods');
+    'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models');
 
 /// @nodoc
 mixin _$OrderModel {
   String? get userID => throw _privateConstructorUsedError;
   String get orderNumber => throw _privateConstructorUsedError;
-  int get locationID => throw _privateConstructorUsedError;
+  String get locationId => throw _privateConstructorUsedError;
   DateTime get createdAt => throw _privateConstructorUsedError;
   List<dynamic> get items => throw _privateConstructorUsedError;
   String get paymentMethod => throw _privateConstructorUsedError;
   String get orderSource => throw _privateConstructorUsedError;
-  DateTime? get pickupDate => throw _privateConstructorUsedError;
-  DateTime? get pickupTime => throw _privateConstructorUsedError;
-  String? get cardBrand => throw _privateConstructorUsedError;
-  String? get last4 => throw _privateConstructorUsedError;
   int get totalAmount => throw _privateConstructorUsedError;
   int get originalSubtotalAmount => throw _privateConstructorUsedError;
   int get discountedSubtotalAmount => throw _privateConstructorUsedError;
@@ -35,6 +31,10 @@ mixin _$OrderModel {
   int get tipAmount => throw _privateConstructorUsedError;
   int get pointsEarned => throw _privateConstructorUsedError;
   int get pointsRedeemed => throw _privateConstructorUsedError;
+  DateTime? get pickupDate => throw _privateConstructorUsedError;
+  DateTime? get pickupTime => throw _privateConstructorUsedError;
+  String? get cardBrand => throw _privateConstructorUsedError;
+  String? get last4 => throw _privateConstructorUsedError;
 
   @JsonKey(ignore: true)
   $OrderModelCopyWith<OrderModel> get copyWith =>
@@ -50,15 +50,11 @@ abstract class $OrderModelCopyWith<$Res> {
   $Res call(
       {String? userID,
       String orderNumber,
-      int locationID,
+      String locationId,
       DateTime createdAt,
       List<dynamic> items,
       String paymentMethod,
       String orderSource,
-      DateTime? pickupDate,
-      DateTime? pickupTime,
-      String? cardBrand,
-      String? last4,
       int totalAmount,
       int originalSubtotalAmount,
       int discountedSubtotalAmount,
@@ -66,7 +62,11 @@ abstract class $OrderModelCopyWith<$Res> {
       int discountAmount,
       int tipAmount,
       int pointsEarned,
-      int pointsRedeemed});
+      int pointsRedeemed,
+      DateTime? pickupDate,
+      DateTime? pickupTime,
+      String? cardBrand,
+      String? last4});
 }
 
 /// @nodoc
@@ -84,15 +84,11 @@ class _$OrderModelCopyWithImpl<$Res, $Val extends OrderModel>
   $Res call({
     Object? userID = freezed,
     Object? orderNumber = null,
-    Object? locationID = null,
+    Object? locationId = null,
     Object? createdAt = null,
     Object? items = null,
     Object? paymentMethod = null,
     Object? orderSource = null,
-    Object? pickupDate = freezed,
-    Object? pickupTime = freezed,
-    Object? cardBrand = freezed,
-    Object? last4 = freezed,
     Object? totalAmount = null,
     Object? originalSubtotalAmount = null,
     Object? discountedSubtotalAmount = null,
@@ -101,6 +97,10 @@ class _$OrderModelCopyWithImpl<$Res, $Val extends OrderModel>
     Object? tipAmount = null,
     Object? pointsEarned = null,
     Object? pointsRedeemed = null,
+    Object? pickupDate = freezed,
+    Object? pickupTime = freezed,
+    Object? cardBrand = freezed,
+    Object? last4 = freezed,
   }) {
     return _then(_value.copyWith(
       userID: freezed == userID
@@ -111,10 +111,10 @@ class _$OrderModelCopyWithImpl<$Res, $Val extends OrderModel>
           ? _value.orderNumber
           : orderNumber // ignore: cast_nullable_to_non_nullable
               as String,
-      locationID: null == locationID
-          ? _value.locationID
-          : locationID // ignore: cast_nullable_to_non_nullable
-              as int,
+      locationId: null == locationId
+          ? _value.locationId
+          : locationId // ignore: cast_nullable_to_non_nullable
+              as String,
       createdAt: null == createdAt
           ? _value.createdAt
           : createdAt // ignore: cast_nullable_to_non_nullable
@@ -131,22 +131,6 @@ class _$OrderModelCopyWithImpl<$Res, $Val extends OrderModel>
           ? _value.orderSource
           : orderSource // ignore: cast_nullable_to_non_nullable
               as String,
-      pickupDate: freezed == pickupDate
-          ? _value.pickupDate
-          : pickupDate // ignore: cast_nullable_to_non_nullable
-              as DateTime?,
-      pickupTime: freezed == pickupTime
-          ? _value.pickupTime
-          : pickupTime // ignore: cast_nullable_to_non_nullable
-              as DateTime?,
-      cardBrand: freezed == cardBrand
-          ? _value.cardBrand
-          : cardBrand // ignore: cast_nullable_to_non_nullable
-              as String?,
-      last4: freezed == last4
-          ? _value.last4
-          : last4 // ignore: cast_nullable_to_non_nullable
-              as String?,
       totalAmount: null == totalAmount
           ? _value.totalAmount
           : totalAmount // ignore: cast_nullable_to_non_nullable
@@ -179,6 +163,22 @@ class _$OrderModelCopyWithImpl<$Res, $Val extends OrderModel>
           ? _value.pointsRedeemed
           : pointsRedeemed // ignore: cast_nullable_to_non_nullable
               as int,
+      pickupDate: freezed == pickupDate
+          ? _value.pickupDate
+          : pickupDate // ignore: cast_nullable_to_non_nullable
+              as DateTime?,
+      pickupTime: freezed == pickupTime
+          ? _value.pickupTime
+          : pickupTime // ignore: cast_nullable_to_non_nullable
+              as DateTime?,
+      cardBrand: freezed == cardBrand
+          ? _value.cardBrand
+          : cardBrand // ignore: cast_nullable_to_non_nullable
+              as String?,
+      last4: freezed == last4
+          ? _value.last4
+          : last4 // ignore: cast_nullable_to_non_nullable
+              as String?,
     ) as $Val);
   }
 }
@@ -194,15 +194,11 @@ abstract class _$$OrderModelImplCopyWith<$Res>
   $Res call(
       {String? userID,
       String orderNumber,
-      int locationID,
+      String locationId,
       DateTime createdAt,
       List<dynamic> items,
       String paymentMethod,
       String orderSource,
-      DateTime? pickupDate,
-      DateTime? pickupTime,
-      String? cardBrand,
-      String? last4,
       int totalAmount,
       int originalSubtotalAmount,
       int discountedSubtotalAmount,
@@ -210,7 +206,11 @@ abstract class _$$OrderModelImplCopyWith<$Res>
       int discountAmount,
       int tipAmount,
       int pointsEarned,
-      int pointsRedeemed});
+      int pointsRedeemed,
+      DateTime? pickupDate,
+      DateTime? pickupTime,
+      String? cardBrand,
+      String? last4});
 }
 
 /// @nodoc
@@ -226,15 +226,11 @@ class __$$OrderModelImplCopyWithImpl<$Res>
   $Res call({
     Object? userID = freezed,
     Object? orderNumber = null,
-    Object? locationID = null,
+    Object? locationId = null,
     Object? createdAt = null,
     Object? items = null,
     Object? paymentMethod = null,
     Object? orderSource = null,
-    Object? pickupDate = freezed,
-    Object? pickupTime = freezed,
-    Object? cardBrand = freezed,
-    Object? last4 = freezed,
     Object? totalAmount = null,
     Object? originalSubtotalAmount = null,
     Object? discountedSubtotalAmount = null,
@@ -243,6 +239,10 @@ class __$$OrderModelImplCopyWithImpl<$Res>
     Object? tipAmount = null,
     Object? pointsEarned = null,
     Object? pointsRedeemed = null,
+    Object? pickupDate = freezed,
+    Object? pickupTime = freezed,
+    Object? cardBrand = freezed,
+    Object? last4 = freezed,
   }) {
     return _then(_$OrderModelImpl(
       userID: freezed == userID
@@ -253,10 +253,10 @@ class __$$OrderModelImplCopyWithImpl<$Res>
           ? _value.orderNumber
           : orderNumber // ignore: cast_nullable_to_non_nullable
               as String,
-      locationID: null == locationID
-          ? _value.locationID
-          : locationID // ignore: cast_nullable_to_non_nullable
-              as int,
+      locationId: null == locationId
+          ? _value.locationId
+          : locationId // ignore: cast_nullable_to_non_nullable
+              as String,
       createdAt: null == createdAt
           ? _value.createdAt
           : createdAt // ignore: cast_nullable_to_non_nullable
@@ -273,22 +273,6 @@ class __$$OrderModelImplCopyWithImpl<$Res>
           ? _value.orderSource
           : orderSource // ignore: cast_nullable_to_non_nullable
               as String,
-      pickupDate: freezed == pickupDate
-          ? _value.pickupDate
-          : pickupDate // ignore: cast_nullable_to_non_nullable
-              as DateTime?,
-      pickupTime: freezed == pickupTime
-          ? _value.pickupTime
-          : pickupTime // ignore: cast_nullable_to_non_nullable
-              as DateTime?,
-      cardBrand: freezed == cardBrand
-          ? _value.cardBrand
-          : cardBrand // ignore: cast_nullable_to_non_nullable
-              as String?,
-      last4: freezed == last4
-          ? _value.last4
-          : last4 // ignore: cast_nullable_to_non_nullable
-              as String?,
       totalAmount: null == totalAmount
           ? _value.totalAmount
           : totalAmount // ignore: cast_nullable_to_non_nullable
@@ -321,6 +305,22 @@ class __$$OrderModelImplCopyWithImpl<$Res>
           ? _value.pointsRedeemed
           : pointsRedeemed // ignore: cast_nullable_to_non_nullable
               as int,
+      pickupDate: freezed == pickupDate
+          ? _value.pickupDate
+          : pickupDate // ignore: cast_nullable_to_non_nullable
+              as DateTime?,
+      pickupTime: freezed == pickupTime
+          ? _value.pickupTime
+          : pickupTime // ignore: cast_nullable_to_non_nullable
+              as DateTime?,
+      cardBrand: freezed == cardBrand
+          ? _value.cardBrand
+          : cardBrand // ignore: cast_nullable_to_non_nullable
+              as String?,
+      last4: freezed == last4
+          ? _value.last4
+          : last4 // ignore: cast_nullable_to_non_nullable
+              as String?,
     ));
   }
 }
@@ -331,15 +331,11 @@ class _$OrderModelImpl implements _OrderModel {
   const _$OrderModelImpl(
       {this.userID,
       required this.orderNumber,
-      required this.locationID,
+      required this.locationId,
       required this.createdAt,
       required final List<dynamic> items,
       required this.paymentMethod,
       required this.orderSource,
-      this.pickupDate,
-      this.pickupTime,
-      this.cardBrand,
-      this.last4,
       required this.totalAmount,
       required this.originalSubtotalAmount,
       required this.discountedSubtotalAmount,
@@ -347,7 +343,11 @@ class _$OrderModelImpl implements _OrderModel {
       required this.discountAmount,
       required this.tipAmount,
       required this.pointsEarned,
-      required this.pointsRedeemed})
+      required this.pointsRedeemed,
+      this.pickupDate,
+      this.pickupTime,
+      this.cardBrand,
+      this.last4})
       : _items = items;
 
   @override
@@ -355,7 +355,7 @@ class _$OrderModelImpl implements _OrderModel {
   @override
   final String orderNumber;
   @override
-  final int locationID;
+  final String locationId;
   @override
   final DateTime createdAt;
   final List<dynamic> _items;
@@ -370,14 +370,6 @@ class _$OrderModelImpl implements _OrderModel {
   final String paymentMethod;
   @override
   final String orderSource;
-  @override
-  final DateTime? pickupDate;
-  @override
-  final DateTime? pickupTime;
-  @override
-  final String? cardBrand;
-  @override
-  final String? last4;
   @override
   final int totalAmount;
   @override
@@ -394,22 +386,30 @@ class _$OrderModelImpl implements _OrderModel {
   final int pointsEarned;
   @override
   final int pointsRedeemed;
+  @override
+  final DateTime? pickupDate;
+  @override
+  final DateTime? pickupTime;
+  @override
+  final String? cardBrand;
+  @override
+  final String? last4;
 
   @override
   String toString() {
-    return 'OrderModel(userID: $userID, orderNumber: $orderNumber, locationID: $locationID, createdAt: $createdAt, items: $items, paymentMethod: $paymentMethod, orderSource: $orderSource, pickupDate: $pickupDate, pickupTime: $pickupTime, cardBrand: $cardBrand, last4: $last4, totalAmount: $totalAmount, originalSubtotalAmount: $originalSubtotalAmount, discountedSubtotalAmount: $discountedSubtotalAmount, taxAmount: $taxAmount, discountAmount: $discountAmount, tipAmount: $tipAmount, pointsEarned: $pointsEarned, pointsRedeemed: $pointsRedeemed)';
+    return 'OrderModel(userID: $userID, orderNumber: $orderNumber, locationId: $locationId, createdAt: $createdAt, items: $items, paymentMethod: $paymentMethod, orderSource: $orderSource, totalAmount: $totalAmount, originalSubtotalAmount: $originalSubtotalAmount, discountedSubtotalAmount: $discountedSubtotalAmount, taxAmount: $taxAmount, discountAmount: $discountAmount, tipAmount: $tipAmount, pointsEarned: $pointsEarned, pointsRedeemed: $pointsRedeemed, pickupDate: $pickupDate, pickupTime: $pickupTime, cardBrand: $cardBrand, last4: $last4)';
   }
 
   @override
-  bool operator ==(dynamic other) {
+  bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$OrderModelImpl &&
             (identical(other.userID, userID) || other.userID == userID) &&
             (identical(other.orderNumber, orderNumber) ||
                 other.orderNumber == orderNumber) &&
-            (identical(other.locationID, locationID) ||
-                other.locationID == locationID) &&
+            (identical(other.locationId, locationId) ||
+                other.locationId == locationId) &&
             (identical(other.createdAt, createdAt) ||
                 other.createdAt == createdAt) &&
             const DeepCollectionEquality().equals(other._items, _items) &&
@@ -417,13 +417,6 @@ class _$OrderModelImpl implements _OrderModel {
                 other.paymentMethod == paymentMethod) &&
             (identical(other.orderSource, orderSource) ||
                 other.orderSource == orderSource) &&
-            (identical(other.pickupDate, pickupDate) ||
-                other.pickupDate == pickupDate) &&
-            (identical(other.pickupTime, pickupTime) ||
-                other.pickupTime == pickupTime) &&
-            (identical(other.cardBrand, cardBrand) ||
-                other.cardBrand == cardBrand) &&
-            (identical(other.last4, last4) || other.last4 == last4) &&
             (identical(other.totalAmount, totalAmount) ||
                 other.totalAmount == totalAmount) &&
             (identical(other.originalSubtotalAmount, originalSubtotalAmount) ||
@@ -440,7 +433,14 @@ class _$OrderModelImpl implements _OrderModel {
             (identical(other.pointsEarned, pointsEarned) ||
                 other.pointsEarned == pointsEarned) &&
             (identical(other.pointsRedeemed, pointsRedeemed) ||
-                other.pointsRedeemed == pointsRedeemed));
+                other.pointsRedeemed == pointsRedeemed) &&
+            (identical(other.pickupDate, pickupDate) ||
+                other.pickupDate == pickupDate) &&
+            (identical(other.pickupTime, pickupTime) ||
+                other.pickupTime == pickupTime) &&
+            (identical(other.cardBrand, cardBrand) ||
+                other.cardBrand == cardBrand) &&
+            (identical(other.last4, last4) || other.last4 == last4));
   }
 
   @override
@@ -448,15 +448,11 @@ class _$OrderModelImpl implements _OrderModel {
         runtimeType,
         userID,
         orderNumber,
-        locationID,
+        locationId,
         createdAt,
         const DeepCollectionEquality().hash(_items),
         paymentMethod,
         orderSource,
-        pickupDate,
-        pickupTime,
-        cardBrand,
-        last4,
         totalAmount,
         originalSubtotalAmount,
         discountedSubtotalAmount,
@@ -464,7 +460,11 @@ class _$OrderModelImpl implements _OrderModel {
         discountAmount,
         tipAmount,
         pointsEarned,
-        pointsRedeemed
+        pointsRedeemed,
+        pickupDate,
+        pickupTime,
+        cardBrand,
+        last4
       ]);
 
   @JsonKey(ignore: true)
@@ -478,15 +478,11 @@ abstract class _OrderModel implements OrderModel {
   const factory _OrderModel(
       {final String? userID,
       required final String orderNumber,
-      required final int locationID,
+      required final String locationId,
       required final DateTime createdAt,
       required final List<dynamic> items,
       required final String paymentMethod,
       required final String orderSource,
-      final DateTime? pickupDate,
-      final DateTime? pickupTime,
-      final String? cardBrand,
-      final String? last4,
       required final int totalAmount,
       required final int originalSubtotalAmount,
       required final int discountedSubtotalAmount,
@@ -494,14 +490,18 @@ abstract class _OrderModel implements OrderModel {
       required final int discountAmount,
       required final int tipAmount,
       required final int pointsEarned,
-      required final int pointsRedeemed}) = _$OrderModelImpl;
+      required final int pointsRedeemed,
+      final DateTime? pickupDate,
+      final DateTime? pickupTime,
+      final String? cardBrand,
+      final String? last4}) = _$OrderModelImpl;
 
   @override
   String? get userID;
   @override
   String get orderNumber;
   @override
-  int get locationID;
+  String get locationId;
   @override
   DateTime get createdAt;
   @override
@@ -510,14 +510,6 @@ abstract class _OrderModel implements OrderModel {
   String get paymentMethod;
   @override
   String get orderSource;
-  @override
-  DateTime? get pickupDate;
-  @override
-  DateTime? get pickupTime;
-  @override
-  String? get cardBrand;
-  @override
-  String? get last4;
   @override
   int get totalAmount;
   @override
@@ -534,6 +526,14 @@ abstract class _OrderModel implements OrderModel {
   int get pointsEarned;
   @override
   int get pointsRedeemed;
+  @override
+  DateTime? get pickupDate;
+  @override
+  DateTime? get pickupTime;
+  @override
+  String? get cardBrand;
+  @override
+  String? get last4;
   @override
   @JsonKey(ignore: true)
   _$$OrderModelImplCopyWith<_$OrderModelImpl> get copyWith =>

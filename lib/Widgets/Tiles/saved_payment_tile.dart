@@ -1,10 +1,11 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:jus_mobile_order_app/Helpers/enums.dart';
-import 'package:jus_mobile_order_app/Helpers/modal_bottom_sheets.dart';
-import 'package:jus_mobile_order_app/Helpers/payments.dart';
+import 'package:jus_mobile_order_app/Helpers/navigation.dart';
+import 'package:jus_mobile_order_app/Helpers/payment_methods.dart';
 import 'package:jus_mobile_order_app/Models/payments_model.dart';
 import 'package:jus_mobile_order_app/Providers/payments_providers.dart';
 import 'package:jus_mobile_order_app/Sheets/edit_payment_method_sheet.dart';
@@ -19,8 +20,7 @@ class SavedPaymentTile extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    String cardTitle =
-        PaymentsHelper().displaySelectedCardTextFromPaymentModel(card);
+    String cardTitle = PaymentMethodHelpers().displaySelectedCardText(card);
     return ListTile(
       leading: card.isWallet
           ? const Icon(FontAwesomeIcons.wallet)
@@ -74,6 +74,7 @@ class SavedPaymentTile extends ConsumerWidget {
   }
 
   void _handleTap(WidgetRef ref, BuildContext context) async {
+    HapticFeedback.lightImpact();
     final pageType = ref.read(pageTypeProvider);
     ref.read(cardNicknameProvider.notifier).state = card.cardNickname;
     if (pageType != PageType.editPaymentMethod) {
@@ -101,12 +102,9 @@ class SavedPaymentTile extends ConsumerWidget {
 
       Navigator.pop(context);
     } else {
-      ModalBottomSheet().partScreen(
-        isScrollControlled: true,
-        enableDrag: true,
-        isDismissible: true,
-        context: context,
-        builder: (context) => EditPaymentMethodSheet(card: card),
+      NavigationHelpers.navigateToPartScreenSheetOrDialog(
+        context,
+        EditPaymentMethodSheet(card: card),
       );
     }
   }

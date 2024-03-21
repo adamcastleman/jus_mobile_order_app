@@ -11,12 +11,13 @@ const getGiftCardIDFromGan = async (orderMap) => {
 
     const response = JSON.parse(cardResponse.body);
 
-    const giftCardID = response.gift_card.id;
+    const giftCardId = response.gift_card.id;
 
-    orderMap.paymentDetails.giftCardID = giftCardID;
+    orderMap.paymentDetails.cardId = giftCardId;
 
-    return giftCardID;
+    return giftCardId;
   } catch (error) {
+    throw error;
     console.log(error);
   }
 };

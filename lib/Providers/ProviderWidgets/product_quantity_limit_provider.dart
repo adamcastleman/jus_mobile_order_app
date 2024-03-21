@@ -8,14 +8,14 @@ import 'package:jus_mobile_order_app/Providers/stream_providers.dart';
 
 class ProductQuantityLimitProviderWidget extends ConsumerWidget {
   final String productUID;
-  final int? locationID;
+  final String? locationId;
   final Widget Function(ProductQuantityModel quantityLimits) builder;
   final dynamic loading;
   final dynamic error;
   const ProductQuantityLimitProviderWidget(
       {required this.builder,
       required this.productUID,
-      this.locationID,
+      this.locationId,
       this.loading,
       this.error,
       super.key});
@@ -23,12 +23,12 @@ class ProductQuantityLimitProviderWidget extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final selectedLocation = ref.watch(selectedLocationProvider);
-
     final params = QuantityLimitParams(
         productUID: productUID,
-        locationID: locationID == null && selectedLocation == null
-            ? 1
-            : locationID ?? selectedLocation.locationID);
+        locationId: locationId == null && selectedLocation.uid.isEmpty
+            ? '1'
+            : locationId ?? selectedLocation.locationId);
+
     final quantityLimits = ref.watch(
       productQuantityLimitProvider(params),
     );

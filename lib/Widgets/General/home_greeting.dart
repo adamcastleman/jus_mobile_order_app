@@ -1,8 +1,6 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_emoji/flutter_emoji.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:jus_mobile_order_app/Helpers/utilities.dart';
 import 'package:jus_mobile_order_app/Models/user_model.dart';
 import 'package:jus_mobile_order_app/Providers/stream_providers.dart';
 
@@ -11,18 +9,11 @@ class MobileHomeGreeting extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final user = ref.watch(currentUserProvider).value;
-    return Padding(
-      padding: const EdgeInsets.only(left: 12.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          AutoSizeText(
-            '${dayPartGreeting()}${determineNameForGreeting(user ?? const UserModel(), context)}',
-            style: const TextStyle(fontSize: 26),
-            maxLines: 1,
-          ),
-        ],
-      ),
+    return AutoSizeText(
+      '${dayPartGreeting()}${determineNameForGreeting(user ?? const UserModel(), context)}',
+      style: const TextStyle(fontSize: 24),
+      maxLines: 1,
+      overflow: TextOverflow.ellipsis,
     );
   }
 
@@ -42,30 +33,11 @@ class MobileHomeGreeting extends ConsumerWidget {
     }
   }
 
-  dayPartEmoji() {
-    final now = DateTime.now();
-    if (!PlatformUtils.isIOS() && !PlatformUtils.isAndroid()) {
-      return '';
-    }
-    if (now.hour >= 4 && now.hour < 12) {
-      return EmojiParser().emojify(':coffee:');
-    } else if (now.hour >= 12 && now.hour < 16) {
-      return EmojiParser().emojify(':sunny:');
-    } else if (now.hour >= 16 && now.hour < 20) {
-      return EmojiParser().emojify(':sparkles:');
-    } else if (now.hour >= 20 && now.hour <= 24 ||
-        now.hour >= 0 && now.hour < 4) {
-      return EmojiParser().emojify(':crescent_moon:');
-    } else {
-      return EmojiParser().emojify(':wave:');
-    }
-  }
-
   determineNameForGreeting(UserModel user, BuildContext context) {
     if (user.uid == null) {
-      return '${dayPartEmoji()}';
+      return '';
     } else {
-      return ', ${user.firstName} ${dayPartEmoji()}';
+      return ', ${user.firstName} ';
     }
   }
 }

@@ -7,7 +7,7 @@ class EmptyLocationTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.all(PlatformUtils.isWeb() ? 30.0 : 0.0),
+      padding: EdgeInsets.all(PlatformUtils.isWeb() ? 30.0 : 8.0),
       color: Colors.white,
       width: MediaQuery.of(context).size.width * 0.9,
       child: Column(

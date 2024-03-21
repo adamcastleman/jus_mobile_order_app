@@ -1,74 +1,97 @@
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:jus_mobile_order_app/Helpers/modal_bottom_sheets.dart';
-import 'package:jus_mobile_order_app/Helpers/wallet.dart';
+import 'package:jus_mobile_order_app/Helpers/payments.dart';
 import 'package:jus_mobile_order_app/Models/payments_model.dart';
 import 'package:jus_mobile_order_app/Models/user_model.dart';
-import 'package:jus_mobile_order_app/Providers/ProviderWidgets/wallet_provider_widget.dart';
 import 'package:jus_mobile_order_app/Providers/loading_providers.dart';
 import 'package:jus_mobile_order_app/Providers/payments_providers.dart';
-import 'package:jus_mobile_order_app/Services/payments_services_square.dart';
-import 'package:jus_mobile_order_app/Sheets/invalid_sheet_single_pop.dart';
+import 'package:jus_mobile_order_app/Services/payment_services.dart';
 import 'package:jus_mobile_order_app/Widgets/Buttons/elevated_button_large.dart';
 import 'package:jus_mobile_order_app/Widgets/Buttons/elevated_button_large_loading.dart';
+import 'package:jus_mobile_order_app/errors.dart';
 
 class LoadWalletWithFundsButton extends ConsumerWidget {
   final UserModel user;
-  const LoadWalletWithFundsButton({required this.user, super.key});
+  final PaymentsModel wallet;
+  final PaymentsModel creditCard;
+  final int loadAmount;
+
+  const LoadWalletWithFundsButton(
+      {required this.creditCard,
+      required this.user,
+      required this.wallet,
+      required this.loadAmount,
+      super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final selectedLoadAmount = ref.watch(selectedLoadAmountProvider);
-    final selectedWallet = ref.watch(currentlySelectedWalletProvider);
-    final loadAmounts = ref.watch(walletLoadAmountsProvider);
-    final formattedAmount = (selectedLoadAmount == null
-            ? (loadAmounts[3] / 100)
-            : selectedLoadAmount / 100)
-        .toStringAsFixed(2);
+    final applePaySelected = ref.watch(applePaySelectedProvider);
     final applePayLoading = ref.watch(applePayLoadingProvider);
     final loading = ref.watch(loadingProvider);
-    if (applePayLoading || applePayLoading || loading) {
+    if (applePayLoading || loading) {
       return const LargeElevatedLoadingButton();
     } else {
-      return WalletProviderWidget(builder: (wallets) {
-        return LargeElevatedButton(
-          buttonText:
-              'Add \$$formattedAmount to Wallet x${selectedWallet.isEmpty ? wallets.first.gan.toString().substring(wallets.first.gan.toString().length - 4) : ''}',
-          onPressed: () => _handlePayment(
-              context: context, ref: ref, user: user, wallet: wallets.first),
-        );
-      });
+      return LargeElevatedButton(
+        buttonText:
+            'Add \$${loadAmount.toStringAsFixed(2)} to Wallet x${wallet.last4}',
+        onPressed: () {
+          _handlePayment(context, ref, applePaySelected);
+        },
+      );
     }
   }
 
-  void _handlePayment({
-    required BuildContext context,
-    required WidgetRef ref,
-    required UserModel user,
-    required PaymentsModel wallet,
-  }) {
-    final selectedPayment = ref.watch(selectedPaymentMethodProvider);
-    final applePaySelected = ref.watch(applePaySelectedProvider);
-
-    if (selectedPayment.isEmpty) {
-      WalletHelpers(ref: ref).displayInvalidPaymentError(context);
+  _handlePayment(
+    BuildContext context,
+    WidgetRef ref,
+    bool applePaySelected,
+  ) {
+    if (creditCard.cardId == null || creditCard.cardId!.isEmpty) {
+      PaymentsHelpers.showPaymentErrorModal(
+          context, ref, ErrorMessage.paymentMethodNotSelected);
       return;
     }
-
     if (applePaySelected) {
       ref.read(applePayLoadingProvider.notifier).state = true;
-      SquarePaymentServices().initApplePayWalletLoad(
-          context: context, ref: ref, user: user, wallet: wallet);
+      _addFundsToWalletUsingApplePay(context, ref);
     } else {
       ref.read(loadingProvider.notifier).state = true;
-      SquarePaymentServices().addFundsToWallet(context, ref, user, wallet,
-          onError: (error) {
-        ModalBottomSheet().partScreen(
-          context: context,
-          builder: (context) => const InvalidSheetSinglePop(
-              error: 'Something went wrong. Please try again later'),
-        );
-      });
+      _callAddFundsCloudFunction(context, ref, creditCard.cardId ?? '');
     }
+  }
+
+  void _addFundsToWalletUsingApplePay(BuildContext context, WidgetRef ref) {
+    PaymentServices().generateSecureCardDetailsFromApplePay(
+      ref: ref,
+      amount: (loadAmount * 100).floor().toString(),
+      onSuccess: (cardDetails) {
+        _callAddFundsCloudFunction(context, ref, cardDetails.nonce);
+      },
+      onError: (error) {
+        PaymentsHelpers.showPaymentErrorModal(context, ref, error);
+      },
+    );
+  }
+
+  void _callAddFundsCloudFunction(
+      BuildContext context, WidgetRef ref, String cardId) {
+    Map<String, dynamic> orderDetails =
+        PaymentsHelpers.generateAddFundsToWalletOrderDetails(
+      user: user,
+      cardId: cardId,
+      gan: wallet.gan ?? '',
+      walletUid: wallet.uid ?? '',
+      loadAmount: (loadAmount * 100).floor().toString(),
+    );
+    PaymentServices.addFundsToWalletCloudFunction(
+      orderDetails,
+      onSuccess: () {
+        PaymentsHelpers.onWalletActivitySuccess(context, ref,
+            message: 'Funds Added to Wallet');
+      },
+      onError: (error) {
+        PaymentsHelpers.showPaymentErrorModal(context, ref, error);
+      },
+    );
   }
 }

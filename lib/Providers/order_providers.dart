@@ -15,7 +15,7 @@ final scheduledAndNowItemsInCartProvider = StateProvider<bool>((ref) => false);
 
 final scheduleAllItemsProvider = StateProvider<bool>((ref) => false);
 
-final checkOutPageProvider = StateProvider<bool>((ref) => false);
+final isCheckOutPageProvider = StateProvider<bool>((ref) => false);
 
 final selectedTipIndexProvider = StateProvider<int>((ref) => 0);
 

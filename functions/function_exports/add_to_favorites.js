@@ -10,24 +10,24 @@ exports.addToFavorites = functions.https.onCall(async (data, context) => {
     };
   }
 
-  const userID = context.auth.uid;
+  const userId = context.auth.uid;
 
-  const { ingredients, toppings, productID, name, size, allergies } = data;
+  const { ingredients, toppings, productId, name, size, allergies } = data;
 
   try {
     const favoritesCollection = admin
       .firestore()
       .collection("users")
-      .doc(userID)
+      .doc(userId)
       .collection("favorites");
 
     const docRef = favoritesCollection.doc();
     const docID = docRef.id;
 
     await docRef.set({
-      productID: productID,
+      productId: productId,
       uid: docID,
-      userID: userID,
+      userId: userId,
       name: name,
       ingredients: ingredients,
       toppings: toppings,

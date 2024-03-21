@@ -5,8 +5,20 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:jus_mobile_order_app/Helpers/utilities.dart';
+import 'package:jus_mobile_order_app/Models/user_model.dart';
+import 'package:jus_mobile_order_app/Providers/ProviderWidgets/breaking_version_provider_widget.dart';
+import 'package:jus_mobile_order_app/Providers/ProviderWidgets/favorites_provider_widget.dart';
+import 'package:jus_mobile_order_app/Providers/ProviderWidgets/ingredients_provider_widget.dart';
+import 'package:jus_mobile_order_app/Providers/ProviderWidgets/location_provider_widget.dart';
+import 'package:jus_mobile_order_app/Providers/ProviderWidgets/points_details_provider_widget.dart';
+import 'package:jus_mobile_order_app/Providers/ProviderWidgets/products_provider_widget.dart';
 import 'package:jus_mobile_order_app/Providers/loading_providers.dart';
+import 'package:jus_mobile_order_app/Providers/location_providers.dart';
+import 'package:jus_mobile_order_app/Providers/points_providers.dart';
+import 'package:jus_mobile_order_app/Providers/product_providers.dart';
+import 'package:jus_mobile_order_app/Providers/stream_providers.dart';
 import 'package:jus_mobile_order_app/Services/payments_services_square.dart';
+import 'package:jus_mobile_order_app/Views/force_app_update_page.dart';
 import 'package:jus_mobile_order_app/Views/home_scaffold_mobile_app.dart';
 import 'package:jus_mobile_order_app/Views/home_scaffold_web_desktop.dart';
 import 'package:jus_mobile_order_app/firebase_options.dart';
@@ -18,6 +30,7 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+
   if (PlatformUtils.isIOS() || PlatformUtils.isAndroid()) {
     await SquarePaymentServices().setApplicationID();
     await [
@@ -32,7 +45,13 @@ void main() async {
     final license = await rootBundle.loadString('Montserrat/OFL.txt');
     yield LicenseEntryWithLineBreaks(['Montserrat'], license);
   });
-  SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]).then(
+  SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
+    statusBarColor: Colors.transparent, // Transparent status bar
+    statusBarIconBrightness: Brightness.dark,
+    // Dark text for status bar
+  ));
+
+  setPreferredOrientations().then(
     (_) => runApp(
       const ProviderScope(
         child: JusMobileOrder(),
@@ -47,15 +66,57 @@ class JusMobileOrder extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final loading = ref.watch(loadingProvider);
+    final user = ref.watch(currentUserProvider).value ?? const UserModel();
     final ThemeData theme = ThemeManager().theme;
+
     return AbsorbPointer(
       absorbing: loading,
       child: MaterialApp(
+        color: Colors.white,
         debugShowCheckedModeBanner: false,
         theme: theme,
-        home: PlatformUtils.isIOS() || PlatformUtils.isAndroid()
-            ? const HomeScaffoldMobileApp()
-            : const HomeScaffoldWeb(),
+        home: BreakingVersionProviderWidget(
+          builder: (isBreakingChange) {
+            if ((PlatformUtils.isIOS() || PlatformUtils.isAndroid()) &&
+                isBreakingChange) {
+              return const ForceAppUpdatePage();
+            }
+            return LocationsProviderWidget(
+              builder: (locations) => IngredientsProviderWidget(
+                builder: (ingredients) => FavoritesProviderWidget(
+                  builder: (favorites) => PointsDetailsProviderWidget(
+                    builder: (points) => ProductsProviderWidget(
+                      builder: (products) {
+                        // Update state with locations, products, and ingredients.
+                        WidgetsBinding.instance.addPostFrameCallback((_) {
+                          ref.read(allLocationsProvider.notifier).state =
+                              locations;
+                          ref.read(allProductsProvider.notifier).state =
+                              products;
+                          ref.read(allIngredientsProvider.notifier).state =
+                              ingredients;
+                          ref.read(pointsInformationProvider.notifier).state =
+                              points;
+                          if (user.uid != null) {
+                            ref.read(allFavoritesProvider.notifier).state =
+                                favorites;
+                          }
+                        });
+
+                        if (PlatformUtils.isIOS() ||
+                            PlatformUtils.isAndroid()) {
+                          return const HomeScaffoldMobileApp();
+                        } else {
+                          return const HomeScaffoldWeb();
+                        }
+                      },
+                    ),
+                  ),
+                ),
+              ),
+            );
+          },
+        ),
       ),
     );
   }
@@ -65,4 +126,14 @@ Future<void> backgroundHandler(RemoteMessage message) async {
   return Future.value();
 }
 
-//open -a /Applications/Android\ Studio.app
+Future<void> setPreferredOrientations() async {
+  final screenWidth = WidgetsBinding
+          .instance.platformDispatcher.views.first.physicalSize.width /
+      WidgetsBinding.instance.platformDispatcher.views.first.devicePixelRatio;
+
+  List<DeviceOrientation> orientations = screenWidth < 700
+      ? [DeviceOrientation.portraitUp]
+      : [DeviceOrientation.landscapeLeft, DeviceOrientation.landscapeRight];
+
+  SystemChrome.setPreferredOrientations(orientations);
+}

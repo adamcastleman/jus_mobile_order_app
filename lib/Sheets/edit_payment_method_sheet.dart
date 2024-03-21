@@ -9,6 +9,7 @@ import 'package:jus_mobile_order_app/Widgets/Buttons/update_payment_method_butto
 import 'package:jus_mobile_order_app/Widgets/General/card_info_fields.dart';
 import 'package:jus_mobile_order_app/Widgets/General/sheet_notch.dart';
 import 'package:jus_mobile_order_app/Widgets/Tiles/default_payment_checkbox_tile.dart';
+import 'package:jus_mobile_order_app/constants.dart';
 
 class EditPaymentMethodSheet extends ConsumerWidget {
   final PaymentsModel card;
@@ -16,15 +17,18 @@ class EditPaymentMethodSheet extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final isDrawerOpen = AppConstants.scaffoldKey.currentState?.isEndDrawerOpen;
     return Padding(
       padding: MediaQuery.of(context).viewInsets,
       child: Padding(
         padding: const EdgeInsets.only(bottom: 25.0, left: 12, right: 12),
         child: Wrap(
           children: [
-            const Center(
-              child: SheetNotch(),
-            ),
+            isDrawerOpen == null || !isDrawerOpen
+                ? const Center(
+                    child: SheetNotch(),
+                  )
+                : Spacing.vertical(20),
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 20.0),
               child: Text(
@@ -59,12 +63,17 @@ class EditPaymentMethodSheet extends ConsumerWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
                   card.isWallet
-                      ? const AddFundsButton()
-                      : DeletePaymentMethodButton(
-                          cardID: card.uid,
-                          defaultPayment: card.defaultPayment,
+                      ? Expanded(child: AddFundsButton(wallet: card))
+                      : Expanded(
+                          child: DeletePaymentMethodButton(
+                            cardID: card.uid ?? '',
+                            defaultPayment: card.defaultPayment,
+                          ),
                         ),
-                  UpdatePaymentMethodButton(card: card),
+                  Spacing.horizontal(12.0),
+                  Expanded(
+                    child: UpdatePaymentMethodButton(card: card),
+                  ),
                 ],
               ),
             ),

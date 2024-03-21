@@ -9,7 +9,7 @@ class ProductModel with _$ProductModel {
     required String name,
     required String category,
     required int categoryOrder,
-    required int productID,
+    required String productId,
     required String description,
     required List ingredients,
     required String image,
@@ -35,7 +35,7 @@ class ProductModel with _$ProductModel {
 class ProductQuantityModel with _$ProductQuantityModel {
   const factory ProductQuantityModel({
     required String uid,
-    required int locationID,
+    required String locationId,
     required String productType,
     required int hoursNotice,
     int? quantityLimit,
@@ -50,6 +50,6 @@ class ProductQuantityModel with _$ProductQuantityModel {
 class QuantityLimitParams with _$QuantityLimitParams {
   const factory QuantityLimitParams({
     required String productUID,
-    required int locationID,
+    required String locationId,
   }) = _QuantityLimitParams;
 }

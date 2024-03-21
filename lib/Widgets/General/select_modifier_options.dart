@@ -2,10 +2,10 @@ import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:jus_mobile_order_app/Helpers/modal_bottom_sheets.dart';
+import 'package:jus_mobile_order_app/Helpers/navigation.dart';
+import 'package:jus_mobile_order_app/Helpers/spacing_widgets.dart';
 import 'package:jus_mobile_order_app/Models/ingredient_model.dart';
 import 'package:jus_mobile_order_app/Models/product_model.dart';
-import 'package:jus_mobile_order_app/Providers/ProviderWidgets/modifiable_ingredients_provider_widget.dart';
 import 'package:jus_mobile_order_app/Providers/controller_providers.dart';
 import 'package:jus_mobile_order_app/Providers/product_providers.dart';
 import 'package:jus_mobile_order_app/Sheets/invalid_modification_sheet.dart';
@@ -17,26 +17,30 @@ class SelectModifierOptions extends ConsumerWidget {
   const SelectModifierOptions({required this.product, super.key});
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return ModifiableIngredientsProviderWidget(
-      builder: (ingredients) => Material(
-        color: Colors.white,
-        elevation: 50,
-        child: Padding(
-          padding: const EdgeInsets.only(
-              top: 20.0, left: 20, right: 20, bottom: 40.0),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              determineResetOrCancelButton(context, ref),
-              MediumElevatedButton(
+    final ingredients = ref.watch(allIngredientsProvider);
+    return Material(
+      color: Colors.white,
+      elevation: 50,
+      child: Padding(
+        padding:
+            const EdgeInsets.only(top: 20.0, left: 20, right: 20, bottom: 40.0),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [
+            Expanded(
+              child: determineResetOrCancelButton(context, ref),
+            ),
+            Spacing.horizontal(20),
+            Expanded(
+              child: MediumElevatedButton(
                 buttonText: 'Confirm',
                 onPressed: () {
                   HapticFeedback.lightImpact();
                   checkForRequiredIngredients(context, ref, ingredients);
                 },
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
@@ -79,27 +83,24 @@ class SelectModifierOptions extends ConsumerWidget {
     final selectedNonBlendedIngredients = _filterSelectedNonBlendedIngredients(
         selectedIngredients: selectedIngredients, ingredients: data);
 
-    if (!_hasFruit(selectedNonBlendedIngredients)) {
-      return ModalBottomSheet().partScreen(
-        isScrollControlled: true,
-        isDismissible: true,
-        enableDrag: true,
-        context: context,
-        builder: (context) => InvalidModificationSheet(
-            category: '${product.hasToppings ? 'blended ' : ''}fruit'),
-      );
-    } else if (!_hasLiquids(selectedNonBlendedIngredients)) {
-      return ModalBottomSheet().partScreen(
-        isScrollControlled: true,
-        isDismissible: true,
-        enableDrag: true,
-        context: context,
-        builder: (context) =>
-            const InvalidModificationSheet(category: 'liquid'),
-      );
+    if (_hasFruit(selectedNonBlendedIngredients) == false) {
+      return _responsiveInvalidRequirementDisplay(
+          context: context,
+          category: '${product.hasToppings ? 'blended ' : ''}fruit');
+    } else if (_hasLiquids(selectedNonBlendedIngredients) == false) {
+      return _responsiveInvalidRequirementDisplay(
+          context: context, category: 'liquid');
     } else {
       Navigator.pop(context);
     }
+  }
+
+  _responsiveInvalidRequirementDisplay(
+      {required BuildContext context, required String category}) {
+    return NavigationHelpers.navigateToPartScreenSheetOrDialog(
+      context,
+      InvalidModificationSheet(category: category),
+    );
   }
 
   List<IngredientModel> _filterSelectedNonBlendedIngredients(

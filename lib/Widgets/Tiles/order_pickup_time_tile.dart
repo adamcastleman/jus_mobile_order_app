@@ -8,6 +8,7 @@ import 'package:jus_mobile_order_app/Helpers/divider.dart';
 import 'package:jus_mobile_order_app/Helpers/error.dart';
 import 'package:jus_mobile_order_app/Helpers/loading.dart';
 import 'package:jus_mobile_order_app/Helpers/locations.dart';
+import 'package:jus_mobile_order_app/Helpers/navigation.dart';
 import 'package:jus_mobile_order_app/Helpers/pickers.dart';
 import 'package:jus_mobile_order_app/Helpers/spacing_widgets.dart';
 import 'package:jus_mobile_order_app/Providers/location_providers.dart';
@@ -23,7 +24,7 @@ class OrderPickupTimeTile extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return Column(
       children: [
-        JusDivider().thin(),
+        JusDivider.thin(),
         ListTile(
           leading: const FaIcon(FontAwesomeIcons.clock),
           title: Text(
@@ -86,7 +87,7 @@ class OrderPickupTimeTile extends ConsumerWidget {
     final selectedLocation = LocationHelper().selectedLocation(ref);
     if (selectedLocation == null) {
       HapticFeedback.lightImpact();
-      return LocationHelper().chooseLocation(context, ref);
+      return NavigationHelpers().navigateToLocationPage(context, ref);
     } else if (!LocationHelper().acceptingOrders(ref)) {
       return;
     } else {
@@ -95,7 +96,7 @@ class OrderPickupTimeTile extends ConsumerWidget {
           Time().nowRounded(ref);
       ref.read(selectedPickupTimeProvider.notifier).state =
           Time().nowRounded(ref);
-      return Picker().time(context, ref);
+      return Picker().time(context);
     }
   }
 }

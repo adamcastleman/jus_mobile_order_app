@@ -7,11 +7,12 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:jus_mobile_order_app/Helpers/formulas.dart';
 import 'package:jus_mobile_order_app/Helpers/locations.dart';
-import 'package:jus_mobile_order_app/Helpers/modal_bottom_sheets.dart';
+import 'package:jus_mobile_order_app/Helpers/navigation.dart';
 import 'package:jus_mobile_order_app/Helpers/spacing_widgets.dart';
 import 'package:jus_mobile_order_app/Helpers/time.dart';
 import 'package:jus_mobile_order_app/Helpers/utilities.dart';
 import 'package:jus_mobile_order_app/Models/location_model.dart';
+import 'package:jus_mobile_order_app/Providers/controller_providers.dart';
 import 'package:jus_mobile_order_app/Providers/location_providers.dart';
 import 'package:jus_mobile_order_app/Providers/theme_providers.dart';
 import 'package:jus_mobile_order_app/Sheets/store_details_sheet.dart';
@@ -51,7 +52,8 @@ class LocationListTile extends ConsumerWidget {
               children: [
                 AutoSizeText(
                   visibleLocations[index].name,
-                  style: titleStyle,
+                  style: const TextStyle(
+                      fontSize: 18, fontWeight: FontWeight.bold),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),
@@ -95,12 +97,11 @@ class LocationListTile extends ConsumerWidget {
                         ),
                         onPressed: () {
                           var location = visibleLocations[index];
-                          setLocationData(ref, location);
-                          ModalBottomSheet().partScreen(
-                            context: context,
-                            enableDrag: true,
-                            isDismissible: true,
-                            builder: (context) => const StoreDetailsSheet(),
+                          LocationHelper()
+                              .setLocationDataFromMap(ref, location);
+                          NavigationHelpers.navigateToPartScreenSheetOrDialog(
+                            context,
+                            const StoreDetailsSheet(),
                           );
                         },
                       ),
@@ -111,16 +112,16 @@ class LocationListTile extends ConsumerWidget {
               var location = visibleLocations[index];
               ref.read(currentLocationLatLongProvider.notifier).state =
                   LatLng(location.latitude, location.longitude);
-              setLocationData(ref, location);
+              LocationHelper().setLocationDataFromMap(ref, location);
               _animateCameraToMarker(ref, mapController!);
               PlatformUtils.isIOS() || PlatformUtils.isAndroid()
                   ? LocationHelper().calculateListScroll(ref, index, tileWidth)
                   : null;
             },
           ),
-          selectedLocation == null ||
-                  selectedLocation.locationID !=
-                      visibleLocations[index].locationID
+          selectedLocation.uid.isEmpty ||
+                  selectedLocation.locationId !=
+                      visibleLocations[index].locationId
               ? const SizedBox()
               : Padding(
                   padding: const EdgeInsets.only(right: 12.0),
@@ -145,7 +146,7 @@ class LocationListTile extends ConsumerWidget {
     if (selectedLocation == null) {
       return Colors.white;
     }
-    return selectedLocation.locationID == visibleLocations[index].locationID
+    return selectedLocation.locationId == visibleLocations[index].locationId
         ? selectedCardColor
         : Colors.white;
   }
@@ -156,17 +157,17 @@ class LocationListTile extends ConsumerWidget {
     if (selectedLocation == null) {
       return Colors.white;
     }
-    return selectedLocation.locationID == visibleLocations[index].locationID
+    return selectedLocation.locationId == visibleLocations[index].locationId
         ? selectedCardBorderColor
         : Colors.white;
   }
 
   Widget openOrClosedText(WidgetRef ref, List<LocationModel> visibleLocations) {
     // Define styles for different states
-    const TextStyle closedStyle = TextStyle(fontSize: 12, color: Colors.red);
+    const TextStyle closedStyle = TextStyle(fontSize: 13, color: Colors.red);
     const TextStyle closingSoonStyle =
         TextStyle(color: Colors.deepOrangeAccent);
-    const TextStyle openStyle = TextStyle(fontSize: 12, color: Colors.green);
+    const TextStyle openStyle = TextStyle(fontSize: 13, color: Colors.green);
 
     // Retrieve the current location status
     final String status = visibleLocations[index].status;
@@ -196,12 +197,12 @@ class LocationListTile extends ConsumerWidget {
 
   Widget acceptingOrdersText(
       List visibleLocations, BuildContext context, WidgetRef ref) {
-    if (visibleLocations[index].acceptingOrders ||
+    if (visibleLocations[index].isAcceptingOrders ||
         !Time().isLocationOpen(location: visibleLocations[index])) {
       return const SizedBox();
     } else {
       return const AutoSizeText(
-        'This location is currently not accepting pickup orders',
+        'Not accepting mobile pickup at this time.',
         style: TextStyle(fontSize: 10, color: Colors.red),
         maxLines: 1,
         overflow: TextOverflow.ellipsis,
@@ -231,7 +232,7 @@ class LocationListTile extends ConsumerWidget {
       future: getDistanceFromCurrentLocation(visibleLocations[index]),
       builder: (context, snapshot) {
         if (!snapshot.hasData) {
-          return const Text('');
+          return const SizedBox();
         }
         return AutoSizeText(
           '${snapshot.data} mi. away',
@@ -243,21 +244,6 @@ class LocationListTile extends ConsumerWidget {
     );
   }
 
-  setLocationData(WidgetRef ref, LocationModel location) {
-    if (location.status == AppConstants.comingSoon) {
-      return null;
-    } else {
-      setSelectedLocation(ref, location);
-      setLatAndLongOfLocation(ref, location);
-      setOpenAndCloseTime(ref, location);
-    }
-  }
-
-  setLatAndLongOfLocation(WidgetRef ref, location) {
-    ref.read(currentLocationLatLongProvider.notifier).state =
-        LatLng(location.latitude, location.longitude);
-  }
-
   _animateCameraToMarker(WidgetRef ref, GoogleMapController mapController) {
     mapController.animateCamera(
       CameraUpdate.newCameraPosition(
@@ -267,22 +253,5 @@ class LocationListTile extends ConsumerWidget {
         ),
       ),
     );
-  }
-
-  setOpenAndCloseTime(WidgetRef ref, location) {
-    var openTime = location.hours[DateTime.now().weekday - 1]['open'];
-    ref.read(selectedLocationOpenTime.notifier).state = TimeOfDay(
-      hour: int.parse(openTime.substring(0, openTime.indexOf(':'))),
-      minute: int.parse(openTime.substring(openTime.indexOf(':') + 1)),
-    );
-    var closeTime = location.hours[DateTime.now().weekday - 1]['close'];
-    ref.read(selectedLocationCloseTime.notifier).state = TimeOfDay(
-      hour: int.parse(closeTime.substring(0, 2)),
-      minute: int.parse(closeTime.substring(3)),
-    );
-  }
-
-  setSelectedLocation(WidgetRef ref, location) {
-    ref.read(selectedLocationProvider.notifier).state = location;
   }
 }

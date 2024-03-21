@@ -26,6 +26,7 @@ class OffersServices {
           qualifyingProducts: data['qualifyingProducts'],
           isMemberOnly: data['isMemberOnly'],
           isActive: data['isActive'],
+          qualifyingUsers: data['qualifyingUsers'],
         );
       },
     ).toList();

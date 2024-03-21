@@ -1,5 +1,9 @@
-import 'package:cloud_functions/cloud_functions.dart';
 import 'package:flutter/material.dart';
+import 'package:jus_mobile_order_app/Helpers/modal_sheets.dart';
+import 'package:jus_mobile_order_app/Helpers/utilities.dart';
+import 'package:jus_mobile_order_app/Sheets/invalid_sheet_double_pop.dart';
+import 'package:jus_mobile_order_app/Sheets/invalid_sheet_single_pop.dart';
+import 'package:jus_mobile_order_app/constants.dart';
 
 class ShowError extends StatelessWidget {
   final String? error;
@@ -17,6 +21,54 @@ class ShowError extends StatelessWidget {
           color: Colors.red,
         ),
         textAlign: TextAlign.center,
+      );
+    }
+  }
+}
+
+class ErrorHelpers {
+  static showSinglePopError(BuildContext context, {String? error}) {
+    if (PlatformUtils.isIOS() || PlatformUtils.isAndroid()) {
+      ModalBottomSheet().partScreen(
+        context: context,
+        builder: (context) => InvalidSheetSinglePop(
+          error: error ?? '',
+        ),
+      );
+    } else {
+      showDialog(
+        context: context,
+        builder: (context) => Dialog(
+          child: SizedBox(
+            height: AppConstants.dialogHeight,
+            width: AppConstants.dialogWidth,
+            child: InvalidSheetSinglePop(
+              error: error ?? '',
+            ),
+          ),
+        ),
+      );
+    }
+  }
+
+  static showDoublePopError(BuildContext context, {String? error}) {
+    if (ResponsiveLayout.isMobileBrowser(context)) {
+      ModalBottomSheet().partScreen(
+        context: context,
+        builder: (context) => InvalidSheetDoublePop(
+          error: error ?? '',
+        ),
+      );
+    } else {
+      showDialog(
+        context: context,
+        builder: (context) => SizedBox(
+          height: AppConstants.dialogHeight,
+          width: AppConstants.dialogWidth,
+          child: InvalidSheetDoublePop(
+            error: error ?? '',
+          ),
+        ),
       );
     }
   }
@@ -59,7 +111,7 @@ enum SquarePaymentsErrorType {
 }
 
 class SquarePaymentsErrors {
-  String getSquareErrorMessage(String error) {
+  static String getSquareErrorMessage(String error) {
     final errorCode = error
         .replaceAll('Authorization error: ', '')
         .replaceAll("'", '') // This will remove single quotes
@@ -139,13 +191,4 @@ class SquarePaymentsErrors {
         return 'Unknown error. Please try again later.';
     }
   }
-}
-
-class CustomHttpsCallableResult implements HttpsCallableResult<dynamic> {
-  final String errorMessage;
-
-  CustomHttpsCallableResult({required this.errorMessage});
-
-  @override
-  dynamic get data => errorMessage;
 }

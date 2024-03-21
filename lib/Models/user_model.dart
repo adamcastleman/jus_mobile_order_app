@@ -1,4 +1,5 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:jus_mobile_order_app/Helpers/enums.dart';
 
 part 'user_model.freezed.dart';
 
@@ -10,7 +11,7 @@ class UserModel with _$UserModel {
     String? lastName,
     String? email,
     String? phone,
-    bool? isActiveMember,
+    SubscriptionStatus? subscriptionStatus,
     String? squareCustomerId,
     int? points,
   }) = _UserModel;

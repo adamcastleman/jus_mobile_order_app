@@ -3,7 +3,7 @@ const { v4: uuidv4 } = require("uuid");
 const { createSquareClient } = require("../payments/square_client");
 const getSquareLocationID = require("../gift_cards/get_square_location_id");
 
-const createNewGiftCard = async (giftCardMap) => {
+const createNewGiftCard = async (orderMap) => {
   const client = await createSquareClient();
   const locationID = await getSquareLocationID();
 
@@ -12,7 +12,7 @@ const createNewGiftCard = async (giftCardMap) => {
     const createResponse = await client.giftCardsApi.createGiftCard({
       idempotencyKey: uuidv4(),
       locationId: locationID,
-      orderId: giftCardMap.paymentDetails.orderId,
+      orderId: orderMap.paymentDetails.orderId,
       giftCard: {
         type: "DIGITAL",
       },
@@ -30,15 +30,16 @@ const createNewGiftCard = async (giftCardMap) => {
           locationId: locationID,
           giftCardId: giftCardID,
           activateActivityDetails: {
-            orderId: giftCardMap.paymentDetails.orderId,
-            lineItemUid: giftCardMap.paymentDetails.lineItemUid,
-          }
+            orderId: orderMap.orderDetails.orderNumber,
+            lineItemUid: orderMap.orderDetails.lineItemUid,
+          },
         },
       });
     // Return the gift card creation result and the gift card activity result
 
     return JSON.parse(loadResponse.body);
   } catch (error) {
+    throw error;
     console.log(error);
   }
 };

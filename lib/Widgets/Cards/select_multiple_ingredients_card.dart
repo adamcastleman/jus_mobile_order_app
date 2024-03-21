@@ -29,27 +29,34 @@ class SelectMultipleIngredientsCard extends ConsumerWidget {
         child: SizedBox(
           width: 100,
           child: Card(
+            elevation: 0.0,
             color: determineCardColor(ref),
             shape: RoundedRectangleBorder(
               side: BorderSide(color: determineBorderColor(ref)),
-              borderRadius: BorderRadius.circular(4),
+              borderRadius: BorderRadius.circular(25),
             ),
             child: Column(
               children: [
-                SizedBox(
-                  height: 70,
-                  width: 70,
-                  child: CachedNetworkImage(
-                    imageUrl: ingredient.image,
+                Flexible(
+                  child: SizedBox(
+                    height: 70,
+                    width: 70,
+                    child: CachedNetworkImage(
+                      imageUrl: ingredient.image,
+                    ),
                   ),
                 ),
                 Spacing.vertical(5),
-                AutoSizeText(
-                  ingredient.name,
-                  style: const TextStyle(fontSize: 12),
-                  textAlign: TextAlign.center,
-                  maxLines: 2,
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 4.0),
+                  child: AutoSizeText(
+                    ingredient.name,
+                    style: const TextStyle(fontSize: 12),
+                    textAlign: TextAlign.center,
+                    maxLines: 2,
+                  ),
                 ),
+                Spacing.vertical(3),
                 AllergenLabel(
                   ingredient: ingredient,
                 ),

@@ -31,26 +31,26 @@ function generateCleanseInstructionsEmail() {
 
         <h3 style="font-weight: bold;">The Cleanses</h3>
           <br>
-              <h4 style="font-weight: bold;">Full Day Cleanse:</h4>
+              <h4 style="font-weight: bold;">Full-Day Cleanse:</h4>
               <p>Up to five days of juicing. | Six juices per day.</p>
               <p>Designed as a complete fast. Fully rest your digestive system while giving your body the tools it needs for a healthy detox.</p>
               <p>We provide six cold-pressed juices per day:</p>
               <ul>
                 <li>Activated Charcoal, Ginger, Lemon, Maple, Water</li>
-                <li>100% Celery Juice</li>
+                <li>Cucumber, Spinach, Kale, Ginger, Turmeric</li>
                 <li>Orange, Carrot, Beet, Lemon, Ginger</li>
                 <li>Cucumber, Apple, Celery, Spinach, Kale</li>
                 <li>Cucumber, Ginger, Lemon, Celery, Spinach, Kale</li>
                 <li>Blue Algae, Ginger, Lemon, Maple, Water</li>
               </ul>
            <br>
-              <h4 style="font-weight: bold;">Juice ’til Dinner:</h4>
+              <h4 style="font-weight: bold;">Half-Day Cleanse:</h4>
               <p>Up to five days of juicing. | Four juices per day.</p>
               <p>A great introduction to cleansing. Reap many benefits of a full cleanse while still being able to consume some solid foods.</p>
               <p>We provide four cold-pressed juices per day:</p>
               <ul>
                 <li>Activated Charcoal, Ginger, Lemon, Maple, Water</li>
-                <li>100% Celery Juice</li>
+                <li>Cucumber, Spinach, Kale, Ginger, Turmeric</li>
                 <li>Orange, Carrot, Beet, Lemon, Ginger</li>
                 <li>Cucumber, Apple, Celery, Spinach, Kale</li>
               </ul>
@@ -68,15 +68,15 @@ function generateCleanseInstructionsEmail() {
        <p>Drink your juices in order and space them out every three hours. This will make sure you’re constantly and consistently supplying your body with the proper nutrients. In addition, keeping a regular drinking schedule will help your body adjust quickly during the initial transition of the fast.</p>
        <p>Drinking water is essential during your cleanse. The live nutrients in the juice will allow your cells to dump built-up toxins, and the water will help wash them all away. Try to match your water consumption with your juice consumption ounce-for-ounce.</p>
        <p>Keep your bottles sealed and chilled until you’re ready to enjoy them. Consume each bottle fully before opening the next, as too much oxygen exposure will reduce the longevity and nutritional value of the juices.</p>
-       <p>If you’re on the “jüs ’til dinner” cleanse, we suggest eating a light, lean meal at least 3 hours before going to bed. This will ensure full digestion before your body shuts down for the night.</p>
+       <p>If you’re on the “Half-Day Cleanse” cleanse, we suggest eating a light, lean meal at least 3 hours before going to bed. This will ensure full digestion before your body shuts down for the night.</p>
        <h4>Post Cleanse</h4>
        <p>Congratulations! You’ve made it through your cleanse and your body is thanking you. Before you ease back into a normal (and hopefully healthy) lifestyle, it’s recommended you take a few steps to help successfully transition back to eating.</p>
        <p>Your stomach has likely shrunk from the lack of food, and you’ll need to introduce food back into your body carefully.</p>
-       <h4>Full Day Cleanse:</h4>
+       <h4>Full-Day Cleanse:</h4>
        <p>Start your morning with something very light and easily digestible. Soft fruits (bananas, oranges, melon), smoothies, simple soups, etc. are all great options to break your fast with. Make sure the foods are “pre-digested” by using a blender, eating foods that are mostly broth based, or eating soft, easily digestible foods.</p>
        <p>Gradually increase toward more solid foods like rice, quinoa, whole vegetables, etc., and see how your stomach responds. If you feel discomfort, keep drinking those smoothies until a little later in the day, then try again.</p>
        <p>After you can handle these foods in moderate quantities, experiment with other foods in your usual diet and see what works. You should be back to normal by this point, but don’t overdo it before you feel comfortable at all stages.</p>
-       <h4>Juice \'til Dinner:</h4>
+       <h4>Half-Day Cleanse:</h4>
        <p>Start your morning with a smoothie or piece of fruit or vegetable to help your transition back to your fully solid diet.</p>
        <p>Gradually increase toward more solid foods like rice, quinoa, hearty salads, and lean proteins throughout your day. You should be back to normal by dinner time, but don’t overdo it before you feel comfortable at all stages.</p>
        <div class="email-container">

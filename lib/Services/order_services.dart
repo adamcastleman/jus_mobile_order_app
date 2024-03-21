@@ -2,9 +2,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:jus_mobile_order_app/Models/order_model.dart';
 
 class OrderServices {
-  final String userID;
+  final String userId;
 
-  OrderServices({required this.userID});
+  OrderServices({required this.userId});
   final CollectionReference ordersCollection =
       FirebaseFirestore.instance.collection('orders');
 
@@ -16,7 +16,7 @@ class OrderServices {
             const Duration(days: 120),
           ),
         )
-        .where('userDetails.userID', isEqualTo: userID)
+        .where('userDetails.userId', isEqualTo: userId)
         .orderBy('paymentDetails.createdAt', descending: true)
         .snapshots()
         .map(getOrdersFromDatabase);
@@ -28,7 +28,7 @@ class OrderServices {
         final dynamic data = doc.data();
         return OrderModel(
           userID: data['userDetails']['userID'],
-          locationID: data['locationDetails']['locationID'],
+          locationId: data['locationDetails']['locationId'],
           pointsEarned: data['pointsDetails']['pointsEarned'],
           pointsRedeemed: data['pointsDetails']['pointsRedeemed'],
           orderNumber: data['orderDetails']['orderNumber'],

@@ -1,12 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:jus_mobile_order_app/Helpers/error.dart';
-import 'package:jus_mobile_order_app/Helpers/loading.dart';
-import 'package:jus_mobile_order_app/Helpers/utilities.dart';
 import 'package:jus_mobile_order_app/Models/product_model.dart';
 import 'package:jus_mobile_order_app/Providers/product_providers.dart';
-import 'package:jus_mobile_order_app/Providers/stream_providers.dart';
 import 'package:jus_mobile_order_app/Providers/theme_providers.dart';
 
 class CategorySelector extends HookConsumerWidget {
@@ -15,60 +11,50 @@ class CategorySelector extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final backgroundColor = ref.watch(backgroundColorProvider);
-    final products = PlatformUtils.isIOS() || PlatformUtils.isAndroid()
-        ? ref.watch(taxableProductsProvider)
-        : ref.watch(productsProvider);
+    final products = ref.watch(allProductsProvider);
     final currentCategory = ref.watch(currentCategoryProvider);
     final controller = useScrollController();
-
+    final filteredList = filterCategoryDuplicates(products);
     return SizedBox(
       height: 40,
-      child: products.when(
-        loading: () => const Loading(),
-        error: (e, _) => ShowError(error: e.toString()),
-        data: (product) {
-          final filteredList = filterCategoryDuplicates(product);
-          return ListView.builder(
-            physics: const ClampingScrollPhysics(),
-            controller: controller,
-            scrollDirection: Axis.horizontal,
-            itemCount: filteredList.length,
-            itemBuilder: (context, index) {
-              _scrollToCategory(
-                  ref, filteredList, index, currentCategory, controller);
-              return InkWell(
-                onTap: () {
-                  ref.read(scrollSourceProvider.notifier).state = 'tapped';
-                  ref.read(tappedCategoryProvider.notifier).state =
-                      filteredList[index]['order'];
-                  ref.read(currentCategoryProvider.notifier).state =
-                      filteredList[index]['order'];
-                },
-                child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 20),
-                  decoration: BoxDecoration(
-                    border: Border(
-                      bottom: BorderSide(
-                        color: currentCategory == filteredList[index]['order']
-                            ? Colors.black
-                            : backgroundColor,
-                      ),
-                    ),
-                  ),
-                  child: Center(
-                    child: Text(
-                      filteredList[index]['category'],
-                      style: TextStyle(
-                        fontWeight:
-                            currentCategory == filteredList[index]['order']
-                                ? FontWeight.bold
-                                : FontWeight.normal,
-                      ),
-                    ),
+      child: ListView.builder(
+        physics: const ClampingScrollPhysics(),
+        controller: controller,
+        scrollDirection: Axis.horizontal,
+        itemCount: filteredList.length,
+        itemBuilder: (context, index) {
+          _scrollToCategory(
+              ref, filteredList, index, currentCategory, controller);
+          return InkWell(
+            onTap: () {
+              ref.read(scrollSourceProvider.notifier).state = 'tapped';
+              ref.read(tappedCategoryProvider.notifier).state =
+                  filteredList[index]['order'];
+              ref.read(currentCategoryProvider.notifier).state =
+                  filteredList[index]['order'];
+            },
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              decoration: BoxDecoration(
+                border: Border(
+                  bottom: BorderSide(
+                    color: currentCategory == filteredList[index]['order']
+                        ? Colors.black
+                        : backgroundColor,
                   ),
                 ),
-              );
-            },
+              ),
+              child: Center(
+                child: Text(
+                  filteredList[index]['category'],
+                  style: TextStyle(
+                    fontWeight: currentCategory == filteredList[index]['order']
+                        ? FontWeight.bold
+                        : FontWeight.normal,
+                  ),
+                ),
+              ),
+            ),
           );
         },
       ),

@@ -19,8 +19,13 @@ class OrdersProviderWidget extends ConsumerWidget {
     return orders.when(
       error: (e, _) =>
           error ??
-          ShowError(
-            error: e.toString(),
+          const Padding(
+            padding: EdgeInsets.symmetric(vertical: 40.0),
+            child:
+            ShowError(
+              error:
+              'We are unable to show your transaction history at the moment. Please try again later',
+            ),
           ),
       loading: () => loading ?? const Loading(),
       data: (orders) => builder(orders),

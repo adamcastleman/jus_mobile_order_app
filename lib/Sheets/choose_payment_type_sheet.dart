@@ -3,18 +3,18 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:jus_mobile_order_app/Helpers/divider.dart';
 import 'package:jus_mobile_order_app/Helpers/enums.dart';
-import 'package:jus_mobile_order_app/Helpers/modal_bottom_sheets.dart';
+import 'package:jus_mobile_order_app/Helpers/error.dart';
+import 'package:jus_mobile_order_app/Helpers/navigation.dart';
+import 'package:jus_mobile_order_app/Helpers/payment_methods.dart';
 import 'package:jus_mobile_order_app/Helpers/points.dart';
+import 'package:jus_mobile_order_app/Helpers/utilities.dart';
 import 'package:jus_mobile_order_app/Providers/ProviderWidgets/credit_card_provider_widget.dart';
-import 'package:jus_mobile_order_app/Providers/ProviderWidgets/points_details_provider_widget.dart';
-import 'package:jus_mobile_order_app/Providers/ProviderWidgets/wallet_provider_widget.dart';
+import 'package:jus_mobile_order_app/Providers/loading_providers.dart';
 import 'package:jus_mobile_order_app/Providers/payments_providers.dart';
 import 'package:jus_mobile_order_app/Providers/stream_providers.dart';
-import 'package:jus_mobile_order_app/Services/payments_services_square.dart';
 import 'package:jus_mobile_order_app/Sheets/create_wallet_sheet.dart';
-import 'package:jus_mobile_order_app/Sheets/invalid_sheet_single_pop.dart';
-import 'package:jus_mobile_order_app/Views/register_page.dart';
 import 'package:jus_mobile_order_app/Widgets/General/sheet_notch.dart';
+import 'package:jus_mobile_order_app/Widgets/Icons/chevron_right_with_loading_icon.dart';
 import 'package:jus_mobile_order_app/Widgets/Tiles/payment_option_tile.dart';
 
 class ChoosePaymentTypeSheet extends ConsumerWidget {
@@ -23,74 +23,93 @@ class ChoosePaymentTypeSheet extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final user = ref.watch(currentUserProvider).value!;
+    final creditCardKey = UniqueKey();
+    final walletKey = UniqueKey();
     return CreditCardProviderWidget(
-      builder: (creditCards) => WalletProviderWidget(
-        builder: (wallets) => PointsDetailsProviderWidget(
-          builder: (points) => Wrap(
-            children: [
-              const Center(
-                child: SheetNotch(),
-              ),
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: 30.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    JusDivider().thin(),
-                    PaymentOptionTile(
-                      icon: CupertinoIcons.creditcard,
-                      title: 'Add credit card',
-                      subtitle: user.uid == null
-                          ? null
-                          : Text(
-                              'Earn ${PointsHelper(ref: ref).pointsDisplayText(isWallet: false)}/\$1'),
-                      onTap: () {
-                        SquarePaymentServices()
-                            .inputSquareCreditCard(ref, user);
-                        Navigator.pop(context);
-                      },
+      builder: (creditCards) => Wrap(
+        children: [
+          PlatformUtils.isIOS() || PlatformUtils.isAndroid()
+              ? const Center(
+                  child: SheetNotch(),
+                )
+              : const SizedBox(),
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 30.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                PaymentOptionTile(
+                  icon: CupertinoIcons.creditcard,
+                  title: 'Add credit card',
+                  subtitle: user.uid == null
+                      ? null
+                      : Text(
+                          'Earn ${PointsHelper().pointsDisplayText(ref: ref, isWallet: false)}/\$1'),
+                  trailing: SizedBox(
+                    height: 20,
+                    width: 20,
+                    child: ChevronRightWithLoadingIcon(
+                      tileKey: creditCardKey,
                     ),
-                    JusDivider().thin(),
-                    PaymentOptionTile(
-                      icon: FontAwesomeIcons.wallet,
-                      title: 'Create Wallet',
-                      subtitle: user.uid == null
-                          ? const SizedBox()
-                          : Text(
-                              'Earn ${PointsHelper(ref: ref).pointsDisplayText(isWallet: true)}/\$1'),
-                      onTap: () async {
-                        ref.read(walletTypeProvider.notifier).state =
-                            WalletType.createWallet;
-                        if (user.uid == null) {
-                          ModalBottomSheet().fullScreen(
-                            context: context,
-                            builder: (context) => const RegisterPage(),
-                          );
-                        }
-                        if (creditCards.isEmpty) {
-                          ModalBottomSheet().partScreen(
-                            context: context,
-                            builder: (context) => const InvalidSheetSinglePop(
-                                error:
-                                    'Before creating a Wallet, please upload a payment method.'),
-                          );
-                        } else {
-                          ModalBottomSheet().partScreen(
-                            enableDrag: true,
-                            isScrollControlled: true,
-                            isDismissible: true,
-                            context: context,
-                            builder: (context) => const CreateWalletSheet(),
-                          );
+                  ),
+                  onTap: () {
+                    ref.read(tileKeyProvider.notifier).state = creditCardKey;
+                    PaymentMethodHelpers().addCreditCardAsSelectedPayment(
+                      context,
+                      ref,
+                      user,
+                      onSuccess: () {
+                        ref
+                            .read(squarePaymentSkdLoadingProvider.notifier)
+                            .state = false;
+                        if (PlatformUtils.isWeb()) {
+                          Navigator.pop(context);
+                          Navigator.pop(context);
                         }
                       },
-                    ),
-                  ],
+                    );
+                  },
                 ),
-              ),
-            ],
+                JusDivider.thin(),
+                PaymentOptionTile(
+                  icon: FontAwesomeIcons.wallet,
+                  title: 'Create Wallet',
+                  subtitle: user.uid == null
+                      ? const SizedBox()
+                      : Text(
+                          'Earn ${PointsHelper().pointsDisplayText(ref: ref, isWallet: true)}/\$1'),
+                  trailing: SizedBox(
+                    height: 20,
+                    width: 20,
+                    child: ChevronRightWithLoadingIcon(
+                      tileKey: walletKey,
+                    ),
+                  ),
+                  onTap: () async {
+                    ref.read(walletTypeProvider.notifier).state =
+                        WalletType.createWallet;
+                    PaymentMethodHelpers().validateCreateWalletSheet(
+                        user: user,
+                        paymentSources: creditCards,
+                        onGuest: () =>
+                            NavigationHelpers.navigateToRegisterPage(context),
+                        onEmptyPaymentSource: () =>
+                            ErrorHelpers.showSinglePopError(
+                              context,
+                              error:
+                                  'To create a Wallet, you must have a card on file.',
+                            ),
+                        onSuccess: () =>
+                            NavigationHelpers.navigateToPartScreenSheetOrDialog(
+                              context,
+                              const CreateWalletSheet(),
+                            ));
+                  },
+                ),
+              ],
+            ),
           ),
-        ),
+        ],
       ),
     );
   }

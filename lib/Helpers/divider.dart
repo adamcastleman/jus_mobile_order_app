@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 
 class JusDivider {
-  thick() {
+  static thick() {
     return const Divider(
       color: Colors.black,
       thickness: 0.5,
     );
   }
 
-  thin() {
+  static thin() {
     return const Divider(
       thickness: 0.5,
     );

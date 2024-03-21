@@ -3,10 +3,9 @@ import 'package:flutter/services.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:jus_mobile_order_app/Helpers/divider.dart';
 import 'package:jus_mobile_order_app/Helpers/enums.dart';
-import 'package:jus_mobile_order_app/Helpers/modal_bottom_sheets.dart';
+import 'package:jus_mobile_order_app/Helpers/navigation.dart';
 import 'package:jus_mobile_order_app/Helpers/spacing_widgets.dart';
-import 'package:jus_mobile_order_app/Providers/ProviderWidgets/points_details_provider_widget.dart';
-import 'package:jus_mobile_order_app/Views/points_detail_page.dart';
+import 'package:jus_mobile_order_app/Providers/points_providers.dart';
 import 'package:jus_mobile_order_app/Widgets/Buttons/info_button.dart';
 
 class WalletSheetHeader extends ConsumerWidget {
@@ -15,6 +14,7 @@ class WalletSheetHeader extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final points = ref.watch(pointsInformationProvider);
     String headerText;
 
     if (walletType == WalletType.createWallet) {
@@ -24,54 +24,50 @@ class WalletSheetHeader extends ConsumerWidget {
     } else {
       headerText = 'Load Wallet and Pay';
     }
-    return PointsDetailsProviderWidget(
-      builder: (points) => Center(
-        child: Padding(
-          padding: const EdgeInsets.only(
-            top: 8.0,
-            bottom: 12.0,
-          ),
-          child: Column(
-            children: [
-              Padding(
-                padding: const EdgeInsets.only(bottom: 4.0),
-                child: Text(
-                  headerText,
-                  style: const TextStyle(
-                    fontSize: 20,
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.only(
+          top: 8.0,
+          bottom: 12.0,
+        ),
+        child: Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.only(bottom: 4.0),
+              child: Text(
+                headerText,
+                style: const TextStyle(
+                  fontSize: 20,
+                ),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.only(bottom: 8.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    'Earn up to ${points.walletPointsPerDollarMember}x points per \$1',
+                    style: const TextStyle(
+                      fontSize: 13,
+                    ),
                   ),
-                ),
+                  Spacing.horizontal(5),
+                  InfoButton(
+                    size: 16,
+                    onTap: () {
+                      HapticFeedback.lightImpact();
+                      NavigationHelpers.navigateToPointsInformationPage(
+                        context,
+                        ref,
+                      );
+                    },
+                  ),
+                ],
               ),
-              Padding(
-                padding: const EdgeInsets.only(bottom: 8.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      'Earn up to ${points.walletPointsPerDollarMember}x points per \$1',
-                      style: const TextStyle(
-                        fontSize: 13,
-                      ),
-                    ),
-                    Spacing.horizontal(5),
-                    InfoButton(
-                      size: 16,
-                      onTap: () {
-                        HapticFeedback.lightImpact();
-                        ModalBottomSheet().fullScreen(
-                          context: context,
-                          builder: (context) => const PointsDetailPage(
-                            closeButton: true,
-                          ),
-                        );
-                      },
-                    ),
-                  ],
-                ),
-              ),
-              JusDivider().thin(),
-            ],
-          ),
+            ),
+            JusDivider.thin(),
+          ],
         ),
       ),
     );

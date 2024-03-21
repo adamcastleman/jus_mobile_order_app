@@ -4,11 +4,10 @@ import 'package:flutter/services.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:jus_mobile_order_app/Helpers/Validators/address_validators.dart';
-import 'package:jus_mobile_order_app/Helpers/modal_bottom_sheets.dart';
+import 'package:jus_mobile_order_app/Helpers/error.dart';
 import 'package:jus_mobile_order_app/Helpers/spacing_widgets.dart';
 import 'package:jus_mobile_order_app/Providers/auth_providers.dart';
 import 'package:jus_mobile_order_app/Providers/loading_providers.dart';
-import 'package:jus_mobile_order_app/Sheets/invalid_sheet_single_pop.dart';
 import 'package:jus_mobile_order_app/Widgets/Buttons/close_button.dart';
 import 'package:jus_mobile_order_app/Widgets/Buttons/elevated_button_medium.dart';
 import 'package:jus_mobile_order_app/Widgets/Buttons/elevated_button_medium_loading.dart';
@@ -75,7 +74,7 @@ class DeleteAccountFormSheet extends HookConsumerWidget {
                       ),
                       Spacing.horizontal(20),
                       SizedBox(
-                        width: MediaQuery.of(context).size.width * 0.2,
+                        width: 100,
                         child: Column(
                           children: [
                             JusTextField(ref: ref).state(
@@ -106,18 +105,13 @@ class DeleteAccountFormSheet extends HookConsumerWidget {
                                 Navigator.pop(context);
                                 Navigator.pop(context);
                                 Navigator.pop(context);
-                                ToastHelper().showToast(
+                                ToastHelper.showToast(
                                     message: 'We have received your request');
                               }, onError: (error) {
-                                ModalBottomSheet().partScreen(
-                                    enableDrag: false,
-                                    isScrollControlled: false,
-                                    isDismissible: false,
-                                    context: context,
-                                    builder: (context) =>
-                                        const InvalidSheetSinglePop(
-                                            error:
-                                                'There was an error sending this request. Please try again.'));
+                                ErrorHelpers.showSinglePopError(context,
+                                    error:
+                                        'There was an error sending this request. Please try again.');
+
                                 ref.read(loadingProvider.notifier).state =
                                     false;
                               });

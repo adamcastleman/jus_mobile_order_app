@@ -7,11 +7,12 @@ const processGiftCardPayment = async (giftCardMap) => {
 
   try {
     const response = await client.paymentsApi.createPayment({
-      sourceId: "cnon:card-nonce-ok",
-      orderId: giftCardMap.paymentDetails.orderId,
+      sourceId: giftCardMap.paymentDetails.cardId,
+      orderId: giftCardMap.orderDetails.orderNumber,
+      customerId: giftCardMap.userDetails.squareCustomerId,
       idempotencyKey: uuidv4(),
       amountMoney: {
-        amount: giftCardMap.paymentDetails.amount,
+        amount: giftCardMap.paymentDetails.amount.toString(),
         currency: giftCardMap.paymentDetails.currency,
       },
     });
@@ -22,6 +23,7 @@ const processGiftCardPayment = async (giftCardMap) => {
 
     return JSON.parse(response.body);
   } catch (error) {
+    throw error;
     console.log(error.message);
     console.log("Error processing gift card transaction:", error);
     return null;

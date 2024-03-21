@@ -2,14 +2,14 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:jus_mobile_order_app/Helpers/locations.dart';
+import 'package:jus_mobile_order_app/Helpers/navigation.dart';
 import 'package:jus_mobile_order_app/Helpers/points.dart';
 import 'package:jus_mobile_order_app/Helpers/set_standard_ingredients.dart';
 import 'package:jus_mobile_order_app/Models/points_details_model.dart';
 import 'package:jus_mobile_order_app/Models/product_model.dart';
-import 'package:jus_mobile_order_app/Providers/ProviderWidgets/points_details_provider_widget.dart';
 import 'package:jus_mobile_order_app/Providers/ProviderWidgets/product_quantity_limit_provider.dart';
 import 'package:jus_mobile_order_app/Providers/location_providers.dart';
+import 'package:jus_mobile_order_app/Providers/points_providers.dart';
 import 'package:jus_mobile_order_app/Providers/product_providers.dart';
 import 'package:jus_mobile_order_app/Providers/theme_providers.dart';
 import 'package:jus_mobile_order_app/Widgets/General/selection_incrementor.dart';
@@ -17,11 +17,11 @@ import 'package:jus_mobile_order_app/constants.dart';
 
 class OrderTileEditRow extends ConsumerWidget {
   final int index;
-  final ProductModel currentProduct;
+  final ProductModel product;
   final Function close;
   const OrderTileEditRow(
       {required this.index,
-      required this.currentProduct,
+      required this.product,
       required this.close,
       super.key});
 
@@ -29,80 +29,78 @@ class OrderTileEditRow extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final backgroundColor = ref.watch(backgroundColorProvider);
     final currentOrder = ref.watch(currentOrderItemsProvider);
+    final points = ref.watch(pointsInformationProvider);
     return ProductQuantityLimitProviderWidget(
-      productUID: currentProduct.uid,
-      builder: (quantity) => PointsDetailsProviderWidget(
-        builder: (points) => Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            currentProduct.isScheduled
-                ? const SizedBox()
-                : SelectionIncrementer(
-                    verticalPadding: 0,
-                    horizontalPadding: 0,
-                    buttonSpacing: 10,
-                    iconSize: 22,
-                    quantityRadius: 15,
-                    quantity: '${currentOrder[index]['itemQuantity']}x',
-                    onAdd: () {
-                      if (quantity.quantityLimit == 0 ||
-                          (quantity.quantityLimit != null &&
-                              currentOrder[index]['itemQuantity'] <
-                                  quantity.quantityLimit)) {
-                        addSingleQuantityCost(ref, currentProduct, points);
-                        addSingleQuantityItem(ref);
-                      }
-                    },
-                    onRemove: () {
-                      removeSingleQuantityCost(ref);
-                      removeSingleQuantityItem(ref);
-                    },
-                  ),
-            Row(
-              children: [
-                !currentProduct.isScheduled &&
-                        (!currentProduct.isModifiable &&
-                            !currentProduct.hasToppings)
-                    ? const SizedBox()
-                    : Padding(
-                        padding: const EdgeInsets.only(right: 12.0),
-                        child: InkWell(
-                          onTap: () => handleEditTap(context, ref),
+      productUID: product.uid,
+      builder: (quantity) => Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          product.isScheduled
+              ? const SizedBox()
+              : SelectionIncrementer(
+                  verticalPadding: 0,
+                  horizontalPadding: 0,
+                  buttonSpacing: 10,
+                  iconSize: 22,
+                  quantityRadius: 15,
+                  quantity: '${currentOrder[index]['itemQuantity']}x',
+                  onAdd: () {
+                    if (quantity.quantityLimit == 0 ||
+                        (quantity.quantityLimit != null &&
+                            currentOrder[index]['itemQuantity'] <
+                                quantity.quantityLimit)) {
+                      addSingleQuantityCost(ref, points);
+                      addSingleQuantityItem(ref);
+                    }
+                  },
+                  onRemove: () {
+                    removeSingleQuantityCost(ref);
+                    removeSingleQuantityItem(ref);
+                  },
+                ),
+          Row(
+            children: [
+              !product.isScheduled &&
+                      (!product.isModifiable && !product.hasToppings)
+                  ? const SizedBox()
+                  : Padding(
+                      padding: const EdgeInsets.only(right: 12.0),
+                      child: InkWell(
+                        onTap: () => handleEditTap(context, ref),
+                        child: CircleAvatar(
+                          radius: 16,
+                          backgroundColor: Colors.black,
                           child: CircleAvatar(
-                            radius: 16,
-                            backgroundColor: Colors.black,
-                            child: CircleAvatar(
-                              radius: 15.5,
-                              backgroundColor: backgroundColor,
-                              child: const Icon(
-                                FontAwesomeIcons.pencil,
-                                color: Colors.black,
-                                size: 16,
-                              ),
+                            radius: 15.5,
+                            backgroundColor: backgroundColor,
+                            child: const Icon(
+                              FontAwesomeIcons.pencil,
+                              color: Colors.black,
+                              size: 16,
                             ),
                           ),
                         ),
                       ),
-                InkWell(
-                  onTap: () => handleDeleteTap(ref),
+                    ),
+              InkWell(
+                onTap: () => handleDeleteTap(ref),
+                child: CircleAvatar(
+                  radius: 16,
+                  backgroundColor: Colors.red,
                   child: CircleAvatar(
-                    radius: 16,
-                    backgroundColor: Colors.red,
-                    child: CircleAvatar(
-                      radius: 15.5,
-                      backgroundColor: backgroundColor,
-                      child: const Icon(
-                        CupertinoIcons.trash,
-                        color: Colors.red,
-                        size: 16,
-                      ),
+                    radius: 15.5,
+                    backgroundColor: backgroundColor,
+                    child: const Icon(
+                      CupertinoIcons.trash,
+                      color: Colors.red,
+                      size: 16,
                     ),
                   ),
                 ),
-              ],
-            ),
-          ],
-        ),
+              ),
+            ],
+          ),
+        ],
       ),
     );
   }
@@ -111,8 +109,8 @@ class OrderTileEditRow extends ConsumerWidget {
     BuildContext context,
     WidgetRef ref,
   ) {
-    if (ref.read(selectedLocationProvider) == null) {
-      LocationHelper().chooseLocation(context, ref);
+    if (ref.read(selectedLocationProvider).uid.isEmpty) {
+      NavigationHelpers().navigateToLocationPage(context, ref);
     } else {
       setItemIndex(ref);
       setItemVariation(ref);
@@ -127,18 +125,17 @@ class OrderTileEditRow extends ConsumerWidget {
     removeItemFromCart(ref);
   }
 
-  addSingleQuantityCost(
-      WidgetRef ref, ProductModel currentProduct, PointsDetailsModel points) {
+  addSingleQuantityCost(WidgetRef ref, PointsDetailsModel points) {
     final currentOrder = ref.watch(currentOrderItemsProvider);
     final extraCharge = currentOrder[index]['selectedIngredients']
         .fold(0, (sum, item) => sum + double.tryParse(item['price'] ?? 0.0));
     final extraChargeMembers = currentOrder[index]['selectedIngredients'].fold(
         0, (sum, item) => sum + double.tryParse(item['memberPrice'] ?? 0.0));
-    final nonMemberVariations = currentProduct.variations
+    final nonMemberVariations = product.variations
         .where(
             (element) => element['customerType'] == AppConstants.nonMemberType)
         .toList();
-    final memberVariations = currentProduct.variations
+    final memberVariations = product.variations
         .where((element) => element['customerType'] == AppConstants.memberType)
         .toList();
     final nonMemberAmount =
@@ -149,8 +146,8 @@ class OrderTileEditRow extends ConsumerWidget {
     return ref.read(currentOrderCostProvider.notifier).addCost({
       'itemPriceNonMember': nonMemberAmount + extraCharge,
       'itemPriceMember': memberAmount + extraChargeMembers,
-      'points': PointsHelper(ref: ref)
-          .getPointValue(currentProduct.productID, points.rewardsAmounts),
+      'points': PointsHelper()
+          .getPointValue(product.productId, points.rewardsAmounts),
       'itemKey': currentOrder[index]['itemKey'],
       'productID': currentOrder[index]['productID'],
       'memberPrice': memberAmount + extraChargeMembers,
@@ -180,13 +177,13 @@ class OrderTileEditRow extends ConsumerWidget {
   addSingleQuantityItem(WidgetRef ref) {
     return ref
         .read(currentOrderItemsProvider.notifier)
-        .addItemQuantity(currentProduct, index);
+        .addItemQuantity(product, index);
   }
 
   removeSingleQuantityItem(WidgetRef ref) {
     return ref
         .read(currentOrderItemsProvider.notifier)
-        .removeItemQuantity(currentProduct, index);
+        .removeItemQuantity(product, index);
   }
 
   setItemVariation(WidgetRef ref) {
@@ -201,7 +198,7 @@ class OrderTileEditRow extends ConsumerWidget {
           : currentOrder[index]['selectedIngredients'];
     }
     ref.read(selectedIngredientsProvider.notifier).addIngredients(ingredients);
-    StandardIngredients(ref: ref).set(currentProduct);
+    StandardIngredients(ref: ref).set(product);
     ref
         .read(itemQuantityProvider.notifier)
         .set(currentOrder[index]['itemQuantity']);
@@ -240,7 +237,7 @@ class OrderTileEditRow extends ConsumerWidget {
   nonMemberCostTotal(WidgetRef ref) {
     final currentOrderItem = ref.watch(currentOrderItemsProvider);
     double extraCharge = 0.0;
-    final nonMemberAmount = currentProduct.variations.firstWhere(
+    final nonMemberAmount = product.variations.firstWhere(
             (element) => element['customerType'] == AppConstants.nonMemberType)[
         currentOrderItem[index]['itemSize']]['amount'];
 
@@ -258,7 +255,7 @@ class OrderTileEditRow extends ConsumerWidget {
   memberCostTotal(WidgetRef ref) {
     final currentOrderItem = ref.watch(currentOrderItemsProvider);
     double extraCharge = 0.0;
-    final memberAmount = currentProduct.variations.firstWhere((element) =>
+    final memberAmount = product.variations.firstWhere((element) =>
         element['customerType'] ==
         AppConstants.memberType)[currentOrderItem[index]['itemSize']]['amount'];
 

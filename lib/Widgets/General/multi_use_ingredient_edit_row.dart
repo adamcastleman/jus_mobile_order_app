@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:jus_mobile_order_app/Helpers/modal_bottom_sheets.dart';
+import 'package:jus_mobile_order_app/Helpers/enums.dart';
+import 'package:jus_mobile_order_app/Helpers/navigation.dart';
 import 'package:jus_mobile_order_app/Models/ingredient_model.dart';
 import 'package:jus_mobile_order_app/Providers/product_providers.dart';
 import 'package:jus_mobile_order_app/Providers/stream_providers.dart';
@@ -21,7 +22,8 @@ class MultiUseIngredientEditRow extends ConsumerWidget {
       padding:
           const EdgeInsets.only(top: 8.0, right: 8.0, bottom: 8.0, left: 14.0),
       child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-        (user.uid == null || !user.isActiveMember!) &&
+        (user.uid == null ||
+                    user.subscriptionStatus != SubscriptionStatus.active) &&
                 selectedIngredients[index]['isExtraCharge']
             ? Text(
                 '\$${(double.parse(selectedIngredients[index]['price']) / 100).toStringAsFixed(2)}')
@@ -39,7 +41,7 @@ class MultiUseIngredientEditRow extends ConsumerWidget {
           onTap: () {
             ref.read(currentIngredientExtraChargeProvider.notifier).state =
                 currentIngredient.isExtraCharge;
-            ref.read(currentIngredientIDProvider.notifier).state =
+            ref.read(currentIngredientIdProvider.notifier).state =
                 selectedIngredients[index]['id'];
             ref.read(currentIngredientIndexProvider.notifier).state = index;
             ref
@@ -52,14 +54,13 @@ class MultiUseIngredientEditRow extends ConsumerWidget {
                 currentIngredient.isBlended &&
                 !currentIngredient.isExtraCharge) {
               ref.read(currentIngredientBlendedProvider.notifier).state =
-                  selectedIngredients[index]['blended'];
+                  selectedIngredients[index]['blended'] == 0 ? true : false;
               ref.read(currentIngredientToppingProvider.notifier).state =
-                  selectedIngredients[index]['topping'];
+                  selectedIngredients[index]['topping'] == 0 ? true : false;
             }
-
-            ModalBottomSheet().partScreen(
-              context: context,
-              builder: (context) => const MultiUseIngredientSelectionSheet(),
+            NavigationHelpers.navigateToPartScreenSheetOrDialog(
+              context,
+              const MultiUseIngredientSelectionSheet(),
             );
           },
         ),

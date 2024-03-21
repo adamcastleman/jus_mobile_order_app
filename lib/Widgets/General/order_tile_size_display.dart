@@ -3,7 +3,6 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:jus_mobile_order_app/Helpers/spacing_widgets.dart';
 import 'package:jus_mobile_order_app/Models/product_model.dart';
 import 'package:jus_mobile_order_app/Providers/ProviderWidgets/product_quantity_limit_provider.dart';
-import 'package:jus_mobile_order_app/constants.dart';
 
 import '../../Providers/product_providers.dart';
 
@@ -17,12 +16,7 @@ class OrderTileSizeDisplay extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     TextStyle style = const TextStyle(fontSize: 13);
     final currentOrder = ref.watch(currentOrderItemsProvider);
-    final nonMemberProductVariation = currentProduct.variations
-        .where(
-            (element) => element['customerType'] == AppConstants.nonMemberType)
-        .toList();
-    final itemSizeName =
-        nonMemberProductVariation[currentOrder[orderIndex]['itemSize']]['name'];
+    final itemSizeName = currentOrder[orderIndex]['itemSizeName'];
     if (!currentProduct.isScheduled &&
         (!currentProduct.isModifiable && !currentProduct.hasToppings)) {
       return const SizedBox();

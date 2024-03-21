@@ -3,11 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_calendar_carousel/flutter_calendar_carousel.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:intl/intl.dart';
-import 'package:jus_mobile_order_app/Helpers/modal_bottom_sheets.dart';
+import 'package:jus_mobile_order_app/Helpers/error.dart';
 import 'package:jus_mobile_order_app/Providers/ProviderWidgets/location_provider_widget.dart';
 import 'package:jus_mobile_order_app/Providers/location_providers.dart';
 import 'package:jus_mobile_order_app/Providers/order_providers.dart';
-import 'package:jus_mobile_order_app/Sheets/invalid_sheet_single_pop.dart';
 
 class SelectDateCalendar extends ConsumerWidget {
   const SelectDateCalendar({super.key});
@@ -34,21 +33,16 @@ class SelectDateCalendar extends ConsumerWidget {
         onDayPressed: (value, list) {
           List dates = locations
               .firstWhere((element) =>
-                  element.locationID == selectedLocation.locationID)
+                  element.locationId == selectedLocation.locationId)
               .blackoutDates;
 
           for (var date in dates) {
             var formattedDate = DateFormat('MM/dd').parse(date);
             if (value.month == formattedDate.month &&
                 value.day == formattedDate.day) {
-              ModalBottomSheet().partScreen(
-                  isScrollControlled: true,
-                  enableDrag: true,
-                  isDismissible: true,
-                  context: context,
-                  builder: (context) => const InvalidSheetSinglePop(
-                      error:
-                          'This date is unavailable for pickup at this location. Please select another date.'));
+              ErrorHelpers.showSinglePopError(context,
+                  error:
+                      'This date is unavailable for pickup at this location. Please select another date.');
               return;
             }
           }

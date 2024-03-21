@@ -12,11 +12,11 @@ part of 'image_model.dart';
 T _$identity<T>(T value) => value;
 
 final _privateConstructorUsedError = UnsupportedError(
-    'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#custom-getters-and-methods');
+    'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models');
 
 /// @nodoc
 mixin _$ImageModel {
-  String get url => throw _privateConstructorUsedError;
+  Map<dynamic, dynamic> get images => throw _privateConstructorUsedError;
 
   @JsonKey(ignore: true)
   $ImageModelCopyWith<ImageModel> get copyWith =>
@@ -29,7 +29,7 @@ abstract class $ImageModelCopyWith<$Res> {
           ImageModel value, $Res Function(ImageModel) then) =
       _$ImageModelCopyWithImpl<$Res, ImageModel>;
   @useResult
-  $Res call({String url});
+  $Res call({Map<dynamic, dynamic> images});
 }
 
 /// @nodoc
@@ -45,13 +45,13 @@ class _$ImageModelCopyWithImpl<$Res, $Val extends ImageModel>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? url = null,
+    Object? images = null,
   }) {
     return _then(_value.copyWith(
-      url: null == url
-          ? _value.url
-          : url // ignore: cast_nullable_to_non_nullable
-              as String,
+      images: null == images
+          ? _value.images
+          : images // ignore: cast_nullable_to_non_nullable
+              as Map<dynamic, dynamic>,
     ) as $Val);
   }
 }
@@ -64,7 +64,7 @@ abstract class _$$ImageModelImplCopyWith<$Res>
       __$$ImageModelImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({String url});
+  $Res call({Map<dynamic, dynamic> images});
 }
 
 /// @nodoc
@@ -78,13 +78,13 @@ class __$$ImageModelImplCopyWithImpl<$Res>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? url = null,
+    Object? images = null,
   }) {
     return _then(_$ImageModelImpl(
-      url: null == url
-          ? _value.url
-          : url // ignore: cast_nullable_to_non_nullable
-              as String,
+      images: null == images
+          ? _value._images
+          : images // ignore: cast_nullable_to_non_nullable
+              as Map<dynamic, dynamic>,
     ));
   }
 }
@@ -92,26 +92,33 @@ class __$$ImageModelImplCopyWithImpl<$Res>
 /// @nodoc
 
 class _$ImageModelImpl implements _ImageModel {
-  const _$ImageModelImpl({required this.url});
+  const _$ImageModelImpl({required final Map<dynamic, dynamic> images})
+      : _images = images;
 
+  final Map<dynamic, dynamic> _images;
   @override
-  final String url;
+  Map<dynamic, dynamic> get images {
+    if (_images is EqualUnmodifiableMapView) return _images;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableMapView(_images);
+  }
 
   @override
   String toString() {
-    return 'ImageModel(url: $url)';
+    return 'ImageModel(images: $images)';
   }
 
   @override
-  bool operator ==(dynamic other) {
+  bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$ImageModelImpl &&
-            (identical(other.url, url) || other.url == url));
+            const DeepCollectionEquality().equals(other._images, _images));
   }
 
   @override
-  int get hashCode => Object.hash(runtimeType, url);
+  int get hashCode =>
+      Object.hash(runtimeType, const DeepCollectionEquality().hash(_images));
 
   @JsonKey(ignore: true)
   @override
@@ -121,10 +128,11 @@ class _$ImageModelImpl implements _ImageModel {
 }
 
 abstract class _ImageModel implements ImageModel {
-  const factory _ImageModel({required final String url}) = _$ImageModelImpl;
+  const factory _ImageModel({required final Map<dynamic, dynamic> images}) =
+      _$ImageModelImpl;
 
   @override
-  String get url;
+  Map<dynamic, dynamic> get images;
   @override
   @JsonKey(ignore: true)
   _$$ImageModelImplCopyWith<_$ImageModelImpl> get copyWith =>

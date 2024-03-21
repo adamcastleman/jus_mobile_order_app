@@ -12,17 +12,17 @@ part of 'payments_model.dart';
 T _$identity<T>(T value) => value;
 
 final _privateConstructorUsedError = UnsupportedError(
-    'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#custom-getters-and-methods');
+    'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models');
 
 /// @nodoc
 mixin _$PaymentsModel {
-  String get uid => throw _privateConstructorUsedError;
-  String get userID => throw _privateConstructorUsedError;
+  String get userId => throw _privateConstructorUsedError;
   String get brand => throw _privateConstructorUsedError;
   String get last4 => throw _privateConstructorUsedError;
   bool get defaultPayment => throw _privateConstructorUsedError;
   String get cardNickname => throw _privateConstructorUsedError;
   bool get isWallet => throw _privateConstructorUsedError;
+  String? get uid => throw _privateConstructorUsedError;
   String? get cardId => throw _privateConstructorUsedError;
   String? get expirationMonth => throw _privateConstructorUsedError;
   String? get expirationYear => throw _privateConstructorUsedError;
@@ -41,13 +41,13 @@ abstract class $PaymentsModelCopyWith<$Res> {
       _$PaymentsModelCopyWithImpl<$Res, PaymentsModel>;
   @useResult
   $Res call(
-      {String uid,
-      String userID,
+      {String userId,
       String brand,
       String last4,
       bool defaultPayment,
       String cardNickname,
       bool isWallet,
+      String? uid,
       String? cardId,
       String? expirationMonth,
       String? expirationYear,
@@ -68,13 +68,13 @@ class _$PaymentsModelCopyWithImpl<$Res, $Val extends PaymentsModel>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? uid = null,
-    Object? userID = null,
+    Object? userId = null,
     Object? brand = null,
     Object? last4 = null,
     Object? defaultPayment = null,
     Object? cardNickname = null,
     Object? isWallet = null,
+    Object? uid = freezed,
     Object? cardId = freezed,
     Object? expirationMonth = freezed,
     Object? expirationYear = freezed,
@@ -82,13 +82,9 @@ class _$PaymentsModelCopyWithImpl<$Res, $Val extends PaymentsModel>
     Object? balance = freezed,
   }) {
     return _then(_value.copyWith(
-      uid: null == uid
-          ? _value.uid
-          : uid // ignore: cast_nullable_to_non_nullable
-              as String,
-      userID: null == userID
-          ? _value.userID
-          : userID // ignore: cast_nullable_to_non_nullable
+      userId: null == userId
+          ? _value.userId
+          : userId // ignore: cast_nullable_to_non_nullable
               as String,
       brand: null == brand
           ? _value.brand
@@ -110,6 +106,10 @@ class _$PaymentsModelCopyWithImpl<$Res, $Val extends PaymentsModel>
           ? _value.isWallet
           : isWallet // ignore: cast_nullable_to_non_nullable
               as bool,
+      uid: freezed == uid
+          ? _value.uid
+          : uid // ignore: cast_nullable_to_non_nullable
+              as String?,
       cardId: freezed == cardId
           ? _value.cardId
           : cardId // ignore: cast_nullable_to_non_nullable
@@ -143,13 +143,13 @@ abstract class _$$PaymentsModelImplCopyWith<$Res>
   @override
   @useResult
   $Res call(
-      {String uid,
-      String userID,
+      {String userId,
       String brand,
       String last4,
       bool defaultPayment,
       String cardNickname,
       bool isWallet,
+      String? uid,
       String? cardId,
       String? expirationMonth,
       String? expirationYear,
@@ -168,13 +168,13 @@ class __$$PaymentsModelImplCopyWithImpl<$Res>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? uid = null,
-    Object? userID = null,
+    Object? userId = null,
     Object? brand = null,
     Object? last4 = null,
     Object? defaultPayment = null,
     Object? cardNickname = null,
     Object? isWallet = null,
+    Object? uid = freezed,
     Object? cardId = freezed,
     Object? expirationMonth = freezed,
     Object? expirationYear = freezed,
@@ -182,13 +182,9 @@ class __$$PaymentsModelImplCopyWithImpl<$Res>
     Object? balance = freezed,
   }) {
     return _then(_$PaymentsModelImpl(
-      uid: null == uid
-          ? _value.uid
-          : uid // ignore: cast_nullable_to_non_nullable
-              as String,
-      userID: null == userID
-          ? _value.userID
-          : userID // ignore: cast_nullable_to_non_nullable
+      userId: null == userId
+          ? _value.userId
+          : userId // ignore: cast_nullable_to_non_nullable
               as String,
       brand: null == brand
           ? _value.brand
@@ -210,6 +206,10 @@ class __$$PaymentsModelImplCopyWithImpl<$Res>
           ? _value.isWallet
           : isWallet // ignore: cast_nullable_to_non_nullable
               as bool,
+      uid: freezed == uid
+          ? _value.uid
+          : uid // ignore: cast_nullable_to_non_nullable
+              as String?,
       cardId: freezed == cardId
           ? _value.cardId
           : cardId // ignore: cast_nullable_to_non_nullable
@@ -238,13 +238,13 @@ class __$$PaymentsModelImplCopyWithImpl<$Res>
 
 class _$PaymentsModelImpl implements _PaymentsModel {
   const _$PaymentsModelImpl(
-      {required this.uid,
-      required this.userID,
+      {required this.userId,
       required this.brand,
       required this.last4,
       required this.defaultPayment,
       required this.cardNickname,
       required this.isWallet,
+      this.uid,
       this.cardId,
       this.expirationMonth,
       this.expirationYear,
@@ -252,9 +252,7 @@ class _$PaymentsModelImpl implements _PaymentsModel {
       this.balance});
 
   @override
-  final String uid;
-  @override
-  final String userID;
+  final String userId;
   @override
   final String brand;
   @override
@@ -265,6 +263,8 @@ class _$PaymentsModelImpl implements _PaymentsModel {
   final String cardNickname;
   @override
   final bool isWallet;
+  @override
+  final String? uid;
   @override
   final String? cardId;
   @override
@@ -278,16 +278,15 @@ class _$PaymentsModelImpl implements _PaymentsModel {
 
   @override
   String toString() {
-    return 'PaymentsModel(uid: $uid, userID: $userID, brand: $brand, last4: $last4, defaultPayment: $defaultPayment, cardNickname: $cardNickname, isWallet: $isWallet, cardId: $cardId, expirationMonth: $expirationMonth, expirationYear: $expirationYear, gan: $gan, balance: $balance)';
+    return 'PaymentsModel(userId: $userId, brand: $brand, last4: $last4, defaultPayment: $defaultPayment, cardNickname: $cardNickname, isWallet: $isWallet, uid: $uid, cardId: $cardId, expirationMonth: $expirationMonth, expirationYear: $expirationYear, gan: $gan, balance: $balance)';
   }
 
   @override
-  bool operator ==(dynamic other) {
+  bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$PaymentsModelImpl &&
-            (identical(other.uid, uid) || other.uid == uid) &&
-            (identical(other.userID, userID) || other.userID == userID) &&
+            (identical(other.userId, userId) || other.userId == userId) &&
             (identical(other.brand, brand) || other.brand == brand) &&
             (identical(other.last4, last4) || other.last4 == last4) &&
             (identical(other.defaultPayment, defaultPayment) ||
@@ -296,6 +295,7 @@ class _$PaymentsModelImpl implements _PaymentsModel {
                 other.cardNickname == cardNickname) &&
             (identical(other.isWallet, isWallet) ||
                 other.isWallet == isWallet) &&
+            (identical(other.uid, uid) || other.uid == uid) &&
             (identical(other.cardId, cardId) || other.cardId == cardId) &&
             (identical(other.expirationMonth, expirationMonth) ||
                 other.expirationMonth == expirationMonth) &&
@@ -308,13 +308,13 @@ class _$PaymentsModelImpl implements _PaymentsModel {
   @override
   int get hashCode => Object.hash(
       runtimeType,
-      uid,
-      userID,
+      userId,
       brand,
       last4,
       defaultPayment,
       cardNickname,
       isWallet,
+      uid,
       cardId,
       expirationMonth,
       expirationYear,
@@ -330,13 +330,13 @@ class _$PaymentsModelImpl implements _PaymentsModel {
 
 abstract class _PaymentsModel implements PaymentsModel {
   const factory _PaymentsModel(
-      {required final String uid,
-      required final String userID,
+      {required final String userId,
       required final String brand,
       required final String last4,
       required final bool defaultPayment,
       required final String cardNickname,
       required final bool isWallet,
+      final String? uid,
       final String? cardId,
       final String? expirationMonth,
       final String? expirationYear,
@@ -344,9 +344,7 @@ abstract class _PaymentsModel implements PaymentsModel {
       final int? balance}) = _$PaymentsModelImpl;
 
   @override
-  String get uid;
-  @override
-  String get userID;
+  String get userId;
   @override
   String get brand;
   @override
@@ -357,6 +355,8 @@ abstract class _PaymentsModel implements PaymentsModel {
   String get cardNickname;
   @override
   bool get isWallet;
+  @override
+  String? get uid;
   @override
   String? get cardId;
   @override

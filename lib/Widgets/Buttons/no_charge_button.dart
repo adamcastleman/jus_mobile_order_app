@@ -3,13 +3,14 @@ import 'package:flutter/services.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:jus_mobile_order_app/Helpers/orders.dart';
 import 'package:jus_mobile_order_app/Helpers/payments.dart';
+import 'package:jus_mobile_order_app/Models/user_model.dart';
 import 'package:jus_mobile_order_app/Providers/loading_providers.dart';
-import 'package:jus_mobile_order_app/Services/payments_services_square.dart';
+import 'package:jus_mobile_order_app/Services/payment_services.dart';
 import 'package:jus_mobile_order_app/Widgets/Buttons/elevated_button_large.dart';
 
 class NoChargePaymentButton extends ConsumerWidget {
-  final Map<String, dynamic> orderMap;
-  const NoChargePaymentButton({required this.orderMap, super.key});
+  final UserModel user;
+  const NoChargePaymentButton({required this.user, super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -17,23 +18,24 @@ class NoChargePaymentButton extends ConsumerWidget {
       buttonText: 'No Charge - Finish Checkout',
       onPressed: () {
         HapticFeedback.lightImpact();
-        var message = OrderHelpers(ref: ref).validateOrder(context);
+        var message = OrderHelpers.validateOrder(context, ref);
         if (message != null) {
-          OrderHelpers(ref: ref).showInvalidOrderModal(context, message);
+          OrderHelpers.showInvalidOrderModal(context, message);
         } else {
           ref.read(loadingProvider.notifier).state = true;
-          SquarePaymentServices().processPayment(
-            orderMap: orderMap,
+          final totals = PaymentsHelpers.generateOrderPricingDetails(ref, user);
+          final orderDetails =
+              PaymentsHelpers().generateOrderDetails(ref, user, totals);
+          PaymentServices.createOrderCloudFunction(
+            orderDetails: orderDetails,
             onPaymentSuccess: () {
-              ref.invalidate(loadingProvider);
-              ref.invalidate(applePayLoadingProvider);
               HapticFeedback.lightImpact();
-              PaymentsHelper().showPaymentSuccessModal(context);
+              invalidateLoadingProviders(ref);
+              PaymentsHelpers.showPaymentSuccessModal(context);
             },
             onError: (error) {
-              ref.invalidate(loadingProvider);
-              ref.invalidate(applePayLoadingProvider);
-              PaymentsHelper().showPaymentErrorModal(context, error);
+              invalidateLoadingProviders(ref);
+              PaymentsHelpers.showPaymentErrorModal(context, ref, error);
             },
           );
         }

@@ -4,8 +4,8 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:jus_mobile_order_app/Helpers/locations.dart';
-import 'package:jus_mobile_order_app/Helpers/utilities.dart';
 import 'package:jus_mobile_order_app/Models/location_model.dart';
+import 'package:jus_mobile_order_app/Providers/controller_providers.dart';
 import 'package:jus_mobile_order_app/Providers/location_providers.dart';
 import 'package:jus_mobile_order_app/Services/location_services.dart';
 import 'package:jus_mobile_order_app/Widgets/Map/map_marker_handler.dart';
@@ -17,44 +17,39 @@ class DisplayGoogleMap extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final selectedLocationLatLong = ref.watch(currentLocationLatLongProvider);
+    final mapController = ref.watch(googleMapControllerProvider);
     final mapStyle = useState<String?>(null);
     final markers = useState<Set<Marker>>({}); // State to store markers
-
-    final mapController = useState<GoogleMapController?>(null);
     final customIcon = useState<BitmapDescriptor?>(null);
     double initialZoom = 0;
-    if (PlatformUtils.isIOS() || PlatformUtils.isAndroid()) {
+    if (selectedLocationLatLong == AppConstants.renoNV) {
       initialZoom = 11.0;
+      // initialZoom = 3.0;
     } else {
-      initialZoom = 3.0;
+      initialZoom = 11.0;
     }
 
     useEffect(() {
-      if (PlatformUtils.isIOS() || PlatformUtils.isAndroid()) {
-        loadMapStyle('assets/map_style.txt').then((string) {
-          mapStyle.value = string;
-          if (mapController.value != null) {
-            mapController.value!.setMapStyle(string);
-          }
+      if (selectedLocationLatLong != AppConstants.renoNV) {
+        WidgetsBinding.instance.addPostFrameCallback((_) async {
+          await waitForMapControllerAndExecute(
+              ref, mapController, selectedLocationLatLong, markers);
         });
       }
+      _updateMarkers(ref, mapController, markers);
 
+      return null;
+    }, [selectedLocationLatLong]);
+
+    useEffect(() {
+      //This is the area where we could update the map theme
       createCustomMarker('assets/location_marker.png').then((icon) {
         customIcon.value = icon;
       });
       return () {
-        mapController.value?.dispose();
+        mapController?.dispose();
       };
     }, const []);
-
-    useEffect(() {
-      if (selectedLocationLatLong != AppConstants.centerOfUS) {
-        waitForMapControllerAndExecute(
-            ref, mapController, selectedLocationLatLong, markers);
-      }
-
-      return null;
-    }, [selectedLocationLatLong]);
 
     // When locationsWithinBounds updates, update the markers
     useEffect(
@@ -66,7 +61,7 @@ class DisplayGoogleMap extends HookConsumerWidget {
     );
 
     return GoogleMap(
-      padding: const EdgeInsets.only(left: 12.0, bottom: 18.0),
+      padding: const EdgeInsets.only(top: 40.0, left: 12.0, bottom: 18.0),
       zoomControlsEnabled: true,
       tiltGesturesEnabled: false,
       initialCameraPosition: CameraPosition(
@@ -80,10 +75,10 @@ class DisplayGoogleMap extends HookConsumerWidget {
       myLocationEnabled: true,
       myLocationButtonEnabled: false,
       mapToolbarEnabled: false,
+      compassEnabled: false,
       markers: markers.value,
       onMapCreated: (controller) {
         List<LocationModel> locationsWithinBounds;
-        mapController.value = controller;
         ref.read(googleMapControllerProvider.notifier).state = controller;
         controller.setMapStyle(mapStyle.value);
         Future.delayed(
@@ -98,7 +93,7 @@ class DisplayGoogleMap extends HookConsumerWidget {
                   .getLocationsWithinMapBounds(mapBounds);
               ref.read(locationsWithinMapBoundsProvider.notifier).state =
                   locationsWithinBounds;
-              _handleMarkers(
+              await _handleMarkers(
                   ref, mapController, locationsWithinBounds, markers);
             } else {
               ref.invalidate(locationsWithinMapBoundsProvider);
@@ -122,30 +117,24 @@ class DisplayGoogleMap extends HookConsumerWidget {
 
   Future<void> waitForMapControllerAndExecute(
       WidgetRef ref,
-      ValueNotifier<GoogleMapController?> mapController,
+      GoogleMapController? mapController,
       LatLng selectedLocationLatLong,
       ValueNotifier<Set<Marker>> markers) async {
-    while (mapController.value == null) {
-      await Future.delayed(const Duration(milliseconds: 500));
-    }
-    // Now that the controller is not null, execute your code
-    if (mapController.value != null) {
-      mapController.value!.animateCamera(
+    if (mapController != null) {
+      await mapController.animateCamera(
         CameraUpdate.newLatLngZoom(
           LatLng(selectedLocationLatLong.latitude,
               selectedLocationLatLong.longitude),
           11.0,
         ),
       );
-      LocationHelper().getCurrentBounds(ref);
-      // Call to update markers here
-      _updateMarkers(ref, mapController, markers);
+      await LocationHelper().getCurrentBounds(ref);
     }
+
+    // Call to update markers here
   }
 
-  void _updateMarkers(
-      WidgetRef ref,
-      ValueNotifier<GoogleMapController?> mapController,
+  void _updateMarkers(WidgetRef ref, GoogleMapController? mapController,
       ValueNotifier<Set<Marker>> markers) async {
     List<LocationModel> locations = ref.read(locationsWithinMapBoundsProvider);
     await _handleMarkers(ref, mapController, locations, markers);
@@ -154,14 +143,14 @@ class DisplayGoogleMap extends HookConsumerWidget {
 
   Future<void> _handleMarkers(
       WidgetRef ref,
-      ValueNotifier<GoogleMapController?> mapController,
+      GoogleMapController? mapController,
       List<LocationModel> locations,
       ValueNotifier<Set<Marker>> markersNotifier) async {
-    if (mapController.value != null) {
+    if (mapController != null) {
       var result = await MarkerHandler().createMarkers(
         ref,
         locations,
-        mapController.value!,
+        mapController,
       );
       markersNotifier.value = result.toSet();
     }

@@ -7,34 +7,36 @@ if (admin.apps.length === 0) {
   admin.initializeApp();
 }
 
-exports.squareCreditCardIdFromNonce = functions.https.onCall(async (data, context) => {
-  const client = await createSquareClient();
-  const { squareCustomerId, nonce } = data;
+exports.squareCreditCardIdFromNonce = functions.https.onCall(
+  async (data, context) => {
+    const client = await createSquareClient();
+    const { squareCustomerId, nonce } = data;
 
-  let card = {};
+    let card = {};
 
-  try {
-    const cardResponse = await client.cardsApi.createCard({
-      idempotencyKey: uuidv4(),
-      sourceId: nonce,
-      card: {
-        customerId: squareCustomerId
-      }
-    });
+    try {
+      const cardResponse = await client.cardsApi.createCard({
+        idempotencyKey: uuidv4(),
+        sourceId: nonce,
+        card: {
+          customerId: squareCustomerId,
+        },
+      });
 
-     const cardDetails = cardResponse.result.card;
+      const cardDetails = cardResponse.result.card;
 
-    card = {
-       cardId: cardDetails.id,
-       last4: cardDetails.last4,
-       cardBrand: cardDetails.cardBrand,
-       expMonth: cardDetails.expMonth.toString(),
-       expYear: cardDetails.expYear.toString(),
-    };
+      card = {
+        cardId: cardDetails.id,
+        last4: cardDetails.last4,
+        cardBrand: cardDetails.cardBrand,
+        expMonth: cardDetails.expMonth.toString(),
+        expYear: cardDetails.expYear.toString(),
+      };
 
-    return card;
-  } catch (error) {
-      console.error('Error creating card with Square:', error);
-      throw new functions.https.HttpsError('unknown', 'Error creating card.');
+      return card;
+    } catch (error) {
+      console.error("Error creating card with Square:", error);
+      throw new functions.https.HttpsError("unknown", "Error creating card.");
     } // End of try-catch block
-     });
+  },
+);

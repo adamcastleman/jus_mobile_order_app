@@ -4,10 +4,7 @@ import 'package:jus_mobile_order_app/Helpers/Validators/form_validators.dart';
 import 'package:jus_mobile_order_app/Providers/auth_providers.dart';
 
 class CheckoutValidators {
-  final WidgetRef ref;
-  CheckoutValidators({required this.ref});
-
-  void validateForm() {
+  void validateForm(WidgetRef ref) {
     final firstName = ref.watch(firstNameProvider);
     final lastName = ref.watch(lastNameProvider);
     final email = ref.watch(emailProvider);
@@ -23,7 +20,7 @@ class CheckoutValidators {
     }
   }
 
-  void _validateFirstName(WidgetRef ref, String firstName) {
+  static _validateFirstName(WidgetRef ref, String firstName) {
     if (firstName.isEmpty) {
       FormValidator().firstName(ref);
     } else {
@@ -31,7 +28,7 @@ class CheckoutValidators {
     }
   }
 
-  void _validateLastName(WidgetRef ref, String lastName) {
+  static _validateLastName(WidgetRef ref, String lastName) {
     if (lastName.isEmpty) {
       FormValidator().lastName(ref);
     } else {
@@ -39,7 +36,7 @@ class CheckoutValidators {
     }
   }
 
-  void _validatePhone(WidgetRef ref, String phone) {
+  static _validatePhone(WidgetRef ref, String phone) {
     if (phone.length != 10) {
       FormValidator().phone(ref);
     } else {
@@ -47,7 +44,7 @@ class CheckoutValidators {
     }
   }
 
-  void _validateEmail(WidgetRef ref, String email) {
+  static _validateEmail(WidgetRef ref, String email) {
     if (!EmailValidator.validate(email)) {
       FormValidator().email(ref);
     } else {
@@ -55,7 +52,7 @@ class CheckoutValidators {
     }
   }
 
-  bool _isFormValid(WidgetRef ref) {
+  static bool _isFormValid(WidgetRef ref) {
     return ref.read(emailErrorProvider.notifier).state == null &&
         ref.read(firstNameErrorProvider.notifier).state == null &&
         ref.read(lastNameErrorProvider.notifier).state == null &&

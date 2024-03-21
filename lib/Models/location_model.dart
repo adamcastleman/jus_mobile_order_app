@@ -7,10 +7,10 @@ class LocationModel with _$LocationModel {
   const factory LocationModel({
     required String uid,
     required String name,
-    required String status,
-    required int locationID,
+    required String locationId,
     required String squareLocationId,
-    required int phone,
+    required String status,
+    required String phone,
     required Map address,
     required List hours,
     required String timezone,
@@ -21,7 +21,6 @@ class LocationModel with _$LocationModel {
     required bool isActive,
     required bool isAcceptingOrders,
     required double salesTaxRate,
-    required bool acceptingOrders,
     required List unavailableProducts,
     required List blackoutDates,
   }) = _LocationModel;

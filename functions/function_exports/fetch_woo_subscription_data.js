@@ -1,6 +1,6 @@
 const functions = require("firebase-functions");
 const admin = require("firebase-admin");
-const axios = require("axios");
+const WooCommerceRestApi = require("@woocommerce/woocommerce-rest-api").default;
 const { getSecret } = require("../secrets");
 
 if (admin.apps.length === 0) {
@@ -10,6 +10,12 @@ if (admin.apps.length === 0) {
 exports.fetchWooSubscriptionData = functions.https.onCall(
   async (data, context) => {
     const email = data.email;
+    let membershipMap = {
+      membershipId: null,
+      status: null,
+      billingPeriod: null,
+      nextPaymentDate: null,
+    };
 
     if (!email) {
       throw new functions.https.HttpsError(
@@ -21,46 +27,38 @@ exports.fetchWooSubscriptionData = functions.https.onCall(
     try {
       const consumerKey = await getSecret("woo-consumer-key");
       const consumerSecret = await getSecret("woo-consumer-secret");
-      const encodedEmail = encodeURIComponent(email);
+      const wooCommerce = new WooCommerceRestApi({
+        url: 'https://www.jusreno.com',
+        consumerKey: consumerKey,
+        consumerSecret: consumerSecret,
+        version: 'wc/v3',
+        queryStringAuth: true
+      });
 
-      const customerUrl = `https://www.jusreno.com/wp-json/wc/v3/customers?role=all&email=${encodedEmail}&consumer_key=${consumerKey}&consumer_secret=${consumerSecret}`;
-      const customerResponse = await axios.get(customerUrl);
+      const membershipResponse = await wooCommerce.get('memberships/members', { customer: email, status: 'active' });
 
-      if (!customerResponse.data || customerResponse.data.length === 0) {
-        return {
-          membershipId: null,
-          status: null,
-          billingPeriod: null,
-          nextPaymentDate: null,
-        };
+      if (membershipResponse.data.length === 0) {
+        console.log('No active memberships found for:', email);
+        return membershipMap; // Return early with the default membershipMap values
       }
 
-      const customerId = customerResponse.data[0].id;
-      const membershipUrl = `https://www.jusreno.com/wp-json/wc/v3/memberships/members?customer=${customerId}&consumer_key=${consumerKey}&consumer_secret=${consumerSecret}`;
-      const subscriptionUrl = `https://www.jusreno.com/wp-json/wc/v3/subscriptions?customer=${customerId}&consumer_key=${consumerKey}&consumer_secret=${consumerSecret}`;
+      let activeMembership = membershipResponse.data[0];
 
-      const membershipResponse = await axios.get(membershipUrl);
-      const subscriptionResponse = await axios.get(subscriptionUrl);
+      if (activeMembership) {
+        const customerId = activeMembership.customer_id;
+        const subscriptionResponse = await wooCommerce.get('subscriptions', { customer: customerId, status: 'active' });
 
-      const result = {
-        membershipId: null,
-        status: null,
-        billingPeriod: null,
-        nextPaymentDate: null,
-      };
+        if (subscriptionResponse.data.length > 0) {
+          let activeSubscription = subscriptionResponse.data[0];
 
-      if (membershipResponse.data && membershipResponse.data.length > 0) {
-        result.membershipId = membershipResponse.data[0].id;
-        result.status = membershipResponse.data[0].status;
+          membershipMap.membershipId = activeMembership.id;
+          membershipMap.status = activeMembership.status;
+          membershipMap.billingPeriod = activeSubscription.billing_period;
+          membershipMap.nextPaymentDate = activeSubscription.next_payment_date_gmt;
+        }
       }
 
-      if (subscriptionResponse.data && subscriptionResponse.data.length > 0) {
-        result.billingPeriod = subscriptionResponse.data[0].billing_period;
-        result.nextPaymentDate =
-          subscriptionResponse.data[0].next_payment_date_gmt;
-      }
-
-      return result;
+      return membershipMap;
     } catch (error) {
       console.error("Error fetching subscription data:", error);
       throw new functions.https.HttpsError(

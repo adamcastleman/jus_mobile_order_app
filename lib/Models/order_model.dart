@@ -7,15 +7,11 @@ class OrderModel with _$OrderModel {
   const factory OrderModel({
     String? userID,
     required String orderNumber,
-    required int locationID,
+    required String locationId,
     required DateTime createdAt,
     required List items,
     required String paymentMethod,
     required String orderSource,
-    DateTime? pickupDate,
-    DateTime? pickupTime,
-    String? cardBrand,
-    String? last4,
     required int totalAmount,
     required int originalSubtotalAmount,
     required int discountedSubtotalAmount,
@@ -24,5 +20,9 @@ class OrderModel with _$OrderModel {
     required int tipAmount,
     required int pointsEarned,
     required int pointsRedeemed,
+    DateTime? pickupDate,
+    DateTime? pickupTime,
+    String? cardBrand,
+    String? last4,
   }) = _OrderModel;
 }

@@ -26,7 +26,10 @@ exports.updateCardNickname = functions.https.onCall(async (data, context) => {
       .collection("squarePaymentMethods")
       .doc(cardID);
 
-    await cardDocRef.update({ cardNickname: cardNickname });
+    // Remove leading and trailing whitespace
+    const trimmedCardNickname = cardNickname.trim();
+
+    await cardDocRef.update({ cardNickname: trimmedCardNickname });
   } catch (error) {
     console.log(error);
     return {

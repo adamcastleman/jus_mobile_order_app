@@ -2,46 +2,48 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:jus_mobile_order_app/Helpers/orders.dart';
+import 'package:jus_mobile_order_app/Helpers/payment_methods.dart';
 import 'package:jus_mobile_order_app/Helpers/payments.dart';
+import 'package:jus_mobile_order_app/Models/user_model.dart';
 import 'package:jus_mobile_order_app/Providers/loading_providers.dart';
 import 'package:jus_mobile_order_app/Providers/payments_providers.dart';
-import 'package:jus_mobile_order_app/Services/payments_services_square.dart';
+import 'package:jus_mobile_order_app/Services/payment_services.dart';
 import 'package:jus_mobile_order_app/Widgets/Buttons/elevated_button_large.dart';
 
 class ProcessCreditCardPaymentButton extends ConsumerWidget {
-  final Map<String, dynamic> orderMap;
-  final VoidCallback onSuccess;
-  final Function(String) onError;
+  final UserModel user;
 
-  const ProcessCreditCardPaymentButton(
-      {required this.orderMap,
-      required this.onSuccess,
-      required this.onError,
-      super.key});
+  const ProcessCreditCardPaymentButton({required this.user, super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final selectedPayment = ref.watch(selectedPaymentMethodProvider);
-    final message = OrderHelpers(ref: ref).validateOrder(context);
+    final validationMessage = OrderHelpers.validateOrder(context, ref);
     final selectedPaymentText =
-        'Pay with ${PaymentsHelper().displaySelectedCardTextFromMap(selectedPayment)}';
+        'Pay with ${PaymentMethodHelpers().displaySelectedCardText(selectedPayment)}';
 
     return LargeElevatedButton(
       buttonText: selectedPaymentText,
       onPressed: () {
         HapticFeedback.lightImpact();
-        if (message != null) {
-          OrderHelpers(ref: ref).showInvalidOrderModal(context, message);
+        if (validationMessage != null) {
+          OrderHelpers.showInvalidOrderModal(context, validationMessage);
           return;
         }
+        final totals = PaymentsHelpers.generateOrderPricingDetails(ref, user);
+        final orderDetails =
+            PaymentsHelpers().generateOrderDetails(ref, user, totals);
         ref.read(loadingProvider.notifier).state = true;
-        SquarePaymentServices().processPayment(
-          orderMap: orderMap,
+        PaymentServices.createOrderCloudFunction(
+          orderDetails: orderDetails,
           onPaymentSuccess: () {
-            onSuccess();
+            PaymentsHelpers.onOrderSuccess(
+              context,
+              ref,
+            );
           },
           onError: (error) {
-            onError(error);
+            PaymentsHelpers.showPaymentErrorModal(context, ref, error);
           },
         );
       },

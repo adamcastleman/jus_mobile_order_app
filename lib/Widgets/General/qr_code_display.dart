@@ -15,7 +15,7 @@ class QrCodeDisplay extends ConsumerWidget {
     return QrImageView(
       data: categoryIndex == 0 ? ref.watch(encryptedQrProvider) : user.uid!,
       version: QrVersions.auto,
-      size: 200.0,
+      size: 150.0,
     );
   }
 }

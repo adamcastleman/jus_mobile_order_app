@@ -1,6 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cloud_functions/cloud_functions.dart';
-import 'package:jus_mobile_order_app/Models/membership_stats_model.dart';
+import 'package:jus_mobile_order_app/Helpers/enums.dart';
 import 'package:jus_mobile_order_app/Models/user_model.dart';
 
 class UserServices {
@@ -15,24 +15,18 @@ class UserServices {
     return userCollection.doc(uid).snapshots().map(getCurrentUserFromDatabase);
   }
 
-  Stream<MembershipStatsModel> get membershipStats {
-    return userCollection
-        .doc(uid)
-        .collection('memberStatistics')
-        .snapshots()
-        .map(getMemberStatsFromDatabase);
-  }
-
   UserModel getCurrentUserFromDatabase(DocumentSnapshot snapshot) {
     if (snapshot.exists) {
       Map<String, dynamic> data = snapshot.data() as Map<String, dynamic>;
+      SubscriptionStatus status =
+          fromString(data['subscriptionStatus'] as String? ?? 'none');
       return UserModel(
         uid: data['uid'],
         firstName: data['firstName'],
         lastName: data['lastName'],
         email: data['email'],
         phone: data['phone'],
-        isActiveMember: data['isActiveMember'],
+        subscriptionStatus: status,
         squareCustomerId: data['squareCustomerId'],
         points: data['points'],
       );
@@ -43,35 +37,11 @@ class UserServices {
         lastName: null,
         email: null,
         phone: null,
-        isActiveMember: null,
+        subscriptionStatus: null,
         squareCustomerId: null,
         points: null,
       );
     }
-  }
-
-  MembershipStatsModel getMemberStatsFromDatabase(QuerySnapshot snapshot) {
-    return snapshot.docs.map((doc) {
-      final dynamic data = doc.data();
-      return MembershipStatsModel(
-        totalSaved: data['totalSaved'] ?? 0,
-        bonusPoints: data['bonusPoints'] ?? 0,
-      );
-    }).first;
-  }
-
-  Future<HttpsCallableResult<dynamic>> createSquareSubscription({
-    required String nonce,
-    required String email,
-    required String startDate,
-  }) async {
-    return await FirebaseFunctions.instance
-        .httpsCallable('createSquareSubscription')
-        .call({
-      'nonce': nonce,
-      'email': email,
-      'startDate': startDate,
-    });
   }
 
   Future<void> createUser({
@@ -106,10 +76,10 @@ class UserServices {
     });
   }
 
-  Future updateMembership(bool isActiveMember) async {
+  Future updateUserSubscriptionStatus(String subscriptionStatus) async {
     await FirebaseFirestore.instance
         .collection('users')
         .doc(uid)
-        .update({'isActiveMember': !isActiveMember});
+        .update({'subscriptionStatus': subscriptionStatus.toUpperCase()});
   }
 }

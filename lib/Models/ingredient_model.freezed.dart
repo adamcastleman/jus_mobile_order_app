@@ -12,7 +12,7 @@ part of 'ingredient_model.dart';
 T _$identity<T>(T value) => value;
 
 final _privateConstructorUsedError = UnsupportedError(
-    'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#custom-getters-and-methods');
+    'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models');
 
 /// @nodoc
 mixin _$IngredientModel {
@@ -20,6 +20,7 @@ mixin _$IngredientModel {
   String get name => throw _privateConstructorUsedError;
   String get image => throw _privateConstructorUsedError;
   String get category => throw _privateConstructorUsedError;
+  int get categoryOrder => throw _privateConstructorUsedError;
   int get id => throw _privateConstructorUsedError;
   int get price => throw _privateConstructorUsedError;
   int get memberPrice => throw _privateConstructorUsedError;
@@ -47,6 +48,7 @@ abstract class $IngredientModelCopyWith<$Res> {
       String name,
       String image,
       String category,
+      int categoryOrder,
       int id,
       int price,
       int memberPrice,
@@ -76,6 +78,7 @@ class _$IngredientModelCopyWithImpl<$Res, $Val extends IngredientModel>
     Object? name = null,
     Object? image = null,
     Object? category = null,
+    Object? categoryOrder = null,
     Object? id = null,
     Object? price = null,
     Object? memberPrice = null,
@@ -104,6 +107,10 @@ class _$IngredientModelCopyWithImpl<$Res, $Val extends IngredientModel>
           ? _value.category
           : category // ignore: cast_nullable_to_non_nullable
               as String,
+      categoryOrder: null == categoryOrder
+          ? _value.categoryOrder
+          : categoryOrder // ignore: cast_nullable_to_non_nullable
+              as int,
       id: null == id
           ? _value.id
           : id // ignore: cast_nullable_to_non_nullable
@@ -161,6 +168,7 @@ abstract class _$$IngredientModelImplCopyWith<$Res>
       String name,
       String image,
       String category,
+      int categoryOrder,
       int id,
       int price,
       int memberPrice,
@@ -188,6 +196,7 @@ class __$$IngredientModelImplCopyWithImpl<$Res>
     Object? name = null,
     Object? image = null,
     Object? category = null,
+    Object? categoryOrder = null,
     Object? id = null,
     Object? price = null,
     Object? memberPrice = null,
@@ -216,6 +225,10 @@ class __$$IngredientModelImplCopyWithImpl<$Res>
           ? _value.category
           : category // ignore: cast_nullable_to_non_nullable
               as String,
+      categoryOrder: null == categoryOrder
+          ? _value.categoryOrder
+          : categoryOrder // ignore: cast_nullable_to_non_nullable
+              as int,
       id: null == id
           ? _value.id
           : id // ignore: cast_nullable_to_non_nullable
@@ -268,6 +281,7 @@ class _$IngredientModelImpl implements _IngredientModel {
       required this.name,
       required this.image,
       required this.category,
+      required this.categoryOrder,
       required this.id,
       required this.price,
       required this.memberPrice,
@@ -288,6 +302,8 @@ class _$IngredientModelImpl implements _IngredientModel {
   final String image;
   @override
   final String category;
+  @override
+  final int categoryOrder;
   @override
   final int id;
   @override
@@ -317,11 +333,11 @@ class _$IngredientModelImpl implements _IngredientModel {
 
   @override
   String toString() {
-    return 'IngredientModel(uid: $uid, name: $name, image: $image, category: $category, id: $id, price: $price, memberPrice: $memberPrice, allergens: $allergens, isModifiable: $isModifiable, isStandardTopping: $isStandardTopping, isBlended: $isBlended, isTopping: $isTopping, isExtraCharge: $isExtraCharge, includeInAllergiesList: $includeInAllergiesList)';
+    return 'IngredientModel(uid: $uid, name: $name, image: $image, category: $category, categoryOrder: $categoryOrder, id: $id, price: $price, memberPrice: $memberPrice, allergens: $allergens, isModifiable: $isModifiable, isStandardTopping: $isStandardTopping, isBlended: $isBlended, isTopping: $isTopping, isExtraCharge: $isExtraCharge, includeInAllergiesList: $includeInAllergiesList)';
   }
 
   @override
-  bool operator ==(dynamic other) {
+  bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$IngredientModelImpl &&
@@ -330,6 +346,8 @@ class _$IngredientModelImpl implements _IngredientModel {
             (identical(other.image, image) || other.image == image) &&
             (identical(other.category, category) ||
                 other.category == category) &&
+            (identical(other.categoryOrder, categoryOrder) ||
+                other.categoryOrder == categoryOrder) &&
             (identical(other.id, id) || other.id == id) &&
             (identical(other.price, price) || other.price == price) &&
             (identical(other.memberPrice, memberPrice) ||
@@ -357,6 +375,7 @@ class _$IngredientModelImpl implements _IngredientModel {
       name,
       image,
       category,
+      categoryOrder,
       id,
       price,
       memberPrice,
@@ -382,6 +401,7 @@ abstract class _IngredientModel implements IngredientModel {
       required final String name,
       required final String image,
       required final String category,
+      required final int categoryOrder,
       required final int id,
       required final int price,
       required final int memberPrice,
@@ -401,6 +421,8 @@ abstract class _IngredientModel implements IngredientModel {
   String get image;
   @override
   String get category;
+  @override
+  int get categoryOrder;
   @override
   int get id;
   @override

@@ -6,10 +6,9 @@ const processPayment = async (orderMap) => {
   const client = await createSquareClient();
 
   try {
-    const giftCardID = orderMap.paymentDetails.giftCardID ?? null;
-
     const response = await client.paymentsApi.createPayment({
-      sourceId: giftCardID === null ? 'cnon:card-nonce-ok' : giftCardID,
+      sourceId: orderMap.paymentDetails.cardId,
+      customerId: orderMap.userDetails.squareCustomerId,
       idempotencyKey: uuidv4(),
       orderId: orderMap.orderDetails.orderNumber,
       externalDetails: {
@@ -26,16 +25,14 @@ const processPayment = async (orderMap) => {
       },
     });
 
-
     if (!response || !response.body) {
       throw new Error("Invalid response from payment gateway");
     }
 
     return JSON.parse(response.body);
   } catch (error) {
-      return { status: 500, message: error.errors[0].detail };
-    }
+    return { status: 500, message: error.errors[0].detail };
+  }
+};
 
-    };
-
-    module.exports = processPayment;
+module.exports = processPayment;

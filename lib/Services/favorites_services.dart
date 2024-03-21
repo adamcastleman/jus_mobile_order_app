@@ -7,14 +7,16 @@ import 'package:jus_mobile_order_app/Providers/product_providers.dart';
 
 class FavoritesServices {
   final WidgetRef? ref;
-  final String? userID;
+  final String? userId;
+  final int? productId;
+  final int? itemSize;
 
-  FavoritesServices({this.ref, this.userID});
+  FavoritesServices({this.ref, this.userId, this.productId, this.itemSize});
 
   Stream<List<FavoritesModel>> get favorites {
     return FirebaseFirestore.instance
         .collection('users')
-        .doc(userID!)
+        .doc(userId!)
         .collection('favorites')
         .snapshots()
         .map(getFavoritesFromDatabase);
@@ -23,12 +25,13 @@ class FavoritesServices {
   List<FavoritesModel> getFavoritesFromDatabase(QuerySnapshot snapshot) {
     return snapshot.docs.map((doc) {
       final dynamic data = doc.data();
+
       return FavoritesModel(
         uid: data['uid'],
         name: data['name'],
         ingredients: data['ingredients'],
         toppings: data['toppings'],
-        productID: data['productID'],
+        productId: data['productId'],
         size: data['size'],
         allergies: data['allergies'] as List,
       );
@@ -43,7 +46,7 @@ class FavoritesServices {
   }) async {
     try {
       await FirebaseFunctions.instance.httpsCallable('addToFavorites').call({
-        'productID': ref!.watch(selectedProductIDProvider),
+        'productId': ref!.watch(selectedProductIdProvider),
         'name': ref!.watch(favoriteItemNameProvider),
         'ingredients': currentIngredients,
         'toppings': currentToppings,
@@ -55,7 +58,7 @@ class FavoritesServices {
     }
   }
 
-  deleteFromFavorites(
+  removeFromFavorites(
       {required BuildContext context,
       required String docID,
       required Function(String) onError}) async {

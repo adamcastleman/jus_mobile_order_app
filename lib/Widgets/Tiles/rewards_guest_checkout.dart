@@ -1,18 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:jus_mobile_order_app/Helpers/modal_bottom_sheets.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:jus_mobile_order_app/Helpers/navigation.dart';
 import 'package:jus_mobile_order_app/Helpers/spacing_widgets.dart';
-import 'package:jus_mobile_order_app/Views/register_page.dart';
-import 'package:jus_mobile_order_app/Widgets/Buttons/elevated_button_small.dart';
+import 'package:jus_mobile_order_app/Widgets/Buttons/elevated_button_medium.dart';
 import 'package:jus_mobile_order_app/Widgets/Buttons/info_button.dart';
 
-import '../../Views/points_detail_page.dart';
-
-class RewardsGuestCheckout extends StatelessWidget {
+class RewardsGuestCheckout extends ConsumerWidget {
   const RewardsGuestCheckout({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 22.0),
       child: Center(
@@ -29,10 +27,10 @@ class RewardsGuestCheckout extends StatelessWidget {
                 InfoButton(
                   onTap: () {
                     HapticFeedback.lightImpact();
-                    ModalBottomSheet().fullScreen(
-                      context: context,
-                      builder: (context) =>
-                          const PointsDetailPage(closeButton: true),
+                    Navigator.pop(context);
+                    NavigationHelpers.navigateToPointsInformationPage(
+                      context,
+                      ref,
                     );
                   },
                   size: 22,
@@ -40,13 +38,11 @@ class RewardsGuestCheckout extends StatelessWidget {
               ],
             ),
             Spacing.vertical(20),
-            SmallElevatedButton(
+            MediumElevatedButton(
               buttonText: 'Join Rewards',
               onPressed: () {
-                ModalBottomSheet().fullScreen(
-                  context: context,
-                  builder: (context) => const RegisterPage(),
-                );
+                HapticFeedback.lightImpact();
+                NavigationHelpers.navigateToRegisterPage(context);
               },
             ),
           ],

@@ -14,7 +14,7 @@ class SavedPaymentsListView extends ConsumerWidget {
       shrinkWrap: true,
       primary: false,
       itemCount: cards.isEmpty ? 0 : cards.length,
-      separatorBuilder: (context, index) => JusDivider().thin(),
+      separatorBuilder: (context, index) => JusDivider.thin(),
       itemBuilder: (context, index) => SavedPaymentTile(card: cards[index]),
     );
   }

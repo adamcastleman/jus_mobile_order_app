@@ -4,15 +4,14 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:jus_mobile_order_app/Models/location_model.dart';
 import 'package:jus_mobile_order_app/constants.dart';
 
+final allLocationsProvider = StateProvider<List<LocationModel>>((ref) => []);
+
 final currentLocationLatLongProvider = StateProvider<LatLng>(
   (ref) => AppConstants.centerOfUS,
 );
 
 final locationsWithinMapBoundsProvider =
     StateProvider<List<LocationModel>>((ref) => []);
-
-final googleMapControllerProvider =
-    StateProvider<GoogleMapController?>((ref) => null);
 
 final currentMapBoundsProvider = StateProvider<LatLngBounds>(
   (ref) => LatLngBounds(
@@ -21,7 +20,28 @@ final currentMapBoundsProvider = StateProvider<LatLngBounds>(
   ),
 );
 
-final selectedLocationProvider = StateProvider<dynamic>((ref) => null);
+final selectedLocationProvider = StateProvider<LocationModel>(
+  (ref) => const LocationModel(
+    uid: '',
+    name: '',
+    locationId: '',
+    squareLocationId: '',
+    status: '',
+    phone: '',
+    address: {},
+    hours: [],
+    timezone: '',
+    currency: '',
+    geohash: '',
+    latitude: 0,
+    longitude: 0,
+    isActive: false,
+    isAcceptingOrders: false,
+    salesTaxRate: 0,
+    unavailableProducts: [],
+    blackoutDates: [],
+  ),
+);
 
 final selectedLocationIndexProvider = StateProvider<int>((ref) => 0);
 

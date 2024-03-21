@@ -1,21 +1,26 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:jus_mobile_order_app/Helpers/divider.dart';
-import 'package:jus_mobile_order_app/Helpers/modal_bottom_sheets.dart';
+import 'package:jus_mobile_order_app/Helpers/enums.dart';
+import 'package:jus_mobile_order_app/Helpers/navigation.dart';
 import 'package:jus_mobile_order_app/Helpers/spacing_widgets.dart';
+import 'package:jus_mobile_order_app/Helpers/utilities.dart';
+import 'package:jus_mobile_order_app/Models/points_details_model.dart';
 import 'package:jus_mobile_order_app/Models/user_model.dart';
-import 'package:jus_mobile_order_app/Providers/ProviderWidgets/points_details_provider_widget.dart';
+import 'package:jus_mobile_order_app/Providers/ProviderWidgets/offers_provider_widget.dart';
+import 'package:jus_mobile_order_app/Providers/points_providers.dart';
 import 'package:jus_mobile_order_app/Providers/stream_providers.dart';
 import 'package:jus_mobile_order_app/Providers/theme_providers.dart';
-import 'package:jus_mobile_order_app/Views/points_detail_page.dart';
+import 'package:jus_mobile_order_app/Views/points_information_page.dart';
 import 'package:jus_mobile_order_app/Widgets/Buttons/info_button.dart';
+import 'package:jus_mobile_order_app/Widgets/Dialogs/screenshot_dialog.dart';
+import 'package:jus_mobile_order_app/Widgets/General/category_display_widget.dart';
+import 'package:jus_mobile_order_app/Widgets/General/display_user_current_points_widget.dart';
 import 'package:jus_mobile_order_app/Widgets/General/payment_method_selector.dart';
 import 'package:jus_mobile_order_app/Widgets/General/points_multiple_text_widget.dart';
 import 'package:jus_mobile_order_app/Widgets/General/qr_code_display.dart';
 import 'package:jus_mobile_order_app/Widgets/General/scan_descriptor_widget.dart';
 import 'package:jus_mobile_order_app/Widgets/General/scan_type_tabs_widget.dart';
-import 'package:jus_mobile_order_app/Widgets/General/user_points_status_display.dart';
+import 'package:jus_mobile_order_app/Widgets/Lists/offers_grid_view.dart';
 
 import '../Providers/scan_providers.dart';
 
@@ -25,65 +30,161 @@ class ScanPage extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final user = ref.watch(currentUserProvider).value ?? const UserModel();
+    final points = ref.watch(pointsInformationProvider);
+    final backgroundColor = ref.watch(backgroundColorProvider);
     final categoryIndex = ref.watch(scanCategoryProvider);
+    final darkGreen = ref.watch(darkGreenProvider);
 
-    if (user.uid == null) {
-      return const PointsDetailPage(closeButton: false);
+    ref.read(screenshotCallbackProvider);
+    final isScreenshotTaken = ref.watch(screenshotDetectedProvider);
+
+    if (user.uid == null || user.uid!.isEmpty) {
+      return const PointsInformationPage(
+        showCloseButton: false,
+      );
     }
-    return PointsDetailsProviderWidget(
-      builder: (points) => Scaffold(
-        backgroundColor: ref.watch(backgroundColorProvider),
-        body: SingleChildScrollView(
-          padding: const EdgeInsets.all(12.0),
+
+    if ((PlatformUtils.isIOS() || PlatformUtils.isAndroid()) &&
+        (user.subscriptionStatus == SubscriptionStatus.active &&
+            isScreenshotTaken)) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        showDialog(
+          barrierDismissible: false,
+          context: context,
+          builder: (context) => const ScreenshotDialog(),
+        );
+        // Reset the state to avoid showing the dialog repeatedly
+        ref.read(screenshotDetectedProvider.notifier).state = false;
+      });
+    }
+
+    return Scaffold(
+      backgroundColor: backgroundColor,
+      appBar: AppBar(
+        title: Center(
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 500),
+            child: const ScanTypeTabsWidget(),
+          ),
+        ),
+      ),
+      body: OffersProviderWidget(
+        builder: (offers) => SingleChildScrollView(
+          primary: false,
+          child: SizedBox(
+            width: double.infinity,
+            child: Center(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 12.0),
+                child: ConstrainedBox(
+                  constraints: const BoxConstraints(maxWidth: 500),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Spacing.vertical(15),
+                      _buildPointsRow(context, ref, user, points),
+                      Spacing.vertical(15),
+                      _buildScanCard(
+                          context, ref, darkGreen, categoryIndex, user),
+                      if (categoryIndex == 0)
+                        Column(
+                          children: [
+                            Spacing.vertical(15),
+                            _buildPaymentSection(ref),
+                          ],
+                        ),
+                      Spacing.vertical(20),
+                      const CategoryWidget(
+                        text: 'Offers',
+                      ),
+                      Spacing.vertical(15),
+                      Flexible(
+                        child: OffersGridView(user: user, offers: offers),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildScanCard(BuildContext context, WidgetRef ref, Color darkGreen,
+      int categoryIndex, UserModel user) {
+    return SizedBox(
+      height: 380,
+      width: double.infinity,
+      child: Card(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(25)),
+        elevation: 0,
+        color: darkGreen,
+        child: Padding(
+          padding: const EdgeInsets.all(24.0),
           child: Column(
             children: [
-              const ScanTypeTabsWidget(),
-              Spacing.vertical(15),
-              UserPointsStatusWidget(
-                user: user,
-                points: points,
-              ),
-              Spacing.vertical(50),
               ScanDescriptorWidget(
-                isScanAndPay: categoryIndex == 0 ? true : false,
+                isScanAndPay: categoryIndex == 0,
                 isActiveMember:
-                    user.isActiveMember == null ? false : user.isActiveMember!,
+                    user.subscriptionStatus == SubscriptionStatus.active,
               ),
-              Spacing.vertical(30),
-              const QrCodeDisplay(),
-              Spacing.vertical(30),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const PointsMultipleText(
-                    textStyle: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  Spacing.horizontal(5),
-                  InfoButton(
-                    size: 20,
-                    onTap: () {
-                      HapticFeedback.lightImpact();
-                      ModalBottomSheet().fullScreen(
-                          context: context,
-                          builder: (context) =>
-                              const PointsDetailPage(closeButton: true));
-                    },
-                  )
-                ],
+              Spacing.vertical(15),
+              const CircleAvatar(
+                radius: 110,
+                backgroundColor: Colors.white,
+                child: QrCodeDisplay(),
               ),
-              Spacing.vertical(20),
-              categoryIndex == 0 ? JusDivider().thin() : const SizedBox(),
-              categoryIndex == 0
-                  ? const PaymentMethodSelector()
-                  : const SizedBox(),
-              categoryIndex == 0 ? JusDivider().thin() : const SizedBox(),
             ],
           ),
         ),
       ),
+    );
+  }
+
+  Widget _buildPointsRow(BuildContext context, WidgetRef ref, UserModel user,
+      PointsDetailsModel points) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 12.0),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          UserCurrentPointsWidget(
+            user: user,
+            fontSize: 18,
+          ),
+          Row(
+            children: [
+              PointsMultipleText(
+                  points: points,
+                  textStyle: const TextStyle(
+                      fontSize: 18, fontWeight: FontWeight.bold)),
+              Spacing.horizontal(5),
+              InfoButton(
+                size: 20,
+                onTap: () => NavigationHelpers.navigateToPointsInformationPage(
+                  context,
+                  ref,
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildPaymentSection(WidgetRef ref) {
+    final pastelBrown = ref.watch(pastelBrownProvider);
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 4.0),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(25),
+        color: pastelBrown,
+      ),
+      child: const PaymentMethodSelector(),
     );
   }
 }

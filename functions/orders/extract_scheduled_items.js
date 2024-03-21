@@ -36,7 +36,7 @@ const extractScheduledItems = (orderMap) => {
         ? item.itemQuantity.toString()
         : "1",
       cleanseQuantityProduction: item.itemQuantity ? item.itemQuantity : 1,
-      cleanseType: item.name === "Full Day Cleanse" ? "Full" : "JTD",
+      cleanseType: item.name === "Full-Day Cleanse" ? "Full" : "JTD",
       customerName: `${firstName} ${lastName}`,
       customerPhoneNumber: phone,
       delivered: false,
@@ -61,7 +61,7 @@ const extractScheduledItems = (orderMap) => {
           : "",
       orderMethod: orderSource,
       pickedUp: "No",
-      pickupDate: pickupDate,
+      pickupDate: orderMap.orderDetails.pickupDateMillis,
       preferredLocationPickup: orderMap.locationDetails.locationName,
       totalDays: item.scheduledQuantity * item.itemQuantity,
       uid: null,

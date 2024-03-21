@@ -3,7 +3,7 @@ const admin = require("firebase-admin");
 const updateOrderMapWithPaymentData = (orderMap, paymentResult) => {
   if (paymentResult) {
     const sourceType = paymentResult.payment.source_type;
-    orderMap.paymentDetails.paymentID = paymentResult.payment.id;
+    orderMap.paymentDetails.paymentId = paymentResult.payment.id;
     orderMap.paymentDetails.paymentStatus = paymentResult.payment.status;
     orderMap.paymentDetails.cardBrand =
       sourceType === "EXTERNAL" || sourceType === "CASH"
@@ -21,7 +21,7 @@ const updateOrderMapWithPaymentData = (orderMap, paymentResult) => {
     );
   } else {
     const sourceType = "EXTERNAL";
-    orderMap.paymentDetails.paymentID = null;
+    orderMap.paymentDetails.paymentId = null;
     orderMap.paymentDetails.paymentStatus = "COMPLETED";
     orderMap.paymentDetails.cardBrand =
       sourceType === "EXTERNAL" || sourceType === "CASH" ? null : "NON-CARD";

@@ -2,37 +2,27 @@ import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:jus_mobile_order_app/Helpers/modal_bottom_sheets.dart';
+import 'package:jus_mobile_order_app/Helpers/modal_sheets.dart';
 import 'package:jus_mobile_order_app/Helpers/permission_handler.dart';
 import 'package:jus_mobile_order_app/Models/location_model.dart';
 import 'package:jus_mobile_order_app/Models/product_model.dart';
 import 'package:jus_mobile_order_app/Providers/controller_providers.dart';
-import 'package:jus_mobile_order_app/Providers/stream_providers.dart';
 import 'package:jus_mobile_order_app/Services/location_services.dart';
-import 'package:jus_mobile_order_app/Widgets/Dialogs/open_app_settings_location.dart';
 import 'package:jus_mobile_order_app/constants.dart';
-import 'package:permission_handler/permission_handler.dart';
 
 import '../Providers/location_providers.dart';
-import '../Views/choose_location_page_mobile.dart';
+import '../Views/location_page_mobile.dart';
 
 class LocationHelper {
   selectedLocation(WidgetRef ref) {
     final location = ref.watch(selectedLocationProvider);
-    final locations = ref.watch(locationsProvider);
-    return locations.when(
-      data: (data) {
-        if (location == null) {
-          return null;
-        } else {
-          return data
-              .where((element) => element.locationID == location.locationID)
-              .first;
-        }
-      },
-      error: (e, _) => false,
-      loading: () => emptyLocationModel(),
-    );
+    final locations = ref.watch(allLocationsProvider);
+    if (location.uid.isEmpty) {
+      return null;
+    }
+    return locations
+        .where((element) => element.locationId == location.locationId)
+        .first;
   }
 
   bool isProductInStock(WidgetRef ref, ProductModel product) {
@@ -40,92 +30,68 @@ class LocationHelper {
         !LocationHelper()
             .selectedLocation(ref)
             .unavailableProducts
-            .contains(product.productID);
+            .contains(product.productId);
   }
 
   acceptingOrders(WidgetRef ref) {
     final location = ref.watch(selectedLocationProvider);
-    final locations = ref.watch(locationsProvider);
-    return locations.when(
-      data: (data) {
-        if (location == null) {
-          return true;
-        } else {
-          return data
-              .where((element) => element.locationID == location.locationID)
-              .first
-              .acceptingOrders;
-        }
-      },
-      error: (e, _) => false,
-      loading: () => true,
-    );
+    final locations = ref.watch(allLocationsProvider);
+    if (location.uid.isEmpty) {
+      return null;
+    }
+    return locations
+        .where((element) => element.locationId == location.locationId)
+        .first
+        .isAcceptingOrders;
   }
 
   locationName(WidgetRef ref) {
     final location = ref.watch(selectedLocationProvider);
-    final locations = ref.watch(locationsProvider);
-    return locations.when(
-      data: (data) {
-        if (location == null) {
-          return true;
-        } else {
-          return data
-              .where((element) => element.locationID == location.locationID)
-              .first
-              .name;
-        }
-      },
-      error: (e, _) => false,
-      loading: () => emptyLocationModel(),
-    );
+    final locations = ref.watch(allLocationsProvider);
+    return locations
+        .where((element) => element.locationId == location.locationId)
+        .first
+        .name;
   }
 
-  Future<void> handleLocationPermissionsWeb(WidgetRef ref) async {
+  Future<Position?> handleLocationPermissionsWeb() async {
+    Position? position;
+    await PermissionHandler().locationPermission(
+      onGranted: () async {
+        // Get current position
+        position = await Geolocator.getCurrentPosition(
+            desiredAccuracy: LocationAccuracy.high);
+      },
+      onDeclined: () async {
+        // Handle declined permission
+        position = null;
+      },
+    );
+    return position;
+  }
+
+  Future<void> chooseLocation(BuildContext context, WidgetRef ref) async {
+    // Request location permission on iOS or Android
     await PermissionHandler().locationPermission(
       onGranted: () async {
         // Get current position
         final position = await Geolocator.getCurrentPosition(
             desiredAccuracy: LocationAccuracy.high);
-        // Update state only once
         ref.read(currentLocationLatLongProvider.notifier).state =
             LatLng(position.latitude, position.longitude);
       },
-      onDeclined: () {},
-    );
-  }
-
-  Future<void> chooseLocation(BuildContext context, WidgetRef ref) async {
-    // Request location permission on iOS or Android
-    final permissionStatus = await PermissionHandler().locationPermission(
-      onGranted: () async {
-        // Get current position
-        final position = await Geolocator.getCurrentPosition(
-            desiredAccuracy: LocationAccuracy.high);
-        ref.read(currentLocationLatLongProvider.notifier).state =
-            LatLng(position.latitude, position.longitude);
-      },
-      onDeclined: () {
+      onDeclined: () async {
         // Show dialog if permission is declined
-        showDialog(
-          context: context,
-          builder: (context) => const LocationPermissionAlertDialog(),
-        );
+        ref.read(currentLocationLatLongProvider.notifier).state =
+            AppConstants.renoNV;
       },
     );
-
-    // Check if permission is granted, limited, or restricted
-    if (permissionStatus.isGranted ||
-        permissionStatus.isLimited ||
-        permissionStatus.isRestricted) {
-      // Show the ChooseLocationPageMobile after a short delay
-      Future.delayed(const Duration(milliseconds: 100), () {
-        ModalTopSheet().fullScreen(
-          context: context,
-          child: const ChooseLocationPageMobile(),
-        );
-      });
-    }
+    Future.delayed(const Duration(milliseconds: 100), () {
+      ModalBottomSheet().fullScreen(
+        context: context,
+        builder: (context) => const LocationPageMobile(),
+      );
+    });
   }
 
   emptyLocationModel() {
@@ -133,9 +99,9 @@ class LocationHelper {
       uid: '',
       name: '',
       status: '',
-      locationID: 0,
+      locationId: '',
       squareLocationId: '',
-      phone: 0,
+      phone: '',
       address: {},
       hours: [],
       timezone: '',
@@ -146,7 +112,6 @@ class LocationHelper {
       isActive: false,
       isAcceptingOrders: false,
       salesTaxRate: 0,
-      acceptingOrders: false,
       unavailableProducts: [],
       blackoutDates: [],
     );
@@ -175,6 +140,38 @@ class LocationHelper {
       duration: const Duration(milliseconds: 500),
       curve: Curves.decelerate,
     );
+  }
+
+  setLocationDataFromMap(WidgetRef ref, LocationModel location) {
+    if (location.status == AppConstants.comingSoon) {
+      return null;
+    } else {
+      _setSelectedLocation(ref, location);
+      _setLatAndLongOfLocation(ref, location);
+      _setOpenAndCloseTime(ref, location);
+    }
+  }
+
+  _setLatAndLongOfLocation(WidgetRef ref, location) {
+    ref.read(currentLocationLatLongProvider.notifier).state =
+        LatLng(location.latitude, location.longitude);
+  }
+
+  _setOpenAndCloseTime(WidgetRef ref, location) {
+    var openTime = location.hours[DateTime.now().weekday - 1]['open'];
+    ref.read(selectedLocationOpenTime.notifier).state = TimeOfDay(
+      hour: int.parse(openTime.substring(0, openTime.indexOf(':'))),
+      minute: int.parse(openTime.substring(openTime.indexOf(':') + 1)),
+    );
+    var closeTime = location.hours[DateTime.now().weekday - 1]['close'];
+    ref.read(selectedLocationCloseTime.notifier).state = TimeOfDay(
+      hour: int.parse(closeTime.substring(0, 2)),
+      minute: int.parse(closeTime.substring(3)),
+    );
+  }
+
+  _setSelectedLocation(WidgetRef ref, location) {
+    ref.read(selectedLocationProvider.notifier).state = location;
   }
 
   getCurrentBounds(WidgetRef ref) async {

@@ -21,7 +21,14 @@ class ProductsProviderWidget extends ConsumerWidget {
           ShowError(
             error: e.toString(),
           ),
-      loading: () => loading ?? const Loading(),
+      loading: () =>
+          loading ??
+          Container(
+            height: double.infinity,
+            width: double.infinity,
+            color: Colors.white,
+            child: const Loading(),
+          ),
       data: (products) => builder(products),
     );
   }

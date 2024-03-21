@@ -17,16 +17,13 @@ exports.createUser = functions.https.onCall(async (data, context) => {
 
   try {
     squareCustomerId = await createSquareCustomer(firstName, lastName, email, phone);
-  } catch (error) {
-    console.error("Error with Square Customer API:", error);
-    throw new functions.https.HttpsError('aborted', "Failed to create or retrieve Square customer.");
-  }
-
-  try {
     points = await fetchSquareLoyaltyPoints(squareCustomerId);
   } catch (error) {
-    console.error("Error with Square Loyalty API:", error);
-    throw new functions.https.HttpsError('aborted', "Failed to retrieve Square loyalty points.");
+    console.error("Error with Square Customer API:", error);
+    throw new functions.https.HttpsError(
+      "aborted",
+      "Failed to create or retrieve Square customer."
+    );
   }
 
   const userDocument = {
@@ -37,28 +34,26 @@ exports.createUser = functions.https.onCall(async (data, context) => {
     phone,
     points,
     squareCustomerId,
-    isActiveMember: subscription !== null,
+    subscriptionStatus: subscription ? 'ACTIVE' : 'NONE',
   };
 
-  const docRef = db.collection("users").doc(uid);
-
   try {
-    await docRef.set(userDocument);
+    await db.collection("users").doc(uid).set(userDocument);
 
-    if (subscription !== null) {
-      const memberStatsRef = db.collection("users").doc(uid).collection("subscriptionData").doc();
-      await memberStatsRef.set({
-        uid: memberStatsRef.id,
+    if (subscription) {
+      // Create a new document in the subscriptions collection
+      const subscriptionDocRef = db.collection("subscriptions").doc();
+      await subscriptionDocRef.set({
+        userId: uid,
         totalSaved: 0,
         bonusPoints: 0,
         subscriptionId: subscription.subscriptionId,
-        cardId: subscription.cardDetails.cardId,
+        cardId: subscription.cardDetails.cardId
       });
 
+      // Create a payment method in the squarePaymentMethods subcollection of the user
       const savedCardRef = db.collection("users").doc(uid).collection("squarePaymentMethods").doc();
       await savedCardRef.set({
-        uid: savedCardRef.id,
-        userID: docRef.id,
         cardId: subscription.cardDetails.cardId,
         last4: subscription.cardDetails.last4,
         cardBrand: subscription.cardDetails.cardBrand,
@@ -66,15 +61,16 @@ exports.createUser = functions.https.onCall(async (data, context) => {
         expYear: subscription.cardDetails.expYear,
         isWallet: false,
         defaultPayment: true,
-        cardNickname: `${firstName}'s ${subscription.cardDetails.cardBrand}`,
-        gan: null,
-        balance: null,
+        cardNickname: `${firstName}'s ${subscription.cardDetails.cardBrand}`
       });
     }
 
-    return { status: "User created successfully", uid: docRef.id };
+    return { status: "success", message: "User created successfully", uid };
   } catch (error) {
     console.error("Error creating user in Firestore:", error);
-    throw new functions.https.HttpsError('unknown', "Error creating user in Firestore.");
+    throw new functions.https.HttpsError(
+      "unknown",
+      "Error creating user in Firestore."
+    );
   }
 });

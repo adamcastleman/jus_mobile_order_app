@@ -2,11 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:jus_mobile_order_app/Helpers/error.dart';
+import 'package:jus_mobile_order_app/Helpers/formatters.dart';
 import 'package:jus_mobile_order_app/Helpers/formulas.dart';
 import 'package:jus_mobile_order_app/Helpers/launchers.dart';
 import 'package:jus_mobile_order_app/Helpers/loading.dart';
 import 'package:jus_mobile_order_app/Helpers/spacing_widgets.dart';
 import 'package:jus_mobile_order_app/Helpers/time.dart';
+import 'package:jus_mobile_order_app/Helpers/utilities.dart';
 import 'package:jus_mobile_order_app/Providers/future_providers.dart';
 import 'package:jus_mobile_order_app/Providers/location_providers.dart';
 import 'package:jus_mobile_order_app/Widgets/General/sheet_notch.dart';
@@ -27,7 +29,7 @@ class StoreDetailsSheet extends ConsumerWidget {
       data: (data) => Wrap(children: [
         Column(
           children: [
-            const SheetNotch(),
+            PlatformUtils.isWeb() ? const SizedBox() : const SheetNotch(),
             Padding(
               padding:
                   const EdgeInsets.symmetric(vertical: 30.0, horizontal: 30.0),
@@ -51,7 +53,7 @@ class StoreDetailsSheet extends ConsumerWidget {
                         Launcher().launchMaps(
                             latitude: location.latitude,
                             longitude: location.longitude,
-                            label: location.locationName);
+                            label: location.name);
                       },
                       child: Text(
                         '${location.address['streetNumber']} ${location.address['streetName']}',
@@ -64,7 +66,7 @@ class StoreDetailsSheet extends ConsumerWidget {
                         Launcher().launchMaps(
                             latitude: location.latitude,
                             longitude: location.longitude,
-                            label: location.locationName);
+                            label: location.name);
                       },
                       child: Text(
                         '${location.address['city']}, ${location.address['state']} ${location.address['zip']}',
@@ -80,10 +82,12 @@ class StoreDetailsSheet extends ConsumerWidget {
                     Spacing.vertical(5),
                     InkWell(
                       onTap: () {
-                        Launcher().launchPhone(number: location.phone);
+                        Launcher().launchPhone(
+                          number: int.parse(location.phone),
+                        );
                       },
                       child: Text(
-                        '${location.phone}',
+                        PhoneNumberFormatter.format(location.phone),
                         style: const TextStyle(
                             decoration: TextDecoration.underline),
                       ),

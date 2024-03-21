@@ -13,42 +13,6 @@ class IngredientServices {
         .map(getIngredientsFromDatabase);
   }
 
-  Stream<List<IngredientModel>> get modifiableIngredients {
-    return ingredientCollection
-        .where('isModifiable', isEqualTo: true)
-        .orderBy('categoryOrder')
-        .orderBy('id')
-        .snapshots()
-        .map(getIngredientsFromDatabase);
-  }
-
-  Stream<List<IngredientModel>> get allergenIngredients {
-    return ingredientCollection
-        .where('includeInAllergiesList', isEqualTo: true)
-        .orderBy('categoryOrder')
-        .orderBy('id')
-        .snapshots()
-        .map(getIngredientsFromDatabase);
-  }
-
-  Stream<List<IngredientModel>> get blendOnlyIngredients {
-    return ingredientCollection
-        .where('isModifiable', isEqualTo: true)
-        .where('isStandardTopping', isEqualTo: false)
-        .orderBy('categoryOrder')
-        .orderBy('id')
-        .snapshots()
-        .map(getIngredientsFromDatabase);
-  }
-
-  Stream<List<IngredientModel>> get toppingsOnlyIngredients {
-    return ingredientCollection
-        .where('isTopping', isEqualTo: true)
-        .orderBy('id')
-        .snapshots()
-        .map(getIngredientsFromDatabase);
-  }
-
   List<IngredientModel> getIngredientsFromDatabase(QuerySnapshot snapshot) {
     return snapshot.docs.map((doc) {
       final dynamic data = doc.data();
@@ -57,6 +21,7 @@ class IngredientServices {
         name: data['name'],
         image: data['image'],
         category: data['category'],
+        categoryOrder: data['categoryOrder'],
         id: data['id'],
         price: data['price'],
         memberPrice: data['memberPrice'],

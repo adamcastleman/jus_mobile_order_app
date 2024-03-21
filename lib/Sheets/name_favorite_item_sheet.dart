@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:jus_mobile_order_app/Helpers/modal_bottom_sheets.dart';
+import 'package:jus_mobile_order_app/Helpers/error.dart';
+import 'package:jus_mobile_order_app/Helpers/spacing_widgets.dart';
 import 'package:jus_mobile_order_app/Models/product_model.dart';
 import 'package:jus_mobile_order_app/Models/user_model.dart';
 import 'package:jus_mobile_order_app/Providers/product_providers.dart';
 import 'package:jus_mobile_order_app/Providers/stream_providers.dart';
 import 'package:jus_mobile_order_app/Services/favorites_services.dart';
-import 'package:jus_mobile_order_app/Sheets/invalid_sheet_single_pop.dart';
 import 'package:jus_mobile_order_app/Widgets/Buttons/elevated_button_medium.dart';
 import 'package:jus_mobile_order_app/Widgets/Buttons/outlined_button_medium.dart';
 
@@ -43,16 +43,21 @@ class NameFavoriteItemSheet extends ConsumerWidget {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
-                    MediumOutlineButton(
-                      buttonText: 'Cancel',
-                      onPressed: () => Navigator.pop(context),
+                    Flexible(
+                      child: MediumOutlineButton(
+                        buttonText: 'Cancel',
+                        onPressed: () => Navigator.pop(context),
+                      ),
                     ),
-                    MediumElevatedButton(
-                      buttonText: 'Add to favorites',
-                      onPressed: () {
-                        Navigator.pop(context);
-                        _addItemToFavorites(context, ref, user);
-                      },
+                    Spacing.horizontal(5),
+                    Flexible(
+                      child: MediumElevatedButton(
+                        buttonText: 'Add to favorites',
+                        onPressed: () {
+                          Navigator.pop(context);
+                          _addItemToFavorites(context, ref, user);
+                        },
+                      ),
                     ),
                   ],
                 ),
@@ -66,17 +71,13 @@ class NameFavoriteItemSheet extends ConsumerWidget {
 
   _addItemToFavorites(BuildContext context, WidgetRef ref, UserModel user) {
     FavoritesServices(ref: ref).addToFavorites(
-        context: context,
-        currentIngredients: addIngredients(ref),
-        currentToppings: addToppings(ref),
-        onError: (error) {
-          ModalBottomSheet().partScreen(
-            context: context,
-            builder: (context) => InvalidSheetSinglePop(
-              error: error,
-            ),
-          );
-        });
+      context: context,
+      currentIngredients: addIngredients(ref),
+      currentToppings: addToppings(ref),
+      onError: (error) {
+        ErrorHelpers.showSinglePopError(context, error: error);
+      },
+    );
   }
 
   addIngredients(WidgetRef ref) {

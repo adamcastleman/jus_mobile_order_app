@@ -1,129 +1,125 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:jus_mobile_order_app/Helpers/modal_bottom_sheets.dart';
 import 'package:jus_mobile_order_app/Helpers/orders.dart';
 import 'package:jus_mobile_order_app/Helpers/payments.dart';
 import 'package:jus_mobile_order_app/Helpers/wallet.dart';
 import 'package:jus_mobile_order_app/Models/payments_model.dart';
 import 'package:jus_mobile_order_app/Models/user_model.dart';
 import 'package:jus_mobile_order_app/Providers/loading_providers.dart';
-import 'package:jus_mobile_order_app/Providers/location_providers.dart';
 import 'package:jus_mobile_order_app/Providers/payments_providers.dart';
-import 'package:jus_mobile_order_app/Services/payments_services_square.dart';
-import 'package:jus_mobile_order_app/Sheets/invalid_sheet_single_pop.dart';
+import 'package:jus_mobile_order_app/Services/payment_services.dart';
 import 'package:jus_mobile_order_app/Widgets/Buttons/elevated_button_large.dart';
+
+import '../../Helpers/error.dart';
 
 class LoadWalletAndPayButton extends ConsumerWidget {
   final UserModel user;
   final PaymentsModel wallet;
-  final VoidCallback onSuccess;
-  final Function(String) onError;
+  final PaymentsModel creditCard;
 
-  const LoadWalletAndPayButton(
-      {required this.wallet,
-      required this.user,
-      required this.onSuccess,
-      required this.onError,
-      super.key});
+  const LoadWalletAndPayButton({
+    required this.wallet,
+    required this.creditCard,
+    required this.user,
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final loadAmount = ref.watch(selectedLoadAmountProvider) ??
+        WalletHelpers().getDefaultLoadAmount(ref, user, wallet.balance ?? 0);
+    final formattedAmount = formatAmount(loadAmount);
+
     return LargeElevatedButton(
-        buttonText: getPaymentButtonText(ref, user, wallet),
-        onPressed: () {
-          ref.read(loadingProvider.notifier).state = true;
-          bool isValidated = _validatePayment(context, ref);
-          if (isValidated) {
-            HapticFeedback.lightImpact();
-            _handlePayment(context: context, ref: ref, user: user);
-          }
-        });
+      buttonText: 'Add \$$formattedAmount to Wallet x${wallet.last4} and pay',
+      onPressed: () => _onPressed(context, ref, loadAmount),
+    );
   }
 
-  String getPaymentButtonText(
-      WidgetRef ref, UserModel user, PaymentsModel wallet) {
-    final walletHelpers = WalletHelpers(ref: ref);
-    final selectedLoadAmount = ref.watch(selectedLoadAmountProvider);
-    final walletAmount = walletHelpers.walletAmount(wallet);
-    final amount = selectedLoadAmount ??
-        walletHelpers.loadAndPayWalletAmount(ref, user, walletAmount);
-    final formattedAmount = (amount / 100).toStringAsFixed(2);
-
-    return 'Add \$$formattedAmount to Wallet and pay';
+  String formatAmount(int amountInCents) {
+    return (amountInCents / 100).toStringAsFixed(2);
   }
 
-  bool _validatePayment(BuildContext context, WidgetRef ref) {
-    final walletHelpers = WalletHelpers(ref: ref);
-    final walletAmount = walletHelpers.walletAmount(wallet);
-    final failedValidationMessage =
-        OrderHelpers(ref: ref).validateOrder(context);
-    final selectedPayment = ref.watch(selectedPaymentMethodProvider);
-
-    if (!WalletHelpers(ref: ref)
-        .isWalletBalanceSufficientToCoverTransaction(ref, walletAmount, user)) {
-      invalidateWalletProviders(ref);
-      ModalBottomSheet().partScreen(
-        context: context,
-        builder: (context) => const InvalidSheetSinglePop(
-          error: 'You cannot cover the order total with this amount.',
-        ),
-      );
-      return false;
-    }
+  void _onPressed(BuildContext context, WidgetRef ref, int loadAmount) {
+    HapticFeedback.lightImpact();
+    String? failedValidationMessage = OrderHelpers.validateOrder(context, ref);
 
     if (failedValidationMessage != null) {
-      invalidateWalletProviders(ref);
-      OrderHelpers(ref: ref)
-          .showInvalidOrderModal(context, failedValidationMessage);
-      return false;
+      ErrorHelpers.showSinglePopError(context, error: failedValidationMessage);
+      return;
     }
 
-    if (selectedPayment.isEmpty) {
-      invalidateWalletProviders(ref);
-      WalletHelpers(ref: ref).displayInvalidPaymentError(context);
-      return false;
+    if (!WalletHelpers.isWalletBalanceSufficientToCoverTransaction(
+        ref, wallet.balance ?? 0, user)) {
+      ErrorHelpers.showSinglePopError(context,
+          error: 'Insufficient wallet balance to cover the order.');
+      return;
     }
 
-    return true; // All validations passed
+    if (wallet.gan == null || wallet.gan!.isEmpty) {
+      ErrorHelpers.showSinglePopError(context,
+          error: 'Please choose a payment method.');
+      return;
+    }
+
+    _handlePayment(context, ref, loadAmount);
   }
 
-  void _handlePayment({
-    required BuildContext context,
-    required WidgetRef ref,
-    required UserModel user,
-  }) {
+  void _handlePayment(BuildContext context, WidgetRef ref, int loadAmount) {
     final applePaySelected = ref.watch(applePaySelectedProvider);
-    final paymentsServices = SquarePaymentServices();
+    final totals = PaymentsHelpers.generateOrderPricingDetails(ref, user);
+    Map<String, dynamic> orderDetails =
+        PaymentsHelpers().generateOrderDetails(ref, user, totals);
 
     if (applePaySelected) {
-      ref.read(applePayLoadingProvider.notifier).state = true;
-      paymentsServices.initApplePayWalletLoad(
-          context: context, ref: ref, user: user);
+      _processApplePay(context, ref, orderDetails, loadAmount);
     } else {
-      addFundsToWalletAndPay(context, ref, user, paymentsServices, wallet);
+      orderDetails['paymentDetails']['cardId'] = creditCard.cardId;
+      _addFundsToWalletAndPay(context, ref, orderDetails, loadAmount);
     }
   }
 
-  addFundsToWalletAndPay(BuildContext context, WidgetRef ref, UserModel user,
-      SquarePaymentServices paymentsServices, PaymentsModel wallet) {
+  void _processApplePay(BuildContext context, WidgetRef ref,
+      Map<String, dynamic> orderDetails, int loadAmount) {
+    ref.read(applePayLoadingProvider.notifier).state = true;
+    PaymentServices().generateSecureCardDetailsFromApplePay(
+      ref: ref,
+      amount: loadAmount.toString(),
+      onSuccess: (cardDetails) {
+        orderDetails['paymentDetails']['cardId'] = cardDetails.nonce;
+        _addFundsToWalletAndPay(context, ref, orderDetails, loadAmount);
+      },
+      onError: (error) =>
+          PaymentsHelpers.showPaymentErrorModal(context, ref, error),
+    );
+  }
+
+  void _addFundsToWalletAndPay(BuildContext context, WidgetRef ref,
+      Map<String, dynamic> orderDetails, int loadAmount) {
     ref.read(loadingProvider.notifier).state = true;
-    final selectedWallet = ref.watch(currentlySelectedWalletProvider);
-    final totals = PaymentsHelper(ref: ref).calculatePricingAndTotals(user);
-    final orderMap = PaymentsHelper(ref: ref).generateOrderMap(user, totals);
-    final loadAmount = ref.watch(walletLoadAmountsProvider);
-    final selectedLoadAmountIndex = ref.watch(selectedLoadAmountIndexProvider);
-    final selectedLocation = ref.watch(selectedLocationProvider);
-    paymentsServices.addFundsToWalletAndPay(
-      orderMap: orderMap,
-      walletUid: selectedWallet.isEmpty ? wallet.uid : selectedWallet['uid'],
-      loadAmount: loadAmount[selectedLoadAmountIndex],
-      currency: selectedLocation.currency,
+    Map<String, dynamic> walletDetails =
+        PaymentsHelpers.generateAddFundsToWalletOrderDetails(
+      user: user,
+      cardId: creditCard.cardId ?? '',
+      gan: wallet.gan ?? '',
+      walletUid: wallet.uid ?? '',
+      loadAmount: (loadAmount).floor().toString(),
+    );
+    PaymentServices.addFundsToWalletCloudFunction(
+      walletDetails,
       onSuccess: () {
-        onSuccess();
+        orderDetails['paymentDetails']['cardId'] = wallet.gan;
+        return PaymentServices.createOrderCloudFunction(
+          orderDetails: orderDetails,
+          onPaymentSuccess: () =>
+              PaymentsHelpers.showPaymentSuccessModal(context),
+          onError: (error) =>
+              PaymentsHelpers.showPaymentErrorModal(context, ref, error),
+        );
       },
       onError: (error) {
-        onError(error);
+        PaymentsHelpers.showPaymentErrorModal(context, ref, error);
       },
     );
   }

@@ -8,7 +8,7 @@ if (admin.apps.length === 0) {
 
 exports.removeFromFavorites = functions.https.onCall(async (data, context) => {
   const { docID } = data;
-  const userID = context.auth.uid;
+  const userId = context.auth.uid;
 
   if (!isAuthenticated(context)) {
     return {
@@ -21,7 +21,7 @@ exports.removeFromFavorites = functions.https.onCall(async (data, context) => {
     const favoritesDocRef = admin
       .firestore()
       .collection("users")
-      .doc(userID)
+      .doc(userId)
       .collection("favorites")
       .doc(docID);
 

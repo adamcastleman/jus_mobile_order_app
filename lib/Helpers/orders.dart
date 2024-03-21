@@ -1,19 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:jus_mobile_order_app/Helpers/Validators/order_validators.dart';
-import 'package:jus_mobile_order_app/Helpers/modal_bottom_sheets.dart';
+import 'package:jus_mobile_order_app/Helpers/error.dart';
 import 'package:jus_mobile_order_app/Helpers/time.dart';
 import 'package:jus_mobile_order_app/Models/product_model.dart';
 import 'package:jus_mobile_order_app/Providers/order_providers.dart';
-import 'package:jus_mobile_order_app/Sheets/invalid_sheet_double_pop.dart';
 
 import '../Providers/product_providers.dart';
 
 class OrderHelpers {
-  final WidgetRef ref;
-  OrderHelpers({required this.ref});
-
-  List<Map<String, dynamic>> scheduledItems() {
+  static List<Map<String, dynamic>> scheduledItems(WidgetRef ref) {
     final currentOrder = ref.watch(currentOrderItemsProvider);
     final allItemsScheduled = ref.watch(scheduleAllItemsProvider);
     if (allItemsScheduled) {
@@ -25,7 +21,7 @@ class OrderHelpers {
     }
   }
 
-  List<Map<String, dynamic>> nonScheduledItems() {
+  static List<Map<String, dynamic>> nonScheduledItems(WidgetRef ref) {
     final currentOrder = ref.watch(currentOrderItemsProvider);
     final allItemsScheduled = ref.watch(scheduleAllItemsProvider);
 
@@ -36,22 +32,23 @@ class OrderHelpers {
     return currentOrder.where((element) => !element['isScheduled']).toList();
   }
 
-  setScheduledLimitProviders(ProductQuantityModel quantityLimit) {
+  static setScheduledLimitProviders(
+      WidgetRef ref, ProductQuantityModel quantityLimit) {
     ref.read(scheduledQuantityDescriptorProvider.notifier).state =
         quantityLimit.scheduledProductDescriptor;
     ref.read(scheduledProductHoursNoticeProvider.notifier).state =
         quantityLimit.hoursNotice;
   }
 
-  List<Map<String, dynamic>> listOfScheduledItems({
+  static List<Map<String, dynamic>> listOfScheduledItems({
     required List<dynamic> scheduledItems,
     required List<dynamic> products,
   }) {
     Map<String, dynamic> toScheduledItemMap(dynamic item) {
       final product =
-          products.firstWhere((p) => p.productID == item['productID']);
+          products.firstWhere((p) => p.productId == item['productId']);
       return {
-        'name': product.locationName,
+        'name': product.name,
         'productUID': product.uid,
         'scheduledQuantity': item['scheduledQuantity'],
         'scheduledProductDescriptor': item['scheduledProductDescriptor'],
@@ -64,17 +61,17 @@ class OrderHelpers {
         .toList();
   }
 
-  void setOrderingDateAndTimeProviders(List product) {
-    final hasScheduledItems = scheduledItems().isNotEmpty;
-    final hasNonScheduledItems = nonScheduledItems().isNotEmpty;
+  void setOrderingDateAndTimeProviders(WidgetRef ref) {
+    final hasScheduledItems = scheduledItems(ref).isNotEmpty;
+    final hasNonScheduledItems = nonScheduledItems(ref).isNotEmpty;
 
     ref.read(scheduledAndNowItemsInCartProvider.notifier).state =
         hasScheduledItems && hasNonScheduledItems;
 
-    setMinimumPickupTime();
+    setMinimumPickupTime(ref);
   }
 
-  void setMinimumScheduleDate() {
+  static setMinimumScheduleDate(WidgetRef ref) {
     final hoursNotice = ref.watch(scheduledProductHoursNoticeProvider);
     final selectedTime = ref.read(selectedPickupDateProvider);
 
@@ -87,12 +84,12 @@ class OrderHelpers {
     ref.read(originalMinimumDateProvider.notifier).state = deadline;
   }
 
-  DateTime _getDeadline(DateTime now, int hoursNotice) {
+  static DateTime _getDeadline(DateTime now, int hoursNotice) {
     return DateTime(now.year, now.month, now.day, 0, 0, 0)
         .add(Duration(hours: hoursNotice));
   }
 
-  DateTime setMinimumPickupTime() {
+  static DateTime setMinimumPickupTime(WidgetRef ref) {
     final nowRounded = Time().nowRounded(ref);
     final openTime = Time().openTime(ref);
 
@@ -110,18 +107,16 @@ class OrderHelpers {
     return minimumTime;
   }
 
-  validateOrder(BuildContext context) {
-    final errorMessage = OrderValidators(ref: ref).checkValidity(context);
+  static validateOrder(BuildContext context, WidgetRef ref) {
+    final errorMessage =
+        OrderValidators().checkFinalOrderValidity(context, ref);
 
     if (errorMessage.isNotEmpty) {
       return errorMessage;
     }
   }
 
-  void showInvalidOrderModal(BuildContext context, String errorMessage) {
-    ModalBottomSheet().partScreen(
-      context: context,
-      builder: (context) => InvalidSheetDoublePop(error: errorMessage),
-    );
+  static showInvalidOrderModal(BuildContext context, String errorMessage) {
+    ErrorHelpers.showDoublePopError(context, error: errorMessage);
   }
 }

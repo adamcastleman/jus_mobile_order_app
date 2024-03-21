@@ -2,12 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:jus_mobile_order_app/Helpers/Validators/order_validators.dart';
-import 'package:jus_mobile_order_app/Helpers/modal_bottom_sheets.dart';
+import 'package:jus_mobile_order_app/Helpers/error.dart';
+import 'package:jus_mobile_order_app/Helpers/navigation.dart';
 import 'package:jus_mobile_order_app/Models/user_model.dart';
 import 'package:jus_mobile_order_app/Providers/auth_providers.dart';
-import 'package:jus_mobile_order_app/Sheets/invalid_sheet_single_pop.dart';
-import 'package:jus_mobile_order_app/Sheets/tip_sheet.dart';
+import 'package:jus_mobile_order_app/Sheets/finalize_payment_sheet.dart';
 import 'package:jus_mobile_order_app/Widgets/Buttons/elevated_button_large.dart';
+import 'package:jus_mobile_order_app/constants.dart';
 
 import '../../Helpers/Validators/checkout_validators.dart';
 
@@ -31,13 +32,12 @@ class FinishAndPayButton extends ConsumerWidget {
 
   _validateCheckoutData(BuildContext context, WidgetRef ref, UserModel user,
       ScrollController controller) {
-    String? validationResult =
-        OrderValidators(ref: ref).checkPickupTime(context);
+    String? validationResult = OrderValidators().checkPickupTime(context, ref);
 
     if (validationResult != null) {
-      ModalBottomSheet().partScreen(
-        context: context,
-        builder: (context) => InvalidSheetSinglePop(error: validationResult),
+      ErrorHelpers.showSinglePopError(
+        context,
+        error: validationResult,
       );
     } else {
       _validateGuestFormAndContinue(context, ref, user, controller);
@@ -46,20 +46,30 @@ class FinishAndPayButton extends ConsumerWidget {
 
   void _validateGuestFormAndContinue(BuildContext context, WidgetRef ref,
       UserModel user, ScrollController controller) {
-    // If user is not a guest, directly show the tip sheet.
+    // If user is not a guest, directly show the finalize payment sheet.
     if (user.uid != null) {
-      _showTipSheet(context, ref);
+      NavigationHelpers.navigateToPartScreenSheetOrEndDrawer(
+        context,
+        ref,
+        AppConstants.scaffoldKey,
+        const FinalizePaymentSheet(),
+      );
       return;
     }
 
     // For guests, validate the form first.
-    CheckoutValidators(ref: ref).validateForm();
+    CheckoutValidators().validateForm(ref);
 
-    // Depending on validation result, either scroll to top or show the tip sheet.
+    // Depending on validation result, either scroll to top or show the finalize payment sheet.
     if (!ref.read(formValidatedProvider)) {
       _scrollToTop(controller);
     } else {
-      _showTipSheet(context, ref);
+      NavigationHelpers.navigateToPartScreenSheetOrEndDrawer(
+        context,
+        ref,
+        AppConstants.scaffoldKey,
+        const FinalizePaymentSheet(),
+      );
     }
   }
 
@@ -68,16 +78,6 @@ class FinishAndPayButton extends ConsumerWidget {
       0.0,
       duration: const Duration(milliseconds: 200),
       curve: Curves.linear,
-    );
-  }
-
-  void _showTipSheet(BuildContext context, WidgetRef ref) {
-    ModalBottomSheet().partScreen(
-      isScrollControlled: true,
-      enableDrag: false,
-      isDismissible: true,
-      context: context,
-      builder: (context) => const TipSheet(),
     );
   }
 }

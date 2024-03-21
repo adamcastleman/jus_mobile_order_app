@@ -40,6 +40,7 @@ class MarkerHandler {
                 //tile when tapping on the marker
                 final index = locations.indexOf(selectedLocation);
                 final tileWidth = AppConstants.tileWidth;
+                LocationHelper().setLocationDataFromMap(ref, location);
                 ref.read(selectedLocationIndexProvider.notifier).state = index;
                 LocationHelper().calculateListScroll(
                   ref,

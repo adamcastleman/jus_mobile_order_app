@@ -3,10 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:jus_mobile_order_app/Models/ingredient_model.dart';
 import 'package:jus_mobile_order_app/Models/product_model.dart';
-import 'package:jus_mobile_order_app/Providers/ProviderWidgets/modifiable_ingredients_provider_widget.dart';
 import 'package:jus_mobile_order_app/Providers/product_providers.dart';
 import 'package:jus_mobile_order_app/Widgets/Cards/modify_allergy_grid_card.dart';
 import 'package:jus_mobile_order_app/Widgets/General/allergen_label.dart';
+import 'package:jus_mobile_order_app/constants.dart';
 
 class AllergyInfo extends ConsumerWidget {
   final ProductModel product;
@@ -15,30 +15,29 @@ class AllergyInfo extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final allergies = ref.watch(selectedAllergiesProvider);
+    final ingredients = ref.watch(allIngredientsProvider);
 
-    return ModifiableIngredientsProviderWidget(
-      builder: (ingredients) => Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            'Allergies',
-            style: Theme.of(context).textTheme.titleLarge,
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Allergies',
+          style: Theme.of(context).textTheme.titleLarge,
+        ),
+        Padding(
+          padding: const EdgeInsets.symmetric(vertical: 4.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 4.0),
+                child: _buildAllergiesGridView(allergies, ingredients),
+              ),
+            ],
           ),
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: 4.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 4.0),
-                  child: _buildAllergiesGridView(allergies, ingredients),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 
@@ -51,33 +50,38 @@ class AllergyInfo extends ConsumerWidget {
       );
     }
 
-    return GridView.builder(
-      padding: const EdgeInsets.all(8.0),
-      primary: false,
-      shrinkWrap: true,
-      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-        childAspectRatio: 1 / 1.2,
-        crossAxisCount: 3,
-        mainAxisSpacing: 3,
-        crossAxisSpacing: 3,
+    return ConstrainedBox(
+      constraints: const BoxConstraints(maxWidth: 500),
+      child: GridView.builder(
+        padding: const EdgeInsets.all(8.0),
+        primary: false,
+        shrinkWrap: true,
+        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+          childAspectRatio: AppConstants.screenWidth > AppConstants.tabletWidth
+              ? 9 / 11
+              : 1 / 1.2,
+          crossAxisCount: 3,
+          mainAxisSpacing: 3,
+          crossAxisSpacing: 3,
+        ),
+        itemCount: allergies.isEmpty ? 1 : allergies.length + 1,
+        itemBuilder: (context, index) {
+          if (index == allergies.length) {
+            return const ModifyAllergyGridCard();
+          } else {
+            final currentIngredient = ingredients
+                .firstWhere((element) => element.id == allergies[index]);
+            return buildAllergyCard(currentIngredient);
+          }
+        },
       ),
-      itemCount: allergies.isEmpty ? 1 : allergies.length + 1,
-      itemBuilder: (context, index) {
-        if (index == allergies.length) {
-          return const ModifyAllergyGridCard();
-        } else {
-          final currentIngredient = ingredients
-              .firstWhere((element) => element.id == allergies[index]);
-          return buildAllergyCard(currentIngredient);
-        }
-      },
     );
   }
 
   Widget buildAllergyCard(IngredientModel ingredient) {
     return Card(
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(4.0),
+        borderRadius: BorderRadius.circular(25),
       ),
       child: Column(
         children: [

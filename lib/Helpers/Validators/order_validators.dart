@@ -7,32 +7,27 @@ import 'package:jus_mobile_order_app/Models/product_model.dart';
 import 'package:jus_mobile_order_app/Providers/location_providers.dart';
 import 'package:jus_mobile_order_app/Providers/order_providers.dart';
 import 'package:jus_mobile_order_app/Providers/product_providers.dart';
-import 'package:jus_mobile_order_app/Providers/stream_providers.dart';
 
 class OrderValidators {
-  final WidgetRef ref;
-
-  OrderValidators({required this.ref});
-
-  String checkValidity(BuildContext context) {
+  String checkFinalOrderValidity(BuildContext context, WidgetRef ref) {
     String? errorMessage;
 
-    errorMessage = checkScheduledOrder();
+    errorMessage = checkScheduledOrder(ref);
     if (errorMessage != null) return errorMessage;
 
-    errorMessage = checkNotAcceptingOrders(context);
+    errorMessage = checkNotAcceptingOrders(context, ref);
     if (errorMessage != null) return errorMessage;
 
-    errorMessage = checkPickupTime(context);
+    errorMessage = checkPickupTime(context, ref);
     if (errorMessage != null) return errorMessage;
 
-    errorMessage = _checkUnavailableItems();
+    errorMessage = checkUnavailableItems(ref);
     if (errorMessage != null) return errorMessage;
 
     return '';
   }
 
-  String? checkScheduledOrder() {
+  static String? checkScheduledOrder(WidgetRef ref) {
     final currentOrder = ref.watch(currentOrderItemsProvider);
 
     bool isScheduledOrder =
@@ -49,11 +44,11 @@ class OrderValidators {
     return null;
   }
 
-  String? checkNotAcceptingOrders(BuildContext context) {
+  String? checkNotAcceptingOrders(BuildContext context, WidgetRef ref) {
     bool isScheduledOrder = ref.watch(scheduleAllItemsProvider);
     bool notAcceptingOrders = !Time().acceptingOrders(context, ref) ||
         !LocationHelper().acceptingOrders(ref);
-    bool notValidScheduleDate = !_isScheduleDateValid();
+    bool notValidScheduleDate = !_isScheduleDateValid(ref);
 
     if (!isScheduledOrder && notAcceptingOrders && notValidScheduleDate) {
       return 'Please schedule your pickup date for ${LocationHelper().selectedLocation(ref).locationName}, which is not accepting pickup orders right now.';
@@ -62,13 +57,13 @@ class OrderValidators {
     return null;
   }
 
-  String? checkPickupTime(BuildContext context) {
+  String? checkPickupTime(BuildContext context, WidgetRef ref) {
     final currentOrder = ref.watch(currentOrderItemsProvider);
     bool isScheduledOrder =
         currentOrder.every((element) => element['isScheduled'] == true) ||
             ref.watch(scheduleAllItemsProvider);
     DateTime? pickupTime = ref.watch(selectedPickupTimeProvider);
-    bool notValidSelectedTime = !_isSelectedTimeValid();
+    bool notValidSelectedTime = !_isSelectedTimeValid(ref);
     bool acceptingOrders = LocationHelper().acceptingOrders(ref) &&
         Time().acceptingOrders(context, ref);
 
@@ -87,17 +82,17 @@ class OrderValidators {
     return null;
   }
 
-  String? _checkUnavailableItems() {
-    var unavailableItems = getUnavailableItemsMessage();
+  String? checkUnavailableItems(WidgetRef ref) {
+    var unavailableItems = getUnavailableItemsMessage(ref);
 
     if (unavailableItems.isNotEmpty) {
-      return '$unavailableItems at ${LocationHelper().selectedLocation(ref).locationName} right now. Please remove this item from your cart before continuing.';
+      return '$unavailableItems at ${LocationHelper().selectedLocation(ref).name} right now. Please remove this item from your cart before continuing.';
     }
 
     return null;
   }
 
-  bool _isScheduleDateValid() {
+  bool _isScheduleDateValid(WidgetRef ref) {
     final currentOrder = ref.watch(currentOrderItemsProvider);
     final scheduledDate = ref.watch(selectedPickupDateProvider);
     final deadline = ref.watch(originalMinimumDateProvider);
@@ -107,7 +102,7 @@ class OrderValidators {
             (scheduledDate == deadline || scheduledDate.isAfter(deadline!)));
   }
 
-  bool _isSelectedTimeValid() {
+  bool _isSelectedTimeValid(WidgetRef ref) {
     final selectedTime = ref.watch(selectedPickupTimeProvider);
     final currentTime = Time().now(ref);
     final validTime = currentTime.add(const Duration(minutes: 5));
@@ -115,43 +110,32 @@ class OrderValidators {
     return selectedTime != null && selectedTime.isAfter(validTime);
   }
 
-  String getUnavailableItemsMessage() {
+  String getUnavailableItemsMessage(WidgetRef ref) {
     final selectedLocation = ref.watch(selectedLocationProvider);
-    final products = ref.watch(productsProvider);
-    final locations = ref.watch(locationsProvider);
-
-    return locations.when(
-      error: (e, _) => '',
-      loading: () => '',
-      data: (location) => products.when(
-        error: (e, _) => '',
-        loading: () => '',
-        data: (product) {
-          final unavailableProductIDs =
-              _getUnavailableProductIDs(location, selectedLocation);
-          final unavailableItems =
-              _getUnavailableItemsInOrder(product, unavailableProductIDs);
-          return _formatUnavailableItemsMessage(unavailableItems);
-        },
-      ),
-    );
+    final products = ref.watch(allProductsProvider);
+    final locations = ref.watch(allLocationsProvider);
+    final unavailableProductIds =
+        _getUnavailableProductIds(locations, selectedLocation);
+    final unavailableItems =
+        _getUnavailableItemsInOrder(ref, products, unavailableProductIds);
+    return _formatUnavailableItemsMessage(unavailableItems);
   }
 
-  List _getUnavailableProductIDs(
+  List _getUnavailableProductIds(
       List<LocationModel> locations, LocationModel selectedLocation) {
     return locations
         .firstWhere(
-            (element) => element.locationID == selectedLocation.locationID)
+            (element) => element.locationId == selectedLocation.locationId)
         .unavailableProducts;
   }
 
   List<String> _getUnavailableItemsInOrder(
-      List<ProductModel> products, List unavailableProductIDs) {
+      WidgetRef ref, List<ProductModel> products, List unavailableProductIds) {
     final currentOrder = ref.watch(currentOrderItemsProvider);
     return currentOrder
-        .where((item) => unavailableProductIDs.contains(item['productID']))
+        .where((item) => unavailableProductIds.contains(item['productId']))
         .map((item) =>
-            products.firstWhere((p) => p.productID == item['productID']))
+            products.firstWhere((p) => p.productId == item['productId']))
         .map((product) => product.name)
         .toList();
   }

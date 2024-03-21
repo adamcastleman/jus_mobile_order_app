@@ -26,15 +26,18 @@ class WalletHistoryTile extends StatelessWidget {
         maxLines: 1,
         overflow: TextOverflow.ellipsis,
       ),
-      trailing: Column(
-        crossAxisAlignment: CrossAxisAlignment.end,
-        children: [
-          Text(
-            '+\$${(wallet.amount / 100).toStringAsFixed(2)}',
-            style: const TextStyle(color: Colors.green),
-          ),
-          Text(DateFormat('M/d/yyyy').format(wallet.createdAt)),
-        ],
+      trailing: Padding(
+        padding: const EdgeInsets.only(right: 24.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.end,
+          children: [
+            Text(
+              '+\$${(wallet.amount / 100).toStringAsFixed(2)}',
+              style: const TextStyle(color: Colors.green),
+            ),
+            Text(DateFormat('M/d/yyyy').format(wallet.createdAt)),
+          ],
+        ),
       ),
     );
   }

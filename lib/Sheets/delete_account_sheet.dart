@@ -1,38 +1,38 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:jus_mobile_order_app/Helpers/modal_bottom_sheets.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:jus_mobile_order_app/Helpers/navigation.dart';
 import 'package:jus_mobile_order_app/Helpers/spacing_widgets.dart';
 import 'package:jus_mobile_order_app/Providers/ProviderWidgets/delete_account_provider_widget.dart';
+import 'package:jus_mobile_order_app/Providers/theme_providers.dart';
 import 'package:jus_mobile_order_app/Sheets/delete_account_form_sheet.dart';
-import 'package:jus_mobile_order_app/Widgets/Buttons/close_button.dart';
 import 'package:jus_mobile_order_app/Widgets/Buttons/elevated_button_medium.dart';
+import 'package:jus_mobile_order_app/Widgets/Headers/sheet_header.dart';
+import 'package:jus_mobile_order_app/constants.dart';
 
-class DeleteAccountSheet extends StatelessWidget {
+class DeleteAccountSheet extends ConsumerWidget {
   const DeleteAccountSheet({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final isDrawerOpen = AppConstants.scaffoldKey.currentState?.isEndDrawerOpen;
+    final backgroundColor = ref.watch(backgroundColorProvider);
     return DeleteAccountProviderWidget(
       builder: (image) => Container(
-        padding: const EdgeInsets.only(top: 60.0, bottom: 50.0),
+        color: backgroundColor,
+        padding: EdgeInsets.only(
+            top: isDrawerOpen == null || !isDrawerOpen ? 60.0 : 20.0,
+            bottom: 50.0),
         height: double.infinity,
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Padding(
-              padding: const EdgeInsets.only(left: 22.0, right: 10.0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    'Delete Account',
-                    style: Theme.of(context).textTheme.headlineSmall,
-                  ),
-                  const JusCloseButton(
-                    removePadding: true,
-                  ),
-                ],
+              padding: const EdgeInsets.only(left: 20.0, right: 10.0),
+              child: SheetHeader(
+                title: 'Delete Account',
+                showCloseButton: isDrawerOpen == null || !isDrawerOpen,
               ),
             ),
             SizedBox(
@@ -73,12 +73,9 @@ class DeleteAccountSheet extends StatelessWidget {
               child: MediumElevatedButton(
                 buttonText: 'Request Account Deletion',
                 onPressed: () {
-                  ModalBottomSheet().partScreen(
-                    enableDrag: false,
-                    isDismissible: false,
-                    isScrollControlled: true,
-                    context: context,
-                    builder: (context) => const DeleteAccountFormSheet(),
+                  NavigationHelpers.navigateToPartScreenSheetOrDialog(
+                    context,
+                    const DeleteAccountFormSheet(),
                   );
                 },
               ),

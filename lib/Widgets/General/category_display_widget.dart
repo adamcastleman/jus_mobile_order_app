@@ -17,7 +17,7 @@ class CategoryWidget extends StatelessWidget {
             fontWeight: FontWeight.bold,
           ),
         ),
-        JusDivider().thick(),
+        JusDivider.thick(),
       ],
     );
   }

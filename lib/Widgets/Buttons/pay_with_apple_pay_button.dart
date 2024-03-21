@@ -6,24 +6,19 @@ import 'package:jus_mobile_order_app/Helpers/payments.dart';
 import 'package:jus_mobile_order_app/Models/user_model.dart';
 import 'package:jus_mobile_order_app/Providers/loading_providers.dart';
 import 'package:jus_mobile_order_app/Providers/payments_providers.dart';
-import 'package:jus_mobile_order_app/Services/payment_method_database_services.dart';
-import 'package:jus_mobile_order_app/Services/payments_services_square.dart';
+import 'package:jus_mobile_order_app/Services/payment_services.dart';
 import 'package:jus_mobile_order_app/Widgets/Buttons/large_apple_pay_button.dart';
 
 class PayWithApplePayButton extends ConsumerWidget {
   final UserModel user;
-  final Map<String, dynamic> orderMap;
-  const PayWithApplePayButton(
-      {required this.user, required this.orderMap, super.key});
+  const PayWithApplePayButton({required this.user, super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final selectedPaymentReference =
-        ref.watch(selectedPaymentMethodProvider.notifier);
     final isApplePayCompleted = ref.watch(isApplePayCompletedProvider);
     if (isApplePayCompleted) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        PaymentsHelper().showPaymentSuccessModal(context);
+        PaymentsHelpers.showPaymentSuccessModal(context);
         ref.read(isApplePayCompletedProvider.notifier).state = false;
       });
       // Reset the state
@@ -33,57 +28,33 @@ class PayWithApplePayButton extends ConsumerWidget {
         HapticFeedback.lightImpact();
         ref.read(applePaySelectedProvider.notifier).state = true;
         ref.read(applePayLoadingProvider.notifier).state = true;
-        final errorMessage = OrderHelpers(ref: ref).validateOrder(context);
+        final errorMessage = OrderHelpers.validateOrder(context, ref);
         if (errorMessage != null) {
-          OrderHelpers(ref: ref).showInvalidOrderModal(context, errorMessage);
+          OrderHelpers.showInvalidOrderModal(context, errorMessage);
         } else {
-          await SquarePaymentServices().initApplePayPayment(
-              priceInDollars:
-                  (orderMap['totals']['totalAmount'] / 100).toString(),
-              onSuccess: (cardDetails) async {
-                PaymentMethodDatabaseServices().updatePaymentMethod(
-                  reference: selectedPaymentReference,
-                  cardNickname: user.firstName ?? '',
-                  cardId: cardDetails.nonce,
-                  brand: cardDetails.card.brand.name,
-                  isWallet: false,
-                  last4: cardDetails.card.lastFourDigits,
-                );
-                //We call these again, to make sure that our orderMap is updated
-                //with the correct cardId that was just generated from the nonce.
-                final totals =
-                    PaymentsHelper(ref: ref).calculatePricingAndTotals(user);
-                final orderMap =
-                    PaymentsHelper(ref: ref).generateOrderMap(user, totals);
-                SquarePaymentServices().processPayment(
-                  orderMap: orderMap,
-                  onPaymentSuccess: () async {
-                    ref.invalidate(loadingProvider);
-                    ref.invalidate(applePayLoadingProvider);
-                    HapticFeedback.lightImpact();
-                    await SquarePaymentServices()
-                        .completeApplePayAuthorization(isSuccess: true);
-                    ref.read(isApplePayCompletedProvider.notifier).state = true;
+          final totals = PaymentsHelpers.generateOrderPricingDetails(ref, user);
+          PaymentServices().generateSecureCardDetailsFromApplePay(
+            ref: ref,
+            amount: '${totals['totalInCents']}',
+            onSuccess: (cardDetails) {
+              PaymentsHelpers
+                  .setCreditCardAsSelectedPaymentMethodWithSquareCardDetails(
+                      ref, user, cardDetails);
+              final orderDetails =
+                  PaymentsHelpers().generateOrderDetails(ref, user, totals);
+              PaymentServices.createOrderCloudFunction(
+                  orderDetails: orderDetails,
+                  onPaymentSuccess: () {
+                    PaymentsHelpers.showPaymentSuccessModal(context);
                   },
                   onError: (error) {
-                    ref.invalidate(loadingProvider);
-                    ref.invalidate(applePayLoadingProvider);
-                    PaymentsHelper().showPaymentErrorModal(context, error);
-                    SquarePaymentServices()
-                        .completeApplePayAuthorization(isSuccess: false);
-                  },
-                );
-              },
-              onFailure: () {
-                ref.invalidate(loadingProvider);
-                ref.invalidate(applePayLoadingProvider);
-                SquarePaymentServices()
-                    .completeApplePayAuthorization(isSuccess: false);
-              },
-              onComplete: () {
-                ref.invalidate(loadingProvider);
-                ref.invalidate(applePayLoadingProvider);
-              });
+                    PaymentsHelpers.showPaymentErrorModal(context, ref, error);
+                  });
+            },
+            onError: (error) {
+              PaymentsHelpers.showPaymentErrorModal(context, ref, error);
+            },
+          );
         }
       },
     );

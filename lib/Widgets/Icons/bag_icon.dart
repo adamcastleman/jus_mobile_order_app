@@ -6,7 +6,8 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:jus_mobile_order_app/Providers/product_providers.dart';
 
 class BagIcon extends ConsumerWidget {
-  const BagIcon({super.key});
+  final double? iconSize;
+  const BagIcon({this.iconSize, super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -35,9 +36,9 @@ class BagIcon extends ConsumerWidget {
                   : 12,
         ),
       ),
-      child: const Icon(
+      child: Icon(
         CupertinoIcons.bag,
-        size: 35,
+        size: iconSize ?? 35,
       ),
     );
   }

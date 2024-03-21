@@ -1,4 +1,22 @@
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:jus_mobile_order_app/Models/points_details_model.dart';
+
+final pointsInformationProvider = StateProvider<PointsDetailsModel>(
+  (ref) => const PointsDetailsModel(
+    uid: '',
+    perks: [],
+    rewardsAmounts: [],
+    name: '',
+    pointsPerDollar: 0,
+    memberPointsPerDollar: 0,
+    walletPointsPerDollar: 0,
+    walletPointsPerDollarMember: 0,
+    pointsStatus: '',
+    memberPointsStatus: '',
+  ),
+);
+
+final rewardAmountIndexProvider = StateProvider<int>((ref) => 0);
 
 final pointsInUseProvider = StateProvider<int>((ref) => 0);
 

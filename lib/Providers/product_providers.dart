@@ -2,11 +2,19 @@ import 'package:collection/collection.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:jus_mobile_order_app/Models/favorites_model.dart';
 import 'package:jus_mobile_order_app/Models/ingredient_model.dart';
 import 'package:jus_mobile_order_app/Models/product_model.dart';
 import 'package:jus_mobile_order_app/Models/user_model.dart';
 import 'package:jus_mobile_order_app/Providers/controller_providers.dart';
 import 'package:jus_mobile_order_app/Widgets/Cards/animated_list_card.dart';
+
+final allProductsProvider = StateProvider<List<ProductModel>>((ref) => []);
+
+final allIngredientsProvider =
+    StateProvider<List<IngredientModel>>((ref) => []);
+
+final allFavoritesProvider = StateProvider<List<FavoritesModel>>((ref) => []);
 
 final tappedCategoryProvider = StateProvider.autoDispose<int>((ref) => 0);
 
@@ -16,15 +24,26 @@ final currentCategoryProvider = StateProvider.autoDispose<int>((ref) => 1);
 
 final categoryHeaderHeightProvider = Provider<double>((ref) => 50);
 
-final productGridCrossAxisCountProvider = Provider<int>((ref) => 2);
+final selectedProductProvider = StateProvider<ProductModel?>((ref) => null);
+
+final productGridCrossAxisCountMobileProvider = Provider<int>((ref) => 2);
+
+final productGridCrossAxisCountTabletProvider = Provider<int>((ref) => 3);
+
+final productGridCrossAxisCountWebProvider = Provider<int>((ref) => 4);
 
 final productGridCrossAxisSpacingProvider = Provider<double>((ref) => 6);
 
 final productGridMainAxisSpacingProvider = Provider<double>((ref) => 6);
 
-final productGridAspectRatioProvider = Provider<double>((ref) => 1 / 1.5);
-
 final categoryItemWidthProvider = Provider<double>((ref) => 80.0);
+
+final productGridMobileAspectRatioProvider = Provider<double>((ref) => 1 / 1.5);
+
+final productGridTabletAspectRatioProvider =
+    Provider<double>((ref) => 1 / 1.25);
+
+final productGridWebAspectRatioProvider = Provider<double>((ref) => 1);
 
 final groupedScrollControllerProvider = Provider<ScrollController>((ref) {
   return ScrollController();
@@ -34,7 +53,7 @@ final isModifiableProductProvider = StateProvider<bool>((ref) => false);
 
 final productHasToppingsProvider = StateProvider<bool>((ref) => false);
 
-final selectedProductIDProvider = StateProvider<int?>((ref) => null);
+final selectedProductIdProvider = StateProvider<String?>((ref) => null);
 
 final selectedProductUIDProvider = StateProvider<String?>((ref) => null);
 
@@ -61,7 +80,7 @@ final animatedListKeyProvider =
     Provider.autoDispose<GlobalKey<AnimatedListState>>(
         (ref) => GlobalKey<AnimatedListState>());
 
-final currentIngredientIDProvider = StateProvider<int?>((ref) => null);
+final currentIngredientIdProvider = StateProvider<int?>((ref) => null);
 
 final currentIngredientIndexProvider = StateProvider<int?>((ref) => null);
 
@@ -72,9 +91,9 @@ final favoriteItemNameProvider = StateProvider<String>((ref) => '');
 final currentIngredientExtraChargeProvider =
     StateProvider<bool>((ref) => false);
 
-final currentIngredientBlendedProvider = StateProvider<int>((ref) => 0);
+final currentIngredientBlendedProvider = StateProvider<bool>((ref) => true);
 
-final currentIngredientToppingProvider = StateProvider<int>((ref) => 0);
+final currentIngredientToppingProvider = StateProvider<bool>((ref) => true);
 
 final extraChargeBlendedIngredientQuantityProvider =
     StateNotifierProvider<SelectExtraChargeIngredientQuantity, int>(
@@ -230,17 +249,21 @@ class SelectExtraChargeIngredientQuantity extends StateNotifier<int> {
   }
 
   increment() {
-    HapticFeedback.lightImpact();
-    state = state + 1;
+    if (state < 3) {
+      HapticFeedback.lightImpact();
+      return state = state + 1;
+    }
+
+    return state = 3;
   }
 
   decrement() {
-    if (state < 1) {
-      return state = 0;
-    } else {
+    if (state > 1) {
       HapticFeedback.lightImpact();
       return state = state - 1;
     }
+
+    return state = 0;
   }
 }
 
@@ -255,8 +278,7 @@ class ListOfIngredients extends StateNotifier<List<dynamic>> {
   }
 
   addIngredient(
-      {required List<dynamic> ingredients,
-      required int index,
+      {required IngredientModel ingredient,
       required bool isExtraCharge,
       required WidgetRef ref,
       required UserModel user,
@@ -267,30 +289,42 @@ class ListOfIngredients extends StateNotifier<List<dynamic>> {
     var newList = [
       ...state,
       {
-        'id': ingredients[index].id,
+        'id': ingredient.id,
         'amount': 1,
         'isExtraCharge': isExtraCharge,
-        'price': ((ingredients[index].price * ((blended ?? 1) + (topping ?? 0)))
+        'price': ((ingredient.price * ((blended ?? 1) + (topping ?? 0)))
             .toStringAsFixed(2)),
-        'memberPrice': ((ingredients[index].memberPrice *
-                ((blended ?? 1) + (topping ?? 0)))
-            .toStringAsFixed(2)),
+        'memberPrice':
+            ((ingredient.memberPrice * ((blended ?? 1) + (topping ?? 0)))
+                .toStringAsFixed(2)),
         'blended': blended ?? 0,
         'topping': topping ?? 0,
       }
     ];
     newList.sort((a, b) => a['id'].compareTo(b['id']));
     int newItemIndex =
-        newList.indexWhere((element) => element['id'] == ingredients[index].id);
+        newList.indexWhere((element) => element['id'] == ingredient.id);
     double cardWidth = 100.0;
-    animatedListKey.currentState!.insertItem(
-      newItemIndex,
-      duration: const Duration(milliseconds: 500),
-    );
-    ref.read(modifyIngredientsListScrollControllerProvider).animateTo(
-        newItemIndex.toDouble() * cardWidth,
+    if (animatedListKey.currentState != null) {
+      animatedListKey.currentState!.insertItem(
+        newItemIndex,
         duration: const Duration(milliseconds: 500),
-        curve: Curves.linear);
+      );
+
+      double cardWidth = 100.0;
+      if (animatedListKey.currentState != null) {
+        ref.read(modifyIngredientsListScrollControllerProvider).animateTo(
+            newItemIndex.toDouble() * cardWidth,
+            duration: const Duration(milliseconds: 500),
+            curve: Curves.linear);
+      }
+    }
+    if (animatedListKey.currentState != null) {
+      ref.read(modifyIngredientsListScrollControllerProvider).animateTo(
+          newItemIndex.toDouble() * cardWidth,
+          duration: const Duration(milliseconds: 500),
+          curve: Curves.linear);
+    }
 
     state = newList;
   }
@@ -300,15 +334,18 @@ class ListOfIngredients extends StateNotifier<List<dynamic>> {
     HapticFeedback.lightImpact();
     final animatedListKey = ref.watch(animatedListKeyProvider);
 
-    animatedListKey.currentState!.removeItem(
-      selectedIngredients.indexWhere((element) => element['id'] == ingredient),
-      (context, animation) => SizeTransition(
-        axis: Axis.horizontal,
-        axisAlignment: 1,
-        sizeFactor: animation,
-        child: const AnimatedListCard(),
-      ),
-    );
+    if (animatedListKey.currentState != null) {
+      animatedListKey.currentState!.removeItem(
+        selectedIngredients
+            .indexWhere((element) => element['id'] == ingredient),
+        (context, animation) => SizeTransition(
+          axis: Axis.horizontal,
+          axisAlignment: 1,
+          sizeFactor: animation,
+          child: const AnimatedListCard(),
+        ),
+      );
+    }
     List newList = [...state];
     newList.removeWhere((element) => element['id'] == ingredient);
     newList.sort((a, b) => a['id'].compareTo(b['id']));
@@ -324,25 +361,29 @@ class ListOfIngredients extends StateNotifier<List<dynamic>> {
       int totalItemsAdded =
           standardIngredients.length - selectedIngredients.length;
 
-      for (var i = 0; i < totalItemsAdded; i++) {
-        animatedListKey.currentState!.insertItem(
-          0,
-          duration: const Duration(milliseconds: 500),
-        );
+      if (animatedListKey.currentState != null) {
+        for (var i = 0; i < totalItemsAdded; i++) {
+          animatedListKey.currentState!.insertItem(
+            0,
+            duration: const Duration(milliseconds: 500),
+          );
+        }
       }
     } else {
       int totalItemsRemoved =
           selectedIngredients.length - standardIngredients.length;
-      for (var i = 0; i < totalItemsRemoved; i++) {
-        animatedListKey.currentState!.removeItem(
-          0,
-          (context, animation) => SizeTransition(
-            axis: Axis.horizontal,
-            axisAlignment: 0.5,
-            sizeFactor: animation,
-            child: const AnimatedListCard(),
-          ),
-        );
+      if (animatedListKey.currentState != null) {
+        for (var i = 0; i < totalItemsRemoved; i++) {
+          animatedListKey.currentState!.removeItem(
+            0,
+            (context, animation) => SizeTransition(
+              axis: Axis.horizontal,
+              axisAlignment: 0.5,
+              sizeFactor: animation,
+              child: const AnimatedListCard(),
+            ),
+          );
+        }
       }
     }
     List newList = state;
@@ -386,14 +427,19 @@ class ListOfIngredients extends StateNotifier<List<dynamic>> {
     };
 
     calculateExtraChargeAmount() {
-      HapticFeedback.lightImpact();
       if (blended != null && topping != null) {
+        HapticFeedback.lightImpact();
         return blended + topping;
       } else if (selectedIngredients[index]['amount'] < 1) {
+        HapticFeedback.lightImpact();
         return 1;
       } else if (selectedIngredients[index]['amount'] == 1) {
+        HapticFeedback.lightImpact();
         return 2;
+      } else if (selectedIngredients[index]['amount'] == 7) {
+        return selectedIngredients[index]['amount'];
       } else {
+        HapticFeedback.lightImpact();
         return selectedIngredients[index]['amount'] + 1;
       }
     }
@@ -515,7 +561,7 @@ class CurrentOrderItems extends StateNotifier<List<Map<String, dynamic>>> {
       final selectedAllergiesEqual = const DeepCollectionEquality.unordered()
           .equals(element['allergies'], item['allergies']);
 
-      return element['productID'] == item['productID'] &&
+      return element['productId'] == item['productId'] &&
           element['itemSize'] == item['itemSize'] &&
           element['scheduledQuantity'] == item['scheduledQuantity'] &&
           (item['selectedIngredients'].isEmpty || selectedIngredientsEqual) &&
@@ -532,6 +578,8 @@ class CurrentOrderItems extends StateNotifier<List<Map<String, dynamic>>> {
           product.first['isScheduled'] ? item['scheduledQuantity'] : 1;
       product.first['scheduledDescriptor'] = item['scheduledDescriptor'];
       product.first['itemSize'] = item['itemSize'];
+      product.first['itemSizeName'] = item['itemSizeName'];
+      product.first['squareVariationId'] = item['squareVariationId'];
       state = [...state];
     }
   }
@@ -548,6 +596,9 @@ class CurrentOrderItems extends StateNotifier<List<Map<String, dynamic>>> {
     currentOrder[currentOrderIndex]['scheduledDescriptor'] =
         item['scheduledDescriptor'];
     currentOrder[currentOrderIndex]['itemSize'] = item['itemSize'];
+    currentOrder[currentOrderIndex]['itemSizeName'] = item['itemSizeName'];
+    currentOrder[currentOrderIndex]['squareVariationId'] =
+        item['squareVariationId'];
     currentOrder[currentOrderIndex]['itemKey'] = item['itemKey'];
     currentOrder[currentOrderIndex]['selectedIngredients'] =
         item['selectedIngredients'];
@@ -611,7 +662,7 @@ class CurrentOrderCost extends StateNotifier<List<Map<String, dynamic>>> {
               'modifierPriceMember': item['modifierPriceMember'],
               'points': item['points'],
               'itemKey': item['itemKey'],
-              'productID': item['productID'],
+              'productId': item['productId'],
               'itemQuantity': 1,
               'scheduledQuantity': 1
             });

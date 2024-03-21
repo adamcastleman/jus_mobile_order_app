@@ -5,7 +5,6 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:jus_mobile_order_app/Helpers/points.dart';
 import 'package:jus_mobile_order_app/Models/points_details_model.dart';
 import 'package:jus_mobile_order_app/Models/user_model.dart';
-import 'package:jus_mobile_order_app/Providers/ProviderWidgets/points_details_provider_widget.dart';
 import 'package:jus_mobile_order_app/Providers/points_providers.dart';
 import 'package:jus_mobile_order_app/Providers/product_providers.dart';
 import 'package:jus_mobile_order_app/Providers/stream_providers.dart';
@@ -20,73 +19,72 @@ class AvailableRewardCard extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final user = ref.watch(currentUserProvider).value!;
-    return PointsDetailsProviderWidget(
-      builder: (reward) => Padding(
-        padding: const EdgeInsets.symmetric(vertical: 18.0),
-        child: SizedBox(
-          width: 150,
-          child: Card(
-            elevation: 3,
-            color: Colors.white,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(10),
-              side: const BorderSide(color: Colors.black, width: 0.5),
-            ),
-            child: Padding(
-              padding: const EdgeInsets.only(
-                  left: 8.0, right: 8.0, top: 8.0, bottom: 15.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      AutoSizeText(
-                        PointsHelper(ref: ref).availableRewards()[index]
-                            ['name'],
-                        style: const TextStyle(
-                            fontSize: 15, fontWeight: FontWeight.bold),
-                        maxLines: 3,
+    final points = ref.watch(pointsInformationProvider);
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 18.0),
+      child: SizedBox(
+        width: 150,
+        child: Card(
+          elevation: 3,
+          color: Colors.white,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+            side: const BorderSide(color: Colors.black, width: 0.5),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.only(
+                left: 8.0, right: 8.0, top: 8.0, bottom: 15.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    AutoSizeText(
+                      PointsHelper().availableRewards(ref, user, points)[index]
+                          ['name'],
+                      style: const TextStyle(
+                          fontSize: 15, fontWeight: FontWeight.bold),
+                      maxLines: 3,
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 5.0),
+                      child: AutoSizeText(
+                        '${PointsHelper().availableRewards(ref, user, points)[index]['amount']} points/ea',
+                        maxLines: 2,
                       ),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 5.0),
-                        child: AutoSizeText(
-                          '${PointsHelper(ref: ref).availableRewards()[index]['amount']} points/ea',
-                          maxLines: 2,
-                        ),
-                      ),
-                    ],
-                  ),
-                  SelectionIncrementer(
-                    verticalPadding: 0,
-                    horizontalPadding: 0,
-                    buttonSpacing: 12,
-                    iconSize: 20,
-                    quantityRadius: 16,
-                    quantity: determineQuantity(ref, index),
-                    onAdd: () {
-                      int pointsInUse = ref.watch(pointsInUseProvider);
-                      int rewardAmount = PointsHelper(ref: ref)
-                          .availableRewards()[index]['amount'];
-                      if (pointsInUse + rewardAmount > user.points!) {
-                        return;
-                      } else {
-                        HapticFeedback.lightImpact();
-                        removeRewardPointsFromTotal(ref, index, reward, user);
-                      }
-                    },
-                    onRemove: () {
-                      if (ref.watch(discountTotalProvider).isEmpty) {
-                        return;
-                      } else {
-                        HapticFeedback.lightImpact();
-                        returnRewardPointsToTotal(ref, reward, user, index);
-                      }
-                    },
-                  ),
-                ],
-              ),
+                    ),
+                  ],
+                ),
+                SelectionIncrementer(
+                  verticalPadding: 0,
+                  horizontalPadding: 0,
+                  buttonSpacing: 12,
+                  iconSize: 20,
+                  quantityRadius: 16,
+                  quantity: determineQuantity(ref, index),
+                  onAdd: () {
+                    int pointsInUse = ref.watch(pointsInUseProvider);
+                    int rewardAmount = PointsHelper()
+                        .availableRewards(ref, user, points)[index]['amount'];
+                    if (pointsInUse + rewardAmount > user.points!) {
+                      return;
+                    } else {
+                      HapticFeedback.lightImpact();
+                      applyPointsTowardReward(ref, index, user, points);
+                    }
+                  },
+                  onRemove: () {
+                    if (ref.watch(discountTotalProvider).isEmpty) {
+                      return;
+                    } else {
+                      HapticFeedback.lightImpact();
+                      returnRewardPointsToTotal(ref, user, index, points);
+                    }
+                  },
+                ),
+              ],
             ),
           ),
         ),
@@ -102,12 +100,12 @@ class AvailableRewardCard extends ConsumerWidget {
     }
   }
 
-  void removeRewardPointsFromTotal(
-      WidgetRef ref, int index, PointsDetailsModel reward, UserModel user) {
+  void applyPointsTowardReward(
+      WidgetRef ref, int index, UserModel user, PointsDetailsModel points) {
     final currentOrder = ref.watch(currentOrderItemsProvider);
     final currentOrderCost = ref.watch(currentOrderCostProvider);
 
-    final rewards = PointsHelper(ref: ref).availableRewards();
+    final rewards = PointsHelper().availableRewards(ref, user, points);
     final rewardAmount = rewards[index]['amount'];
     final numberOfAvailableRewards = rewards.length;
 
@@ -133,9 +131,9 @@ class AvailableRewardCard extends ConsumerWidget {
   }
 
   void returnRewardPointsToTotal(
-      WidgetRef ref, PointsDetailsModel reward, UserModel user, int index) {
+      WidgetRef ref, UserModel user, int index, PointsDetailsModel points) {
     int rewardAmount =
-        PointsHelper(ref: ref).availableRewards()[index]['amount'];
+        PointsHelper().availableRewards(ref, user, points)[index]['amount'];
 
     ref.read(rewardQuantityProvider.notifier).removeReward(
           ref: ref,
@@ -152,7 +150,7 @@ class AvailableRewardCard extends ConsumerWidget {
     Map<int, int> result = {};
 
     for (var item in currentOrder) {
-      int id = item['productID'];
+      String id = item['productId'];
       int itemQuantity = item['itemQuantity'] * item['scheduledQuantity'];
 
       for (var reward in availableRewards) {
@@ -183,10 +181,12 @@ class AvailableRewardCard extends ConsumerWidget {
       );
 
       result.add({
-        'price': orderCost['itemPriceNonMember'],
-        'memberPrice': orderCost['itemPriceMember'],
+        'price': orderCost['itemPriceNonMember'] +
+            orderCost['modifierPriceNonMember'],
+        'memberPrice':
+            orderCost['itemPriceMember'] + orderCost['modifierPriceMember'],
         'itemKey': orderCost['itemKey'],
-        'productID': orderItem['productID'],
+        'productId': orderItem['productId'],
         'itemQuantity':
             orderItem['itemQuantity'] * orderItem['scheduledQuantity'],
         'amount': rewardAmount,

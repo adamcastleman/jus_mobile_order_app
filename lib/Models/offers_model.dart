@@ -14,5 +14,6 @@ class OffersModel with _$OffersModel {
     required List qualifyingProducts,
     required bool isMemberOnly,
     required bool isActive,
+    required List qualifyingUsers,
   }) = _OffersModel;
 }

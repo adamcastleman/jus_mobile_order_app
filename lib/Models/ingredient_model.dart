@@ -9,6 +9,7 @@ class IngredientModel with _$IngredientModel {
     required String name,
     required String image,
     required String category,
+    required int categoryOrder,
     required int id,
     required int price,
     required int memberPrice,

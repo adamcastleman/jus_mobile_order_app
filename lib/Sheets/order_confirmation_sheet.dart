@@ -10,10 +10,11 @@ import 'package:jus_mobile_order_app/Helpers/launchers.dart';
 import 'package:jus_mobile_order_app/Helpers/orders.dart';
 import 'package:jus_mobile_order_app/Helpers/permission_handler.dart';
 import 'package:jus_mobile_order_app/Helpers/spacing_widgets.dart';
+import 'package:jus_mobile_order_app/Helpers/utilities.dart';
 import 'package:jus_mobile_order_app/Hooks/confetti_controller.dart';
-import 'package:jus_mobile_order_app/Models/product_model.dart';
-import 'package:jus_mobile_order_app/Providers/ProviderWidgets/products_provider_widget.dart';
+import 'package:jus_mobile_order_app/Providers/ProviderWidgets/display_images_provider_widget.dart';
 import 'package:jus_mobile_order_app/Providers/auth_providers.dart';
+import 'package:jus_mobile_order_app/Providers/controller_providers.dart';
 import 'package:jus_mobile_order_app/Providers/discounts_provider.dart';
 import 'package:jus_mobile_order_app/Providers/loading_providers.dart';
 import 'package:jus_mobile_order_app/Providers/location_providers.dart';
@@ -27,8 +28,10 @@ import 'package:jus_mobile_order_app/Providers/stream_providers.dart';
 import 'package:jus_mobile_order_app/Providers/theme_providers.dart';
 import 'package:jus_mobile_order_app/Widgets/Buttons/close_button.dart';
 import 'package:jus_mobile_order_app/Widgets/Dialogs/open_app_settings_calendar.dart';
+import 'package:jus_mobile_order_app/Widgets/General/banner_call_to_action.dart';
 import 'package:jus_mobile_order_app/Widgets/General/total_price.dart';
 import 'package:jus_mobile_order_app/Widgets/Tiles/order_tile.dart';
+import 'package:jus_mobile_order_app/constants.dart';
 
 class OrderConfirmationSheet extends HookConsumerWidget {
   const OrderConfirmationSheet({super.key});
@@ -36,87 +39,171 @@ class OrderConfirmationSheet extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final controller = useConfettiController();
-    return ProductsProviderWidget(
-      builder: (products) {
-        Future.delayed(
-          const Duration(milliseconds: 150),
-          () {
-            if (controller.state == ConfettiControllerState.playing) {
-              controller.stop();
-              controller.play();
-            } else {
-              controller.play();
-            }
-          },
-        );
+    final isTabletOrSmaller =
+        MediaQuery.of(context).size.width <= AppConstants.tabletWidth;
 
-        return Container(
-          color: ref.watch(backgroundColorProvider),
-          child: Padding(
-            padding: const EdgeInsets.only(left: 20.0, right: 20.0),
-            child: Stack(
-              children: [
-                ListView(
-                  padding: const EdgeInsets.only(top: 50.0, bottom: 50.0),
-                  primary: false,
-                  children: [
-                    Align(
-                      alignment: Alignment.topRight,
-                      child: JusCloseButton(
-                        removePadding: true,
-                        onPressed: () {
-                          HapticFeedback.lightImpact();
-                          invalidateAllProviders(context, ref);
-                          Navigator.pop(context);
-                          Navigator.pop(context);
-                          Navigator.pop(context);
-                        },
-                      ),
-                    ),
-                    const Center(
-                      child: Icon(
-                        CupertinoIcons.checkmark_circle,
-                        color: Colors.black,
-                        size: 100,
-                      ),
-                    ),
-                    const Padding(
-                      padding: EdgeInsets.symmetric(vertical: 22.0),
-                      child: AutoSizeText(
-                        'We\'ve received your order.',
-                        style: TextStyle(fontSize: 25),
-                        textAlign: TextAlign.center,
-                        maxLines: 1,
-                      ),
-                    ),
-                    _buildLocationDisplay(ref),
-                    _buildNonScheduledDisplay(ref, products),
-                    _buildScheduledDisplay(context, ref, products),
-                    JusDivider().thick(),
-                    const TotalPrice(),
-                  ],
-                ),
-                Positioned.fill(
-                  child: Align(
-                    alignment: Alignment.topCenter,
-                    child: ConfettiWidget(
-                      confettiController: controller,
-                      shouldLoop: false,
-                      blastDirection: 3.14,
-                      blastDirectionality: BlastDirectionality.explosive,
-                      maxBlastForce: 30,
-                      numberOfParticles: 50,
-                      gravity: 0.5,
-                      colors: const [
-                        Colors.black,
-                      ],
+    if (isTabletOrSmaller) {
+      _displayConfettiAnimation(controller);
+    }
+    if (isTabletOrSmaller) {
+      return _mobileLayout(context, ref, controller);
+    } else {
+      return _webLayout(context, ref);
+    }
+  }
+
+  Widget _mobileLayout(
+      BuildContext context, WidgetRef ref, ConfettiController controller) {
+    return Container(
+      padding: const EdgeInsets.only(left: 20.0, right: 20.0),
+      color: ref.watch(backgroundColorProvider),
+      child: Center(
+        child: ConstrainedBox(
+          constraints: BoxConstraints(maxWidth: AppConstants.mobilePhoneWidth),
+          child: Stack(
+            children: [
+              ListView(
+                padding: const EdgeInsets.only(top: 50.0, bottom: 50.0),
+                primary: false,
+                children: [
+                  Align(
+                    alignment: Alignment.topRight,
+                    child: JusCloseButton(
+                      removePadding: true,
+                      onPressed: () {
+                        HapticFeedback.lightImpact();
+                        invalidateAllProviders(context, ref);
+                        _popToHomeScreen(context);
+                      },
                     ),
                   ),
+                  const Center(
+                    child: Icon(
+                      CupertinoIcons.checkmark_circle,
+                      color: Colors.black,
+                      size: 100,
+                    ),
+                  ),
+                  _displayTitleText(),
+                  _buildLocationDisplay(ref),
+                  _buildNonScheduledDisplay(ref),
+                  _buildScheduledDisplay(context, ref),
+                  JusDivider.thick(),
+                  const TotalPrice(),
+                ],
+              ),
+              Positioned.fill(
+                child: Align(
+                  alignment: Alignment.topCenter,
+                  child: ConfettiWidget(
+                    confettiController: controller,
+                    shouldLoop: false,
+                    blastDirection: 3.14,
+                    blastDirectionality: BlastDirectionality.explosive,
+                    maxBlastForce: 30,
+                    numberOfParticles: 50,
+                    gravity: 0.5,
+                    colors: const [
+                      Colors.black,
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  _webLayout(BuildContext context, WidgetRef ref) {
+    final backgroundColor = ref.watch(backgroundColorProvider);
+    final pastelTan = ref.watch(pastelTanProvider);
+    return DisplayImagesProviderWidget(
+      builder: (images) => Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Container(
+            color: pastelTan,
+            height: double.infinity,
+            width: MediaQuery.of(context).size.width * 0.5,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                ConstrainedBox(
+                  constraints: const BoxConstraints(
+                    maxHeight: 600,
+                    maxWidth: 600,
+                  ),
+                  child: CallToActionBanner(
+                    backgroundColor: pastelTan,
+                    imagePath: images['images'][25]['url'],
+                    title: 'We\'ve received your order',
+                    description: 'Thank you for shopping with us.',
+                    callToActionText: 'Close',
+                    callToActionOnPressed: () {
+                      invalidateAllProviders(context, ref);
+                      _popToHomeScreen(context);
+                    },
+                  ).buildMobileLayout(context),
                 ),
               ],
             ),
           ),
-        );
+          Container(
+            width: MediaQuery.of(context).size.width * 0.5,
+            height: double.infinity,
+            color: backgroundColor,
+            child: Center(
+              // Center horizontally
+              child: SingleChildScrollView(
+                child: ConstrainedBox(
+                  constraints: const BoxConstraints(
+                    maxHeight: double.infinity,
+                    maxWidth: 400, // Set your max width here
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment
+                        .center, // Center horizontally the column items
+                    children: [
+                      _buildLocationDisplay(ref),
+                      _buildNonScheduledDisplay(ref),
+                      _buildScheduledDisplay(context, ref),
+                      JusDivider.thick(),
+                      const TotalPrice(),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _displayTitleText() {
+    return const Padding(
+      padding: EdgeInsets.symmetric(vertical: 22.0),
+      child: AutoSizeText(
+        'We\'ve received your order.',
+        style: TextStyle(fontSize: 25),
+        textAlign: TextAlign.center,
+        maxLines: 1,
+      ),
+    );
+  }
+
+  void _displayConfettiAnimation(ConfettiController controller) {
+    Future.delayed(
+      const Duration(milliseconds: 150),
+      () {
+        if (controller.state == ConfettiControllerState.playing) {
+          controller.stop();
+          controller.play();
+        } else {
+          controller.play();
+        }
       },
     );
   }
@@ -125,14 +212,14 @@ class OrderConfirmationSheet extends HookConsumerWidget {
     final location = ref.watch(selectedLocationProvider);
     return Column(
       children: [
-        JusDivider().thin(),
+        JusDivider.thin(),
         Padding(
           padding: const EdgeInsets.symmetric(vertical: 12.0),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                'Location: ${location.locationName}',
+                'Location: ${location.name}',
                 style: const TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 18,
@@ -147,7 +234,7 @@ class OrderConfirmationSheet extends HookConsumerWidget {
                   Launcher().launchMaps(
                       latitude: location.latitude,
                       longitude: location.longitude,
-                      label: location.locationName);
+                      label: location.name);
                 },
               ),
             ],
@@ -157,8 +244,8 @@ class OrderConfirmationSheet extends HookConsumerWidget {
     );
   }
 
-  _buildNonScheduledDisplay(WidgetRef ref, List<ProductModel> product) {
-    final nonScheduledItems = OrderHelpers(ref: ref).nonScheduledItems();
+  _buildNonScheduledDisplay(WidgetRef ref) {
+    final nonScheduledItems = OrderHelpers.nonScheduledItems(ref);
     if (nonScheduledItems.isEmpty) {
       return const SizedBox();
     }
@@ -185,7 +272,7 @@ class OrderConfirmationSheet extends HookConsumerWidget {
           shrinkWrap: true,
           primary: false,
           itemCount: matchingIndices.length,
-          separatorBuilder: (context, index) => JusDivider().thin(),
+          separatorBuilder: (context, index) => JusDivider.thin(),
           itemBuilder: (context, index) {
             return OrderTile(orderIndex: matchingIndices[index]);
           },
@@ -194,10 +281,9 @@ class OrderConfirmationSheet extends HookConsumerWidget {
     );
   }
 
-  Widget _buildScheduledDisplay(
-      BuildContext context, WidgetRef ref, List<ProductModel> product) {
-    final nonScheduledItems = OrderHelpers(ref: ref).nonScheduledItems();
-    final scheduledItems = OrderHelpers(ref: ref).scheduledItems();
+  Widget _buildScheduledDisplay(BuildContext context, WidgetRef ref) {
+    final nonScheduledItems = OrderHelpers.nonScheduledItems(ref);
+    final scheduledItems = OrderHelpers.scheduledItems(ref);
     if (scheduledItems.isEmpty) {
       return const SizedBox();
     }
@@ -207,7 +293,7 @@ class OrderConfirmationSheet extends HookConsumerWidget {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        nonScheduledItems.isEmpty ? const SizedBox() : JusDivider().thin(),
+        nonScheduledItems.isEmpty ? const SizedBox() : JusDivider.thin(),
         Padding(
           padding: const EdgeInsets.symmetric(vertical: 12.0),
           child: Row(
@@ -241,7 +327,7 @@ class OrderConfirmationSheet extends HookConsumerWidget {
           shrinkWrap: true,
           primary: false,
           itemCount: scheduledItems.length,
-          separatorBuilder: (context, index) => JusDivider().thin(),
+          separatorBuilder: (context, index) => JusDivider.thin(),
           itemBuilder: (context, index) {
             return OrderTile(orderIndex: matchingIndices[index]);
           },
@@ -251,17 +337,16 @@ class OrderConfirmationSheet extends HookConsumerWidget {
   }
 
   List getOrderIndices(WidgetRef ref, {required bool isNonScheduled}) {
-    final OrderHelpers orderHelpers = OrderHelpers(ref: ref);
     final List items = isNonScheduled
-        ? orderHelpers.nonScheduledItems()
-        : orderHelpers.scheduledItems();
+        ? OrderHelpers.nonScheduledItems(ref)
+        : OrderHelpers.scheduledItems(ref);
     final currentOrder = ref.watch(currentOrderItemsProvider);
 
-    List productIds = items.map((item) => item['productID'] as int).toList();
+    List productIds = items.map((item) => item['productId']).toList();
     List matchingIndices = [];
 
     for (int index = 0; index < currentOrder.length; index++) {
-      if (productIds.contains(currentOrder[index]['productID'])) {
+      if (productIds.contains(currentOrder[index]['productId'])) {
         matchingIndices.add(index);
       }
     }
@@ -275,7 +360,6 @@ class OrderConfirmationSheet extends HookConsumerWidget {
     ref.read(loadingProvider.notifier).state = false;
     ref.invalidate(selectedLoadAmountProvider);
     ref.invalidate(selectedLoadAmountIndexProvider);
-    ref.read(bottomNavigationProvider.notifier).state = 0;
     ref.invalidate(currentOrderItemsProvider);
     ref.invalidate(currentOrderItemsIndexProvider);
     ref.invalidate(currentOrderCostProvider);
@@ -294,7 +378,31 @@ class OrderConfirmationSheet extends HookConsumerWidget {
     ref.invalidate(scheduledAndNowItemsInCartProvider);
     ref.invalidate(selectedTipPercentageProvider);
     ref.invalidate(selectedTipIndexProvider);
-    ref.invalidate(checkOutPageProvider);
+    ref.invalidate(isCheckOutPageProvider);
     ref.invalidate(locationsProvider);
+    _setPageProviders(ref);
+  }
+
+  _setPageProviders(WidgetRef ref) {
+    if (PlatformUtils.isWeb()) {
+      ref.read(webNavigationProvider.notifier).state = AppConstants.homePage;
+      ref
+          .read(webNavigationPageControllerProvider)
+          .jumpToPage(AppConstants.homePage);
+    } else {
+      ref.read(bottomNavigationProvider.notifier).state = 0;
+      ref.read(bottomNavigationPageControllerProvider).jumpToPage(0);
+    }
+  }
+
+  _popToHomeScreen(BuildContext context) {
+    if (PlatformUtils.isWeb()) {
+      Navigator.pop(context);
+      Navigator.pop(context);
+    } else {
+      Navigator.pop(context);
+      Navigator.pop(context);
+      Navigator.pop(context);
+    }
   }
 }

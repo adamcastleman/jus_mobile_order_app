@@ -2,10 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:jus_mobile_order_app/Helpers/error.dart';
-import 'package:jus_mobile_order_app/Helpers/modal_bottom_sheets.dart';
+import 'package:jus_mobile_order_app/Helpers/navigation.dart';
 import 'package:jus_mobile_order_app/Models/user_model.dart';
 import 'package:jus_mobile_order_app/Providers/auth_providers.dart';
-import 'package:jus_mobile_order_app/Sheets/us_states_picker.dart';
 
 class JusTextField {
   final WidgetRef ref;
@@ -139,15 +138,8 @@ class JusTextField {
     return TextFormField(
       controller: stateNameAbbreviationController,
       autofocus: autofocus ?? false,
-      onTap: () {
-        ModalBottomSheet().partScreen(
-            enableDrag: true,
-            isDismissible: true,
-            isScrollControlled: true,
-            context: context,
-            builder: (context) =>
-                USStatesPicker(controller: stateNameAbbreviationController));
-      },
+      onTap: () => NavigationHelpers.navigateToUSStatePicker(
+          context, stateNameAbbreviationController),
       readOnly: true,
       decoration: const InputDecoration(
         hintText: 'State',

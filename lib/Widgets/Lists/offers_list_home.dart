@@ -34,7 +34,8 @@ class OffersList extends StatelessWidget {
                   scrollDirection: Axis.horizontal,
                   separatorBuilder: (context, index) => Spacing.horizontal(15),
                   itemCount: offers.isEmpty ? 0 : offers.length,
-                  itemBuilder: (context, index) => OffersCard(index: index),
+                  itemBuilder: (context, index) =>
+                      OffersCard(offer: offers[index]),
                 ),
               ),
             ),

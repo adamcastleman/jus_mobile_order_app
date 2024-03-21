@@ -1,37 +1,22 @@
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:jus_mobile_order_app/Helpers/error.dart';
+import 'package:jus_mobile_order_app/Helpers/enums.dart';
 import 'package:jus_mobile_order_app/Helpers/extensions.dart';
 import 'package:jus_mobile_order_app/Helpers/pricing.dart';
+import 'package:jus_mobile_order_app/Models/points_details_model.dart';
 import 'package:jus_mobile_order_app/Models/user_model.dart';
 import 'package:jus_mobile_order_app/Providers/offers_providers.dart';
 import 'package:jus_mobile_order_app/Providers/payments_providers.dart';
 import 'package:jus_mobile_order_app/Providers/product_providers.dart';
 import 'package:jus_mobile_order_app/Providers/stream_providers.dart';
 
-import 'loading.dart';
-
 class PointsHelper {
-  final WidgetRef ref;
-  PointsHelper({required this.ref});
+  List availableRewards(
+      WidgetRef ref, UserModel user, PointsDetailsModel points) {
+    final eligibleRewards =
+        getEligibleRewards(points.rewardsAmounts, user.points!);
+    final applicableRewards = getApplicableRewards(ref, eligibleRewards);
 
-  List availableRewards() {
-    final currentUser = ref.watch(currentUserProvider);
-    final rewards = ref.watch(pointsDetailsProvider);
-    return currentUser.when(
-      error: (e, _) => [],
-      loading: () => [],
-      data: (user) => rewards.when(
-        error: (e, _) => [],
-        loading: () => [],
-        data: (reward) {
-          final eligibleRewards =
-              getEligibleRewards(reward.rewardsAmounts, user.points!);
-          final applicableRewards = getApplicableRewards(eligibleRewards);
-
-          return applicableRewards;
-        },
-      ),
-    );
+    return applicableRewards;
   }
 
   List getEligibleRewards(List rewardsAmounts, int totalPoints) {
@@ -40,16 +25,16 @@ class PointsHelper {
         .toList();
   }
 
-  List getApplicableRewards(List rewardsAmounts) {
+  List getApplicableRewards(WidgetRef ref, List rewardsAmounts) {
     final currentOrder = ref.watch(currentOrderItemsProvider);
     return rewardsAmounts
         .where((rewards) => rewards['products'].any((products) => currentOrder
-            .map((element) => element['productID'])
+            .map((element) => element['productId'])
             .contains(products)))
         .toList();
   }
 
-  getPointValue(int variable1, List list1) {
+  getPointValue(String variable1, List list1) {
     for (var item in list1) {
       if (item['products'].contains(variable1)) {
         return item['amount'];
@@ -59,7 +44,9 @@ class PointsHelper {
   }
 
   String pointsDisplayText(
-      {required bool isWallet, bool applyPointsMultiplier = false}) {
+      {required WidgetRef ref,
+      required bool isWallet,
+      bool applyPointsMultiplier = false}) {
     final currentUser = ref.watch(currentUserProvider);
     final pointsDetails = ref.watch(pointsDetailsProvider);
     final pointsMultiple =
@@ -79,7 +66,8 @@ class PointsHelper {
           var memberPointsValue = isWallet
               ? points.walletPointsPerDollarMember * pointsMultiple
               : points.memberPointsPerDollar * pointsMultiple;
-          if (user.uid == null || !user.isActiveMember!) {
+          if (user.uid == null ||
+              user.subscriptionStatus != SubscriptionStatus.active) {
             if (pointValue.isWhole()) {
               return '${pointValue.toInt()} point';
             } else {
@@ -99,68 +87,46 @@ class PointsHelper {
     );
   }
 
-  determinePointsMultiple() {
-    final currentUser = ref.watch(currentUserProvider);
-    final pointsDetails = ref.watch(pointsDetailsProvider);
+  determinePointsMultiple(
+      WidgetRef ref, UserModel user, PointsDetailsModel points) {
     final pointsMultiplier = ref.watch(pointsMultiplierProvider);
     final selectedPaymentMethod = ref.watch(selectedPaymentMethodProvider);
 
-    return currentUser.when(
-      error: (e, _) => '{error}',
-      loading: () => '{error}',
-      data: (user) => pointsDetails.when(
-        error: (e, _) => '{error}',
-        loading: () => '{error}',
-        data: (points) {
-          if (user.uid == null) {
-            return 0;
-          }
-
-          bool isWallet = selectedPaymentMethod.isNotEmpty &&
-              selectedPaymentMethod['isWallet'] == true;
-          bool isActiveMember = user.isActiveMember ?? false;
-
-          int pointsPerDollar = isActiveMember
-              ? points.memberPointsPerDollar
-              : points.pointsPerDollar;
-          num walletPointsPerDollar = isActiveMember
-              ? points.walletPointsPerDollarMember
-              : points.walletPointsPerDollar;
-
-          return isWallet
-              ? walletPointsPerDollar * pointsMultiplier
-              : pointsPerDollar * pointsMultiplier;
-        },
-      ),
-    );
-  }
-
-  totalEarnedPoints() {
-    final currentUser = ref.watch(currentUserProvider);
-
-    return currentUser.when(
-      loading: () => const Loading(),
-      error: (e, _) => ShowError(
-        error: e.toString(),
-      ),
-      data: (user) {
-        final pointsFromOrder =
-            _calculatePointsFromOrder(user, Pricing(ref: ref));
-
-        final pointsMultiple = PointsHelper(ref: ref).determinePointsMultiple();
-        final earnedPoints = pointsFromOrder * pointsMultiple;
-        return earnedPoints.truncate();
-      },
-    );
-  }
-
-  double _calculatePointsFromOrder(UserModel user, Pricing pricing) {
     if (user.uid == null) {
       return 0;
-    } else if (!user.isActiveMember!) {
-      return pricing.discountedSubtotalForNonMembers();
+    }
+
+    bool isWallet = selectedPaymentMethod.userId.isEmpty &&
+        selectedPaymentMethod.isWallet == true;
+    bool isActiveMember = user.subscriptionStatus == SubscriptionStatus.active;
+
+    int pointsPerDollar =
+        isActiveMember ? points.memberPointsPerDollar : points.pointsPerDollar;
+    num walletPointsPerDollar = isActiveMember
+        ? points.walletPointsPerDollarMember
+        : points.walletPointsPerDollar;
+
+    return isWallet
+        ? walletPointsPerDollar * pointsMultiplier
+        : pointsPerDollar * pointsMultiplier;
+  }
+
+  totalEarnedPoints(WidgetRef ref, UserModel user, PointsDetailsModel points) {
+    final pointsFromOrder = _calculatePointsFromOrder(ref, user);
+
+    final pointsMultiple = determinePointsMultiple(ref, user, points);
+    final earnedPoints = pointsFromOrder * pointsMultiple;
+    return earnedPoints.truncate();
+  }
+
+  double _calculatePointsFromOrder(WidgetRef ref, UserModel user) {
+    final PricingHelpers pricing = PricingHelpers();
+    if (user.uid == null) {
+      return 0;
+    } else if (user.subscriptionStatus != SubscriptionStatus.active) {
+      return pricing.discountedSubtotalForNonMembers(ref);
     } else {
-      return pricing.discountedSubtotalForMembers();
+      return pricing.discountedSubtotalForMembers(ref);
     }
   }
 }

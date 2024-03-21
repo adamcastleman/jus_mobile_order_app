@@ -5,6 +5,7 @@ class PaymentOptionTile extends StatelessWidget {
   final IconData icon;
   final String title;
   final Widget? subtitle;
+  final Widget? trailing;
   final VoidCallback onTap;
 
   const PaymentOptionTile({
@@ -12,6 +13,7 @@ class PaymentOptionTile extends StatelessWidget {
     required this.icon,
     required this.title,
     this.subtitle,
+    this.trailing,
     required this.onTap,
   });
 
@@ -24,10 +26,15 @@ class PaymentOptionTile extends StatelessWidget {
         style: const TextStyle(fontWeight: FontWeight.bold),
       ),
       subtitle: subtitle,
-      trailing: const Icon(
-        CupertinoIcons.chevron_right,
-        size: 15,
-      ),
+      trailing: trailing != null
+          ? SizedBox(
+              width: 24,
+              child: trailing,
+            )
+          : const Icon(
+              CupertinoIcons.chevron_right,
+              size: 15,
+            ),
       onTap: onTap,
     );
   }

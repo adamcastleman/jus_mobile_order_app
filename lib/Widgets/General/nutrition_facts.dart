@@ -14,6 +14,7 @@ class NutritionFacts extends ConsumerWidget {
     final selectedSize = ref.watch(itemSizeProvider);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
       children: [
         Text(
           'Nutrition',
@@ -34,38 +35,45 @@ class NutritionFacts extends ConsumerWidget {
             ],
           ),
         ),
-        GridView.builder(
-          padding: const EdgeInsets.all(8.0),
-          primary: false,
-          shrinkWrap: true,
-          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 4,
-            mainAxisSpacing: 10,
-            crossAxisSpacing: 10,
-            childAspectRatio: 1 / 1,
+        ConstrainedBox(
+          constraints: const BoxConstraints(
+            maxWidth: 500,
           ),
-          itemCount: product.nutrition[selectedSize].length,
-          itemBuilder: (context, index) => Container(
-            width: 70,
-            height: 70,
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(4),
-              border: Border.all(color: Colors.black, width: 0.5),
+          child: GridView.builder(
+            padding: const EdgeInsets.all(8.0),
+            primary: false,
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 4,
+              mainAxisSpacing: 10,
+              crossAxisSpacing: 10,
+              childAspectRatio: 1,
             ),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                AutoSizeText(
-                  product.nutrition[selectedSize]['$index']['name'].toString(),
-                  maxLines: 1,
-                ),
-                AutoSizeText(
-                  product.nutrition[selectedSize]['$index']['amount']
-                      .toString(),
-                  maxLines: 1,
-                ),
-              ],
+            itemCount: product.nutrition[selectedSize].length,
+            itemBuilder: (context, index) => Container(
+              width: 70,
+              height: 70,
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(4),
+                border: Border.all(color: Colors.black, width: 0.5),
+              ),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  AutoSizeText(
+                    product.nutrition[selectedSize]['$index']['name']
+                        .toString(),
+                    maxLines: 1,
+                  ),
+                  AutoSizeText(
+                    product.nutrition[selectedSize]['$index']['amount']
+                        .toString(),
+                    maxLines: 1,
+                  ),
+                ],
+              ),
             ),
           ),
         ),

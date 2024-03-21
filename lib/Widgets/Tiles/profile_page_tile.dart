@@ -27,8 +27,8 @@ class ProfilePageTile extends ConsumerWidget {
           onTap: onTap,
         ),
         isLastTile == null || isLastTile != true
-            ? JusDivider().thin()
-            : JusDivider().thick(),
+            ? JusDivider.thin()
+            : JusDivider.thick(),
       ],
     );
   }

@@ -9,7 +9,7 @@ class FavoritesModel with _$FavoritesModel {
     required String name,
     required List ingredients,
     required List toppings,
-    required int productID,
+    required String productId,
     required int size,
     required List allergies,
   }) = _FavoritesModel;

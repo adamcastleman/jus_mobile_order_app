@@ -3,38 +3,33 @@ const addFailedOrderToDatabase = require("../orders/add_failed_order_to_database
 const sendGiftCardConfirmationEmail = require("../emails/send_gift_card_confirmation_email");
 const sendEmailToAdminOnFailedOrder = require("../emails/send_email_to_admin_on_failed_order");
 
-const addGiftCardActivityToDatabase = async (db, giftCardMap, userID) => {
-
-
-  if (!giftCardMap.orderDetails) {
-    giftCardMap.orderDetails = {};
+const addGiftCardActivityToDatabase = async (db, orderMap) => {
+  if (!orderMap.orderDetails) {
+    orderMap.orderDetails = {};
   }
 
   try {
-    delete giftCardMap.paymentDetails.cardId;
-    delete giftCardMap.metadata;
-
+    delete orderMap.paymentDetails.cardId;
+    delete orderMap.metadata;
 
     const giftCardActivitiesRef = db.collection("walletActivities").doc();
 
-    giftCardMap.uid = giftCardActivitiesRef.id;
-    giftCardMap.orderDetails.orderStatus = "SUCCESS";
+    orderMap.uid = giftCardActivitiesRef.id;
+    orderMap.orderDetails.orderStatus = "SUCCESS";
 
-    console.log(giftCardMap.cardDetails.activity);
-
-    await giftCardActivitiesRef.set(giftCardMap);
+    await giftCardActivitiesRef.set(orderMap);
     if (
-      giftCardMap.cardDetails.activity == "LOAD" ||
-      giftCardMap.cardDetails.activity == "TRANSFER"
+      orderMap.cardDetails.activity == "LOAD" ||
+      orderMap.cardDetails.activity == "TRANSFER"
     ) {
-      await sendGiftCardConfirmationEmail(giftCardMap);
+      await sendGiftCardConfirmationEmail(orderMap);
     }
 
-    return giftCardMap;
+    return orderMap;
   } catch (error) {
     console.log("Error adding order to database:", error.message);
-    await addFailedOrderToDatabase(db, giftCardMap);
-    await sendEmailToAdminOnFailedOrder(giftCardMap);
+    await addFailedOrderToDatabase(db, orderMap);
+    await sendEmailToAdminOnFailedOrder(orderMap);
 
     throw error;
   }

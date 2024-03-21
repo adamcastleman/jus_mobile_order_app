@@ -1,10 +1,9 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:jus_mobile_order_app/Helpers/divider.dart';
-import 'package:jus_mobile_order_app/Helpers/modal_bottom_sheets.dart';
+import 'package:jus_mobile_order_app/Helpers/error.dart';
 import 'package:jus_mobile_order_app/Helpers/spacing_widgets.dart';
 import 'package:jus_mobile_order_app/Services/payment_method_database_services.dart';
-import 'package:jus_mobile_order_app/Sheets/invalid_sheet_single_pop.dart';
 
 class DeletePaymentMethodConfirmationSheet extends StatelessWidget {
   final String cardID;
@@ -23,7 +22,7 @@ class DeletePaymentMethodConfirmationSheet extends StatelessWidget {
             maxLines: 1,
           ),
           Spacing.vertical(40),
-          JusDivider().thick(),
+          JusDivider.thick(),
           // Spacing().vertical(30),
           ListTile(
             textColor: Colors.black,
@@ -37,7 +36,7 @@ class DeletePaymentMethodConfirmationSheet extends StatelessWidget {
               Navigator.pop(context);
             },
           ),
-          JusDivider().thin(),
+          JusDivider.thin(),
           ListTile(
             textColor: Colors.red,
             title: const Text(
@@ -48,15 +47,12 @@ class DeletePaymentMethodConfirmationSheet extends StatelessWidget {
             ),
             onTap: () {
               PaymentMethodDatabaseServices().deletePaymentMethod(
-                  cardID: cardID,
-                  onError: (error) {
-                    ModalBottomSheet().partScreen(
-                      context: context,
-                      builder: (context) => InvalidSheetSinglePop(
-                        error: error.toString(),
-                      ),
-                    );
-                  });
+                cardID: cardID,
+                onError: (error) {
+                  ErrorHelpers.showSinglePopError(context,
+                      error: error.toString());
+                },
+              );
               Navigator.pop(context);
               Navigator.pop(context);
             },

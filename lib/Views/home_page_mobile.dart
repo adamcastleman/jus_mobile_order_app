@@ -1,20 +1,21 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:jus_mobile_order_app/Helpers/navigation.dart';
 import 'package:jus_mobile_order_app/Helpers/spacing_widgets.dart';
-import 'package:jus_mobile_order_app/Models/offers_model.dart';
+import 'package:jus_mobile_order_app/Models/announcements_model.dart';
+import 'package:jus_mobile_order_app/Models/top_banner_model.dart';
 import 'package:jus_mobile_order_app/Models/user_model.dart';
-import 'package:jus_mobile_order_app/Providers/ProviderWidgets/offers_provider_widget.dart';
+import 'package:jus_mobile_order_app/Providers/ProviderWidgets/announcements_provider_widget.dart';
+import 'package:jus_mobile_order_app/Providers/ProviderWidgets/display_images_provider_widget.dart';
+import 'package:jus_mobile_order_app/Providers/ProviderWidgets/top_banner_provider_widget.dart';
+import 'package:jus_mobile_order_app/Providers/product_providers.dart';
 import 'package:jus_mobile_order_app/Providers/stream_providers.dart';
-import 'package:jus_mobile_order_app/Widgets/Cards/loyalty_card.dart';
-import 'package:jus_mobile_order_app/Widgets/Cards/loyalty_guest.dart';
+import 'package:jus_mobile_order_app/Providers/theme_providers.dart';
+import 'package:jus_mobile_order_app/Widgets/General/banner_call_to_action.dart';
 import 'package:jus_mobile_order_app/Widgets/General/home_greeting.dart';
 import 'package:jus_mobile_order_app/Widgets/Lists/favorites_list.dart';
-import 'package:jus_mobile_order_app/Widgets/Lists/new_product_list.dart';
-import 'package:jus_mobile_order_app/Widgets/Lists/offers_list_home.dart';
-import 'package:jus_mobile_order_app/Widgets/Lists/recommended_list.dart';
 import 'package:jus_mobile_order_app/Widgets/Tiles/announcement_tile.dart';
-
-import '../Widgets/Cards/favorites_guest.dart';
 
 class MobileHomePage extends ConsumerWidget {
   const MobileHomePage({super.key});
@@ -22,58 +23,227 @@ class MobileHomePage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final user = ref.watch(currentUserProvider).value ?? const UserModel();
-    return OffersProviderWidget(
-      builder: (offers) => SingleChildScrollView(
+    return DisplayImagesProviderWidget(
+      builder: (images) => TopBannerProviderWidget(
+        builder: (banner) => AnnouncementsProviderWidget(
+          builder: (announcements) {
+            if (user.uid == null) {
+              return _guestHomePage(
+                  context, ref, user, banner, images, announcements);
+            }
+            return _userHomePage(
+                context, ref, user, images, banner, announcements);
+          },
+        ),
+      ),
+    );
+  }
+
+  _guestHomePage(
+    BuildContext context,
+    WidgetRef ref,
+    UserModel user,
+    TopBannerModel banner,
+    dynamic images,
+    List<AnnouncementsModel> announcements,
+  ) {
+    final pastelBlue = ref.watch(pastelBlueProvider);
+    final pastelRed = ref.watch(pastelRedProvider);
+    final pastelBrown = ref.watch(pastelBrownProvider);
+    final pastelPurple = ref.watch(pastelPurpleProvider);
+
+    return Scaffold(
+      appBar: _homeAppBar(),
+      body: SingleChildScrollView(
         padding: const EdgeInsets.only(bottom: 40),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           mainAxisSize: MainAxisSize.min,
           children: [
-            Spacing.vertical(25),
-            const Align(
-              alignment: Alignment.centerLeft,
-              child: MobileHomeGreeting(),
+            _displayAnnouncementTile(user, announcements),
+            CallToActionBanner(
+              imagePath: banner.image,
+              backgroundColor: banner.color == null
+                  ? pastelRed
+                  : ref.watch(banner.color ?? pastelRedProvider),
+              callToActionText: 'Order Now',
+              callToActionOnPressed: () {
+                HapticFeedback.lightImpact();
+                NavigationHelpers().navigateToMenuPage(context, ref);
+              },
+              titleMaxLines: 1,
+              title: banner.title,
+              description: banner.description,
+              isImageOnRight: true,
             ),
-            Spacing.vertical(25),
-            const AnnouncementTile(),
-            user.uid == null
-                ? const Padding(
-                    padding: EdgeInsets.only(top: 22.0),
-                    child: LoyaltyCardGuest(),
-                  )
-                : const LoyaltyCard(),
-            showOffersList(user, offers),
-            user.uid == null
-                ? const Padding(
-                    padding: EdgeInsets.only(top: 18.0),
-                    child: FavoritesCardGuest(),
-                  )
-                : const FavoritesList(),
-            user.uid == null ? const SizedBox() : const NewProductList(),
-            user.uid == null ? const SizedBox() : const RecommendedList(),
+            CallToActionBanner(
+              imagePath: images['images'][14]['url'],
+              backgroundColor: pastelPurple,
+              callToActionText: 'Sign Up',
+              callToActionOnPressed: () {
+                HapticFeedback.lightImpact();
+                NavigationHelpers.navigateToRegisterPage(context);
+              },
+              titleMaxLines: 1,
+              title: 'Save Favorites',
+              description:
+                  'Create an account to save your favorites so it\'s faster and easier to order next time.',
+              isImageOnRight: false,
+            ),
+            CallToActionBanner(
+              imagePath: images['images'][8]['url'],
+              backgroundColor: pastelBrown,
+              callToActionText: 'Learn More',
+              callToActionOnPressed: () {
+                HapticFeedback.lightImpact();
+                NavigationHelpers.navigateToPointsInformationPage(
+                  context,
+                  ref,
+                );
+              },
+              titleMaxLines: 1,
+              title: 'Get Free Stuff',
+              description:
+                  'Collect points as you shop, and redeem these points for free items.',
+              isImageOnRight: false,
+            ),
+            CallToActionBanner(
+              imagePath: images['images'][12]['url'],
+              backgroundColor: pastelBlue,
+              callToActionText: 'View Map',
+              callToActionOnPressed: () {
+                HapticFeedback.lightImpact();
+                NavigationHelpers().navigateToLocationPage(context, ref);
+              },
+              titleMaxLines: 1,
+              title: 'Locations',
+              description: 'Find a store near you.',
+            )
           ],
         ),
       ),
     );
   }
 
-  Widget showOffersList(UserModel user, List<OffersModel> offers) {
-    if (offers.isEmpty || user.uid == null) {
-      return const SizedBox();
-    }
+  _userHomePage(
+    BuildContext context,
+    WidgetRef ref,
+    UserModel user,
+    dynamic images,
+    TopBannerModel banner,
+    List<AnnouncementsModel> announcements,
+  ) {
+    final pastelRed = ref.watch(pastelRedProvider);
+    final pastelPurple = ref.watch(pastelPurpleProvider);
+    final pastelBlue = ref.watch(pastelBlueProvider);
+    final pastelBrown = ref.watch(pastelBrownProvider);
+    final favorites = ref.watch(allFavoritesProvider);
+    return Scaffold(
+      appBar: _homeAppBar(),
+      body: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            _displayAnnouncementTile(user, announcements),
+            CallToActionBanner(
+              imagePath: banner.image,
+              backgroundColor: pastelRed,
+              callToActionText: 'Order Now',
+              callToActionOnPressed: () {
+                HapticFeedback.lightImpact();
+                NavigationHelpers().navigateToMenuPage(context, ref);
+              },
+              titleMaxLines: 1,
+              title: banner.title,
+              description: banner.description,
+              isImageOnRight: true,
+            ),
+            favorites.isEmpty
+                ? CallToActionBanner(
+                    imagePath: images['images'][14]['url'],
+                    backgroundColor: pastelPurple,
+                    callToActionText: 'See Menu',
+                    callToActionOnPressed: () {
+                      HapticFeedback.lightImpact();
+                      NavigationHelpers().navigateToMenuPage(context, ref);
+                    },
+                    titleMaxLines: 1,
+                    title: 'Save Favorites',
+                    description:
+                        'Select your favorite item and tap the heart for faster reordering',
+                    isImageOnRight: false,
+                  )
+                : Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 22.0),
+                    child: FavoritesList(
+                      favorites: favorites,
+                    ),
+                  ),
+            CallToActionBanner(
+              imagePath: images['images'][8]['url'],
+              backgroundColor: pastelBrown,
+              callToActionText: 'View Points',
+              callToActionOnPressed: () {
+                HapticFeedback.lightImpact();
+                NavigationHelpers.navigateToScanPage(
+                  context,
+                  ref,
+                );
+              },
+              titleMaxLines: 1,
+              title: 'Points and Rewards',
+              description:
+                  'Earn points as you spend and redeem these points for free stuff',
+              isImageOnRight: false,
+            ),
+            CallToActionBanner(
+              imagePath: images['images'][12]['url'],
+              backgroundColor: pastelBlue,
+              callToActionText: 'View Map',
+              callToActionOnPressed: () {
+                HapticFeedback.lightImpact();
+                NavigationHelpers().navigateToLocationPage(context, ref);
+              },
+              titleMaxLines: 1,
+              title: 'Locations',
+              description: 'Find a store near you.',
+            )
+          ],
+        ),
+      ),
+    );
+  }
 
-    bool allMemberOnly = true;
-    for (var offer in offers) {
-      if (!offer.isMemberOnly) {
-        allMemberOnly = false;
-        break;
-      }
-    }
+  AppBar _homeAppBar() {
+    return AppBar(
+      title: const MobileHomeGreeting(),
+      actions: [
+        Padding(
+          padding: const EdgeInsets.only(right: 8.0),
+          child: Image.asset(
+            'assets/jus_logo_icon.png',
+            scale: 3,
+          ),
+        ),
+      ],
+    );
+  }
 
-    if (allMemberOnly && !user.isActiveMember!) {
+  Widget _displayAnnouncementTile(
+      UserModel user, List<AnnouncementsModel> announcements) {
+    if (announcements.isEmpty) {
       return const SizedBox();
     } else {
-      return const OffersList();
+      return Column(
+        children: [
+          user.uid == null ? const SizedBox() : Spacing.vertical(25),
+          AnnouncementTile(
+            announcements: announcements,
+          ),
+          Spacing.vertical(25),
+        ],
+      );
     }
   }
 }

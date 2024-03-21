@@ -12,10 +12,10 @@ const loadMoneyToWallet = async (gan, orderId, lineItemUid) => {
         type: "LOAD",
         locationId: locationID,
         giftCardGan: gan,
-       loadActivityDetails: {
+        loadActivityDetails: {
           orderId: orderId,
-           lineItemUid: lineItemUid
-        }
+          lineItemUid: lineItemUid,
+        },
       },
     });
 

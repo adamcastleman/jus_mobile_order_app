@@ -6,7 +6,8 @@ class InvalidModificationSheet extends StatelessWidget {
   const InvalidModificationSheet({required this.category, super.key});
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
+    return Container(
+      padding: const EdgeInsets.all(8.0),
       height: MediaQuery.of(context).size.height * 0.33,
       child: Center(
         child: Column(

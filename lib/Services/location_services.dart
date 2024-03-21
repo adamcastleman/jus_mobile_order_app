@@ -28,6 +28,15 @@ class LocationServices {
     return getLocationDataFromDatabase(querySnapshot);
   }
 
+  Future<LocationModel> getLocationFromLocationID(int locationId) async {
+    var querySnapshot = await FirebaseFirestore.instance
+        .collection('locations')
+        .where('locationId', isEqualTo: locationId)
+        .get();
+
+    return getLocationDataFromDatabase(querySnapshot).first;
+  }
+
   List<LocationModel> getLocationDataFromDatabase(QuerySnapshot snapshot) {
     return snapshot.docs.map(
       (doc) {
@@ -36,7 +45,7 @@ class LocationServices {
           uid: data['uid'],
           name: data['name'],
           status: data['status'],
-          locationID: data['locationID'],
+          locationId: data['locationId'],
           squareLocationId: data['squareLocationId'],
           phone: data['phone'],
           address: data['address'],
@@ -49,7 +58,6 @@ class LocationServices {
           isActive: data['isActive'],
           isAcceptingOrders: data['isAcceptingOrders'],
           salesTaxRate: data['salesTaxRate'],
-          acceptingOrders: data['acceptingOrders'],
           unavailableProducts: data['unavailableProducts'],
           blackoutDates: data['blackoutDates'],
         );

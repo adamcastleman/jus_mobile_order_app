@@ -146,7 +146,7 @@ class AccountInfoUpdater {
         await _updateUser(ref, user);
       }
 
-      ToastHelper().showToast(message: 'Account info updated');
+      ToastHelper.showToast(message: 'Account info updated');
     }
 
     ref.read(loadingProvider.notifier).state = false;

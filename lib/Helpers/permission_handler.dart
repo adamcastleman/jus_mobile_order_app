@@ -1,27 +1,25 @@
-import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 class PermissionHandler {
-  Future<PermissionStatus> locationPermission(
-      {required VoidCallback onGranted,
-      required VoidCallback onDeclined}) async {
+  Future<PermissionStatus> locationPermission({
+    required Future<void> Function() onGranted,
+    required Future<void> Function() onDeclined,
+  }) async {
     // Request permission if not already granted or permanently denied
-    if (await Permission.location.isDenied) {
-      final status = await Permission.location.request();
+    final status = await Permission.location.request();
 
-      if (status.isGranted || status.isLimited) {
-        onGranted();
-      } else {
-        onDeclined();
-      }
-      return status;
-    } else if (await Permission.location.isPermanentlyDenied) {
-      onDeclined();
-      return await Permission.location.status;
+    if (status.isGranted || status.isLimited) {
+      // Await the onGranted callback
+      await onGranted();
+    } else if (status.isPermanentlyDenied) {
+      // Handle permanently denied permission
+      await onDeclined();
     } else {
-      onGranted();
-      return await Permission.location.status;
+      // Handle other cases such as denied
+      await onDeclined();
     }
+
+    return status;
   }
 
   calendarPermission({required isDenied}) async {

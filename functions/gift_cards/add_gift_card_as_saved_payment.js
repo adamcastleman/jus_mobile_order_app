@@ -7,21 +7,21 @@ if (admin.apps.length === 0) {
   admin.initializeApp();
 }
 
-const addGiftCardAsSavedPayment = async (db, giftCardMap, userID) => {
+const addGiftCardAsSavedPayment = async (db, orderMap) => {
   const data = {
     cardId: null,
     brand: "wallet",
-    last4: giftCardMap.cardDetails.gan.slice(-4),
+    last4: orderMap.cardDetails.gan.slice(-4),
     expirationMonth: null,
     expirationYear: null,
     postalCode: null,
     isWallet: true,
-    firstName: giftCardMap.userDetails.firstName,
-    gan: giftCardMap.cardDetails.gan,
-    balance: giftCardMap.paymentDetails.amount,
+    firstName: orderMap.userDetails.firstName,
+    gan: orderMap.cardDetails.gan,
+    balance: orderMap.paymentDetails.amount,
   };
 
-  const context = { auth: { uid: userID } };
+  const context = { auth: { uid: orderMap.userDetails.userId } };
 
   try {
     const result = await addSavedPaymentToDatabase.run(data, context);

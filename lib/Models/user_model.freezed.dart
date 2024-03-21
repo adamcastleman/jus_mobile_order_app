@@ -12,7 +12,7 @@ part of 'user_model.dart';
 T _$identity<T>(T value) => value;
 
 final _privateConstructorUsedError = UnsupportedError(
-    'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#custom-getters-and-methods');
+    'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models');
 
 /// @nodoc
 mixin _$UserModel {
@@ -21,7 +21,8 @@ mixin _$UserModel {
   String? get lastName => throw _privateConstructorUsedError;
   String? get email => throw _privateConstructorUsedError;
   String? get phone => throw _privateConstructorUsedError;
-  bool? get isActiveMember => throw _privateConstructorUsedError;
+  SubscriptionStatus? get subscriptionStatus =>
+      throw _privateConstructorUsedError;
   String? get squareCustomerId => throw _privateConstructorUsedError;
   int? get points => throw _privateConstructorUsedError;
 
@@ -41,7 +42,7 @@ abstract class $UserModelCopyWith<$Res> {
       String? lastName,
       String? email,
       String? phone,
-      bool? isActiveMember,
+      SubscriptionStatus? subscriptionStatus,
       String? squareCustomerId,
       int? points});
 }
@@ -64,7 +65,7 @@ class _$UserModelCopyWithImpl<$Res, $Val extends UserModel>
     Object? lastName = freezed,
     Object? email = freezed,
     Object? phone = freezed,
-    Object? isActiveMember = freezed,
+    Object? subscriptionStatus = freezed,
     Object? squareCustomerId = freezed,
     Object? points = freezed,
   }) {
@@ -89,10 +90,10 @@ class _$UserModelCopyWithImpl<$Res, $Val extends UserModel>
           ? _value.phone
           : phone // ignore: cast_nullable_to_non_nullable
               as String?,
-      isActiveMember: freezed == isActiveMember
-          ? _value.isActiveMember
-          : isActiveMember // ignore: cast_nullable_to_non_nullable
-              as bool?,
+      subscriptionStatus: freezed == subscriptionStatus
+          ? _value.subscriptionStatus
+          : subscriptionStatus // ignore: cast_nullable_to_non_nullable
+              as SubscriptionStatus?,
       squareCustomerId: freezed == squareCustomerId
           ? _value.squareCustomerId
           : squareCustomerId // ignore: cast_nullable_to_non_nullable
@@ -119,7 +120,7 @@ abstract class _$$UserModelImplCopyWith<$Res>
       String? lastName,
       String? email,
       String? phone,
-      bool? isActiveMember,
+      SubscriptionStatus? subscriptionStatus,
       String? squareCustomerId,
       int? points});
 }
@@ -140,7 +141,7 @@ class __$$UserModelImplCopyWithImpl<$Res>
     Object? lastName = freezed,
     Object? email = freezed,
     Object? phone = freezed,
-    Object? isActiveMember = freezed,
+    Object? subscriptionStatus = freezed,
     Object? squareCustomerId = freezed,
     Object? points = freezed,
   }) {
@@ -165,10 +166,10 @@ class __$$UserModelImplCopyWithImpl<$Res>
           ? _value.phone
           : phone // ignore: cast_nullable_to_non_nullable
               as String?,
-      isActiveMember: freezed == isActiveMember
-          ? _value.isActiveMember
-          : isActiveMember // ignore: cast_nullable_to_non_nullable
-              as bool?,
+      subscriptionStatus: freezed == subscriptionStatus
+          ? _value.subscriptionStatus
+          : subscriptionStatus // ignore: cast_nullable_to_non_nullable
+              as SubscriptionStatus?,
       squareCustomerId: freezed == squareCustomerId
           ? _value.squareCustomerId
           : squareCustomerId // ignore: cast_nullable_to_non_nullable
@@ -190,7 +191,7 @@ class _$UserModelImpl implements _UserModel {
       this.lastName,
       this.email,
       this.phone,
-      this.isActiveMember,
+      this.subscriptionStatus,
       this.squareCustomerId,
       this.points});
 
@@ -205,7 +206,7 @@ class _$UserModelImpl implements _UserModel {
   @override
   final String? phone;
   @override
-  final bool? isActiveMember;
+  final SubscriptionStatus? subscriptionStatus;
   @override
   final String? squareCustomerId;
   @override
@@ -213,11 +214,11 @@ class _$UserModelImpl implements _UserModel {
 
   @override
   String toString() {
-    return 'UserModel(uid: $uid, firstName: $firstName, lastName: $lastName, email: $email, phone: $phone, isActiveMember: $isActiveMember, squareCustomerId: $squareCustomerId, points: $points)';
+    return 'UserModel(uid: $uid, firstName: $firstName, lastName: $lastName, email: $email, phone: $phone, subscriptionStatus: $subscriptionStatus, squareCustomerId: $squareCustomerId, points: $points)';
   }
 
   @override
-  bool operator ==(dynamic other) {
+  bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$UserModelImpl &&
@@ -228,8 +229,8 @@ class _$UserModelImpl implements _UserModel {
                 other.lastName == lastName) &&
             (identical(other.email, email) || other.email == email) &&
             (identical(other.phone, phone) || other.phone == phone) &&
-            (identical(other.isActiveMember, isActiveMember) ||
-                other.isActiveMember == isActiveMember) &&
+            (identical(other.subscriptionStatus, subscriptionStatus) ||
+                other.subscriptionStatus == subscriptionStatus) &&
             (identical(other.squareCustomerId, squareCustomerId) ||
                 other.squareCustomerId == squareCustomerId) &&
             (identical(other.points, points) || other.points == points));
@@ -237,7 +238,7 @@ class _$UserModelImpl implements _UserModel {
 
   @override
   int get hashCode => Object.hash(runtimeType, uid, firstName, lastName, email,
-      phone, isActiveMember, squareCustomerId, points);
+      phone, subscriptionStatus, squareCustomerId, points);
 
   @JsonKey(ignore: true)
   @override
@@ -253,7 +254,7 @@ abstract class _UserModel implements UserModel {
       final String? lastName,
       final String? email,
       final String? phone,
-      final bool? isActiveMember,
+      final SubscriptionStatus? subscriptionStatus,
       final String? squareCustomerId,
       final int? points}) = _$UserModelImpl;
 
@@ -268,7 +269,7 @@ abstract class _UserModel implements UserModel {
   @override
   String? get phone;
   @override
-  bool? get isActiveMember;
+  SubscriptionStatus? get subscriptionStatus;
   @override
   String? get squareCustomerId;
   @override

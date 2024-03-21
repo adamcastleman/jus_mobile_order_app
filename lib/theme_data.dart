@@ -1,3 +1,4 @@
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -50,6 +51,7 @@ class ThemeManager {
     unselectedWidgetColor: Colors.grey,
     splashColor: Colors.transparent,
     highlightColor: Colors.transparent,
+    hoverColor: Colors.transparent,
     splashFactory: NoSplash.splashFactory,
     textTheme: GoogleFonts.quicksandTextTheme(),
     cardTheme: CardTheme(
@@ -128,6 +130,20 @@ class ThemeManager {
       collapsedIconColor: Colors.black,
       textColor: Colors.black,
     ),
+    checkboxTheme: CheckboxThemeData(
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(100),
+        side: const BorderSide(color: Colors.black, width: 0.5),
+      ),
+      fillColor:
+          MaterialStateProperty.resolveWith<Color>((Set<MaterialState> states) {
+        if (states.contains(MaterialState.selected)) {
+          return Colors.black;
+        }
+        return Colors.white;
+      }),
+      checkColor: MaterialStateProperty.all<Color>(Colors.white),
+    ),
     bottomSheetTheme: const BottomSheetThemeData(
       modalBackgroundColor: Colors.white,
       backgroundColor: Colors.white,
@@ -136,6 +152,11 @@ class ThemeManager {
           topRight: Radius.circular(12),
           topLeft: Radius.circular(12),
         ),
+      ),
+    ),
+    dialogTheme: DialogTheme(
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(25),
       ),
     ),
   );
@@ -154,5 +175,44 @@ class ThemeManager {
     themeConfigurationBuilder.keyboardAppearance = KeyboardAppearance.light;
 
     await InAppPayments.setIOSCardEntryTheme(themeConfigurationBuilder.build());
+  }
+}
+
+class TitleText extends StatelessWidget {
+  final String text;
+  final double fontSize;
+  final int? maxLines;
+
+  const TitleText(
+      {required this.text, required this.fontSize, this.maxLines, super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return AutoSizeText(
+      text,
+      style: GoogleFonts.raleway(
+          fontSize: fontSize, fontWeight: FontWeight.bold, letterSpacing: -2),
+      textAlign: TextAlign.center,
+      maxLines: maxLines ?? 2,
+    );
+  }
+}
+
+class DescriptionText extends StatelessWidget {
+  final String text;
+  final double fontSize;
+  final int? maxLines;
+
+  const DescriptionText(
+      {required this.text, required this.fontSize, this.maxLines, super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return AutoSizeText(
+      text,
+      style: TextStyle(fontSize: fontSize, letterSpacing: -1),
+      textAlign: TextAlign.center,
+      maxLines: maxLines ?? 3,
+    );
   }
 }

@@ -12,16 +12,16 @@ part of 'location_model.dart';
 T _$identity<T>(T value) => value;
 
 final _privateConstructorUsedError = UnsupportedError(
-    'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#custom-getters-and-methods');
+    'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models');
 
 /// @nodoc
 mixin _$LocationModel {
   String get uid => throw _privateConstructorUsedError;
   String get name => throw _privateConstructorUsedError;
-  String get status => throw _privateConstructorUsedError;
-  int get locationID => throw _privateConstructorUsedError;
+  String get locationId => throw _privateConstructorUsedError;
   String get squareLocationId => throw _privateConstructorUsedError;
-  int get phone => throw _privateConstructorUsedError;
+  String get status => throw _privateConstructorUsedError;
+  String get phone => throw _privateConstructorUsedError;
   Map<dynamic, dynamic> get address => throw _privateConstructorUsedError;
   List<dynamic> get hours => throw _privateConstructorUsedError;
   String get timezone => throw _privateConstructorUsedError;
@@ -32,7 +32,6 @@ mixin _$LocationModel {
   bool get isActive => throw _privateConstructorUsedError;
   bool get isAcceptingOrders => throw _privateConstructorUsedError;
   double get salesTaxRate => throw _privateConstructorUsedError;
-  bool get acceptingOrders => throw _privateConstructorUsedError;
   List<dynamic> get unavailableProducts => throw _privateConstructorUsedError;
   List<dynamic> get blackoutDates => throw _privateConstructorUsedError;
 
@@ -50,10 +49,10 @@ abstract class $LocationModelCopyWith<$Res> {
   $Res call(
       {String uid,
       String name,
-      String status,
-      int locationID,
+      String locationId,
       String squareLocationId,
-      int phone,
+      String status,
+      String phone,
       Map<dynamic, dynamic> address,
       List<dynamic> hours,
       String timezone,
@@ -64,7 +63,6 @@ abstract class $LocationModelCopyWith<$Res> {
       bool isActive,
       bool isAcceptingOrders,
       double salesTaxRate,
-      bool acceptingOrders,
       List<dynamic> unavailableProducts,
       List<dynamic> blackoutDates});
 }
@@ -84,9 +82,9 @@ class _$LocationModelCopyWithImpl<$Res, $Val extends LocationModel>
   $Res call({
     Object? uid = null,
     Object? name = null,
-    Object? status = null,
-    Object? locationID = null,
+    Object? locationId = null,
     Object? squareLocationId = null,
+    Object? status = null,
     Object? phone = null,
     Object? address = null,
     Object? hours = null,
@@ -98,7 +96,6 @@ class _$LocationModelCopyWithImpl<$Res, $Val extends LocationModel>
     Object? isActive = null,
     Object? isAcceptingOrders = null,
     Object? salesTaxRate = null,
-    Object? acceptingOrders = null,
     Object? unavailableProducts = null,
     Object? blackoutDates = null,
   }) {
@@ -111,22 +108,22 @@ class _$LocationModelCopyWithImpl<$Res, $Val extends LocationModel>
           ? _value.name
           : name // ignore: cast_nullable_to_non_nullable
               as String,
-      status: null == status
-          ? _value.status
-          : status // ignore: cast_nullable_to_non_nullable
+      locationId: null == locationId
+          ? _value.locationId
+          : locationId // ignore: cast_nullable_to_non_nullable
               as String,
-      locationID: null == locationID
-          ? _value.locationID
-          : locationID // ignore: cast_nullable_to_non_nullable
-              as int,
       squareLocationId: null == squareLocationId
           ? _value.squareLocationId
           : squareLocationId // ignore: cast_nullable_to_non_nullable
               as String,
+      status: null == status
+          ? _value.status
+          : status // ignore: cast_nullable_to_non_nullable
+              as String,
       phone: null == phone
           ? _value.phone
           : phone // ignore: cast_nullable_to_non_nullable
-              as int,
+              as String,
       address: null == address
           ? _value.address
           : address // ignore: cast_nullable_to_non_nullable
@@ -167,10 +164,6 @@ class _$LocationModelCopyWithImpl<$Res, $Val extends LocationModel>
           ? _value.salesTaxRate
           : salesTaxRate // ignore: cast_nullable_to_non_nullable
               as double,
-      acceptingOrders: null == acceptingOrders
-          ? _value.acceptingOrders
-          : acceptingOrders // ignore: cast_nullable_to_non_nullable
-              as bool,
       unavailableProducts: null == unavailableProducts
           ? _value.unavailableProducts
           : unavailableProducts // ignore: cast_nullable_to_non_nullable
@@ -194,10 +187,10 @@ abstract class _$$LocationModelImplCopyWith<$Res>
   $Res call(
       {String uid,
       String name,
-      String status,
-      int locationID,
+      String locationId,
       String squareLocationId,
-      int phone,
+      String status,
+      String phone,
       Map<dynamic, dynamic> address,
       List<dynamic> hours,
       String timezone,
@@ -208,7 +201,6 @@ abstract class _$$LocationModelImplCopyWith<$Res>
       bool isActive,
       bool isAcceptingOrders,
       double salesTaxRate,
-      bool acceptingOrders,
       List<dynamic> unavailableProducts,
       List<dynamic> blackoutDates});
 }
@@ -226,9 +218,9 @@ class __$$LocationModelImplCopyWithImpl<$Res>
   $Res call({
     Object? uid = null,
     Object? name = null,
-    Object? status = null,
-    Object? locationID = null,
+    Object? locationId = null,
     Object? squareLocationId = null,
+    Object? status = null,
     Object? phone = null,
     Object? address = null,
     Object? hours = null,
@@ -240,7 +232,6 @@ class __$$LocationModelImplCopyWithImpl<$Res>
     Object? isActive = null,
     Object? isAcceptingOrders = null,
     Object? salesTaxRate = null,
-    Object? acceptingOrders = null,
     Object? unavailableProducts = null,
     Object? blackoutDates = null,
   }) {
@@ -253,22 +244,22 @@ class __$$LocationModelImplCopyWithImpl<$Res>
           ? _value.name
           : name // ignore: cast_nullable_to_non_nullable
               as String,
-      status: null == status
-          ? _value.status
-          : status // ignore: cast_nullable_to_non_nullable
+      locationId: null == locationId
+          ? _value.locationId
+          : locationId // ignore: cast_nullable_to_non_nullable
               as String,
-      locationID: null == locationID
-          ? _value.locationID
-          : locationID // ignore: cast_nullable_to_non_nullable
-              as int,
       squareLocationId: null == squareLocationId
           ? _value.squareLocationId
           : squareLocationId // ignore: cast_nullable_to_non_nullable
               as String,
+      status: null == status
+          ? _value.status
+          : status // ignore: cast_nullable_to_non_nullable
+              as String,
       phone: null == phone
           ? _value.phone
           : phone // ignore: cast_nullable_to_non_nullable
-              as int,
+              as String,
       address: null == address
           ? _value._address
           : address // ignore: cast_nullable_to_non_nullable
@@ -309,10 +300,6 @@ class __$$LocationModelImplCopyWithImpl<$Res>
           ? _value.salesTaxRate
           : salesTaxRate // ignore: cast_nullable_to_non_nullable
               as double,
-      acceptingOrders: null == acceptingOrders
-          ? _value.acceptingOrders
-          : acceptingOrders // ignore: cast_nullable_to_non_nullable
-              as bool,
       unavailableProducts: null == unavailableProducts
           ? _value._unavailableProducts
           : unavailableProducts // ignore: cast_nullable_to_non_nullable
@@ -331,9 +318,9 @@ class _$LocationModelImpl implements _LocationModel {
   const _$LocationModelImpl(
       {required this.uid,
       required this.name,
-      required this.status,
-      required this.locationID,
+      required this.locationId,
       required this.squareLocationId,
+      required this.status,
       required this.phone,
       required final Map<dynamic, dynamic> address,
       required final List<dynamic> hours,
@@ -345,7 +332,6 @@ class _$LocationModelImpl implements _LocationModel {
       required this.isActive,
       required this.isAcceptingOrders,
       required this.salesTaxRate,
-      required this.acceptingOrders,
       required final List<dynamic> unavailableProducts,
       required final List<dynamic> blackoutDates})
       : _address = address,
@@ -358,13 +344,13 @@ class _$LocationModelImpl implements _LocationModel {
   @override
   final String name;
   @override
-  final String status;
-  @override
-  final int locationID;
+  final String locationId;
   @override
   final String squareLocationId;
   @override
-  final int phone;
+  final String status;
+  @override
+  final String phone;
   final Map<dynamic, dynamic> _address;
   @override
   Map<dynamic, dynamic> get address {
@@ -397,8 +383,6 @@ class _$LocationModelImpl implements _LocationModel {
   final bool isAcceptingOrders;
   @override
   final double salesTaxRate;
-  @override
-  final bool acceptingOrders;
   final List<dynamic> _unavailableProducts;
   @override
   List<dynamic> get unavailableProducts {
@@ -418,21 +402,21 @@ class _$LocationModelImpl implements _LocationModel {
 
   @override
   String toString() {
-    return 'LocationModel(uid: $uid, name: $name, status: $status, locationID: $locationID, squareLocationId: $squareLocationId, phone: $phone, address: $address, hours: $hours, timezone: $timezone, currency: $currency, geohash: $geohash, latitude: $latitude, longitude: $longitude, isActive: $isActive, isAcceptingOrders: $isAcceptingOrders, salesTaxRate: $salesTaxRate, acceptingOrders: $acceptingOrders, unavailableProducts: $unavailableProducts, blackoutDates: $blackoutDates)';
+    return 'LocationModel(uid: $uid, name: $name, locationId: $locationId, squareLocationId: $squareLocationId, status: $status, phone: $phone, address: $address, hours: $hours, timezone: $timezone, currency: $currency, geohash: $geohash, latitude: $latitude, longitude: $longitude, isActive: $isActive, isAcceptingOrders: $isAcceptingOrders, salesTaxRate: $salesTaxRate, unavailableProducts: $unavailableProducts, blackoutDates: $blackoutDates)';
   }
 
   @override
-  bool operator ==(dynamic other) {
+  bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$LocationModelImpl &&
             (identical(other.uid, uid) || other.uid == uid) &&
             (identical(other.name, name) || other.name == name) &&
-            (identical(other.status, status) || other.status == status) &&
-            (identical(other.locationID, locationID) ||
-                other.locationID == locationID) &&
+            (identical(other.locationId, locationId) ||
+                other.locationId == locationId) &&
             (identical(other.squareLocationId, squareLocationId) ||
                 other.squareLocationId == squareLocationId) &&
+            (identical(other.status, status) || other.status == status) &&
             (identical(other.phone, phone) || other.phone == phone) &&
             const DeepCollectionEquality().equals(other._address, _address) &&
             const DeepCollectionEquality().equals(other._hours, _hours) &&
@@ -451,8 +435,6 @@ class _$LocationModelImpl implements _LocationModel {
                 other.isAcceptingOrders == isAcceptingOrders) &&
             (identical(other.salesTaxRate, salesTaxRate) ||
                 other.salesTaxRate == salesTaxRate) &&
-            (identical(other.acceptingOrders, acceptingOrders) ||
-                other.acceptingOrders == acceptingOrders) &&
             const DeepCollectionEquality()
                 .equals(other._unavailableProducts, _unavailableProducts) &&
             const DeepCollectionEquality()
@@ -460,28 +442,26 @@ class _$LocationModelImpl implements _LocationModel {
   }
 
   @override
-  int get hashCode => Object.hashAll([
-        runtimeType,
-        uid,
-        name,
-        status,
-        locationID,
-        squareLocationId,
-        phone,
-        const DeepCollectionEquality().hash(_address),
-        const DeepCollectionEquality().hash(_hours),
-        timezone,
-        currency,
-        geohash,
-        latitude,
-        longitude,
-        isActive,
-        isAcceptingOrders,
-        salesTaxRate,
-        acceptingOrders,
-        const DeepCollectionEquality().hash(_unavailableProducts),
-        const DeepCollectionEquality().hash(_blackoutDates)
-      ]);
+  int get hashCode => Object.hash(
+      runtimeType,
+      uid,
+      name,
+      locationId,
+      squareLocationId,
+      status,
+      phone,
+      const DeepCollectionEquality().hash(_address),
+      const DeepCollectionEquality().hash(_hours),
+      timezone,
+      currency,
+      geohash,
+      latitude,
+      longitude,
+      isActive,
+      isAcceptingOrders,
+      salesTaxRate,
+      const DeepCollectionEquality().hash(_unavailableProducts),
+      const DeepCollectionEquality().hash(_blackoutDates));
 
   @JsonKey(ignore: true)
   @override
@@ -494,10 +474,10 @@ abstract class _LocationModel implements LocationModel {
   const factory _LocationModel(
       {required final String uid,
       required final String name,
-      required final String status,
-      required final int locationID,
+      required final String locationId,
       required final String squareLocationId,
-      required final int phone,
+      required final String status,
+      required final String phone,
       required final Map<dynamic, dynamic> address,
       required final List<dynamic> hours,
       required final String timezone,
@@ -508,7 +488,6 @@ abstract class _LocationModel implements LocationModel {
       required final bool isActive,
       required final bool isAcceptingOrders,
       required final double salesTaxRate,
-      required final bool acceptingOrders,
       required final List<dynamic> unavailableProducts,
       required final List<dynamic> blackoutDates}) = _$LocationModelImpl;
 
@@ -517,13 +496,13 @@ abstract class _LocationModel implements LocationModel {
   @override
   String get name;
   @override
-  String get status;
-  @override
-  int get locationID;
+  String get locationId;
   @override
   String get squareLocationId;
   @override
-  int get phone;
+  String get status;
+  @override
+  String get phone;
   @override
   Map<dynamic, dynamic> get address;
   @override
@@ -544,8 +523,6 @@ abstract class _LocationModel implements LocationModel {
   bool get isAcceptingOrders;
   @override
   double get salesTaxRate;
-  @override
-  bool get acceptingOrders;
   @override
   List<dynamic> get unavailableProducts;
   @override

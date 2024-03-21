@@ -1,12 +1,12 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:intl/intl.dart';
-import 'package:jus_mobile_order_app/Helpers/modal_bottom_sheets.dart';
+import 'package:jus_mobile_order_app/Helpers/navigation.dart';
 import 'package:jus_mobile_order_app/Helpers/spacing_widgets.dart';
 import 'package:jus_mobile_order_app/Models/order_model.dart';
-import 'package:jus_mobile_order_app/Providers/ProviderWidgets/location_provider_widget.dart';
-import 'package:jus_mobile_order_app/Providers/ProviderWidgets/products_provider_widget.dart';
+import 'package:jus_mobile_order_app/Providers/location_providers.dart';
 import 'package:jus_mobile_order_app/Sheets/receipt_sheet.dart';
 import 'package:jus_mobile_order_app/Widgets/Icons/chevron_right_icon.dart';
 
@@ -18,88 +18,91 @@ class OrderHistoryTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return LocationsProviderWidget(
-      builder: (locations) => ProductsProviderWidget(
-        builder: (products) => InkWell(
-          onTap: () {
-            HapticFeedback.lightImpact();
-            ModalBottomSheet().fullScreen(
-                context: context,
-                builder: (context) => ReceiptSheet(order: order));
-          },
-          child: Column(
-            children: [
-              order.pointsRedeemed != 0
-                  ? Padding(
-                      padding: const EdgeInsets.only(bottom: 12.0),
-                      child: ListTile(
-                        title: Text(
-                          '${order.pointsRedeemed} points redeemed',
-                          style: const TextStyle(
-                              fontSize: 18, fontWeight: FontWeight.bold),
-                        ),
-                        trailing: Text(
-                            DateFormat('M/d/yyyy').format(order.createdAt)),
-                      ))
-                  : const SizedBox(),
-              ListTile(
-                leading: determineOrderIcon(order),
-                title: Text(
-                  order.orderSource,
-                  style: const TextStyle(fontWeight: FontWeight.bold),
-                ),
-                subtitle: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(order.totalAmount <= 0
-                        ? 'No charge'
-                        : '${order.cardBrand} x${order.last4}'),
-                    Text(locations
-                        .firstWhere(
-                            (element) => element.locationID == order.locationID)
-                        .name),
-                  ],
-                ),
-                trailing: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.end,
-                      children: [
-                        Text(
-                          '\$${NumberFormat.currency(
-                            locale: 'en_US',
-                            symbol: '',
-                            decimalDigits: 2,
-                          ).format((order.totalAmount + order.tipAmount) / 100)}',
-                          style: const TextStyle(fontWeight: FontWeight.bold),
-                        ),
-                        Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Text(
-                              '+${order.pointsEarned}',
-                              style: const TextStyle(color: Colors.green),
-                            ),
-                            const Text(' points'),
-                          ],
-                        ),
-                        Text(DateFormat('M/d/yyyy').format(order.createdAt)),
-                      ],
+    return InkWell(
+      onTap: () {
+        HapticFeedback.lightImpact();
+        _showReceipt(context);
+      },
+      child: Column(
+        children: [
+          order.pointsRedeemed != 0
+              ? Padding(
+                  padding: const EdgeInsets.only(bottom: 12.0),
+                  child: ListTile(
+                    title: Text(
+                      '${order.pointsRedeemed} points redeemed',
+                      style: const TextStyle(
+                          fontSize: 18, fontWeight: FontWeight.bold),
                     ),
-                    Spacing.horizontal(10),
-                    const ChevronRightIcon(),
+                    trailing:
+                        Text(DateFormat('M/d/yyyy').format(order.createdAt)),
+                  ))
+              : const SizedBox(),
+          ListTile(
+            leading: determineOrderIcon(order),
+            title: Text(
+              order.orderSource,
+              style: const TextStyle(fontWeight: FontWeight.bold),
+            ),
+            subtitle: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(order.totalAmount <= 0
+                    ? 'No charge'
+                    : '${order.cardBrand} x${order.last4}'),
+                Consumer(
+                  builder: (context, ref, child) {
+                    final locations = ref.watch(allLocationsProvider);
+                    return Text(locations
+                        .firstWhere(
+                            (element) => element.locationId == order.locationId)
+                        .name);
+                  },
+                ),
+              ],
+            ),
+            trailing: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    Flexible(
+                      child: Text(
+                        '\$${NumberFormat.currency(
+                          locale: 'en_US',
+                          symbol: '',
+                          decimalDigits: 2,
+                        ).format((order.totalAmount + order.tipAmount) / 100)}',
+                        style: const TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                    ),
+                    Flexible(
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(
+                            '+${order.pointsEarned}',
+                            style: const TextStyle(color: Colors.green),
+                          ),
+                          const Text(' points'),
+                        ],
+                      ),
+                    ),
+                    Flexible(
+                        child: Text(
+                            DateFormat('M/d/yyyy').format(order.createdAt))),
                   ],
                 ),
-                onTap: () {
-                  ModalBottomSheet().fullScreen(
-                      context: context,
-                      builder: (context) => ReceiptSheet(order: order));
-                },
-              ),
-            ],
+                Spacing.horizontal(10),
+                const ChevronRightIcon(),
+              ],
+            ),
+            onTap: () {
+              _showReceipt(context);
+            },
           ),
-        ),
+        ],
       ),
     );
   }
@@ -121,5 +124,12 @@ class OrderHistoryTile extends StatelessWidget {
       default:
         const Icon(CupertinoIcons.home);
     }
+  }
+
+  void _showReceipt(BuildContext context) {
+    NavigationHelpers.navigateToFullScreenSheetOrDialog(
+      context,
+      ReceiptSheet(order: order),
+    );
   }
 }

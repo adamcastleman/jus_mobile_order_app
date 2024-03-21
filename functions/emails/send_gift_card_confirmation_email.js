@@ -24,7 +24,7 @@ const sendGiftCardConfirmationEmail = async (giftCardMap) => {
   let info = await transporter.sendMail({
     from: email,
     to: giftCardMap.userDetails.email,
-    subject: `New Wallet Event - Confirmation# ${giftCardMap.orderDetails.orderNumber}`,
+    subject: `New Wallet Event - Confirmation #${giftCardMap.orderDetails.orderNumber}`,
     html: emailBody,
   });
 

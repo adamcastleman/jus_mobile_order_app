@@ -1,4 +1,6 @@
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:intl/intl.dart';
+import 'package:jus_mobile_order_app/Helpers/enums.dart';
 import 'package:jus_mobile_order_app/Helpers/locations.dart';
 import 'package:jus_mobile_order_app/Models/user_model.dart';
 import 'package:jus_mobile_order_app/Providers/discounts_provider.dart';
@@ -8,16 +10,13 @@ import 'package:jus_mobile_order_app/constants.dart';
 
 import '../Models/product_model.dart';
 
-class Pricing {
-  WidgetRef? ref;
-
-  Pricing({this.ref});
-
+class PricingHelpers {
   double productDetailPriceNonMember(
+    WidgetRef ref,
     ProductModel product,
   ) {
-    final selectedSize = ref!.watch(itemSizeProvider);
-    final scheduledQuantity = ref!.watch(scheduledQuantityProvider);
+    final selectedSize = ref.watch(itemSizeProvider);
+    final scheduledQuantity = ref.watch(scheduledQuantityProvider);
     final nonMemberItems = product.variations
         .where(
           (element) => element['customerType'] == AppConstants.nonMemberType,
@@ -25,15 +24,17 @@ class Pricing {
         .toList();
     final amount = nonMemberItems[selectedSize]['amount'];
 
-    return (amount / 100 + totalCostForExtraChargeIngredientsForNonMembers()) *
+    return (amount / 100 +
+            totalCostForExtraChargeIngredientsForNonMembers(ref)) *
         scheduledQuantity;
   }
 
   double productDetailPriceForMembers(
+    WidgetRef ref,
     ProductModel product,
   ) {
-    final selectedSize = ref!.watch(itemSizeProvider);
-    final scheduledQuantity = ref!.watch(scheduledQuantityProvider);
+    final selectedSize = ref.watch(itemSizeProvider);
+    final scheduledQuantity = ref.watch(scheduledQuantityProvider);
     final memberItems = product.variations
         .where(
           (element) => element['customerType'] == AppConstants.memberType,
@@ -41,13 +42,13 @@ class Pricing {
         .toList();
     final amount = memberItems[selectedSize]['amount'];
 
-    return (amount / 100 + totalCostForExtraChargeIngredientsForMembers()) *
+    return (amount / 100 + totalCostForExtraChargeIngredientsForMembers(ref)) *
         scheduledQuantity;
   }
 
   String orderTileProductPriceForNonMembers(
-      ProductModel currentProduct, int index) {
-    final currentOrder = ref!.watch(currentOrderItemsProvider);
+      WidgetRef ref, ProductModel currentProduct, int index) {
+    final currentOrder = ref.watch(currentOrderItemsProvider);
     final nonMemberVariations = currentProduct.variations
         .where(
             (element) => element['customerType'] == AppConstants.nonMemberType)
@@ -65,8 +66,8 @@ class Pricing {
   }
 
   String orderTileProductPriceForMembers(
-      ProductModel currentProduct, int index) {
-    final currentOrder = ref!.watch(currentOrderItemsProvider);
+      WidgetRef ref, ProductModel currentProduct, int index) {
+    final currentOrder = ref.watch(currentOrderItemsProvider);
     final memberVariations = currentProduct.variations
         .where((element) => element['customerType'] == AppConstants.memberType)
         .toList();
@@ -106,10 +107,11 @@ class Pricing {
     }
   }
 
-  double individualProductSavingsForMembers(ProductModel product) {
-    final quantity = ref!.watch(itemQuantityProvider);
-    final scheduledQuantity = ref!.watch(scheduledQuantityProvider);
-    final selectedSize = ref!.watch(itemSizeProvider);
+  double individualProductSavingsForMembers(
+      WidgetRef ref, ProductModel product) {
+    final quantity = ref.watch(itemQuantityProvider);
+    final scheduledQuantity = ref.watch(scheduledQuantityProvider);
+    final selectedSize = ref.watch(itemSizeProvider);
     final memberItems = product.variations
         .where(
           (element) => element['customerType'] == AppConstants.memberType,
@@ -124,15 +126,15 @@ class Pricing {
     final memberAmount = memberItems[selectedSize]['amount'];
 
     return (nonMemberAmount / 100 +
-            totalCostForExtraChargeIngredientsForNonMembers() -
+            totalCostForExtraChargeIngredientsForNonMembers(ref) -
             memberAmount / 100 +
-            Pricing(ref: ref).totalCostForExtraChargeIngredientsForMembers()) *
+            totalCostForExtraChargeIngredientsForMembers(ref)) *
         quantity *
         scheduledQuantity;
   }
 
-  double totalCostForExtraChargeIngredientsForNonMembers() {
-    final selectedIngredients = ref!.watch(selectedIngredientsProvider);
+  double totalCostForExtraChargeIngredientsForNonMembers(WidgetRef ref) {
+    final selectedIngredients = ref.watch(selectedIngredientsProvider);
     if (selectedIngredients.isEmpty) {
       return 0.0;
     }
@@ -143,8 +145,8 @@ class Pricing {
         100;
   }
 
-  double totalCostForExtraChargeIngredientsForMembers() {
-    final selectedIngredients = ref!.watch(selectedIngredientsProvider);
+  double totalCostForExtraChargeIngredientsForMembers(WidgetRef ref) {
+    final selectedIngredients = ref.watch(selectedIngredientsProvider);
 
     if (selectedIngredients.isEmpty) {
       return 0.0;
@@ -157,8 +159,8 @@ class Pricing {
         100;
   }
 
-  double discountTotalForNonMembers() {
-    final discount = ref!.watch(discountTotalProvider);
+  double discountTotalForNonMembers(WidgetRef ref) {
+    final discount = ref.watch(discountTotalProvider);
     double total = 0.0;
     for (var amount in discount) {
       total = total + amount['price'];
@@ -167,8 +169,8 @@ class Pricing {
     return total / 100;
   }
 
-  double discountTotalForMembers() {
-    final discount = ref!.watch(discountTotalProvider);
+  double discountTotalForMembers(WidgetRef ref) {
+    final discount = ref.watch(discountTotalProvider);
 
     double total = 0.0;
     for (var amount in discount) {
@@ -177,21 +179,21 @@ class Pricing {
     return total / 100;
   }
 
-  double tipAmountForNonMembers() {
-    final tipPercentage = ref!.watch(selectedTipPercentageProvider);
+  double tipAmountForNonMembers(WidgetRef ref) {
+    final tipPercentage = ref.watch(selectedTipPercentageProvider);
 
-    return originalSubtotalForNonMembers() * (tipPercentage / 100);
+    return originalSubtotalForNonMembers(ref) * (tipPercentage / 100);
   }
 
-  double tipAmountForMembers() {
-    final tipPercentage = ref!.watch(selectedTipPercentageProvider);
+  double tipAmountForMembers(WidgetRef ref) {
+    final tipPercentage = ref.watch(selectedTipPercentageProvider);
 
-    return originalSubtotalForMembers() * (tipPercentage / 100);
+    return originalSubtotalForMembers(ref) * (tipPercentage / 100);
   }
 
-  double originalSubtotalForNonMembers() {
+  double originalSubtotalForNonMembers(WidgetRef ref) {
     var subtotal = 0.0;
-    final totalCost = ref!.watch(currentOrderCostProvider);
+    final totalCost = ref.watch(currentOrderCostProvider);
     for (var price in totalCost) {
       var totalItemPrice =
           price['itemPriceNonMember'] + (price['modifierPriceNonMember'] ?? 0);
@@ -202,9 +204,9 @@ class Pricing {
     return subtotal / 100;
   }
 
-  originalSubtotalForMembers() {
+  originalSubtotalForMembers(WidgetRef ref) {
     var subtotal = 0.0;
-    final totalCost = ref!.watch(currentOrderCostProvider);
+    final totalCost = ref.watch(currentOrderCostProvider);
     for (var price in totalCost) {
       var totalItemPrice =
           price['itemPriceMember'] + (price['modifierPriceMember'] ?? 0);
@@ -214,70 +216,78 @@ class Pricing {
     return subtotal / 100;
   }
 
-  double discountedSubtotalForNonMembers() {
-    double original = originalSubtotalForNonMembers();
-    double discount = discountTotalForNonMembers();
+  double discountedSubtotalForNonMembers(WidgetRef ref) {
+    double original = originalSubtotalForNonMembers(ref);
+    double discount = discountTotalForNonMembers(ref);
 
     return (original - discount);
   }
 
-  double discountedSubtotalForMembers() {
-    double original = originalSubtotalForMembers();
-    double discount = discountTotalForMembers();
+  double discountedSubtotalForMembers(WidgetRef ref) {
+    double original = originalSubtotalForMembers(ref);
+    double discount = discountTotalForMembers(ref);
 
     return (original - discount);
   }
 
-  double totalTaxForNonMembers() {
-    final selectedLocation = LocationHelper().selectedLocation(ref!);
-    final price = originalSubtotalForNonMembers();
-    final discount = discountTotalForNonMembers();
+  double totalTaxForNonMembers(WidgetRef ref) {
+    final selectedLocation = LocationHelper().selectedLocation(ref);
+    final price = originalSubtotalForNonMembers(ref);
+    final discount = discountTotalForNonMembers(ref);
     final taxRate = selectedLocation?.salesTaxRate ?? 0;
     return (price - discount) * taxRate;
   }
 
-  double totalTaxForMembers() {
-    final selectedLocation = LocationHelper().selectedLocation(ref!);
-    final price = originalSubtotalForMembers();
-    final discount = discountTotalForMembers();
+  double totalTaxForMembers(WidgetRef ref) {
+    final selectedLocation = LocationHelper().selectedLocation(ref);
+    final price = originalSubtotalForMembers(ref);
+    final discount = discountTotalForMembers(ref);
     final taxRate = selectedLocation?.salesTaxRate ?? 0;
     return (price - discount) * taxRate;
   }
 
-  double orderTotalForNonMembers() {
-    final subtotal = originalSubtotalForNonMembers();
-    final tax = totalTaxForNonMembers();
+  double orderTotalForNonMembers(WidgetRef ref) {
+    final subtotal = originalSubtotalForNonMembers(ref);
+    final tax = totalTaxForNonMembers(ref);
     return subtotal -
-        discountTotalForNonMembers() +
+        discountTotalForNonMembers(ref) +
         tax +
-        tipAmountForNonMembers();
+        tipAmountForNonMembers(ref);
   }
 
-  double orderTotalForMembers() {
-    final subtotal = originalSubtotalForMembers();
-    final tax = totalTaxForMembers();
+  double orderTotalForMembers(WidgetRef ref) {
+    final subtotal = originalSubtotalForMembers(ref);
+    final tax = totalTaxForMembers(ref);
 
-    return subtotal - discountTotalForMembers() + tax + tipAmountForMembers();
+    return subtotal -
+        discountTotalForMembers(ref) +
+        tax +
+        tipAmountForMembers(ref);
   }
 
-  double orderTotalFromUserType(UserModel user) {
-    if (user.uid == null || !user.isActiveMember!) {
-      return orderTotalForNonMembers() * 100;
+  double orderTotalFromUserType(WidgetRef ref, UserModel user) {
+    if (user.uid == null ||
+        user.subscriptionStatus != SubscriptionStatus.active) {
+      return orderTotalForNonMembers(ref) * 100;
     } else {
-      return Pricing(ref: ref).orderTotalForMembers() * 100;
+      return PricingHelpers().orderTotalForMembers(ref) * 100;
     }
   }
 
-  double totalOrderSavings() {
-    return orderTotalForNonMembers() - orderTotalForMembers();
+  double totalOrderSavings(WidgetRef ref) {
+    return orderTotalForNonMembers(ref) - orderTotalForMembers(ref);
   }
 
-  bool isZeroCharge() {
-    if (originalSubtotalForNonMembers() + tipAmountForNonMembers() ==
-        discountTotalForNonMembers()) {
+  bool isZeroCharge(WidgetRef ref) {
+    if (originalSubtotalForNonMembers(ref) + tipAmountForNonMembers(ref) ==
+        discountTotalForNonMembers(ref)) {
       return true;
     } else {
       return false;
     }
+  }
+
+  static String formatAsCurrency(double amount) {
+    return NumberFormat('#,##0.00').format(amount);
   }
 }

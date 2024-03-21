@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:jus_mobile_order_app/Helpers/spacing_widgets.dart';
 import 'package:jus_mobile_order_app/Providers/scan_providers.dart';
 
 class ScanTypeTabsWidget extends ConsumerWidget {
@@ -24,35 +25,32 @@ class ScanTypeTabsWidget extends ConsumerWidget {
                   ref.read(scanCategoryProvider.notifier).state = 0;
                 },
               ),
+              Spacing.vertical(5),
               Container(
                 height: 0.5,
-                width: MediaQuery.of(context).size.width * 0.5,
-                decoration: BoxDecoration(
-                    color:
-                        categoryIndex == 0 ? Colors.black : Colors.transparent),
+                color: categoryIndex == 0 ? Colors.black : Colors.transparent,
               ),
             ],
           ),
         ),
-        Column(
-          children: [
-            TextButton(
-              child: const Text(
-                'Scan only',
-                style: TextStyle(fontSize: 17),
+        Expanded(
+          child: Column(
+            children: [
+              TextButton(
+                child: const Text(
+                  'Scan only',
+                  style: TextStyle(fontSize: 17),
+                ),
+                onPressed: () {
+                  ref.read(scanCategoryProvider.notifier).state = 1;
+                },
               ),
-              onPressed: () {
-                ref.read(scanCategoryProvider.notifier).state = 1;
-              },
-            ),
-            Container(
-              height: 0.5,
-              width: MediaQuery.of(context).size.width * 0.5,
-              decoration: BoxDecoration(
-                  color:
-                      categoryIndex == 1 ? Colors.black : Colors.transparent),
-            ),
-          ],
+              Container(
+                height: 0.5,
+                color: categoryIndex == 1 ? Colors.black : Colors.transparent,
+              ),
+            ],
+          ),
         ),
       ],
     );

@@ -5,6 +5,6 @@ part 'image_model.freezed.dart';
 @freezed
 class ImageModel with _$ImageModel {
   const factory ImageModel({
-    required String url,
+    required Map images,
   }) = _ImageModel;
 }

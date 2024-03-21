@@ -12,7 +12,7 @@ part of 'product_model.dart';
 T _$identity<T>(T value) => value;
 
 final _privateConstructorUsedError = UnsupportedError(
-    'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#custom-getters-and-methods');
+    'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models');
 
 /// @nodoc
 mixin _$ProductModel {
@@ -20,7 +20,7 @@ mixin _$ProductModel {
   String get name => throw _privateConstructorUsedError;
   String get category => throw _privateConstructorUsedError;
   int get categoryOrder => throw _privateConstructorUsedError;
-  int get productID => throw _privateConstructorUsedError;
+  String get productId => throw _privateConstructorUsedError;
   String get description => throw _privateConstructorUsedError;
   List<dynamic> get ingredients => throw _privateConstructorUsedError;
   String get image => throw _privateConstructorUsedError;
@@ -56,7 +56,7 @@ abstract class $ProductModelCopyWith<$Res> {
       String name,
       String category,
       int categoryOrder,
-      int productID,
+      String productId,
       String description,
       List<dynamic> ingredients,
       String image,
@@ -94,7 +94,7 @@ class _$ProductModelCopyWithImpl<$Res, $Val extends ProductModel>
     Object? name = null,
     Object? category = null,
     Object? categoryOrder = null,
-    Object? productID = null,
+    Object? productId = null,
     Object? description = null,
     Object? ingredients = null,
     Object? image = null,
@@ -131,10 +131,10 @@ class _$ProductModelCopyWithImpl<$Res, $Val extends ProductModel>
           ? _value.categoryOrder
           : categoryOrder // ignore: cast_nullable_to_non_nullable
               as int,
-      productID: null == productID
-          ? _value.productID
-          : productID // ignore: cast_nullable_to_non_nullable
-              as int,
+      productId: null == productId
+          ? _value.productId
+          : productId // ignore: cast_nullable_to_non_nullable
+              as String,
       description: null == description
           ? _value.description
           : description // ignore: cast_nullable_to_non_nullable
@@ -224,7 +224,7 @@ abstract class _$$ProductModelImplCopyWith<$Res>
       String name,
       String category,
       int categoryOrder,
-      int productID,
+      String productId,
       String description,
       List<dynamic> ingredients,
       String image,
@@ -260,7 +260,7 @@ class __$$ProductModelImplCopyWithImpl<$Res>
     Object? name = null,
     Object? category = null,
     Object? categoryOrder = null,
-    Object? productID = null,
+    Object? productId = null,
     Object? description = null,
     Object? ingredients = null,
     Object? image = null,
@@ -297,10 +297,10 @@ class __$$ProductModelImplCopyWithImpl<$Res>
           ? _value.categoryOrder
           : categoryOrder // ignore: cast_nullable_to_non_nullable
               as int,
-      productID: null == productID
-          ? _value.productID
-          : productID // ignore: cast_nullable_to_non_nullable
-              as int,
+      productId: null == productId
+          ? _value.productId
+          : productId // ignore: cast_nullable_to_non_nullable
+              as String,
       description: null == description
           ? _value.description
           : description // ignore: cast_nullable_to_non_nullable
@@ -385,7 +385,7 @@ class _$ProductModelImpl implements _ProductModel {
       required this.name,
       required this.category,
       required this.categoryOrder,
-      required this.productID,
+      required this.productId,
       required this.description,
       required final List<dynamic> ingredients,
       required this.image,
@@ -417,7 +417,7 @@ class _$ProductModelImpl implements _ProductModel {
   @override
   final int categoryOrder;
   @override
-  final int productID;
+  final String productId;
   @override
   final String description;
   final List<dynamic> _ingredients;
@@ -475,11 +475,11 @@ class _$ProductModelImpl implements _ProductModel {
 
   @override
   String toString() {
-    return 'ProductModel(uid: $uid, name: $name, category: $category, categoryOrder: $categoryOrder, productID: $productID, description: $description, ingredients: $ingredients, image: $image, isActive: $isActive, variations: $variations, taxable: $taxable, isNew: $isNew, isRecommended: $isRecommended, isFeatured: $isFeatured, isModifiable: $isModifiable, isScheduled: $isScheduled, hasToppings: $hasToppings, nutrition: $nutrition, perks: $perks, servingsFruit: $servingsFruit, servingsVeggie: $servingsVeggie, scheduledProductLimit: $scheduledProductLimit, scheduledProductType: $scheduledProductType)';
+    return 'ProductModel(uid: $uid, name: $name, category: $category, categoryOrder: $categoryOrder, productId: $productId, description: $description, ingredients: $ingredients, image: $image, isActive: $isActive, variations: $variations, taxable: $taxable, isNew: $isNew, isRecommended: $isRecommended, isFeatured: $isFeatured, isModifiable: $isModifiable, isScheduled: $isScheduled, hasToppings: $hasToppings, nutrition: $nutrition, perks: $perks, servingsFruit: $servingsFruit, servingsVeggie: $servingsVeggie, scheduledProductLimit: $scheduledProductLimit, scheduledProductType: $scheduledProductType)';
   }
 
   @override
-  bool operator ==(dynamic other) {
+  bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$ProductModelImpl &&
@@ -489,8 +489,8 @@ class _$ProductModelImpl implements _ProductModel {
                 other.category == category) &&
             (identical(other.categoryOrder, categoryOrder) ||
                 other.categoryOrder == categoryOrder) &&
-            (identical(other.productID, productID) ||
-                other.productID == productID) &&
+            (identical(other.productId, productId) ||
+                other.productId == productId) &&
             (identical(other.description, description) ||
                 other.description == description) &&
             const DeepCollectionEquality()
@@ -532,7 +532,7 @@ class _$ProductModelImpl implements _ProductModel {
         name,
         category,
         categoryOrder,
-        productID,
+        productId,
         description,
         const DeepCollectionEquality().hash(_ingredients),
         image,
@@ -566,7 +566,7 @@ abstract class _ProductModel implements ProductModel {
       required final String name,
       required final String category,
       required final int categoryOrder,
-      required final int productID,
+      required final String productId,
       required final String description,
       required final List<dynamic> ingredients,
       required final String image,
@@ -595,7 +595,7 @@ abstract class _ProductModel implements ProductModel {
   @override
   int get categoryOrder;
   @override
-  int get productID;
+  String get productId;
   @override
   String get description;
   @override
@@ -641,7 +641,7 @@ abstract class _ProductModel implements ProductModel {
 /// @nodoc
 mixin _$ProductQuantityModel {
   String get uid => throw _privateConstructorUsedError;
-  int get locationID => throw _privateConstructorUsedError;
+  String get locationId => throw _privateConstructorUsedError;
   String get productType => throw _privateConstructorUsedError;
   int get hoursNotice => throw _privateConstructorUsedError;
   int? get quantityLimit => throw _privateConstructorUsedError;
@@ -663,7 +663,7 @@ abstract class $ProductQuantityModelCopyWith<$Res> {
   @useResult
   $Res call(
       {String uid,
-      int locationID,
+      String locationId,
       String productType,
       int hoursNotice,
       int? quantityLimit,
@@ -688,7 +688,7 @@ class _$ProductQuantityModelCopyWithImpl<$Res,
   @override
   $Res call({
     Object? uid = null,
-    Object? locationID = null,
+    Object? locationId = null,
     Object? productType = null,
     Object? hoursNotice = null,
     Object? quantityLimit = freezed,
@@ -702,10 +702,10 @@ class _$ProductQuantityModelCopyWithImpl<$Res,
           ? _value.uid
           : uid // ignore: cast_nullable_to_non_nullable
               as String,
-      locationID: null == locationID
-          ? _value.locationID
-          : locationID // ignore: cast_nullable_to_non_nullable
-              as int,
+      locationId: null == locationId
+          ? _value.locationId
+          : locationId // ignore: cast_nullable_to_non_nullable
+              as String,
       productType: null == productType
           ? _value.productType
           : productType // ignore: cast_nullable_to_non_nullable
@@ -748,7 +748,7 @@ abstract class _$$ProductQuantityModelImplCopyWith<$Res>
   @useResult
   $Res call(
       {String uid,
-      int locationID,
+      String locationId,
       String productType,
       int hoursNotice,
       int? quantityLimit,
@@ -770,7 +770,7 @@ class __$$ProductQuantityModelImplCopyWithImpl<$Res>
   @override
   $Res call({
     Object? uid = null,
-    Object? locationID = null,
+    Object? locationId = null,
     Object? productType = null,
     Object? hoursNotice = null,
     Object? quantityLimit = freezed,
@@ -784,10 +784,10 @@ class __$$ProductQuantityModelImplCopyWithImpl<$Res>
           ? _value.uid
           : uid // ignore: cast_nullable_to_non_nullable
               as String,
-      locationID: null == locationID
-          ? _value.locationID
-          : locationID // ignore: cast_nullable_to_non_nullable
-              as int,
+      locationId: null == locationId
+          ? _value.locationId
+          : locationId // ignore: cast_nullable_to_non_nullable
+              as String,
       productType: null == productType
           ? _value.productType
           : productType // ignore: cast_nullable_to_non_nullable
@@ -825,7 +825,7 @@ class __$$ProductQuantityModelImplCopyWithImpl<$Res>
 class _$ProductQuantityModelImpl implements _ProductQuantityModel {
   const _$ProductQuantityModelImpl(
       {required this.uid,
-      required this.locationID,
+      required this.locationId,
       required this.productType,
       required this.hoursNotice,
       this.quantityLimit,
@@ -837,7 +837,7 @@ class _$ProductQuantityModelImpl implements _ProductQuantityModel {
   @override
   final String uid;
   @override
-  final int locationID;
+  final String locationId;
   @override
   final String productType;
   @override
@@ -855,17 +855,17 @@ class _$ProductQuantityModelImpl implements _ProductQuantityModel {
 
   @override
   String toString() {
-    return 'ProductQuantityModel(uid: $uid, locationID: $locationID, productType: $productType, hoursNotice: $hoursNotice, quantityLimit: $quantityLimit, scheduledQuantityLimit: $scheduledQuantityLimit, scheduledProductDescriptor: $scheduledProductDescriptor, toppingsDescriptor: $toppingsDescriptor, toppingsQuantityLimit: $toppingsQuantityLimit)';
+    return 'ProductQuantityModel(uid: $uid, locationId: $locationId, productType: $productType, hoursNotice: $hoursNotice, quantityLimit: $quantityLimit, scheduledQuantityLimit: $scheduledQuantityLimit, scheduledProductDescriptor: $scheduledProductDescriptor, toppingsDescriptor: $toppingsDescriptor, toppingsQuantityLimit: $toppingsQuantityLimit)';
   }
 
   @override
-  bool operator ==(dynamic other) {
+  bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$ProductQuantityModelImpl &&
             (identical(other.uid, uid) || other.uid == uid) &&
-            (identical(other.locationID, locationID) ||
-                other.locationID == locationID) &&
+            (identical(other.locationId, locationId) ||
+                other.locationId == locationId) &&
             (identical(other.productType, productType) ||
                 other.productType == productType) &&
             (identical(other.hoursNotice, hoursNotice) ||
@@ -888,7 +888,7 @@ class _$ProductQuantityModelImpl implements _ProductQuantityModel {
   int get hashCode => Object.hash(
       runtimeType,
       uid,
-      locationID,
+      locationId,
       productType,
       hoursNotice,
       quantityLimit,
@@ -909,7 +909,7 @@ class _$ProductQuantityModelImpl implements _ProductQuantityModel {
 abstract class _ProductQuantityModel implements ProductQuantityModel {
   const factory _ProductQuantityModel(
       {required final String uid,
-      required final int locationID,
+      required final String locationId,
       required final String productType,
       required final int hoursNotice,
       final int? quantityLimit,
@@ -921,7 +921,7 @@ abstract class _ProductQuantityModel implements ProductQuantityModel {
   @override
   String get uid;
   @override
-  int get locationID;
+  String get locationId;
   @override
   String get productType;
   @override
@@ -945,7 +945,7 @@ abstract class _ProductQuantityModel implements ProductQuantityModel {
 /// @nodoc
 mixin _$QuantityLimitParams {
   String get productUID => throw _privateConstructorUsedError;
-  int get locationID => throw _privateConstructorUsedError;
+  String get locationId => throw _privateConstructorUsedError;
 
   @JsonKey(ignore: true)
   $QuantityLimitParamsCopyWith<QuantityLimitParams> get copyWith =>
@@ -958,7 +958,7 @@ abstract class $QuantityLimitParamsCopyWith<$Res> {
           QuantityLimitParams value, $Res Function(QuantityLimitParams) then) =
       _$QuantityLimitParamsCopyWithImpl<$Res, QuantityLimitParams>;
   @useResult
-  $Res call({String productUID, int locationID});
+  $Res call({String productUID, String locationId});
 }
 
 /// @nodoc
@@ -975,17 +975,17 @@ class _$QuantityLimitParamsCopyWithImpl<$Res, $Val extends QuantityLimitParams>
   @override
   $Res call({
     Object? productUID = null,
-    Object? locationID = null,
+    Object? locationId = null,
   }) {
     return _then(_value.copyWith(
       productUID: null == productUID
           ? _value.productUID
           : productUID // ignore: cast_nullable_to_non_nullable
               as String,
-      locationID: null == locationID
-          ? _value.locationID
-          : locationID // ignore: cast_nullable_to_non_nullable
-              as int,
+      locationId: null == locationId
+          ? _value.locationId
+          : locationId // ignore: cast_nullable_to_non_nullable
+              as String,
     ) as $Val);
   }
 }
@@ -998,7 +998,7 @@ abstract class _$$QuantityLimitParamsImplCopyWith<$Res>
       __$$QuantityLimitParamsImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({String productUID, int locationID});
+  $Res call({String productUID, String locationId});
 }
 
 /// @nodoc
@@ -1013,17 +1013,17 @@ class __$$QuantityLimitParamsImplCopyWithImpl<$Res>
   @override
   $Res call({
     Object? productUID = null,
-    Object? locationID = null,
+    Object? locationId = null,
   }) {
     return _then(_$QuantityLimitParamsImpl(
       productUID: null == productUID
           ? _value.productUID
           : productUID // ignore: cast_nullable_to_non_nullable
               as String,
-      locationID: null == locationID
-          ? _value.locationID
-          : locationID // ignore: cast_nullable_to_non_nullable
-              as int,
+      locationId: null == locationId
+          ? _value.locationId
+          : locationId // ignore: cast_nullable_to_non_nullable
+              as String,
     ));
   }
 }
@@ -1032,31 +1032,31 @@ class __$$QuantityLimitParamsImplCopyWithImpl<$Res>
 
 class _$QuantityLimitParamsImpl implements _QuantityLimitParams {
   const _$QuantityLimitParamsImpl(
-      {required this.productUID, required this.locationID});
+      {required this.productUID, required this.locationId});
 
   @override
   final String productUID;
   @override
-  final int locationID;
+  final String locationId;
 
   @override
   String toString() {
-    return 'QuantityLimitParams(productUID: $productUID, locationID: $locationID)';
+    return 'QuantityLimitParams(productUID: $productUID, locationId: $locationId)';
   }
 
   @override
-  bool operator ==(dynamic other) {
+  bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$QuantityLimitParamsImpl &&
             (identical(other.productUID, productUID) ||
                 other.productUID == productUID) &&
-            (identical(other.locationID, locationID) ||
-                other.locationID == locationID));
+            (identical(other.locationId, locationId) ||
+                other.locationId == locationId));
   }
 
   @override
-  int get hashCode => Object.hash(runtimeType, productUID, locationID);
+  int get hashCode => Object.hash(runtimeType, productUID, locationId);
 
   @JsonKey(ignore: true)
   @override
@@ -1069,12 +1069,12 @@ class _$QuantityLimitParamsImpl implements _QuantityLimitParams {
 abstract class _QuantityLimitParams implements QuantityLimitParams {
   const factory _QuantityLimitParams(
       {required final String productUID,
-      required final int locationID}) = _$QuantityLimitParamsImpl;
+      required final String locationId}) = _$QuantityLimitParamsImpl;
 
   @override
   String get productUID;
   @override
-  int get locationID;
+  String get locationId;
   @override
   @JsonKey(ignore: true)
   _$$QuantityLimitParamsImplCopyWith<_$QuantityLimitParamsImpl> get copyWith =>

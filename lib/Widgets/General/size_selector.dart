@@ -40,7 +40,7 @@ class SizeSelector extends ConsumerWidget {
                   color:
                       selectedSize == index ? selectedCardColor : Colors.white,
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(4.0),
+                    borderRadius: BorderRadius.circular(8),
                     side: BorderSide(
                         color: selectedSize == index
                             ? selectedCardBorderColor

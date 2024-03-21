@@ -9,7 +9,7 @@ class AnimatedListCard extends StatelessWidget {
       child: Card(
         elevation: 2,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(4),
+          borderRadius: BorderRadius.circular(25),
         ),
       ),
     );

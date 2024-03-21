@@ -1,3 +1,4 @@
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:jus_mobile_order_app/Providers/loading_providers.dart';
@@ -20,10 +21,10 @@ class InvalidSheetSinglePop extends ConsumerWidget {
               'Whoops...',
               style: Theme.of(context).textTheme.headlineSmall,
             ),
-            Text(
+            AutoSizeText(
               error,
               style: Theme.of(context).textTheme.titleMedium,
-              maxLines: 2,
+              maxLines: 3,
             ),
             Center(
               child: LargeElevatedButton(

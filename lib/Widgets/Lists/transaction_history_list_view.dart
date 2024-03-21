@@ -46,7 +46,7 @@ class TransactionHistoryListView extends StatelessWidget {
                         order: item,
                         tileIndex: itemIndexInOriginalList,
                       ),
-                      JusDivider().thin(),
+                      JusDivider.thin(),
                     ],
                   ),
                 );
@@ -60,7 +60,7 @@ class TransactionHistoryListView extends StatelessWidget {
                           ? const SizedBox()
                           : WalletHistoryTile(
                               wallet: item, tileIndex: itemIndexInOriginalList),
-                      JusDivider().thin(),
+                      JusDivider.thin(),
                     ],
                   ),
                 );
@@ -75,7 +75,7 @@ class TransactionHistoryListView extends StatelessWidget {
     return Align(
       alignment: Alignment.centerLeft,
       child: Container(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 18.0),
         child: Text(
           DateFormat('MMMM yyyy').format(monthYearFormat.parse(createdAt)),
           style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),

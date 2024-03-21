@@ -25,14 +25,14 @@ class SmallElevatedButtonWeb extends StatelessWidget {
           return Colors.black; // Default color
         }),
         minimumSize: MaterialStateProperty.all(
-          Size(buttonHeight, buttonWidth),
+          Size(buttonWidth, buttonHeight),
         ),
         // Other styles...
       ),
       onPressed: onPressed,
       child: Text(
         buttonText,
-        style: const TextStyle(fontSize: 18),
+        style: const TextStyle(fontSize: 16),
       ),
     );
   }

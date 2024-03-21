@@ -62,7 +62,8 @@ class RedeemOfferCard extends ConsumerWidget {
   Widget buildOfferButton(WidgetRef ref, int index, List<OffersModel> offers) {
     final offer = offers[index];
     final paymentMethod = ref.watch(selectedPaymentMethodProvider);
-    final isWallet = ref.watch(selectedPaymentMethodProvider)['isWallet'];
+    final isWallet =
+        paymentMethod.userId.isEmpty ? false : paymentMethod.isWallet;
 
     if (offer.pointsMultiple > 1) {
       return Row(
@@ -78,8 +79,10 @@ class RedeemOfferCard extends ConsumerWidget {
                         color: Colors.green,
                       ),
                       Text(
-                        '${PointsHelper(ref: ref).pointsDisplayText(
-                          isWallet: paymentMethod.isEmpty ? false : isWallet,
+                        '${PointsHelper().pointsDisplayText(
+                          ref: ref,
+                          isWallet:
+                              paymentMethod.userId.isEmpty ? false : isWallet,
                           applyPointsMultiplier: true,
                         )}/\$1',
                         style: const TextStyle(fontSize: 11),
@@ -133,6 +136,7 @@ class RedeemOfferCard extends ConsumerWidget {
           if (ref
               .read(offersQuantityProvider)
               .any((element) => element['quantity'] != 0)) {
+            HapticFeedback.lightImpact();
             ref.read(offersQuantityProvider.notifier).remove(ref, index);
 
             ref
@@ -190,9 +194,8 @@ class RedeemOfferCard extends ConsumerWidget {
       WidgetRef ref, int index, List<OffersModel> offers) {
     final currentOrder = ref.watch(currentOrderItemsProvider);
     return currentOrder
-        .where((element) => offers[index]
-            .qualifyingProducts
-            .contains(element['productID'] as int))
+        .where((element) =>
+            offers[index].qualifyingProducts.contains(element['productId']))
         .toList();
   }
 
@@ -223,7 +226,7 @@ class RedeemOfferCard extends ConsumerWidget {
     final currentOrderCost = ref.watch(currentOrderCostProvider);
 
     final qualifyingProductsInOffers = currentOrder
-        .where((item) => offer.qualifyingProducts.contains(item['productID']))
+        .where((item) => offer.qualifyingProducts.contains(item['productId']))
         .toList();
 
     final qualifyingCostsInOffers = currentOrderCost
@@ -231,8 +234,8 @@ class RedeemOfferCard extends ConsumerWidget {
             .any((product) => cost['itemKey'] == product['itemKey']))
         .map((cost) => Map<String, dynamic>.from({
               'itemKey': cost['itemKey'],
-              'price': cost['price'],
-              'memberPrice': cost['memberPrice'],
+              'price': cost['itemPriceNonMember'],
+              'memberPrice': cost['itemPriceMember'],
               'points': cost['points'],
             }))
         .toList();
@@ -284,12 +287,14 @@ class RedeemOfferCard extends ConsumerWidget {
       WidgetRef ref, int index, int maxItems, List<OffersModel> offers) {
     if (ref.read(offersQuantityProvider).isEmpty ||
         ref.read(offersQuantityProvider)[index]['quantity'] < maxItems) {
+      HapticFeedback.lightImpact();
       ref.read(offersQuantityProvider.notifier).add(
             ref,
             index,
             offers.length,
             maxItems,
           );
+
       ref
           .read(discountTotalProvider.notifier)
           .add(getQualifyingOrderCosts(ref, offers[index]));

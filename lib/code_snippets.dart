@@ -1,23 +1,7 @@
-//MODIFY INGREDIENTS COLLECTION
-// for (var doc in data) {
-//   FirebaseFirestore.instance
-//       .collection('ingredients')
-//       .doc(doc.uid)
-//       .update({
-//     'isBlended': false,
-//     'isTopping': false,
-//   });
-// }
-
-//MODIFY PRODUCT COLLECTION
-// for (var doc in data) {
-//   FirebaseFirestore.instance
-//       .collection('products')
-//       .doc(doc.uid)
-//       .update({
-//     'isBlended': false,
-//   });
-// }
+//open -a /Applications/Android\ Studio.app
+// npx prettier --write
+//FVM: fvm use 3.13.0 - phone
+//FVM: fvm use 3.19.0 - web
 
 //DUPLICATE DOCUMENT
 // // Get a reference to the source and target collections
@@ -39,7 +23,3 @@
 // } else {
 // print('Source document not found');
 // }
-
-// .when(error: (e,_) => ShowError(error: e.toString()), loading: () => const Loading(), data: (data) => );
-
-

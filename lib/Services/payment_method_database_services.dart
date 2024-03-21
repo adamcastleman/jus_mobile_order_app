@@ -1,43 +1,45 @@
+import 'dart:async';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cloud_functions/cloud_functions.dart';
+import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:jus_mobile_order_app/Helpers/payments.dart';
 import 'package:jus_mobile_order_app/Models/payments_model.dart';
 import 'package:jus_mobile_order_app/Models/wallet_activities_model.dart';
 import 'package:jus_mobile_order_app/Providers/payments_providers.dart';
 
 class PaymentMethodDatabaseServices {
   final WidgetRef? ref;
-  final String? userID;
+  final String? userId;
 
-  PaymentMethodDatabaseServices({this.ref, this.userID});
+  PaymentMethodDatabaseServices({this.ref, this.userId});
 
   Stream<List<PaymentsModel>> get squareCreditCards {
     CollectionReference collectionReference = FirebaseFirestore.instance
         .collection('users')
-        .doc(userID)
+        .doc(userId)
         .collection('squarePaymentMethods');
     return collectionReference
         .where('isWallet', isNotEqualTo: true)
         .snapshots()
-        .map(getPaymentCardsFromDatabase);
+        .map(getPaymentCardsListFromDatabase);
   }
 
   Stream<List<PaymentsModel>> get wallets {
     CollectionReference collectionReference = FirebaseFirestore.instance
         .collection('users')
-        .doc(userID)
+        .doc(userId)
         .collection('squarePaymentMethods');
     return collectionReference
         .where('isWallet', isEqualTo: true)
         .snapshots()
-        .map(getPaymentCardsFromDatabase);
+        .map(getPaymentCardsListFromDatabase);
   }
 
   Stream<PaymentsModel> get defaultPaymentCard {
     return FirebaseFirestore.instance
         .collection('users')
-        .doc(userID)
+        .doc(userId)
         .collection('squarePaymentMethods')
         .where('defaultPayment', isEqualTo: true)
         .snapshots()
@@ -53,7 +55,7 @@ class PaymentMethodDatabaseServices {
             const Duration(days: 120),
           ),
         )
-        .where('userDetails.userID', isEqualTo: userID)
+        .where('userDetails.userId', isEqualTo: userId)
         .orderBy('paymentDetails.createdAt', descending: true)
         .snapshots()
         .map(getWalletActivitiesFromDatabase);
@@ -65,40 +67,75 @@ class PaymentMethodDatabaseServices {
         final dynamic data = doc.data();
 
         return PaymentsModel(
-          uid: data['uid'],
-          userID: data['userID'],
-          cardId: data['cardId'],
-          brand: data['brand'],
-          last4: data['last4'],
-          expirationMonth: data['expirationMonth'],
-          expirationYear: data['expirationYear'],
+          uid: data['uid'] ?? '',
+          userId: data['userId'] ?? '',
+          cardId: data['cardId'] ?? '',
+          brand: data['brand'] ?? '',
           isWallet: data['isWallet'],
+          last4: data['last4'],
+          expirationMonth: data['expMonth'] ?? '',
+          expirationYear: data['expYear'] ?? '',
           defaultPayment: data['defaultPayment'],
           cardNickname: data['cardNickname'],
-          gan: data['gan'],
-          balance: data['balance'],
+          gan: data['gan'] ?? '',
+          balance: data['balance'] ?? 0,
         );
       },
     ).first;
   }
 
-  List<PaymentsModel> getPaymentCardsFromDatabase(QuerySnapshot snapshot) {
+  Future<PaymentsModel> getCardDetailsFromSquareCardId(
+      String userId, String cardId) {
+    return FirebaseFirestore.instance
+        .collection('users')
+        .doc(userId)
+        .collection('squarePaymentMethods')
+        .where('cardId', isEqualTo: cardId)
+        .get()
+        .then((querySnapshot) {
+      if (querySnapshot.docs.isNotEmpty) {
+        return _getPaymentCardFromDocument(querySnapshot.docs.first, userId);
+      }
+      throw Exception('Card not found');
+    });
+  }
+
+  PaymentsModel _getPaymentCardFromDocument(
+      DocumentSnapshot doc, String userId) {
+    final data = doc.data() as Map<String, dynamic>;
+    return PaymentsModel(
+      uid: data['uid'] ?? '',
+      userId: data['userId'] ?? '',
+      cardId: data['cardId'] ?? '',
+      brand: data['brand'] ?? '',
+      isWallet: data['isWallet'],
+      last4: data['last4'],
+      expirationMonth: data['expMonth'] ?? '',
+      expirationYear: data['expYear'] ?? '',
+      defaultPayment: data['defaultPayment'],
+      cardNickname: data['cardNickname'],
+      gan: data['gan'] ?? '',
+      balance: data['balance'] ?? 0,
+    );
+  }
+
+  List<PaymentsModel> getPaymentCardsListFromDatabase(QuerySnapshot snapshot) {
     return snapshot.docs.map(
       (doc) {
         final dynamic data = doc.data();
         return PaymentsModel(
-          uid: data['uid'],
-          userID: data['userID'],
-          cardId: data['cardId'],
-          brand: data['brand'],
+          uid: data['uid'] ?? '',
+          userId: userId ?? '',
+          cardId: data['cardId'] ?? '',
+          brand: data['brand'] ?? '',
           isWallet: data['isWallet'],
           last4: data['last4'],
-          expirationMonth: data['expirationMonth'],
-          expirationYear: data['expirationYear'],
+          expirationMonth: data['expMonth'] ?? '',
+          expirationYear: data['expYear'] ?? '',
           defaultPayment: data['defaultPayment'],
           cardNickname: data['cardNickname'],
-          gan: data['gan'],
-          balance: data['balance'],
+          gan: data['gan'] ?? '',
+          balance: data['balance'] ?? 0,
         );
       },
     ).toList();
@@ -114,10 +151,10 @@ class PaymentMethodDatabaseServices {
       (doc) {
         final dynamic data = doc.data();
         return WalletActivitiesModel(
-            userID: data['userDetails']['userID'],
+            userID: data['userDetails']['userId'],
             orderNumber: data['orderDetails']['orderNumber'],
             createdAt: data['paymentDetails']['createdAt'].toDate(),
-            gan: data['cardDetails']['gan'],
+            gan: data['paymentDetails']['gan'],
             amount: data['paymentDetails']['amount'],
             activity: data['cardDetails']['activity']);
       },
@@ -163,8 +200,7 @@ class PaymentMethodDatabaseServices {
         'firstName': firstName,
       });
     } catch (e) {
-      return;
-      // Handle the error as needed
+      rethrow;
     }
   }
 
@@ -178,7 +214,6 @@ class PaymentMethodDatabaseServices {
       required String last4,
       required String brand}) {
     reference.updateSelectedPaymentMethod(
-        card: PaymentsHelper().setSelectedPaymentMap(
       cardNickname: cardNickname,
       isWallet: isWallet,
       cardId: cardId,
@@ -186,18 +221,19 @@ class PaymentMethodDatabaseServices {
       brand: brand,
       balance: balance,
       last4: last4,
-    ));
+    );
   }
 
   updateCardNickname(
       {required String cardNickname,
       required String cardID,
+      required VoidCallback onSuccess,
       required Function(String) onError}) async {
     try {
       await FirebaseFunctions.instance
           .httpsCallable('updateCardNickname')
           .call({'cardID': cardID, 'cardNickname': cardNickname});
-      ref!.invalidate(cardNicknameProvider);
+      onSuccess();
     } catch (e) {
       onError(e.toString());
     }

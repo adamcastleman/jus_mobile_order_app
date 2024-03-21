@@ -1,18 +1,18 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
+import 'package:flutter_emoji/flutter_emoji.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:intl/intl.dart';
-import 'package:jus_mobile_order_app/Helpers/error.dart';
-import 'package:jus_mobile_order_app/Helpers/loading.dart';
-import 'package:jus_mobile_order_app/Helpers/modal_bottom_sheets.dart';
+import 'package:jus_mobile_order_app/Helpers/enums.dart';
+import 'package:jus_mobile_order_app/Helpers/navigation.dart';
 import 'package:jus_mobile_order_app/Helpers/points.dart';
 import 'package:jus_mobile_order_app/Helpers/pricing.dart';
 import 'package:jus_mobile_order_app/Helpers/spacing_widgets.dart';
+import 'package:jus_mobile_order_app/Helpers/utilities.dart';
 import 'package:jus_mobile_order_app/Models/user_model.dart';
 import 'package:jus_mobile_order_app/Providers/discounts_provider.dart';
 import 'package:jus_mobile_order_app/Providers/order_providers.dart';
+import 'package:jus_mobile_order_app/Providers/points_providers.dart';
 import 'package:jus_mobile_order_app/Providers/theme_providers.dart';
-import 'package:jus_mobile_order_app/Views/membership_detail_page.dart';
 import 'package:jus_mobile_order_app/Widgets/Buttons/info_button.dart';
 import 'package:jus_mobile_order_app/Widgets/General/points_multiple_text_widget.dart';
 import 'package:jus_mobile_order_app/Widgets/Icons/member_icon.dart';
@@ -53,7 +53,7 @@ class TotalPrice extends ConsumerWidget {
           Spacing.vertical(30),
           buildOrderTotalRow(ref, user),
           Spacing.vertical(20),
-          Pricing(ref: ref).discountedSubtotalForNonMembers() <= 0.0
+          PricingHelpers().discountedSubtotalForNonMembers(ref) <= 0.0
               ? const SizedBox()
               : buildSavedAmountRow(context, ref, user),
         ],
@@ -65,8 +65,9 @@ class TotalPrice extends ConsumerWidget {
     WidgetRef ref,
     UserModel user,
   ) {
-    final isMember = user.uid != null && user.isActiveMember == true;
-    final pricing = Pricing(ref: ref);
+    final isMember = user.uid != null &&
+        user.subscriptionStatus == SubscriptionStatus.active;
+    final pricing = PricingHelpers();
 
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -80,19 +81,19 @@ class TotalPrice extends ConsumerWidget {
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
               Text(
-                '\$${NumberFormat('#,##0.00').format(pricing.originalSubtotalForNonMembers())}',
+                '\$${NumberFormat('#,##0.00').format(pricing.originalSubtotalForNonMembers(ref))}',
                 style: ref.watch(priceLineThroughStyleProvider),
               ),
               Spacing.horizontal(10),
               Text(
-                '\$${NumberFormat('#,##0.00').format(pricing.originalSubtotalForMembers())}',
+                '\$${NumberFormat('#,##0.00').format(pricing.originalSubtotalForMembers(ref))}',
                 style: ref.watch(priceNormalStyleProvider),
               ),
             ],
           ),
         if (!isMember)
           Text(
-            '\$${NumberFormat('#,##0.00').format(pricing.originalSubtotalForNonMembers())}',
+            '\$${NumberFormat('#,##0.00').format(pricing.originalSubtotalForNonMembers(ref))}',
             style: ref.watch(priceNormalStyleProvider),
           ),
       ],
@@ -100,9 +101,11 @@ class TotalPrice extends ConsumerWidget {
   }
 
   Widget buildDiscountRow(WidgetRef ref, UserModel user) {
-    final double discountTotal = user.uid == null || !user.isActiveMember!
-        ? Pricing(ref: ref).discountTotalForNonMembers()
-        : Pricing(ref: ref).discountTotalForMembers();
+    final isMember = user.uid != null &&
+        user.subscriptionStatus == SubscriptionStatus.active;
+    final double discountTotal = !isMember
+        ? PricingHelpers().discountTotalForNonMembers(ref)
+        : PricingHelpers().discountTotalForMembers(ref);
 
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -120,9 +123,11 @@ class TotalPrice extends ConsumerWidget {
   }
 
   Widget buildSubtotalWithDiscountRow(WidgetRef ref, UserModel user) {
-    final subtotal = user.uid == null || !user.isActiveMember!
-        ? Pricing(ref: ref).discountedSubtotalForNonMembers()
-        : Pricing(ref: ref).discountedSubtotalForMembers();
+    final isMember = user.uid != null &&
+        user.subscriptionStatus == SubscriptionStatus.active;
+    final subtotal = !isMember
+        ? PricingHelpers().discountedSubtotalForNonMembers(ref)
+        : PricingHelpers().discountedSubtotalForMembers(ref);
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -139,16 +144,21 @@ class TotalPrice extends ConsumerWidget {
   }
 
   Widget buildTipRow(WidgetRef ref, UserModel user) {
-    final tipAmount = user.uid == null || !user.isActiveMember!
-        ? Pricing(ref: ref).tipAmountForNonMembers()
-        : Pricing(ref: ref).tipAmountForMembers();
+    final isMember = user.uid != null &&
+        user.subscriptionStatus == SubscriptionStatus.active;
+    final tipAmount = !isMember
+        ? PricingHelpers().tipAmountForNonMembers(ref)
+        : PricingHelpers().tipAmountForMembers(ref);
+    if (tipAmount == 0) {
+      return const SizedBox();
+    }
 
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        const Text(
-          'Tip',
-          style: TextStyle(fontSize: 16),
+        Text(
+          'Tip ${EmojiParser().get(':heart:').code}',
+          style: const TextStyle(fontSize: 16),
         ),
         Text(
           '\$${NumberFormat('#,##0.00').format(tipAmount)}',
@@ -159,6 +169,8 @@ class TotalPrice extends ConsumerWidget {
   }
 
   buildTaxesRow(WidgetRef ref, UserModel user) {
+    final isMember = user.uid != null &&
+        user.subscriptionStatus == SubscriptionStatus.active;
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -166,13 +178,17 @@ class TotalPrice extends ConsumerWidget {
           'Taxes',
           style: TextStyle(fontSize: 16),
         ),
-        user.uid == null || !user.isActiveMember!
+        !isMember
             ? Text(
-                '\$${NumberFormat('#,##0.00').format(Pricing(ref: ref).totalTaxForNonMembers())}',
+                '\$${NumberFormat('#,##0.00').format(
+                  PricingHelpers().totalTaxForNonMembers(ref),
+                )}',
                 style: ref.watch(priceNormalStyleProvider),
               )
             : Text(
-                '\$${NumberFormat('#,##0.00').format(Pricing(ref: ref).totalTaxForMembers())}',
+                '\$${NumberFormat('#,##0.00').format(
+                  PricingHelpers().totalTaxForMembers(ref),
+                )}',
                 style: ref.watch(priceNormalStyleProvider),
               ),
       ],
@@ -180,20 +196,16 @@ class TotalPrice extends ConsumerWidget {
   }
 
   orderTotal(WidgetRef ref) {
-    final currentUser = ref.watch(currentUserProvider);
-    return currentUser.when(
-      error: (e, _) => ShowError(error: e.toString()),
-      loading: () => const Loading(),
-      data: (user) {
-        if (user.uid == null || !user.isActiveMember!) {
-          return NumberFormat('#,##0.00')
-              .format(Pricing(ref: ref).orderTotalForNonMembers());
-        } else {
-          return NumberFormat('#,##0.00')
-              .format(Pricing(ref: ref).orderTotalForMembers());
-        }
-      },
-    );
+    final user = ref.watch(currentUserProvider).value ?? const UserModel();
+    final isMember = user.uid != null &&
+        user.subscriptionStatus == SubscriptionStatus.active;
+    if (!isMember) {
+      return NumberFormat('#,##0.00')
+          .format(PricingHelpers().orderTotalForNonMembers(ref));
+    } else {
+      return NumberFormat('#,##0.00')
+          .format(PricingHelpers().orderTotalForMembers(ref));
+    }
   }
 
   Widget buildOrderTotalRow(WidgetRef ref, UserModel user) {
@@ -216,8 +228,10 @@ class TotalPrice extends ConsumerWidget {
   }
 
   Widget buildPointsRow(WidgetRef ref) {
-    final pointsHelper = PointsHelper(ref: ref);
-    final earnedPoints = pointsHelper.totalEarnedPoints();
+    final user = ref.watch(currentUserProvider).value ?? const UserModel();
+    final points = ref.watch(pointsInformationProvider);
+    final pointsHelper = PointsHelper();
+    final earnedPoints = pointsHelper.totalEarnedPoints(ref, user, points);
 
     if (earnedPoints == 0) {
       return const SizedBox();
@@ -241,8 +255,9 @@ class TotalPrice extends ConsumerWidget {
                 ),
               ],
             ),
-            const PointsMultipleText(
-              textStyle: TextStyle(fontSize: 10),
+            PointsMultipleText(
+              points: points,
+              textStyle: const TextStyle(fontSize: 10),
             ),
           ],
         ),
@@ -252,52 +267,49 @@ class TotalPrice extends ConsumerWidget {
 
   Widget buildSavedAmountRow(
       BuildContext context, WidgetRef ref, UserModel user) {
-    final savedAmount = Pricing(ref: ref).totalOrderSavings();
+    final PricingHelpers pricingHelpers = PricingHelpers();
+    final savedAmount = pricingHelpers.totalOrderSavings(ref);
     const couldHaveSavedText = 'You could have saved \$';
     const savedText = 'You saved \$';
+    final isMember = user.uid != null &&
+        user.subscriptionStatus == SubscriptionStatus.active;
 
-    if (Pricing(ref: ref).originalSubtotalForNonMembers() ==
-        Pricing(ref: ref).discountTotalForNonMembers()) {
+    if (pricingHelpers.originalSubtotalForNonMembers(ref) ==
+        pricingHelpers.discountTotalForNonMembers(ref)) {
       return const SizedBox();
-    } else if (user.uid == null || !user.isActiveMember!) {
-      return Row(
-        mainAxisAlignment: MainAxisAlignment.end,
-        children: [
-          Text(
-            '${user.uid == null || !user.isActiveMember! ? couldHaveSavedText : savedText}${NumberFormat('#,##0.00').format(savedAmount)}',
-            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-          ),
-          Spacing.horizontal(5),
-          const MemberIcon(iconSize: 10),
+    }
+
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.end,
+      children: [
+        Text(
+          '${isMember ? savedText : couldHaveSavedText}${NumberFormat('#,##0.00').format(savedAmount)}',
+          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+        ),
+        Spacing.horizontal(5),
+        if (!isMember) const MemberIcon(iconSize: 10),
+        if (!isMember)
           Padding(
             padding: const EdgeInsets.only(left: 4.0),
             child: InfoButton(
               size: 22,
               onTap: () {
-                HapticFeedback.lightImpact();
-                ModalBottomSheet().fullScreen(
-                  context: context,
-                  builder: (context) => const MembershipDetailPage(),
+                if (PlatformUtils.isWeb()) {
+                  NavigationHelpers.popEndDrawer(context);
+                }
+                NavigationHelpers.handleMembershipNavigation(
+                  context,
+                  ref,
+                  user,
+                  showCloseButton:
+                      PlatformUtils.isIOS() || PlatformUtils.isAndroid(),
                 );
               },
             ),
-          ),
-        ],
-      );
-    } else if (user.isActiveMember!) {
-      return Row(
-        mainAxisAlignment: MainAxisAlignment.end,
-        children: [
-          Text(
-            '${user.isActiveMember! ? savedText : couldHaveSavedText}${NumberFormat('#,##0.00').format(savedAmount)}',
-            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-          ),
-          Spacing.horizontal(5),
+          )
+        else
           const MemberIcon(iconSize: 12),
-        ],
-      );
-    } else {
-      return const Text('');
-    }
+      ],
+    );
   }
 }

@@ -12,7 +12,7 @@ part of 'favorites_model.dart';
 T _$identity<T>(T value) => value;
 
 final _privateConstructorUsedError = UnsupportedError(
-    'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#custom-getters-and-methods');
+    'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models');
 
 /// @nodoc
 mixin _$FavoritesModel {
@@ -20,7 +20,7 @@ mixin _$FavoritesModel {
   String get name => throw _privateConstructorUsedError;
   List<dynamic> get ingredients => throw _privateConstructorUsedError;
   List<dynamic> get toppings => throw _privateConstructorUsedError;
-  int get productID => throw _privateConstructorUsedError;
+  String get productId => throw _privateConstructorUsedError;
   int get size => throw _privateConstructorUsedError;
   List<dynamic> get allergies => throw _privateConstructorUsedError;
 
@@ -40,7 +40,7 @@ abstract class $FavoritesModelCopyWith<$Res> {
       String name,
       List<dynamic> ingredients,
       List<dynamic> toppings,
-      int productID,
+      String productId,
       int size,
       List<dynamic> allergies});
 }
@@ -62,7 +62,7 @@ class _$FavoritesModelCopyWithImpl<$Res, $Val extends FavoritesModel>
     Object? name = null,
     Object? ingredients = null,
     Object? toppings = null,
-    Object? productID = null,
+    Object? productId = null,
     Object? size = null,
     Object? allergies = null,
   }) {
@@ -83,10 +83,10 @@ class _$FavoritesModelCopyWithImpl<$Res, $Val extends FavoritesModel>
           ? _value.toppings
           : toppings // ignore: cast_nullable_to_non_nullable
               as List<dynamic>,
-      productID: null == productID
-          ? _value.productID
-          : productID // ignore: cast_nullable_to_non_nullable
-              as int,
+      productId: null == productId
+          ? _value.productId
+          : productId // ignore: cast_nullable_to_non_nullable
+              as String,
       size: null == size
           ? _value.size
           : size // ignore: cast_nullable_to_non_nullable
@@ -112,7 +112,7 @@ abstract class _$$FavoritesModelImplCopyWith<$Res>
       String name,
       List<dynamic> ingredients,
       List<dynamic> toppings,
-      int productID,
+      String productId,
       int size,
       List<dynamic> allergies});
 }
@@ -132,7 +132,7 @@ class __$$FavoritesModelImplCopyWithImpl<$Res>
     Object? name = null,
     Object? ingredients = null,
     Object? toppings = null,
-    Object? productID = null,
+    Object? productId = null,
     Object? size = null,
     Object? allergies = null,
   }) {
@@ -153,10 +153,10 @@ class __$$FavoritesModelImplCopyWithImpl<$Res>
           ? _value._toppings
           : toppings // ignore: cast_nullable_to_non_nullable
               as List<dynamic>,
-      productID: null == productID
-          ? _value.productID
-          : productID // ignore: cast_nullable_to_non_nullable
-              as int,
+      productId: null == productId
+          ? _value.productId
+          : productId // ignore: cast_nullable_to_non_nullable
+              as String,
       size: null == size
           ? _value.size
           : size // ignore: cast_nullable_to_non_nullable
@@ -177,7 +177,7 @@ class _$FavoritesModelImpl implements _FavoritesModel {
       required this.name,
       required final List<dynamic> ingredients,
       required final List<dynamic> toppings,
-      required this.productID,
+      required this.productId,
       required this.size,
       required final List<dynamic> allergies})
       : _ingredients = ingredients,
@@ -205,7 +205,7 @@ class _$FavoritesModelImpl implements _FavoritesModel {
   }
 
   @override
-  final int productID;
+  final String productId;
   @override
   final int size;
   final List<dynamic> _allergies;
@@ -218,11 +218,11 @@ class _$FavoritesModelImpl implements _FavoritesModel {
 
   @override
   String toString() {
-    return 'FavoritesModel(uid: $uid, name: $name, ingredients: $ingredients, toppings: $toppings, productID: $productID, size: $size, allergies: $allergies)';
+    return 'FavoritesModel(uid: $uid, name: $name, ingredients: $ingredients, toppings: $toppings, productId: $productId, size: $size, allergies: $allergies)';
   }
 
   @override
-  bool operator ==(dynamic other) {
+  bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$FavoritesModelImpl &&
@@ -231,8 +231,8 @@ class _$FavoritesModelImpl implements _FavoritesModel {
             const DeepCollectionEquality()
                 .equals(other._ingredients, _ingredients) &&
             const DeepCollectionEquality().equals(other._toppings, _toppings) &&
-            (identical(other.productID, productID) ||
-                other.productID == productID) &&
+            (identical(other.productId, productId) ||
+                other.productId == productId) &&
             (identical(other.size, size) || other.size == size) &&
             const DeepCollectionEquality()
                 .equals(other._allergies, _allergies));
@@ -245,7 +245,7 @@ class _$FavoritesModelImpl implements _FavoritesModel {
       name,
       const DeepCollectionEquality().hash(_ingredients),
       const DeepCollectionEquality().hash(_toppings),
-      productID,
+      productId,
       size,
       const DeepCollectionEquality().hash(_allergies));
 
@@ -263,7 +263,7 @@ abstract class _FavoritesModel implements FavoritesModel {
       required final String name,
       required final List<dynamic> ingredients,
       required final List<dynamic> toppings,
-      required final int productID,
+      required final String productId,
       required final int size,
       required final List<dynamic> allergies}) = _$FavoritesModelImpl;
 
@@ -276,7 +276,7 @@ abstract class _FavoritesModel implements FavoritesModel {
   @override
   List<dynamic> get toppings;
   @override
-  int get productID;
+  String get productId;
   @override
   int get size;
   @override

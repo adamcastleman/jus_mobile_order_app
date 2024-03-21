@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:jus_mobile_order_app/Providers/stream_providers.dart';
-import 'package:jus_mobile_order_app/Widgets/Icons/chevron_right_icon.dart';
+import 'package:jus_mobile_order_app/Widgets/Icons/chevron_right_with_loading_icon.dart';
 import 'package:jus_mobile_order_app/Widgets/Icons/payment_method_icons.dart';
 
 class AddPaymentMethodTile extends ConsumerWidget {
@@ -11,11 +11,13 @@ class AddPaymentMethodTile extends ConsumerWidget {
   final bool isTransfer;
   final String title;
   final VoidCallback onTap;
+  final UniqueKey? tileKey;
   const AddPaymentMethodTile(
       {required this.isWallet,
       required this.isTransfer,
       required this.title,
       required this.onTap,
+      this.tileKey,
       super.key});
 
   @override
@@ -40,7 +42,13 @@ class AddPaymentMethodTile extends ConsumerWidget {
               'Your payment method will be saved for future use.',
               style: TextStyle(fontSize: 12),
             ),
-      trailing: const ChevronRightIcon(),
+      trailing: SizedBox(
+        width: 20,
+        height: 20,
+        child: ChevronRightWithLoadingIcon(
+          tileKey: tileKey,
+        ),
+      ),
       onTap: onTap,
     );
   }

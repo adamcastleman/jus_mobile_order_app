@@ -1,20 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:jus_mobile_order_app/Helpers/modal_bottom_sheets.dart';
 import 'package:jus_mobile_order_app/Helpers/pricing.dart';
-import 'package:jus_mobile_order_app/Models/payments_model.dart';
+import 'package:jus_mobile_order_app/Helpers/spacing_widgets.dart';
 import 'package:jus_mobile_order_app/Models/user_model.dart';
 import 'package:jus_mobile_order_app/Providers/payments_providers.dart';
-import 'package:jus_mobile_order_app/Sheets/invalid_sheet_single_pop.dart';
-import 'package:jus_mobile_order_app/Sheets/select_credit_card_for_wallet_sheet.dart';
 import 'package:jus_mobile_order_app/Widgets/General/total_price.dart';
 
 class WalletHelpers {
-  final WidgetRef ref;
-
-  WalletHelpers({required this.ref});
-
-  displayOrderTotal(UserModel user) {
+  static displayOrderTotal(WidgetRef ref, UserModel user) {
     return Padding(
       padding: const EdgeInsets.only(top: 20.0),
       child: Column(
@@ -22,32 +15,15 @@ class WalletHelpers {
           const TotalPrice().buildSubtotalWithDiscountRow(ref, user),
           const TotalPrice().buildTaxesRow(ref, user),
           const TotalPrice().buildTipRow(ref, user),
+          Spacing.vertical(10),
           const TotalPrice().buildOrderTotalRow(ref, user),
         ],
       ),
     );
   }
 
-  void selectCreditCard(BuildContext context) {
-    ModalBottomSheet().partScreen(
-      enableDrag: true,
-      isScrollControlled: true,
-      isDismissible: true,
-      context: context,
-      builder: (context) => const SelectCreditCardForWalletSheet(),
-    );
-  }
-
-  walletAmount(PaymentsModel wallet) {
-    final selectedWallet = ref.watch(currentlySelectedWalletProvider);
-    if (selectedWallet.isEmpty) {
-      return wallet.balance;
-    } else {
-      return selectedWallet['balance'];
-    }
-  }
-
-  void updateSelectedLoadAmount(List<int> loadAmounts, int selectedLoadAmount) {
+  static void updateSelectedLoadAmount(
+      WidgetRef ref, List<int> loadAmounts, int selectedLoadAmount) {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       ref.read(selectedLoadAmountProvider.notifier).state = selectedLoadAmount;
       ref.read(selectedLoadAmountIndexProvider.notifier).state =
@@ -55,29 +31,20 @@ class WalletHelpers {
     });
   }
 
-  int loadWalletAmount() {
+  static int loadWalletAmount(WidgetRef ref) {
     final selectedLoadAmount = ref.watch(selectedLoadAmountProvider);
     return selectedLoadAmount ?? ref.watch(walletLoadAmountsProvider)[3];
   }
 
-  void displayInvalidPaymentError(BuildContext context) {
-    ModalBottomSheet().partScreen(
-      context: context,
-      builder: (context) => const InvalidSheetSinglePop(
-        error: 'Please choose a payment method.',
-      ),
-    );
-  }
-
-  bool isWalletBalanceSufficientToCoverTransaction(
+  static bool isWalletBalanceSufficientToCoverTransaction(
       WidgetRef ref, int walletAmount, UserModel user) {
-    final totalOrderPrice = Pricing(ref: ref).orderTotalFromUserType(user);
+    final totalOrderPrice = PricingHelpers().orderTotalFromUserType(ref, user);
     final selectedLoadAmount = ref.watch(selectedLoadAmountProvider);
 
     num balance = walletAmount;
     if (selectedLoadAmount == null) {
       // If there is no selected load amount, add the load and pay amount to the wallet balance
-      balance += loadAndPayWalletAmount(ref, user, walletAmount);
+      balance += WalletHelpers().getDefaultLoadAmount(ref, user, walletAmount);
     } else {
       // If there is a selected load amount, add it to the wallet balance
       balance += selectedLoadAmount;
@@ -87,24 +54,23 @@ class WalletHelpers {
     return balance >= totalOrderPrice;
   }
 
-  int loadAndPayWalletAmount(WidgetRef ref, UserModel user, int walletAmount) {
+  int getDefaultLoadAmount(WidgetRef ref, UserModel user, int walletAmount) {
     final difference =
         _differenceBetweenOrderAmountAndWalletBalance(ref, user, walletAmount);
     final loadAmounts = ref.watch(walletLoadAmountsProvider);
     // Find the appropriate load amount
     int selectedLoadAmount = _findMatchingLoadAmount(loadAmounts, difference);
-    WalletHelpers(ref: ref)
-        .updateSelectedLoadAmount(loadAmounts, selectedLoadAmount);
+    updateSelectedLoadAmount(ref, loadAmounts, selectedLoadAmount);
     return selectedLoadAmount;
   }
 
-  double _differenceBetweenOrderAmountAndWalletBalance(
+  static double _differenceBetweenOrderAmountAndWalletBalance(
       WidgetRef ref, UserModel user, int walletAmount) {
-    final totalOrderPrice = Pricing(ref: ref).orderTotalFromUserType(user);
+    final totalOrderPrice = PricingHelpers().orderTotalFromUserType(ref, user);
     return totalOrderPrice - walletAmount;
   }
 
-  int _findMatchingLoadAmount(List<int> loadAmounts, double difference) {
+  static int _findMatchingLoadAmount(List<int> loadAmounts, double difference) {
     if (difference <= loadAmounts.first) {
       return loadAmounts.first;
     }
@@ -116,5 +82,28 @@ class WalletHelpers {
     }
 
     return loadAmounts.last;
+  }
+
+  static void updateSelectedLoadAmountIndex(
+    WidgetRef ref,
+    UserModel user,
+  ) {
+    final loadAmounts = ref.read(walletLoadAmountsProvider);
+    final selectedLoadAmount = ref.watch(selectedLoadAmountProvider);
+    final walletBalance =
+        selectedLoadAmount ?? 0; // Assuming `wallet` is accessible from `user`
+    final minimumLoadAmount =
+        WalletHelpers().getDefaultLoadAmount(ref, user, walletBalance);
+
+    // Find the index of the load amount that matches or exceeds the minimum required load amount
+    final loadAmountIndex =
+        loadAmounts.indexWhere((amount) => amount >= minimumLoadAmount);
+
+    // Ensure the index is within the list bounds and not already set to the same value
+    if (loadAmountIndex != -1 &&
+        ref.read(selectedLoadAmountIndexProvider) != loadAmountIndex) {
+      ref.read(selectedLoadAmountIndexProvider.notifier).state =
+          loadAmountIndex;
+    }
   }
 }

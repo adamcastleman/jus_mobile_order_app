@@ -3,9 +3,10 @@ import 'package:jus_mobile_order_app/Models/product_model.dart';
 
 class ProductServices {
   final String? productUID;
-  final int? locationID;
+  final String? locationId;
+  final int? productId;
 
-  ProductServices({this.productUID, this.locationID});
+  ProductServices({this.productUID, this.locationId, this.productId});
 
   final FirebaseFirestore firestore = FirebaseFirestore.instance;
 
@@ -13,33 +14,7 @@ class ProductServices {
     return firestore
         .collection('products')
         .orderBy('categoryOrder')
-        .orderBy('name')
-        .snapshots()
-        .map(getProductsFromDatabase);
-  }
-
-  Stream<List<ProductModel>> get taxableProducts {
-    return firestore
-        .collection('products')
-        .where('taxable', isEqualTo: true)
-        .orderBy('productID')
-        .orderBy('name')
-        .snapshots()
-        .map(getProductsFromDatabase);
-  }
-
-  Stream<List<ProductModel>> get recommendedProducts {
-    return firestore
-        .collection('products')
-        .where('isRecommended', isEqualTo: true)
-        .snapshots()
-        .map(getProductsFromDatabase);
-  }
-
-  Stream<List<ProductModel>> get newProducts {
-    return firestore
-        .collection('products')
-        .where('isNew', isEqualTo: true)
+        .orderBy('productId')
         .snapshots()
         .map(getProductsFromDatabase);
   }
@@ -49,7 +24,7 @@ class ProductServices {
         .collection('products')
         .doc(productUID)
         .collection('quantityLimits')
-        .where('locationID', isEqualTo: locationID)
+        .where('locationId', isEqualTo: locationId)
         .snapshots()
         .map(getQuantityLimitsFromDatabase);
   }
@@ -64,7 +39,7 @@ class ProductServices {
           category: data['category'],
           categoryOrder: data['categoryOrder'],
           variations: data['variations'],
-          productID: data['productID'],
+          productId: data['productId'],
           image: data['image'],
           description: data['description'],
           ingredients: data['ingredients'],
@@ -90,9 +65,10 @@ class ProductServices {
   ProductQuantityModel getQuantityLimitsFromDatabase(QuerySnapshot snapshot) {
     return snapshot.docs.map((doc) {
       final dynamic data = doc.data();
+
       return ProductQuantityModel(
         uid: data['uid'],
-        locationID: data['locationID'],
+        locationId: data['locationId'],
         productType: data['productType'],
         hoursNotice: data['hoursNotice'],
         quantityLimit: data['quantityLimit'] ?? 0,

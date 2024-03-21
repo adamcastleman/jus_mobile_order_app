@@ -3,117 +3,167 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:jus_mobile_order_app/Helpers/spacing_widgets.dart';
 import 'package:jus_mobile_order_app/Models/ingredient_model.dart';
 import 'package:jus_mobile_order_app/Models/user_model.dart';
-import 'package:jus_mobile_order_app/Providers/ProviderWidgets/modifiable_ingredients_provider_widget.dart';
 import 'package:jus_mobile_order_app/Providers/product_providers.dart';
 import 'package:jus_mobile_order_app/Providers/stream_providers.dart';
 import 'package:jus_mobile_order_app/Widgets/Buttons/elevated_button_medium.dart';
 import 'package:jus_mobile_order_app/Widgets/Buttons/multi_use_ingredient_quantity_picker.dart';
 import 'package:jus_mobile_order_app/Widgets/Buttons/outlined_button_medium.dart';
-import 'package:jus_mobile_order_app/Widgets/Cards/multi_use_ingredient_selection_cards.dart';
 
 class MultiUseIngredientSelectionSheet extends ConsumerWidget {
   const MultiUseIngredientSelectionSheet({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final user = ref.watch(currentUserProvider).value!;
+    final user = ref.watch(currentUserProvider).value ?? const UserModel();
+    final ingredients = ref.watch(allIngredientsProvider);
+    final selectedIngredientID = ref.watch(currentIngredientIdProvider);
+    final modifiableIngredients =
+        ingredients.where((element) => element.isModifiable == true).toList();
+
+    final IngredientModel currentIngredient =
+        ingredients.firstWhere((element) => element.id == selectedIngredientID);
+
+    return Wrap(
+      children: [
+        _buildIngredientTitle(currentIngredient),
+        _buildIngredientOptions(ref, currentIngredient),
+        Padding(
+          padding: const EdgeInsets.only(bottom: 30.0),
+          child: _buildActionButtons(context, ref, modifiableIngredients, user),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildIngredientTitle(IngredientModel ingredient) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 10.0),
+      child: Text(
+        ingredient.name,
+        style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 24),
+      ),
+    );
+  }
+
+  Widget _buildIngredientOptions(WidgetRef ref, IngredientModel ingredient) {
     final isExtraCharge = ref.watch(currentIngredientExtraChargeProvider);
-    final selectedIngredientID = ref.watch(currentIngredientIDProvider);
-    return ModifiableIngredientsProviderWidget(
-      builder: (ingredients) {
-        IngredientModel currentIngredient = ingredients
-            .where((element) => element.id == selectedIngredientID)
-            .first;
-        return Wrap(
-          children: [
-            Padding(
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 12.0, vertical: 10.0),
-              child: Text(
-                currentIngredient.name,
-                style:
-                    const TextStyle(fontWeight: FontWeight.bold, fontSize: 24),
+    final isBlended = ref.watch(currentIngredientBlendedProvider);
+    final isTopping = ref.watch(currentIngredientToppingProvider);
+
+    return Column(
+      children: [
+        Padding(
+          padding: const EdgeInsets.all(30),
+          child: Column(
+            children: [
+              _buildBlendedOption(ref, isExtraCharge, ingredient, isBlended),
+              Spacing.vertical(22),
+              _buildToppingOption(ref, isExtraCharge, ingredient, isTopping),
+              Spacing.vertical(12),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildBlendedOption(WidgetRef ref, bool isExtraCharge,
+      IngredientModel currentIngredient, bool isBlended) {
+    return isExtraCharge
+        ? Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              const Text(
+                'Blended',
+                style: TextStyle(fontSize: 20),
               ),
+              MultiUseIngredientQuantityPicker(
+                index: 0,
+                currentIngredient: currentIngredient,
+              )
+            ],
+          )
+        : CheckboxListTile(
+            title: const Text(
+              'Blended',
+              style: TextStyle(fontSize: 20),
             ),
-            Padding(
-              padding: const EdgeInsets.only(bottom: 28.0),
-              child: Column(
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.only(
-                        left: 30.0, right: 30.0, bottom: 30.0, top: 20.0),
-                    child: Column(
-                      children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            const Text(
-                              'Blended',
-                              style: TextStyle(fontSize: 20),
-                            ),
-                            isExtraCharge
-                                ? MultiUseIngredientQuantityPicker(
-                                    index: 0,
-                                    currentIngredient: currentIngredient)
-                                : const MultiUseIngredientSelectionCards(
-                                    index: 0,
-                                  ),
-                          ],
-                        ),
-                        Spacing.vertical(22),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            const Text(
-                              'As Topping',
-                              style: TextStyle(fontSize: 20),
-                            ),
-                            isExtraCharge
-                                ? MultiUseIngredientQuantityPicker(
-                                    index: 1,
-                                    currentIngredient: currentIngredient)
-                                : const MultiUseIngredientSelectionCards(
-                                    index: 1,
-                                  ),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      MediumOutlineButton(
-                        buttonText: 'Cancel',
-                        onPressed: () {
-                          Navigator.pop(context);
-                        },
-                      ),
-                      MediumElevatedButton(
-                          buttonText: 'Confirm',
-                          onPressed: () {
-                            modifyIngredient(ingredients, user, ref);
-                            Navigator.pop(context);
-                          }),
-                    ],
-                  ),
-                ],
+            value: isBlended,
+            onChanged: (value) {
+              ref.read(currentIngredientBlendedProvider.notifier).state =
+                  value!;
+            },
+          );
+  }
+
+  Widget _buildToppingOption(WidgetRef ref, bool isExtraCharge,
+      IngredientModel currentIngredient, bool isTopping) {
+    return isExtraCharge
+        ? Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              const Text(
+                'As Topping',
+                style: TextStyle(fontSize: 20),
               ),
+              MultiUseIngredientQuantityPicker(
+                index: 1,
+                currentIngredient: currentIngredient,
+              )
+            ],
+          )
+        : CheckboxListTile(
+            title: const Text(
+              'As Topping',
+              style: TextStyle(fontSize: 20),
             ),
-          ],
-        );
-      },
+            value: isTopping,
+            onChanged: (value) {
+              ref.read(currentIngredientToppingProvider.notifier).state =
+                  value!;
+            },
+          );
+  }
+
+  Widget _buildActionButtons(BuildContext context, WidgetRef ref,
+      List<IngredientModel> ingredients, UserModel user) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 22.0),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        children: [
+          Expanded(
+            child: MediumOutlineButton(
+              buttonText: 'Cancel',
+              onPressed: () {
+                Navigator.pop(context);
+              },
+            ),
+          ),
+          Spacing.horizontal(22),
+          Expanded(
+            child: MediumElevatedButton(
+              buttonText: 'Confirm',
+              onPressed: () {
+                modifyIngredient(ingredients, user, ref);
+                Navigator.pop(context);
+              },
+            ),
+          ),
+        ],
+      ),
     );
   }
 
   modifyIngredient(
       List<IngredientModel> ingredients, UserModel user, WidgetRef ref) {
     final ingredientIndex = ref.watch(currentIngredientIndexProvider);
+
     final isExtraCharge = ref.watch(currentIngredientExtraChargeProvider);
     final isBlended = ref.watch(currentIngredientBlendedProvider);
     final isTopping = ref.watch(currentIngredientToppingProvider);
     final selectedIngredients = ref.watch(selectedIngredientsProvider);
-    final selectedIngredientID = ref.watch(currentIngredientIDProvider);
+    final selectedIngredientID = ref.watch(currentIngredientIdProvider);
     final blendedItemQuantity =
         ref.watch(extraChargeBlendedIngredientQuantityProvider);
     final toppedItemQuantity =
@@ -123,12 +173,14 @@ class MultiUseIngredientSelectionSheet extends ConsumerWidget {
 
     //All extra charged ingredients are handled first - followed by non-charge ingredients//
 
-    //User has selected '0 Quantity' to both blended and topping in charged new ingredient. No action, just pops
+    //User has selected '0 Quantity' to both blended and topping in charged new ingredient.
+    // No action, just pops
     if (currentIngredient.isEmpty &&
         isExtraCharge &&
         blendedItemQuantity == 0 &&
         toppedItemQuantity == 0) {
-      //User has selected '0 Quantity' to both blended and topping while editing a charged ingredient. Deletes the ingredient.
+      //User has selected '0 Quantity' to both blended and topping while editing
+      //a charged ingredient. Deletes the ingredient.
     } else if (currentIngredient.isNotEmpty &&
         isExtraCharge &&
         blendedItemQuantity == 0 &&
@@ -136,12 +188,13 @@ class MultiUseIngredientSelectionSheet extends ConsumerWidget {
       ref
           .read(selectedIngredientsProvider.notifier)
           .removeIngredient(selectedIngredientID!, ref, selectedIngredients);
+
       //User is adding a new ingredient that can be both topped, blended,
       //and has an extra charge, to the list.
     } else if (currentIngredient.isEmpty && isExtraCharge) {
       ref.read(selectedIngredientsProvider.notifier).addIngredient(
-            ingredients: ingredients,
-            index: ingredientIndex!,
+            ingredient: ingredients
+                .firstWhere((element) => element.id == selectedIngredientID),
             isExtraCharge: isExtraCharge,
             ref: ref,
             user: user,
@@ -161,10 +214,14 @@ class MultiUseIngredientSelectionSheet extends ConsumerWidget {
           );
     }
     //User has selected 'No' to both blended and topping in non-charged new ingredient. No action, just pops
-    else if (isBlended == 1 && isTopping == 1 && currentIngredient.isEmpty) {
+    else if (isBlended == false &&
+        isTopping == false &&
+        currentIngredient.isEmpty) {
     }
     //User has selected 'No' to both blended and topping while editing a non-charged ingredient already in list.
-    else if (isBlended == 1 && isTopping == 1 && currentIngredient.isNotEmpty) {
+    else if (isBlended == false &&
+        isTopping == false &&
+        currentIngredient.isNotEmpty) {
       ref
           .read(selectedIngredientsProvider.notifier)
           .removeIngredient(selectedIngredientID!, ref, selectedIngredients);
@@ -172,23 +229,24 @@ class MultiUseIngredientSelectionSheet extends ConsumerWidget {
       //and has no extra charge.
     } else if (currentIngredient.isEmpty) {
       ref.read(selectedIngredientsProvider.notifier).addIngredient(
-          ingredients: ingredients,
-          index: ingredientIndex!,
-          isExtraCharge: isExtraCharge,
-          ref: ref,
-          user: user,
-          blended: isBlended,
-          topping: isTopping);
+            ingredient: ingredients[ingredientIndex!],
+            isExtraCharge: isExtraCharge,
+            ref: ref,
+            user: user,
+            blended: isBlended == true ? 0 : 1,
+            topping: isTopping == true ? 0 : 1,
+          );
       //User is editing the topped or blended option in a non-charged ingredient already included in list
     } else {
       ref.read(selectedIngredientsProvider.notifier).addQuantityAmount(
-          index: ingredientIndex!,
-          ref: ref,
-          ingredients: ingredients,
-          isExtraCharge: isExtraCharge,
-          user: user,
-          blended: isBlended,
-          topping: isTopping);
+            index: ingredientIndex!,
+            ref: ref,
+            ingredients: ingredients,
+            isExtraCharge: isExtraCharge,
+            user: user,
+            blended: isBlended == true ? 0 : 1,
+            topping: isTopping == true ? 0 : 1,
+          );
     }
   }
 }

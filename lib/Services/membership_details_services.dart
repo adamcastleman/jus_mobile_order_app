@@ -22,6 +22,7 @@ class MembershipDetailsServices {
         description: data['description'],
         signUpText: data['signUpText'],
         name: data['name'],
+        termsOfService: data['termsOfService'],
       );
     }).first;
   }

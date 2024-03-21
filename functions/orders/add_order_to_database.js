@@ -7,14 +7,12 @@ const sendOrderConfirmationEmail = require("../emails/send_order_confirmation_em
 const sendCleanseInstructionsEmail = require("../emails/send_cleanse_instructions_email");
 const sendEmailToAdminOnFailedOrder = require("../emails/send_email_to_admin_on_failed_order");
 
-const addOrderToDatabase = async (db, orderMap, userID) => {
+const addOrderToDatabase = async (db, orderMap) => {
   const orderWithoutCardSource = { ...orderMap };
 
   try {
     delete orderWithoutCardSource.paymentDetails.cardId;
     delete orderWithoutCardSource.paymentDetails.gan;
-    delete orderWithoutCardSource.paymentDetails.giftCardID;
-    orderWithoutCardSource.orderDetails
 
     convertDatesToTimestamps(orderWithoutCardSource);
 
@@ -24,22 +22,22 @@ const addOrderToDatabase = async (db, orderMap, userID) => {
 
     await newOrderRef.set(orderWithoutCardSource);
 
-    const scheduledItems = extractScheduledItems(orderMap);
+    const scheduledItems = extractScheduledItems(orderWithoutCardSource);
 
-   if(scheduledItems.length > 0) {
-       sendScheduledItems(scheduledItems);
-   }
+    if (scheduledItems.length > 0) {
+      sendScheduledItems(scheduledItems);
+    }
 
     await sendOrderConfirmationEmail(orderWithoutCardSource);
 
-    for (let j = 0; j < orderWithoutCardSource.orderDetails.items.length; j++) {
-      const item = orderWithoutCardSource.orderDetails.items[j];
+    for (let i = 0; i < orderWithoutCardSource.orderDetails.items.length; i++) {
+      const item = orderWithoutCardSource.orderDetails.items[i];
 
       if (
-        item.name === "Full Day Cleanse" ||
-        item.name === "Juice 'til Dinner"
+        item.name === "Full-Day Cleanse" ||
+        item.name === "Half-Day Cleanse"
       ) {
-        await sendCleanseInstructionsEmail(orderMap);
+        await sendCleanseInstructionsEmail(orderWithoutCardSource);
         break;
       }
     }

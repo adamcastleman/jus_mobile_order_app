@@ -1,11 +1,12 @@
 const admin = require("firebase-admin");
+const getGiftCardBalance = require("../gift_cards/get_gift_card_balance");
 
-const updateWalletBalanceInDatabase = async (db, orderMap, giftCardMap) => {
+const updateWalletBalanceInDatabase = async (db, orderMap) => {
   const savedPaymentsSnapshot = await db
     .collection("users")
-    .doc(orderMap.userDetails.userID)
+    .doc(orderMap.userDetails.userId)
     .collection("squarePaymentMethods")
-    .where("gan", "==", giftCardMap.cardDetails.gan)
+    .where("gan", "==", orderMap.paymentDetails.gan)
     .get();
 
   if (savedPaymentsSnapshot.empty) {
@@ -13,15 +14,16 @@ const updateWalletBalanceInDatabase = async (db, orderMap, giftCardMap) => {
     return { error: "No matching wallet found" };
   }
 
-  const savedPayment = savedPaymentsSnapshot.docs[0];
-  const orderAmount =
-    parseInt(orderMap.totals.totalAmount + orderMap.totals.tipAmount) || 0;
-  const originalBalance = parseInt(savedPayment.data().balance) || 0;
+  const savedPaymentDoc = savedPaymentsSnapshot.docs[0];
+
+  const balance = await getGiftCardBalance(orderMap.paymentDetails.gan);
 
   try {
-    await savedPayment.ref.update({ balance: originalBalance - orderAmount });
+    // Use the document reference to update the balance field
+    await savedPaymentDoc.ref.update({ balance: balance });
     return 200;
   } catch (error) {
+    console.error("Error updating card balance:", error);
     return { error: "Error updating card balance" };
   }
 };

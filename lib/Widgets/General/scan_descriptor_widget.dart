@@ -16,16 +16,17 @@ class ScanDescriptorWidget extends StatelessWidget {
     return Column(
       children: [
         Text(
-          isScanAndPay ? 'Earn points and pay' : 'Scan to earn points',
+          isScanAndPay ? 'Pay and collect points' : 'Scan to earn points',
           style: const TextStyle(
-            fontSize: 20,
+            fontSize: 26,
             fontWeight: FontWeight.bold,
+            color: Colors.white,
           ),
         ),
         Spacing.vertical(5),
         Text(
           _displayDescriptorText(),
-          style: const TextStyle(fontSize: 14),
+          style: const TextStyle(fontSize: 14, color: Colors.white),
         ),
       ],
     );

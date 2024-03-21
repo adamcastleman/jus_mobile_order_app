@@ -12,7 +12,7 @@ part of 'membership_details_model.dart';
 T _$identity<T>(T value) => value;
 
 final _privateConstructorUsedError = UnsupportedError(
-    'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#custom-getters-and-methods');
+    'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models');
 
 /// @nodoc
 mixin _$MembershipDetailsModel {
@@ -22,6 +22,7 @@ mixin _$MembershipDetailsModel {
   String get description => throw _privateConstructorUsedError;
   String get signUpText => throw _privateConstructorUsedError;
   String get name => throw _privateConstructorUsedError;
+  String get termsOfService => throw _privateConstructorUsedError;
 
   @JsonKey(ignore: true)
   $MembershipDetailsModelCopyWith<MembershipDetailsModel> get copyWith =>
@@ -40,7 +41,8 @@ abstract class $MembershipDetailsModelCopyWith<$Res> {
       List<dynamic> subscriptionPrice,
       String description,
       String signUpText,
-      String name});
+      String name,
+      String termsOfService});
 }
 
 /// @nodoc
@@ -63,6 +65,7 @@ class _$MembershipDetailsModelCopyWithImpl<$Res,
     Object? description = null,
     Object? signUpText = null,
     Object? name = null,
+    Object? termsOfService = null,
   }) {
     return _then(_value.copyWith(
       uid: null == uid
@@ -89,6 +92,10 @@ class _$MembershipDetailsModelCopyWithImpl<$Res,
           ? _value.name
           : name // ignore: cast_nullable_to_non_nullable
               as String,
+      termsOfService: null == termsOfService
+          ? _value.termsOfService
+          : termsOfService // ignore: cast_nullable_to_non_nullable
+              as String,
     ) as $Val);
   }
 }
@@ -108,7 +115,8 @@ abstract class _$$MembershipDetailsModelImplCopyWith<$Res>
       List<dynamic> subscriptionPrice,
       String description,
       String signUpText,
-      String name});
+      String name,
+      String termsOfService});
 }
 
 /// @nodoc
@@ -130,6 +138,7 @@ class __$$MembershipDetailsModelImplCopyWithImpl<$Res>
     Object? description = null,
     Object? signUpText = null,
     Object? name = null,
+    Object? termsOfService = null,
   }) {
     return _then(_$MembershipDetailsModelImpl(
       uid: null == uid
@@ -156,6 +165,10 @@ class __$$MembershipDetailsModelImplCopyWithImpl<$Res>
           ? _value.name
           : name // ignore: cast_nullable_to_non_nullable
               as String,
+      termsOfService: null == termsOfService
+          ? _value.termsOfService
+          : termsOfService // ignore: cast_nullable_to_non_nullable
+              as String,
     ));
   }
 }
@@ -169,7 +182,8 @@ class _$MembershipDetailsModelImpl implements _MembershipDetailsModel {
       required final List<dynamic> subscriptionPrice,
       required this.description,
       required this.signUpText,
-      required this.name})
+      required this.name,
+      required this.termsOfService})
       : _perks = perks,
         _subscriptionPrice = subscriptionPrice;
 
@@ -198,14 +212,16 @@ class _$MembershipDetailsModelImpl implements _MembershipDetailsModel {
   final String signUpText;
   @override
   final String name;
+  @override
+  final String termsOfService;
 
   @override
   String toString() {
-    return 'MembershipDetailsModel(uid: $uid, perks: $perks, subscriptionPrice: $subscriptionPrice, description: $description, signUpText: $signUpText, name: $name)';
+    return 'MembershipDetailsModel(uid: $uid, perks: $perks, subscriptionPrice: $subscriptionPrice, description: $description, signUpText: $signUpText, name: $name, termsOfService: $termsOfService)';
   }
 
   @override
-  bool operator ==(dynamic other) {
+  bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$MembershipDetailsModelImpl &&
@@ -217,7 +233,9 @@ class _$MembershipDetailsModelImpl implements _MembershipDetailsModel {
                 other.description == description) &&
             (identical(other.signUpText, signUpText) ||
                 other.signUpText == signUpText) &&
-            (identical(other.name, name) || other.name == name));
+            (identical(other.name, name) || other.name == name) &&
+            (identical(other.termsOfService, termsOfService) ||
+                other.termsOfService == termsOfService));
   }
 
   @override
@@ -228,7 +246,8 @@ class _$MembershipDetailsModelImpl implements _MembershipDetailsModel {
       const DeepCollectionEquality().hash(_subscriptionPrice),
       description,
       signUpText,
-      name);
+      name,
+      termsOfService);
 
   @JsonKey(ignore: true)
   @override
@@ -245,7 +264,8 @@ abstract class _MembershipDetailsModel implements MembershipDetailsModel {
       required final List<dynamic> subscriptionPrice,
       required final String description,
       required final String signUpText,
-      required final String name}) = _$MembershipDetailsModelImpl;
+      required final String name,
+      required final String termsOfService}) = _$MembershipDetailsModelImpl;
 
   @override
   String get uid;
@@ -259,6 +279,8 @@ abstract class _MembershipDetailsModel implements MembershipDetailsModel {
   String get signUpText;
   @override
   String get name;
+  @override
+  String get termsOfService;
   @override
   @JsonKey(ignore: true)
   _$$MembershipDetailsModelImplCopyWith<_$MembershipDetailsModelImpl>

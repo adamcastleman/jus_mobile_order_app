@@ -4,8 +4,12 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:jus_mobile_order_app/Helpers/divider.dart';
-import 'package:jus_mobile_order_app/Helpers/modal_bottom_sheets.dart';
-import 'package:jus_mobile_order_app/Helpers/payments.dart';
+import 'package:jus_mobile_order_app/Helpers/error.dart';
+import 'package:jus_mobile_order_app/Helpers/loading.dart';
+import 'package:jus_mobile_order_app/Helpers/modal_sheets.dart';
+import 'package:jus_mobile_order_app/Helpers/navigation.dart';
+import 'package:jus_mobile_order_app/Helpers/payment_methods.dart';
+import 'package:jus_mobile_order_app/Helpers/spacing_widgets.dart';
 import 'package:jus_mobile_order_app/Models/payments_model.dart';
 import 'package:jus_mobile_order_app/Models/user_model.dart';
 import 'package:jus_mobile_order_app/Providers/ProviderWidgets/credit_card_provider_widget.dart';
@@ -16,11 +20,11 @@ import 'package:jus_mobile_order_app/Providers/stream_providers.dart';
 import 'package:jus_mobile_order_app/Providers/theme_providers.dart';
 import 'package:jus_mobile_order_app/Services/payments_services_square.dart';
 import 'package:jus_mobile_order_app/Sheets/create_wallet_sheet.dart';
-import 'package:jus_mobile_order_app/Sheets/invalid_sheet_single_pop.dart';
 import 'package:jus_mobile_order_app/Sheets/list_of_wallets_sheet.dart';
 import 'package:jus_mobile_order_app/Widgets/Buttons/elevated_button_large.dart';
 import 'package:jus_mobile_order_app/Widgets/Buttons/elevated_button_large_loading.dart';
 import 'package:jus_mobile_order_app/Widgets/General/sheet_notch.dart';
+import 'package:jus_mobile_order_app/constants.dart';
 
 class TransferGiftCardToWalletSheet extends ConsumerWidget {
   const TransferGiftCardToWalletSheet({super.key});
@@ -29,55 +33,64 @@ class TransferGiftCardToWalletSheet extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final backgroundColor = ref.watch(backgroundColorProvider);
     final giftCard = ref.watch(physicalGiftCardBalanceProvider);
+    final giftCardLoading = ref.watch(giftCardLoadingProvider);
+    final user = ref.watch(currentUserProvider).value!;
+    final isDrawerOpen = AppConstants.scaffoldKey.currentState?.isEndDrawerOpen;
     return CreditCardProviderWidget(
       builder: (cards) => WalletProviderWidget(
         builder: (wallets) {
           return Container(
+            padding: EdgeInsets.only(
+                top: isDrawerOpen == null || !isDrawerOpen ? 0.0 : 24.0,
+                left: 12.0,
+                right: 12.0,
+                bottom: 24.0),
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(30),
               color: backgroundColor,
             ),
-            child: Padding(
-              padding: const EdgeInsets.only(bottom: 50.0),
-              child: Wrap(
-                children: [
-                  const Padding(
-                    padding: EdgeInsets.only(bottom: 30.0),
-                    child: SheetNotch(),
+            child: Wrap(
+              children: [
+                isDrawerOpen == null || !isDrawerOpen
+                    ? const SheetNotch()
+                    : const SizedBox(),
+                Padding(
+                  padding: const EdgeInsets.symmetric(
+                      vertical: 12.0, horizontal: 12.0),
+                  child: _buildHeader(),
+                ),
+                JusDivider.thin(),
+                Spacing.vertical(40.0),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    giftCard.isEmpty
+                        ? _addGiftCardWidget(
+                            context, ref, user, giftCardLoading)
+                        : _currentGiftCardWidget(
+                            context, ref, user, giftCard, giftCardLoading),
+                    const Icon(CupertinoIcons.arrow_right),
+                    wallets.isEmpty
+                        ? _createNewWallet(context, ref, user, cards)
+                        : _currentWalletSelectedButton(context, ref, wallets),
+                  ],
+                ),
+                const Padding(
+                  padding: EdgeInsets.symmetric(
+                    vertical: 30.0,
+                    horizontal: 10.0,
                   ),
-                  _buildHeader(),
-                  JusDivider().thin(),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 22.0),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        giftCard.isEmpty
-                            ? _addGiftCardWidget(context, ref)
-                            : _currentGiftCardWidget(context, ref, giftCard),
-                        const Icon(CupertinoIcons.arrow_right),
-                        wallets.isEmpty
-                            ? _createNewWallet(context, ref, cards)
-                            : _currentWalletSelectedButton(
-                                context, ref, wallets),
-                      ],
-                    ),
+                  child: Text(
+                    'Please note that this action will transfer the full '
+                    'balance from your physical gift card to your digital wallet. '
+                    'After the transfer, the balance on your physical card will '
+                    'become zero.',
+                    style: TextStyle(fontSize: 12),
+                    textAlign: TextAlign.center,
                   ),
-                  const Padding(
-                    padding:
-                        EdgeInsets.only(left: 10.0, right: 10.0, bottom: 30.0),
-                    child: Text(
-                      'Please note that this action will transfer the full '
-                      'balance from your physical gift card to your digital wallet. '
-                      'After the transfer, the balance on your physical card will '
-                      'become zero.',
-                      style: TextStyle(fontSize: 12),
-                      textAlign: TextAlign.center,
-                    ),
-                  ),
-                  _transferBalanceButton(context, ref, wallets),
-                ],
-              ),
+                ),
+                _transferBalanceButton(context, ref, wallets),
+              ],
             ),
           );
         },
@@ -87,18 +100,18 @@ class TransferGiftCardToWalletSheet extends ConsumerWidget {
 
   _buildHeader() {
     return const Center(
-      child: Padding(
-        padding: EdgeInsets.only(left: 10.0, right: 10.0, bottom: 20.0),
-        child: AutoSizeText(
-          'Transfer gift card balance to Wallet.',
-          style: TextStyle(fontSize: 20),
-          maxLines: 1,
-        ),
+      child: AutoSizeText(
+        'Transfer gift card balance to Wallet',
+        style: TextStyle(fontSize: 20),
+        maxLines: 1,
       ),
     );
   }
 
-  _transferCard({required List<Widget> children, required VoidCallback onTap}) {
+  _transferCard(
+      {bool? isLoading,
+      required List<Widget> children,
+      required VoidCallback onTap}) {
     return InkWell(
       onTap: onTap,
       child: Container(
@@ -108,16 +121,20 @@ class TransferGiftCardToWalletSheet extends ConsumerWidget {
           borderRadius: BorderRadius.circular(4),
           color: Colors.white,
         ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: children,
-        ),
+        child: isLoading != null && isLoading
+            ? const Loading()
+            : Column(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: children,
+              ),
       ),
     );
   }
 
-  _addGiftCardWidget(BuildContext context, WidgetRef ref) {
+  _addGiftCardWidget(BuildContext context, WidgetRef ref, UserModel user,
+      bool giftCardLoading) {
     return _transferCard(
+      isLoading: giftCardLoading,
       children: const [
         Icon(
           FontAwesomeIcons.gift,
@@ -126,13 +143,15 @@ class TransferGiftCardToWalletSheet extends ConsumerWidget {
         Text('Upload Gift Card'),
       ],
       onTap: () {
-        SquarePaymentServices().inputSquareGiftCard(ref);
+        PaymentMethodHelpers().showSquareGiftCardEntryForm(context, ref, user);
       },
     );
   }
 
-  _currentGiftCardWidget(BuildContext context, WidgetRef ref, Map giftCard) {
+  _currentGiftCardWidget(BuildContext context, WidgetRef ref, UserModel user,
+      Map giftCard, bool giftCardLoading) {
     return _transferCard(
+      isLoading: giftCardLoading,
       children: [
         const Icon(
           FontAwesomeIcons.gift,
@@ -147,14 +166,14 @@ class TransferGiftCardToWalletSheet extends ConsumerWidget {
         ),
       ],
       onTap: () {
-        SquarePaymentServices().inputSquareGiftCard(ref);
+        PaymentMethodHelpers().showSquareGiftCardEntryForm(context, ref, user);
       },
     );
   }
 
   _currentWalletSelectedButton(
       BuildContext context, WidgetRef ref, List<PaymentsModel> wallets) {
-    final selectedWallet = ref.watch(currentlySelectedWalletProvider);
+    final selectedWallet = ref.watch(selectedWalletProvider);
     return _transferCard(
       children: [
         const Icon(
@@ -164,45 +183,39 @@ class TransferGiftCardToWalletSheet extends ConsumerWidget {
         Column(
           children: [
             Text(
-              selectedWallet.isEmpty
+              selectedWallet.userId.isEmpty
                   ? wallets.first.cardNickname
-                  : selectedWallet['cardNickname'],
+                  : selectedWallet.cardNickname,
               textAlign: TextAlign.center,
             ),
             Text(
-                'Balance: \$${((selectedWallet.isEmpty ? wallets.first.balance! : selectedWallet['balance']!) / 100).toStringAsFixed(2)}'),
+                'Balance: \$${((selectedWallet.userId.isEmpty ? wallets.first.balance! : selectedWallet.balance!) / 100).toStringAsFixed(2)}'),
           ],
         ),
       ],
       onTap: () {
-        ModalBottomSheet().partScreen(
-          enableDrag: true,
-          isDismissible: true,
-          isScrollControlled: true,
-          context: context,
-          builder: (context) => const ListOfWalletsSheet(),
+        NavigationHelpers.navigateToPartScreenSheetOrDialog(
+          context,
+          const ListOfWalletsSheet(),
         );
       },
     );
   }
 
-  _createNewWallet(
-      BuildContext context, WidgetRef ref, List<PaymentsModel> cards) {
+  _createNewWallet(BuildContext context, WidgetRef ref, UserModel user,
+      List<PaymentsModel> cards) {
     return _transferCard(
       children: [
         const Icon(FontAwesomeIcons.wallet),
       ],
       onTap: () {
         if (cards.isEmpty) {
-          ModalBottomSheet().partScreen(
-            context: context,
-            builder: (context) => const InvalidSheetSinglePop(
-                error:
-                    'Before creating a Wallet, please upload a payment method.'),
-          );
+          ErrorHelpers.showSinglePopError(context,
+              error:
+                  'Before creating a Wallet, please upload a payment method.');
         } else {
-          PaymentsHelper(ref: ref)
-              .setSelectedPaymentToValidPaymentMethod(cards);
+          PaymentMethodHelpers()
+              .setSelectedPaymentToValidPaymentMethod(ref, user, cards);
           ModalBottomSheet().partScreen(
             isDismissible: true,
             isScrollControlled: true,
@@ -242,23 +255,17 @@ class TransferGiftCardToWalletSheet extends ConsumerWidget {
     UserModel user,
     List<PaymentsModel> wallets,
   ) async {
-    final selectedWallet = ref.watch(currentlySelectedWalletProvider);
+    final selectedWallet = ref.watch(selectedWalletProvider);
     final giftCard = ref.watch(physicalGiftCardBalanceProvider);
 
     if (giftCard.isEmpty) {
-      return ModalBottomSheet().partScreen(
-        context: context,
-        builder: (context) =>
-            const InvalidSheetSinglePop(error: 'Please upload your gift card.'),
-      );
+      return ErrorHelpers.showSinglePopError(context,
+          error: 'Please upload your gift card.');
     }
 
     if (giftCard.isNotEmpty && giftCard['amount'] < 0.01) {
-      return ModalBottomSheet().partScreen(
-        context: context,
-        builder: (context) =>
-            const InvalidSheetSinglePop(error: 'This gift card is empty.'),
-      );
+      return ErrorHelpers.showSinglePopError(context,
+          error: 'This gift card is empty.');
     }
 
     ref.read(loadingProvider.notifier).state = true;
@@ -267,25 +274,29 @@ class TransferGiftCardToWalletSheet extends ConsumerWidget {
       ref: ref,
       email: user.email!,
       firstName: user.firstName!,
-      walletGan:
-          selectedWallet.isEmpty ? wallets.first.gan : selectedWallet['gan'],
-      walletUID:
-          selectedWallet.isEmpty ? wallets.first.uid : selectedWallet['uid'],
+      walletGan: selectedWallet.userId.isEmpty
+          ? wallets.first.gan!
+          : selectedWallet.gan!,
+      walletUID: selectedWallet.userId.isEmpty
+          ? wallets.first.uid ?? ''
+          : selectedWallet.uid!,
       physicalCardGan: giftCard['gan'],
       physicalCardAmount: giftCard['amount'],
     );
 
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (response.data == 200) {
-        Navigator.pop(context);
-      } else {
-        ModalBottomSheet().partScreen(
-            context: context,
-            builder: (context) => const InvalidSheetSinglePop(
-                error:
-                    'There was an unexpected error processing this request. Please try again later.'));
-      }
-    });
+    WidgetsBinding.instance.addPostFrameCallback(
+      (_) {
+        if (response.data == 200) {
+          Navigator.pop(context);
+        } else {
+          ErrorHelpers.showSinglePopError(
+            context,
+            error:
+                'There was an unexpected error processing this request. Please try again later.',
+          );
+        }
+      },
+    );
 
     ref.read(loadingProvider.notifier).state = false;
   }

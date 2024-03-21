@@ -21,7 +21,7 @@ class UserPointsStatusWidget extends StatelessWidget {
           Text(
             'Points: ${NumberFormat('#,###').format(user.points)}',
             style: const TextStyle(
-                letterSpacing: 1, fontSize: 15, fontWeight: FontWeight.bold),
+                letterSpacing: 1, fontSize: 20, fontWeight: FontWeight.bold),
           ),
           Container(
             padding: const EdgeInsets.all(4.0),
