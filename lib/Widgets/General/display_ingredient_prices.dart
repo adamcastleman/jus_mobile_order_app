@@ -13,8 +13,7 @@ class DisplayPremiumIngredientPrices extends ConsumerWidget {
     final user = ref.watch(currentUserProvider).value!;
     final selectedIngredients = ref.watch(selectedIngredientsProvider);
 
-    if ((user.uid == null ||
-            user.subscriptionStatus != SubscriptionStatus.active) &&
+    if ((user.uid == null || user.subscriptionStatus!.isNotActive) &&
         selectedIngredients[index]['price'] != 0.toStringAsFixed(2)) {
       return Text(
         '\$${(double.parse(selectedIngredients[index]['price']) / 100).toStringAsFixed(2)}',

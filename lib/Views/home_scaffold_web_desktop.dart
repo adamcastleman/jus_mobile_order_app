@@ -55,14 +55,14 @@ class HomeScaffoldWeb extends ConsumerWidget {
             onPageChanged: (value) {
               ref.read(webNavigationProvider.notifier).state = value;
             },
-            children: const [
-              HomePageWeb(),
-              MenuPage(),
-              CleansePageWeb(),
-              MembershipInformationPage(),
-              LocationPageWeb(),
-              ScanPage(),
-              PointsInformationPage(showCloseButton: false),
+            children:  [
+             const HomePageWeb(),
+             const MenuPage(),
+             const CleansePageWeb(),
+             const MembershipInformationPage(),
+             const LocationPageWeb(),
+              ScanPage(ref: ref),
+             const PointsInformationPage(showCloseButton: false),
             ],
           ),
           user.subscriptionStatus == SubscriptionStatus.paused

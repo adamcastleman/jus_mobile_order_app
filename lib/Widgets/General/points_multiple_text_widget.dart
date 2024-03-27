@@ -15,8 +15,8 @@ class PointsMultipleText extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final user = ref.watch(currentUserProvider).value!;
     final selectedCard = ref.watch(selectedPaymentMethodProvider);
-    final isActiveMember = user.uid != null &&
-        user.subscriptionStatus == SubscriptionStatus.active;
+    final isActiveMember =
+        user.uid != null && user.subscriptionStatus!.isActive;
     num pointValue;
 
     if (!isActiveMember && selectedCard.brand != 'wallet') {

@@ -160,7 +160,7 @@ class CheckoutPage extends HookConsumerWidget {
     } else {
       return Column(
         children: [
-          const PaymentMethodSelector(),
+           const PaymentMethodSelector(),
           JusDivider.thin(),
           PlatformUtils.isIOS()
               ? Column(

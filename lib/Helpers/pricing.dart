@@ -266,8 +266,7 @@ class PricingHelpers {
   }
 
   double orderTotalFromUserType(WidgetRef ref, UserModel user) {
-    if (user.uid == null ||
-        user.subscriptionStatus != SubscriptionStatus.active) {
+    if (user.uid == null || user.subscriptionStatus!.isNotActive) {
       return orderTotalForNonMembers(ref) * 100;
     } else {
       return PricingHelpers().orderTotalForMembers(ref) * 100;

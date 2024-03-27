@@ -21,8 +21,8 @@ import 'package:jus_mobile_order_app/Sheets/create_wallet_sheet.dart';
 import 'package:jus_mobile_order_app/Sheets/transfer_gift_card_to_wallet_sheet.dart';
 import 'package:jus_mobile_order_app/Widgets/General/category_display_widget.dart';
 import 'package:jus_mobile_order_app/Widgets/Headers/sheet_header.dart';
-import 'package:jus_mobile_order_app/Widgets/Lists/saved_payments_list_view.dart';
 import 'package:jus_mobile_order_app/Widgets/Tiles/add_payment_method_tile.dart';
+import 'package:jus_mobile_order_app/Widgets/Tiles/saved_payment_tile.dart';
 import 'package:jus_mobile_order_app/constants.dart';
 
 class PaymentSettingsSheet extends ConsumerWidget {
@@ -80,9 +80,13 @@ class PaymentSettingsSheet extends ConsumerWidget {
               CategoryWidget(
                   text:
                       'Wallets - Earn ${PointsHelper().pointsDisplayText(ref: ref, isWallet: true)}/\$1'),
-              SavedPaymentsListView(
-                cards: wallets,
-              ),
+            ListView.separated(
+              shrinkWrap: true,
+              primary: false,
+              itemCount: wallets.isEmpty ? 0 : wallets.length,
+              separatorBuilder: (context, index) => JusDivider.thin(),
+              itemBuilder: (context, index) => SavedPaymentTile(card: wallets[index]),
+            ),
               wallets.isEmpty ? const SizedBox() : JusDivider.thin(),
               AddPaymentMethodTile(
                 tileKey: walletTileKey,
@@ -98,8 +102,12 @@ class PaymentSettingsSheet extends ConsumerWidget {
               CategoryWidget(
                   text:
                       'Payment method - Earn ${PointsHelper().pointsDisplayText(ref: ref, isWallet: false)}/\$1'),
-              SavedPaymentsListView(
-                cards: creditCards,
+              ListView.separated(
+                shrinkWrap: true,
+                primary: false,
+                itemCount: creditCards.isEmpty ? 0 : creditCards.length,
+                separatorBuilder: (context, index) => JusDivider.thin(),
+                itemBuilder: (context, index) => SavedPaymentTile(card: creditCards[index]),
               ),
               creditCards.isEmpty ? const SizedBox() : JusDivider.thin(),
               AddPaymentMethodTile(

@@ -1,8 +1,6 @@
 import 'dart:async';
 
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:jus_mobile_order_app/Helpers/scan.dart';
-import 'package:jus_mobile_order_app/Helpers/time.dart';
 import 'package:screenshot_callback/screenshot_callback.dart';
 
 // Provider for managing the lifecycle of ScreenshotCallback
@@ -33,29 +31,43 @@ final screenshotDetectedProvider = StateProvider<bool>((ref) => false);
 
 final scanCategoryProvider = StateProvider<int>((ref) => 0);
 
-final qrTimestampProvider = StateProvider<DateTime>((ref) => DateTime.now());
+final qrTimestampProvider = StateProvider<int>((ref) => 0);
 
-final encryptedQrProvider = StateProvider<String>((ref) => '');
+final encryptedScanAndPayProvider = StateProvider<String>((ref) => '');
+
+final encryptedScanOnlyProvider = StateProvider<String>((ref) => '');
 
 final qrTimerProvider =
     StateNotifierProvider<TimerController, bool>((ref) => TimerController());
 
 class TimerController extends StateNotifier<bool> {
-  late Timer _timer;
+  Timer? _timer;
 
-  TimerController() : super(false) {
-    _timer = Timer.periodic(const Duration(minutes: 5), (_) {});
-  }
+  TimerController() : super(false);
 
-  void startTimer(WidgetRef ref) {
+  void returnEpochTimeEveryTenSeconds({required Function(int) onTimerUpdate}) {
+    _timer?.cancel(); // Cancel existing timer if any
     _timer = Timer.periodic(const Duration(seconds: 10), (_) {
-      ref.watch(qrTimestampProvider.notifier).state = Time().now(ref);
-      ScanHelpers.scanAndPayMap(ref);
-      ScanHelpers.scanOnlyMap(ref);
+      int timestamp = DateTime.now().millisecondsSinceEpoch;
+
+      onTimerUpdate(timestamp);
     });
   }
 
   void cancelTimer() {
-    _timer.cancel();
+    _timer?.cancel();
+    _timer = null;
+  }
+
+  void pauseTimer() {
+    if (_timer?.isActive ?? false) {
+      _timer!.cancel();
+    }
+  }
+
+  void resumeTimer({required Function(int) onTimerUpdate}) {
+    if (_timer == null || !_timer!.isActive) {
+      returnEpochTimeEveryTenSeconds(onTimerUpdate: onTimerUpdate);
+    }
   }
 }

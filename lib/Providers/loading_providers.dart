@@ -12,6 +12,8 @@ final tileKeyProvider = StateProvider.autoDispose<UniqueKey?>((ref) => null);
 final squarePaymentSkdLoadingProvider =
     StateProvider.autoDispose<bool>((ref) => false);
 
+final qrLoadingProvider = StateProvider.autoDispose<bool>((ref) => false);
+
 final locationLoadingProvider = StateProvider.autoDispose<bool>((ref) => false);
 
 final applePayLoadingProvider = StateProvider.autoDispose<bool>((ref) => false);

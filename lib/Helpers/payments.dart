@@ -65,8 +65,7 @@ class PaymentsHelpers {
   static Map<String, int> generateOrderPricingDetails(
       WidgetRef ref, UserModel user) {
     final pricing = PricingHelpers();
-    final isMember = user.uid != null &&
-        user.subscriptionStatus == SubscriptionStatus.active;
+    final isMember = user.uid != null && user.subscriptionStatus!.isActive;
     final originalSubtotal = isMember
         ? pricing.originalSubtotalForMembers(ref)
         : pricing.originalSubtotalForNonMembers(ref);
@@ -231,8 +230,7 @@ class PaymentsHelpers {
       'pointsDetails': {
         'pointsEarned': points,
         'pointsRedeemed': pointsInUse,
-        'bonusPoints': user.uid == null ||
-                user.subscriptionStatus != SubscriptionStatus.active
+        'bonusPoints': user.uid == null || user.subscriptionStatus!.isNotActive
             ? 0
             : (points / pointsMultiple).floor(),
       }
@@ -326,8 +324,7 @@ class PaymentsHelpers {
         .firstWhere((element) => element['itemKey'] == itemKey,
             orElse: () => <String, dynamic>{})['itemPriceMember']
         .toInt();
-    if (user.uid == null ||
-        user.subscriptionStatus != SubscriptionStatus.active) {
+    if (user.uid == null || user.subscriptionStatus!.isNotActive) {
       return itemPriceNonMember;
     } else {
       return itemPriceMember;
@@ -344,8 +341,7 @@ class PaymentsHelpers {
         .firstWhere((element) => element['itemKey'] == itemKey,
             orElse: () => <String, dynamic>{})['modifierPriceMember']
         .toInt();
-    if (user.uid == null ||
-        user.subscriptionStatus != SubscriptionStatus.active) {
+    if (user.uid == null || user.subscriptionStatus!.isNotActive) {
       return modifierPriceNonMember;
     } else {
       return modifierPriceMember;
@@ -370,8 +366,7 @@ class PaymentsHelpers {
       }
     }
 
-    itemDiscount = (user.uid == null ||
-            user.subscriptionStatus != SubscriptionStatus.active)
+    itemDiscount = (user.uid == null || user.subscriptionStatus!.isNotActive)
         ? itemDiscountNonMember.toInt()
         : itemDiscountMember.toInt();
 
@@ -448,10 +443,10 @@ class PaymentsHelpers {
       final selectedIngredient = order['selectedIngredients']
           .firstWhere((element) => element['id'] == ingredient.id);
 
-      int premiumIngredientPrice = double.parse(user.uid == null ||
-                  user.subscriptionStatus != SubscriptionStatus.active
-              ? (selectedIngredient['price'])
-              : (selectedIngredient['memberPrice']))
+      int premiumIngredientPrice = double.parse(
+              user.uid == null || user.subscriptionStatus!.isNotActive
+                  ? (selectedIngredient['price'])
+                  : (selectedIngredient['memberPrice']))
           .toInt();
       String blendedOrTopping = productHelpers.blendedOrToppingDescription(
           ref, added, ingredient, index, added.indexOf(addedIngredient));

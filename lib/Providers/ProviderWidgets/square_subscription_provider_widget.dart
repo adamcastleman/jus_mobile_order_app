@@ -4,6 +4,7 @@ import 'package:jus_mobile_order_app/Helpers/error.dart';
 import 'package:jus_mobile_order_app/Helpers/loading.dart';
 import 'package:jus_mobile_order_app/Models/square_subscription_model.dart';
 import 'package:jus_mobile_order_app/Providers/future_providers.dart';
+import 'package:jus_mobile_order_app/Widgets/Buttons/close_button.dart';
 
 class SquareSubscriptionProviderWidget extends ConsumerWidget {
   final String subscriptionId;
@@ -26,9 +27,23 @@ class SquareSubscriptionProviderWidget extends ConsumerWidget {
           error ??
           const Padding(
             padding: EdgeInsets.symmetric(vertical: 40.0),
-            child: ShowError(
-              error:
-                  'We are unable to show your subscription data at the moment. Please try again later',
+            child: SizedBox(
+              height: double.infinity,
+              child: Stack(
+                children: [
+                  Center(
+                    child: ShowError(
+                      error:
+                          'We are unable to show your subscription data at the moment. Please try again later',
+                    ),
+                  ),
+                  Positioned(
+                    top: 0,
+                    right: 0,
+                    child: JusCloseButton(),
+                  )
+                ],
+              ),
             ),
           ),
       loading: () => loading ?? const Loading(),

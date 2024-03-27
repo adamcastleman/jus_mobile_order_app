@@ -10,14 +10,13 @@ const createSquareSubscription = async ({
   sourceId,
 }) => {
   const client = await createSquareClient();
-
   try {
-    const subscription =
+    const subscriptionResponse =
       await client.subscriptionsApi.createSubscription({
         idempotencyKey: uuidv4(),
         //TODO update location Id to new subscription location
         locationId: "LPRZ3G3PWZBKF",
-        planId:
+        planVariationId:
           billingPeriod === "month"
             ? "6EBSHQ6KWAKHYRRLKVT6OEXX"
             : "TEQZXLQPYGVZLYAHPD6NNDBY",
@@ -27,6 +26,9 @@ const createSquareSubscription = async ({
         sourceId: sourceId,
         timezone: "UTC",
       });
+
+     const subscription = JSON.parse(subscriptionResponse.body);
+
 
     return subscription;
   } catch (error) {

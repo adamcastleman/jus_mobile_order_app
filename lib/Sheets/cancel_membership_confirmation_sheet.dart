@@ -1,23 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:jus_mobile_order_app/Helpers/divider.dart';
-import 'package:jus_mobile_order_app/Helpers/enums.dart';
 import 'package:jus_mobile_order_app/Helpers/loading.dart';
 import 'package:jus_mobile_order_app/Helpers/spacing_widgets.dart';
 import 'package:jus_mobile_order_app/Helpers/utilities.dart';
-import 'package:jus_mobile_order_app/Models/user_model.dart';
 import 'package:jus_mobile_order_app/Providers/ProviderWidgets/subscription_data_provider_widget.dart';
 import 'package:jus_mobile_order_app/Providers/membership_providers.dart';
-import 'package:jus_mobile_order_app/Providers/stream_providers.dart';
-import 'package:jus_mobile_order_app/Services/user_services.dart';
+import 'package:jus_mobile_order_app/Services/subscription_services.dart';
 import 'package:jus_mobile_order_app/Widgets/General/sheet_notch.dart';
 
-class CancelMembershipConfirmationSheet extends ConsumerWidget {
-  const CancelMembershipConfirmationSheet({super.key});
+class CancelMembershipConfirmationSheet extends StatelessWidget {
+  final WidgetRef ref;
+  const CancelMembershipConfirmationSheet({required this.ref, super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final user = ref.watch(currentUserProvider).value!;
+  Widget build(BuildContext context) {
     return SubscriptionDataProviderWidget(
       builder: (subscription) => Padding(
         padding: EdgeInsets.only(
@@ -56,7 +53,7 @@ class CancelMembershipConfirmationSheet extends ConsumerWidget {
                         ? TextAlign.center
                         : TextAlign.left,
                   ),
-                  trailing: ref.watch(cancelMembershipLoadingProvider) == true
+                  trailing: ref.watch(updateMembershipLoadingProvider) == true
                       ? const SizedBox(
                           height: 50,
                           width: 50,
@@ -76,12 +73,12 @@ class CancelMembershipConfirmationSheet extends ConsumerWidget {
                         ? TextAlign.center
                         : TextAlign.left,
                   ),
-                  onTap: () {
-                    ref.read(cancelMembershipLoadingProvider.notifier).state =
+                  onTap: () async {
+                    ref.read(updateMembershipLoadingProvider.notifier).state =
                         true;
-                    updateMembershipStatus(user);
                     Navigator.pop(context);
-                    ref.invalidate(cancelMembershipLoadingProvider);
+                    await SubscriptionServices().cancelSquareSubscription();
+                    ref.invalidate(updateMembershipLoadingProvider);
                   },
                 ),
               ],
@@ -92,12 +89,6 @@ class CancelMembershipConfirmationSheet extends ConsumerWidget {
           ],
         ),
       ),
-    );
-  }
-
-  updateMembershipStatus(UserModel user) async {
-    await UserServices(uid: user.uid).updateUserSubscriptionStatus(
-      SubscriptionStatus.canceled.name,
     );
   }
 }

@@ -15,8 +15,7 @@ class PriceDisplay extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final isMember = user.uid != null &&
-        user.subscriptionStatus == SubscriptionStatus.active;
+    final isMember = user.uid != null && user.subscriptionStatus!.isActive;
     final quantity = ref.watch(itemQuantityProvider);
     final PricingHelpers pricingHelpers = PricingHelpers();
     final nonMemberPrice =

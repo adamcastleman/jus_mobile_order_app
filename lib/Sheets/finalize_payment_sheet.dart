@@ -181,8 +181,7 @@ class FinalizePaymentSheet extends ConsumerWidget {
   }
 
   double _getTotalPrice(WidgetRef ref, UserModel user) {
-    return user.uid == null ||
-            user.subscriptionStatus != SubscriptionStatus.active
+    return user.uid == null || user.subscriptionStatus!.isNotActive
         ? PricingHelpers().orderTotalForNonMembers(ref) * 100
         : PricingHelpers().orderTotalForMembers(ref) * 100;
   }

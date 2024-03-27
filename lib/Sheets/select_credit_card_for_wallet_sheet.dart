@@ -11,60 +11,59 @@ import 'package:jus_mobile_order_app/Models/user_model.dart';
 import 'package:jus_mobile_order_app/Providers/loading_providers.dart';
 import 'package:jus_mobile_order_app/Providers/payments_providers.dart';
 import 'package:jus_mobile_order_app/Providers/stream_providers.dart';
-import 'package:jus_mobile_order_app/Widgets/General/sheet_notch.dart';
+import 'package:jus_mobile_order_app/Providers/theme_providers.dart';
+import 'package:jus_mobile_order_app/Widgets/Headers/sheet_header.dart';
 import 'package:jus_mobile_order_app/Widgets/Tiles/add_payment_method_tile.dart';
 import 'package:jus_mobile_order_app/Widgets/Tiles/payment_option_tile.dart';
 
 class SelectCreditCardOnlySheet extends ConsumerWidget {
   final List<PaymentsModel> creditCards;
+  final bool showApplePay;
   final VoidCallback? onCreditCardSelected;
+
   const SelectCreditCardOnlySheet(
-      {required this.creditCards, this.onCreditCardSelected, super.key});
+      {required this.creditCards, required this.showApplePay, this.onCreditCardSelected,super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final user = ref.watch(currentUserProvider).value!;
     final tileKey = UniqueKey();
     final paymentHelpers = PaymentMethodHelpers();
+    final backgroundColor = ref.watch(backgroundColorProvider);
 
     // Pre-calculate non-wallet credit cards and the offset for indices
     final nonWalletCards =
         creditCards.where((element) => !element.isWallet).toList();
-    final int applePayOffset = PlatformUtils.isIOS() ? 2 : 1;
 
-    return SizedBox(
-      height: 600,
+    return Container(
+      color: backgroundColor,
+      height: PlatformUtils.isWeb() ? 600 : double.infinity,
       child: Column(
         children: [
-          PlatformUtils.isWeb() ? const SizedBox() : const SheetNotch(),
-          const Padding(
-            padding: EdgeInsets.only(top: 22.0, bottom: 12.0),
-            child: Text(
-              'Choose card',
-              style: TextStyle(fontSize: 18),
-            ),
+           Padding(
+            padding:  EdgeInsets.only(top: PlatformUtils.isWeb() ? 22.0 : 50.0, bottom: 12.0, left: 12.0),
+            child: SheetHeader(title: 'Choose Card', showCloseButton: PlatformUtils.isWeb() ? false : true, onClose: () {
+              ref.read(squarePaymentSkdLoadingProvider.notifier).state = false;
+              Navigator.pop(context);
+            },),
           ),
           JusDivider.thick(),
           Expanded(
             child: ListView.separated(
-              padding:
-                  const EdgeInsets.symmetric(vertical: 22.0, horizontal: 12.0),
+              padding: const EdgeInsets.symmetric(vertical: 22.0, horizontal: 12.0),
               shrinkWrap: true,
-              itemCount: nonWalletCards.length + applePayOffset,
+              itemCount: nonWalletCards.length + 1 + (showApplePay && PlatformUtils.isIOS() ? 1 : 0), // Adjust itemCount based on conditions
               separatorBuilder: (context, index) => JusDivider.thin(),
               itemBuilder: (context, index) {
-                if (index == nonWalletCards.length) {
-                  // Add Payment Method option
-                  return _buildAddPaymentMethodTile(
-                      tileKey, context, ref, user);
-                } else if (PlatformUtils.isIOS() &&
-                    index == nonWalletCards.length + 1) {
-                  // Pay with Apple Pay option
-                  return _buildApplePayTile(context, ref);
-                } else if (index < nonWalletCards.length) {
+                if (index < nonWalletCards.length) {
                   // Credit card options
-                  return _buildPaymentOptionTile(nonWalletCards[index], context,
-                      ref, user, paymentHelpers);
+                  return _buildPaymentOptionTile(nonWalletCards[index], context, ref, user, paymentHelpers);
+                } else if (index == nonWalletCards.length) {
+                  // Add Payment Method option
+                  return _buildAddPaymentMethodTile(tileKey, context, ref, user);
+                } else if (showApplePay && PlatformUtils.isIOS() && index == nonWalletCards.length + 1) {
+                  // Pay with Apple Pay option, shown only if showApplePay is true and on an iOS device
+                  return _buildApplePayTile(context, ref);
                 } else {
                   // This should never be reached if itemCount is correct
                   assert(false, 'Unhandled index: $index');
@@ -72,6 +71,7 @@ class SelectCreditCardOnlySheet extends ConsumerWidget {
                 }
               },
             ),
+
           ),
         ],
       ),

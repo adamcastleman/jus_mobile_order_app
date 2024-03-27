@@ -20,8 +20,7 @@ class MemberSavingsWidget extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final isMember = user.uid != null &&
-        user.subscriptionStatus == SubscriptionStatus.active;
+    final isMember = user.uid != null && user.subscriptionStatus!.isActive;
     return Row(
       children: [
         determineSavedAmount(ref, isMember),

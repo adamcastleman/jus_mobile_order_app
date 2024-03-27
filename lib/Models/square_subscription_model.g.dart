@@ -11,6 +11,8 @@ _$SquareSubscriptionModelImpl _$$SquareSubscriptionModelImplFromJson(
     _$SquareSubscriptionModelImpl(
       subscriptionId: json['subscriptionId'] as String,
       startDate: json['startDate'] as String,
+      chargeThruDate: json['chargeThruDate'] as String,
+      status: json['status'] as String,
       canceledDate: json['canceledDate'] as String?,
       monthlyBillingAnchorDate: json['monthlyBillingAnchorDate'] as int?,
     );
@@ -20,6 +22,8 @@ Map<String, dynamic> _$$SquareSubscriptionModelImplToJson(
     <String, dynamic>{
       'subscriptionId': instance.subscriptionId,
       'startDate': instance.startDate,
+      'chargeThruDate': instance.chargeThruDate,
+      'status': instance.status,
       'canceledDate': instance.canceledDate,
       'monthlyBillingAnchorDate': instance.monthlyBillingAnchorDate,
     };

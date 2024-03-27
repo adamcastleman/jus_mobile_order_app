@@ -11,8 +11,7 @@ class DetermineUserStatus extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final user = ref.watch(currentUserProvider).value!;
     final points = ref.watch(pointsInformationProvider);
-    if (user.uid == null ||
-        user.subscriptionStatus != SubscriptionStatus.active) {
+    if (user.uid == null || user.subscriptionStatus!.isNotActive) {
       return Text(
         points.pointsStatus,
         style: const TextStyle(

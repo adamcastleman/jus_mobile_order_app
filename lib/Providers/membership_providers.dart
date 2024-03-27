@@ -1,7 +1,7 @@
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:jus_mobile_order_app/Helpers/enums.dart';
 
-final cancelMembershipLoadingProvider = StateProvider<bool>((ref) => false);
+final updateMembershipLoadingProvider = StateProvider<bool>((ref) => false);
 
 final selectedMembershipPlanProvider =
     StateProvider<MembershipPlan>((ref) => MembershipPlan.annual);

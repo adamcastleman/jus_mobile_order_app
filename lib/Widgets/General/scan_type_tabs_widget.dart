@@ -1,13 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:jus_mobile_order_app/Helpers/scan.dart';
 import 'package:jus_mobile_order_app/Helpers/spacing_widgets.dart';
 import 'package:jus_mobile_order_app/Providers/scan_providers.dart';
 
-class ScanTypeTabsWidget extends ConsumerWidget {
-  const ScanTypeTabsWidget({super.key});
+class ScanTypeTabsWidget extends StatelessWidget {
+  final WidgetRef ref;
+  const ScanTypeTabsWidget({required this.ref, super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     final categoryIndex = ref.watch(scanCategoryProvider);
 
     return Row(
@@ -23,6 +25,8 @@ class ScanTypeTabsWidget extends ConsumerWidget {
                 ),
                 onPressed: () {
                   ref.read(scanCategoryProvider.notifier).state = 0;
+                  ScanHelpers.cancelQrTimer(ref);
+                 ScanHelpers.handleScanAndPayPageInitializers(ref);
                 },
               ),
               Spacing.vertical(5),
@@ -43,6 +47,7 @@ class ScanTypeTabsWidget extends ConsumerWidget {
                 ),
                 onPressed: () {
                   ref.read(scanCategoryProvider.notifier).state = 1;
+                  ScanHelpers.handleScanOnlyPageInitializers(ref);
                 },
               ),
               Container(

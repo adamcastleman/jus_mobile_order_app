@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:jus_mobile_order_app/Helpers/navigation.dart';
 import 'package:jus_mobile_order_app/Helpers/spacing_widgets.dart';
@@ -186,14 +185,5 @@ class ProductModifierPage extends StatelessWidget {
     );
   }
 
-  void _handleMemberOnTapMobile(BuildContext context, WidgetRef ref) {
-    HapticFeedback.lightImpact();
-    NavigationHelpers.handleMembershipNavigation(
-      context,
-      ref,
-      user,
-      showCloseButton: true,
-    );
-    NavigationHelpers.popEndDrawer(context);
-  }
+
 }

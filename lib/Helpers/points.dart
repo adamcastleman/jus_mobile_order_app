@@ -66,8 +66,7 @@ class PointsHelper {
           var memberPointsValue = isWallet
               ? points.walletPointsPerDollarMember * pointsMultiple
               : points.memberPointsPerDollar * pointsMultiple;
-          if (user.uid == null ||
-              user.subscriptionStatus != SubscriptionStatus.active) {
+          if (user.uid == null || user.subscriptionStatus!.isNotActive) {
             if (pointValue.isWhole()) {
               return '${pointValue.toInt()} point';
             } else {
@@ -98,7 +97,7 @@ class PointsHelper {
 
     bool isWallet = selectedPaymentMethod.userId.isEmpty &&
         selectedPaymentMethod.isWallet == true;
-    bool isActiveMember = user.subscriptionStatus == SubscriptionStatus.active;
+    bool isActiveMember = user.subscriptionStatus!.isActive;
 
     int pointsPerDollar =
         isActiveMember ? points.memberPointsPerDollar : points.pointsPerDollar;
@@ -123,7 +122,7 @@ class PointsHelper {
     final PricingHelpers pricing = PricingHelpers();
     if (user.uid == null) {
       return 0;
-    } else if (user.subscriptionStatus != SubscriptionStatus.active) {
+    } else if (user.subscriptionStatus!.isNotActive) {
       return pricing.discountedSubtotalForNonMembers(ref);
     } else {
       return pricing.discountedSubtotalForMembers(ref);

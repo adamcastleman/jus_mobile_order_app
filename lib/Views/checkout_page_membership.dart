@@ -85,7 +85,7 @@ class MembershipCheckoutPage extends ConsumerWidget {
                       _determinePaymentTile(
                           context, ref, user, creditCards, tileKey),
                       JusDivider.thin(),
-                      _membershipAgreementCheckbox(isDisclaimerChecked),
+                      _membershipAgreementCheckbox(ref, isDisclaimerChecked),
                     ],
                   ),
                   SubscribeToMembershipButton(
@@ -196,7 +196,7 @@ class MembershipCheckoutPage extends ConsumerWidget {
     }
   }
 
-  _membershipAgreementCheckbox(bool isDisclaimerChecked) {
+  _membershipAgreementCheckbox(WidgetRef ref, bool isDisclaimerChecked) {
     return CheckboxListTile(
         contentPadding:
             const EdgeInsets.symmetric(vertical: 12.0, horizontal: 22.0),
@@ -217,7 +217,8 @@ class MembershipCheckoutPage extends ConsumerWidget {
         ),
         value: isDisclaimerChecked,
         onChanged: (value) {
-          // Handle change
+          ref.read(membershipDisclaimerCheckboxValueProvider.notifier).state =
+              value!;
         });
   }
 

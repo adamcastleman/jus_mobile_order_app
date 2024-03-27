@@ -1,5 +1,6 @@
 {
   "dependencies": {
-    "npm-woocommerce-api": "^1.0.7"
+    "@google-cloud/secret-manager": "^5.2.0",
+    "uuid": "^9.0.1"
   }
 }

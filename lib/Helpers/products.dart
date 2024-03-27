@@ -238,8 +238,8 @@ class ProductHelpers {
   determineModifierPriceText(UserModel user, List<dynamic> added, int index) {
     final isExtraCharge = added[index]['isExtraCharge'] == true;
     final price = num.tryParse(added[index]['price'])! / 100;
-    final isActiveMember = user.uid != null &&
-        user.subscriptionStatus == SubscriptionStatus.active;
+    final isActiveMember =
+        user.uid != null && user.subscriptionStatus!.isActive;
     return isExtraCharge
         ? isActiveMember
             ? '-\u00A0Free'

@@ -110,21 +110,4 @@ class PaymentServices {
           'There was an error processing this order. Please try again later.');
     }
   }
-
-  static void createSubscriptionCloudFunction({
-    required Map<String, dynamic> orderDetails,
-    required VoidCallback onPaymentSuccess,
-    required Function(String) onError,
-  }) async {
-    final result = await FirebaseFunctions.instance
-        .httpsCallable('createSubscription')
-        .call(orderDetails);
-
-    if (result.data['status'] == 200) {
-      onPaymentSuccess();
-    } else {
-      onError(result.data['message'] ??
-          'There was an error processing this order. Please try again later.');
-    }
-  }
 }

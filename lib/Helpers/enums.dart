@@ -25,13 +25,27 @@ enum SubscriptionStatus {
   paused,
   canceled,
   failed,
+  pendingCancel,
   none,
+}
+
+extension SubscriptionStatusExtension on SubscriptionStatus {
+  bool get isActive {
+    return this == SubscriptionStatus.active ||
+        this == SubscriptionStatus.pendingCancel;
+  }
+
+  bool get isNotActive {
+    return !isActive;
+  }
 }
 
 SubscriptionStatus fromString(String status) {
   switch (status.toUpperCase()) {
     case 'ACTIVE':
       return SubscriptionStatus.active;
+    case 'PENDING-CANCEL':
+      return SubscriptionStatus.pendingCancel;
     case 'PAUSED':
       return SubscriptionStatus.paused;
     case 'CANCELED':

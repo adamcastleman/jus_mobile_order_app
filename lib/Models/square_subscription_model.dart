@@ -8,6 +8,8 @@ class SquareSubscriptionModel with _$SquareSubscriptionModel {
   const factory SquareSubscriptionModel({
     required String subscriptionId,
     required String startDate,
+    required String chargeThruDate,
+    required String status,
     String? canceledDate,
     int? monthlyBillingAnchorDate,
   }) = _SquareSubscriptionModel;

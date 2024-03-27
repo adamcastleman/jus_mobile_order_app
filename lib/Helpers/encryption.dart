@@ -1,17 +1,27 @@
-import 'package:encrypt/encrypt.dart' as encrypt;
+import 'package:cloud_functions/cloud_functions.dart';
 
-class Encryptor {
-  static final key = encrypt.Key.fromLength(32);
-  static final iv = encrypt.IV.fromLength(16);
-  static final encryptor = encrypt.Encrypter(
-    encrypt.AES(key),
-  );
+class Encryption {
+  Future<String> encryptText(String plaintext) async {
 
-  static encryptText(String text) {
-    return encryptor.encrypt(text, iv: iv);
+    try {
+     var result = await FirebaseFunctions.instance.httpsCallable('encryptText').call({
+        'plaintext': plaintext,
+      });
+     return result.data;
+    } catch (e) {
+       throw e.toString();
+    }
   }
 
-  static decryptText(text) {
-    return encryptor.decrypt64(text, iv: iv);
+  Future<String> decryptText(String encryptedText) async {
+    try {
+      HttpsCallable callable = FirebaseFunctions.instance.httpsCallable('decryptText');
+      final result = await callable.call({'encryptedText': encryptedText});
+      return result.data;
+    } catch(e) {
+      throw e.toString();
+    }
   }
+
+
 }

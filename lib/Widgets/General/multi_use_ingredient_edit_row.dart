@@ -22,8 +22,7 @@ class MultiUseIngredientEditRow extends ConsumerWidget {
       padding:
           const EdgeInsets.only(top: 8.0, right: 8.0, bottom: 8.0, left: 14.0),
       child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-        (user.uid == null ||
-                    user.subscriptionStatus != SubscriptionStatus.active) &&
+        (user.uid == null || user.subscriptionStatus!.isNotActive) &&
                 selectedIngredients[index]['isExtraCharge']
             ? Text(
                 '\$${(double.parse(selectedIngredients[index]['price']) / 100).toStringAsFixed(2)}')

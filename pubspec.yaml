@@ -34,7 +34,6 @@ dependencies:
   intl: ^0.18.1
   tuple: ^2.0.2
   google_fonts: ^4.0.4
-  encrypt: ^5.0.1
   cached_network_image: ^3.2.3
   flutter_emoji: ^2.4.0
   top_modal_sheet: ^2.0.1

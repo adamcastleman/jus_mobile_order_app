@@ -212,7 +212,6 @@ class SquarePaymentServices {
     //payment so it can be used automatically without selection.
     Map card = await PaymentMethodDatabaseServices().getCardIdFromNonce(
         user.squareCustomerId!, cardDetails['cardId'] ?? cardDetails['nonce']);
-    print(card);
     await PaymentMethodDatabaseServices().addPaymentCardToDatabase(
       cardId: card['cardId'],
       brand: card['cardBrand'],

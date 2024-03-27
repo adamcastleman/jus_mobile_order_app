@@ -36,8 +36,13 @@ class NavigationHelpers {
         : null;
   }
 
-  static showDialogWeb(BuildContext context, Widget page,
-      {double? height, double? width}) {
+  static showDialogWeb(
+    BuildContext context,
+    Widget page, {
+    double? height,
+    double? width,
+    VoidCallback? whenComplete,
+  }) {
     return showDialog(
       context: context,
       builder: (context) => Dialog(
@@ -46,23 +51,27 @@ class NavigationHelpers {
             width: width ?? AppConstants.dialogWidth,
             child: page),
       ),
-    );
+    ).whenComplete(whenComplete ?? () {});
   }
 
-  static navigateToFullScreenSheet(BuildContext context, Widget page) {
+  static navigateToFullScreenSheet(BuildContext context, Widget page,
+      {VoidCallback? whenComplete}) {
     return ModalBottomSheet().fullScreen(
       context: context,
       builder: (context) => page,
+      whenComplete: whenComplete,
     );
   }
 
-  static navigateToPartScreenSheet(BuildContext context, Widget page) {
+  static navigateToPartScreenSheet(BuildContext context, Widget page,
+      {VoidCallback? whenComplete}) {
     return ModalBottomSheet().partScreen(
       context: context,
       isScrollControlled: true,
       enableDrag: true,
       isDismissible: true,
       builder: (context) => page,
+      whenComplete: whenComplete,
     );
   }
 
@@ -92,31 +101,29 @@ class NavigationHelpers {
     }
   }
 
-  static navigateToFullScreenSheetOrDialog(BuildContext context, Widget page) {
+  static navigateToFullScreenSheetOrDialog(BuildContext context, Widget page,
+      {VoidCallback? whenComplete}) {
     if (PlatformUtils.isWeb()) {
-      showDialogWeb(
-        context,
-        page,
-      );
+      showDialogWeb(context, page, whenComplete: whenComplete);
     } else {
       navigateToFullScreenSheet(
         context,
         page,
+        whenComplete: whenComplete,
       );
     }
   }
 
-  static navigateToPartScreenSheetOrDialog(BuildContext context, Widget page) {
+  static navigateToPartScreenSheetOrDialog(BuildContext context, Widget page,
+      {VoidCallback? whenComplete}) {
     if (PlatformUtils.isWeb()) {
       showDialogWeb(
         context,
         page,
+        whenComplete: whenComplete,
       );
     } else {
-      navigateToPartScreenSheet(
-        context,
-        page,
-      );
+      navigateToPartScreenSheet(context, page, whenComplete: whenComplete);
     }
   }
 
@@ -201,8 +208,8 @@ class NavigationHelpers {
     scaffoldKey.currentState?.openEndDrawer();
   }
 
-  static navigateToScanPage(BuildContext context, WidgetRef ref) {
-    ScanHelpers.handleScanPageInitializers(ref);
+  static navigateToScanPage(BuildContext context, WidgetRef ref) async {
+    ScanHelpers.handleScanAndPayPageInitializers(ref);
     if (PlatformUtils.isWeb()) {
       ref.read(webNavigationProvider.notifier).state = AppConstants.scanPageWeb;
       ref

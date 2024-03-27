@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:jus_mobile_order_app/Helpers/enums.dart';
+import 'package:jus_mobile_order_app/Helpers/loading.dart';
 import 'package:jus_mobile_order_app/Helpers/navigation.dart';
+import 'package:jus_mobile_order_app/Helpers/scan.dart';
 import 'package:jus_mobile_order_app/Helpers/spacing_widgets.dart';
 import 'package:jus_mobile_order_app/Helpers/utilities.dart';
 import 'package:jus_mobile_order_app/Models/points_details_model.dart';
 import 'package:jus_mobile_order_app/Models/user_model.dart';
 import 'package:jus_mobile_order_app/Providers/ProviderWidgets/offers_provider_widget.dart';
+import 'package:jus_mobile_order_app/Providers/loading_providers.dart';
 import 'package:jus_mobile_order_app/Providers/points_providers.dart';
 import 'package:jus_mobile_order_app/Providers/stream_providers.dart';
 import 'package:jus_mobile_order_app/Providers/theme_providers.dart';
@@ -24,16 +27,19 @@ import 'package:jus_mobile_order_app/Widgets/Lists/offers_grid_view.dart';
 
 import '../Providers/scan_providers.dart';
 
-class ScanPage extends HookConsumerWidget {
-  const ScanPage({super.key});
+class ScanPage extends StatelessWidget {
+  final WidgetRef ref;
+  const ScanPage({required this.ref, super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     final user = ref.watch(currentUserProvider).value ?? const UserModel();
     final points = ref.watch(pointsInformationProvider);
     final backgroundColor = ref.watch(backgroundColorProvider);
     final categoryIndex = ref.watch(scanCategoryProvider);
     final darkGreen = ref.watch(darkGreenProvider);
+
+    final isLoading = ref.watch(qrLoadingProvider);
 
     ref.read(screenshotCallbackProvider);
     final isScreenshotTaken = ref.watch(screenshotDetectedProvider);
@@ -45,8 +51,7 @@ class ScanPage extends HookConsumerWidget {
     }
 
     if ((PlatformUtils.isIOS() || PlatformUtils.isAndroid()) &&
-        (user.subscriptionStatus == SubscriptionStatus.active &&
-            isScreenshotTaken)) {
+        (user.subscriptionStatus!.isActive && isScreenshotTaken)) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         showDialog(
           barrierDismissible: false,
@@ -64,7 +69,9 @@ class ScanPage extends HookConsumerWidget {
         title: Center(
           child: ConstrainedBox(
             constraints: const BoxConstraints(maxWidth: 500),
-            child: const ScanTypeTabsWidget(),
+            child: ScanTypeTabsWidget(
+              ref: ref,
+            ),
           ),
         ),
       ),
@@ -85,13 +92,13 @@ class ScanPage extends HookConsumerWidget {
                       Spacing.vertical(15),
                       _buildPointsRow(context, ref, user, points),
                       Spacing.vertical(15),
-                      _buildScanCard(
-                          context, ref, darkGreen, categoryIndex, user),
+                      _buildScanCard(context, ref, darkGreen, categoryIndex,
+                          user, isLoading),
                       if (categoryIndex == 0)
                         Column(
                           children: [
                             Spacing.vertical(15),
-                            _buildPaymentSection(ref),
+                            _buildPaymentSection(),
                           ],
                         ),
                       Spacing.vertical(20),
@@ -114,7 +121,7 @@ class ScanPage extends HookConsumerWidget {
   }
 
   Widget _buildScanCard(BuildContext context, WidgetRef ref, Color darkGreen,
-      int categoryIndex, UserModel user) {
+      int categoryIndex, UserModel user, isLoading) {
     return SizedBox(
       height: 380,
       width: double.infinity,
@@ -128,14 +135,13 @@ class ScanPage extends HookConsumerWidget {
             children: [
               ScanDescriptorWidget(
                 isScanAndPay: categoryIndex == 0,
-                isActiveMember:
-                    user.subscriptionStatus == SubscriptionStatus.active,
+                isActiveMember: user.subscriptionStatus!.isActive,
               ),
               Spacing.vertical(15),
-              const CircleAvatar(
+              CircleAvatar(
                 radius: 110,
                 backgroundColor: Colors.white,
-                child: QrCodeDisplay(),
+                child: isLoading ? const Loading() : const QrCodeDisplay(),
               ),
             ],
           ),
@@ -176,7 +182,7 @@ class ScanPage extends HookConsumerWidget {
     );
   }
 
-  Widget _buildPaymentSection(WidgetRef ref) {
+  Widget _buildPaymentSection() {
     final pastelBrown = ref.watch(pastelBrownProvider);
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 4.0),
@@ -184,7 +190,12 @@ class ScanPage extends HookConsumerWidget {
         borderRadius: BorderRadius.circular(25),
         color: pastelBrown,
       ),
-      child: const PaymentMethodSelector(),
+      child: PaymentMethodSelector(
+        whenComplete: () {
+          ScanHelpers.cancelQrTimer(ref);
+          ScanHelpers.handleScanAndPayPageInitializers(ref);
+        },
+      ),
     );
   }
 }

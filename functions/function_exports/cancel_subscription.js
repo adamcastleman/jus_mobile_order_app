@@ -27,13 +27,13 @@ exports.cancelSubscription = functions.https.onCall(async (data, context) => {
     }
 
     const subscriptionDoc = querySnapshot.docs[0];
-    const subscriptionId = subscriptionDoc.data().subscriptionId; // Ensure this is the correct field
+    const subscriptionId = subscriptionDoc.data().subscriptionId;
 
     await client.subscriptionsApi.cancelSubscription(subscriptionId);
 
 
     await db.collection("users").doc(userId).update({
-      subscriptionStatus: 'CANCELED'
+      subscriptionStatus: 'PENDING-CANCEL'
     });
 
     return { status: 200, message: 'Successfully canceled subscription' };

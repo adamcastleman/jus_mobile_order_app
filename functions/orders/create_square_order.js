@@ -65,7 +65,9 @@ const createSquareOrder = async (orderMap) => {
           ? "BCEVYZEZO7UE5YQCOQHVT3S7"
           : item.name === "Pineapple Bowl"
           ? "CWWLFMBOBTWCRRBPDLWCFYAQ"
-          : "INYCAWPKX7HQXQH7RIUQ2X5I",
+          : item.name === "Full-Day Cleanse"
+          ? "INYCAWPKX7HQXQH7RIUQ2X5I"
+          : "CWWLFMBOBTWCRRBPDLWCFYAQ",
       quantity: item.isScheduled
         ? (item.itemQuantity * item.scheduledQuantity).toString()
         : item.itemQuantity.toString(),

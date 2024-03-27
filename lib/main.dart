@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:jus_mobile_order_app/Helpers/scan.dart';
 import 'package:jus_mobile_order_app/Helpers/utilities.dart';
 import 'package:jus_mobile_order_app/Models/user_model.dart';
 import 'package:jus_mobile_order_app/Providers/ProviderWidgets/breaking_version_provider_widget.dart';
@@ -12,8 +13,10 @@ import 'package:jus_mobile_order_app/Providers/ProviderWidgets/ingredients_provi
 import 'package:jus_mobile_order_app/Providers/ProviderWidgets/location_provider_widget.dart';
 import 'package:jus_mobile_order_app/Providers/ProviderWidgets/points_details_provider_widget.dart';
 import 'package:jus_mobile_order_app/Providers/ProviderWidgets/products_provider_widget.dart';
+import 'package:jus_mobile_order_app/Providers/lifecyle_providers.dart';
 import 'package:jus_mobile_order_app/Providers/loading_providers.dart';
 import 'package:jus_mobile_order_app/Providers/location_providers.dart';
+import 'package:jus_mobile_order_app/Providers/payments_providers.dart';
 import 'package:jus_mobile_order_app/Providers/points_providers.dart';
 import 'package:jus_mobile_order_app/Providers/product_providers.dart';
 import 'package:jus_mobile_order_app/Providers/stream_providers.dart';
@@ -68,6 +71,13 @@ class JusMobileOrder extends ConsumerWidget {
     final loading = ref.watch(loadingProvider);
     final user = ref.watch(currentUserProvider).value ?? const UserModel();
     final ThemeData theme = ThemeManager().theme;
+    ref.watch(selectedPaymentMethodProvider);
+    ref.watch(appLifecycleProvider);
+    final notifier = ref.read(appLifecycleProvider.notifier);
+    notifier.setOnAppResumeCallback(() {
+      // Define what should happen when the app resumes and is on the scan page
+      ScanHelpers.handleScanAndPayPageInitializers(ref);
+    });
 
     return AbsorbPointer(
       absorbing: loading,

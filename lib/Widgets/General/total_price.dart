@@ -65,8 +65,7 @@ class TotalPrice extends ConsumerWidget {
     WidgetRef ref,
     UserModel user,
   ) {
-    final isMember = user.uid != null &&
-        user.subscriptionStatus == SubscriptionStatus.active;
+    final isMember = user.uid != null && user.subscriptionStatus!.isActive;
     final pricing = PricingHelpers();
 
     return Row(
@@ -101,8 +100,7 @@ class TotalPrice extends ConsumerWidget {
   }
 
   Widget buildDiscountRow(WidgetRef ref, UserModel user) {
-    final isMember = user.uid != null &&
-        user.subscriptionStatus == SubscriptionStatus.active;
+    final isMember = user.uid != null && user.subscriptionStatus!.isActive;
     final double discountTotal = !isMember
         ? PricingHelpers().discountTotalForNonMembers(ref)
         : PricingHelpers().discountTotalForMembers(ref);
@@ -123,8 +121,7 @@ class TotalPrice extends ConsumerWidget {
   }
 
   Widget buildSubtotalWithDiscountRow(WidgetRef ref, UserModel user) {
-    final isMember = user.uid != null &&
-        user.subscriptionStatus == SubscriptionStatus.active;
+    final isMember = user.uid != null && user.subscriptionStatus!.isActive;
     final subtotal = !isMember
         ? PricingHelpers().discountedSubtotalForNonMembers(ref)
         : PricingHelpers().discountedSubtotalForMembers(ref);
@@ -144,8 +141,7 @@ class TotalPrice extends ConsumerWidget {
   }
 
   Widget buildTipRow(WidgetRef ref, UserModel user) {
-    final isMember = user.uid != null &&
-        user.subscriptionStatus == SubscriptionStatus.active;
+    final isMember = user.uid != null && user.subscriptionStatus!.isActive;
     final tipAmount = !isMember
         ? PricingHelpers().tipAmountForNonMembers(ref)
         : PricingHelpers().tipAmountForMembers(ref);
@@ -169,8 +165,7 @@ class TotalPrice extends ConsumerWidget {
   }
 
   buildTaxesRow(WidgetRef ref, UserModel user) {
-    final isMember = user.uid != null &&
-        user.subscriptionStatus == SubscriptionStatus.active;
+    final isMember = user.uid != null && user.subscriptionStatus!.isActive;
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -197,8 +192,7 @@ class TotalPrice extends ConsumerWidget {
 
   orderTotal(WidgetRef ref) {
     final user = ref.watch(currentUserProvider).value ?? const UserModel();
-    final isMember = user.uid != null &&
-        user.subscriptionStatus == SubscriptionStatus.active;
+    final isMember = user.uid != null && user.subscriptionStatus!.isActive;
     if (!isMember) {
       return NumberFormat('#,##0.00')
           .format(PricingHelpers().orderTotalForNonMembers(ref));
@@ -271,8 +265,7 @@ class TotalPrice extends ConsumerWidget {
     final savedAmount = pricingHelpers.totalOrderSavings(ref);
     const couldHaveSavedText = 'You could have saved \$';
     const savedText = 'You saved \$';
-    final isMember = user.uid != null &&
-        user.subscriptionStatus == SubscriptionStatus.active;
+    final isMember = user.uid != null && user.subscriptionStatus!.isActive;
 
     if (pricingHelpers.originalSubtotalForNonMembers(ref) ==
         pricingHelpers.discountTotalForNonMembers(ref)) {

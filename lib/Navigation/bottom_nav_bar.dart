@@ -54,7 +54,7 @@ class BottomNavBar extends HookConsumerWidget {
   }
 
   void _handleNavigation(BuildContext context, WidgetRef ref, int selected,
-      PageController pageController) {
+      PageController pageController) async {
     HapticFeedback.lightImpact();
     _updateNavigationState(context, ref, selected);
     pageController.jumpToPage(selected);
@@ -71,7 +71,7 @@ class BottomNavBar extends HookConsumerWidget {
       BuildContext context, WidgetRef ref, int selected) {
     switch (selected) {
       case 1:
-        ScanHelpers.handleScanPageInitializers(ref);
+        ScanHelpers.handleScanAndPayPageInitializers(ref);
         break;
       case 2:
         if (ref.read(selectedLocationProvider).uid.isEmpty) {

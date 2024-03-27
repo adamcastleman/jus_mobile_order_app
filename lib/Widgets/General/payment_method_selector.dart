@@ -2,17 +2,20 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:jus_mobile_order_app/Helpers/enums.dart';
-import 'package:jus_mobile_order_app/Helpers/payment_methods.dart';
+import 'package:jus_mobile_order_app/Helpers/navigation.dart';
 import 'package:jus_mobile_order_app/Helpers/utilities.dart';
 import 'package:jus_mobile_order_app/Providers/loading_providers.dart';
 import 'package:jus_mobile_order_app/Providers/payments_providers.dart';
 import 'package:jus_mobile_order_app/Providers/stream_providers.dart';
+import 'package:jus_mobile_order_app/Sheets/choose_payment_type_sheet.dart';
+import 'package:jus_mobile_order_app/Sheets/payments_sheet.dart';
 import 'package:jus_mobile_order_app/Widgets/Tiles/add_payment_method_tile.dart';
 import 'package:jus_mobile_order_app/Widgets/Tiles/apple_pay_selected_tile.dart';
 import 'package:jus_mobile_order_app/Widgets/Tiles/selected_payment_tile.dart';
 
 class PaymentMethodSelector extends ConsumerWidget {
-  const PaymentMethodSelector({super.key});
+ final VoidCallback? whenComplete;
+  const PaymentMethodSelector({this.whenComplete, super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -34,19 +37,19 @@ class PaymentMethodSelector extends ConsumerWidget {
             ref.read(pageTypeProvider.notifier).state =
                 PageType.selectPaymentMethod;
             ref.read(tileKeyProvider.notifier).state = tileKey;
-            PaymentMethodHelpers().showAddCardOrWallet(context);
+            NavigationHelpers.navigateToPartScreenSheetOrDialog(context,  const ChoosePaymentTypeSheet(),);
           });
     } else {
       return SelectedPaymentTile(
         onTap: () {
           HapticFeedback.lightImpact();
           if (user.uid == null || cardId == null) {
-            PaymentMethodHelpers().showAddCardOrWallet(context);
+            NavigationHelpers.navigateToPartScreenSheetOrDialog(context,  const ChoosePaymentTypeSheet(),);
           } else {
             ref.read(pageTypeProvider.notifier).state =
                 PageType.selectPaymentMethod;
 
-            PaymentMethodHelpers().showPaymentMethodSheet(context);
+            NavigationHelpers.navigateToFullScreenSheetOrDialog(context,  const PaymentSettingsSheet(), whenComplete: whenComplete);
           }
         },
       );

@@ -29,8 +29,7 @@ class OrderTile extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final user = ref.watch(currentUserProvider).value ?? const UserModel();
-    final isMember = user.uid != null &&
-        user.subscriptionStatus == SubscriptionStatus.active;
+    final isMember = user.uid != null && user.subscriptionStatus!.isActive;
     final products = ref.watch(allProductsProvider);
     final ingredients = ref.watch(allIngredientsProvider);
     final backgroundColor = ref.watch(backgroundColorProvider);

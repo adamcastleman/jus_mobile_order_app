@@ -36,6 +36,7 @@ class PaymentFormMobile extends PaymentFormManager {
       },
       onCancel: () {
         ref.read(loadingProvider.notifier).state = false;
+        ref.read(squarePaymentSkdLoadingProvider.notifier).state = false;
       },
     );
   }
@@ -58,23 +59,7 @@ class PaymentFormMobile extends PaymentFormManager {
       },
       onCancel: () {
         ref.read(loadingProvider.notifier).state = false;
-      },
-    );
-  }
-
-  @override
-  void generateCreditCardPaymentFormForSubscription(
-      {required BuildContext context,
-      required WidgetRef ref,
-      required UserModel user,
-      required Function(String) onSuccess}) {
-    PaymentServices().generateSecureCardDetailsFromCreditCardInAppPaymentsSdk(
-      ref: ref,
-      onSuccess: (result) {
-        onSuccess(result.nonce);
-      },
-      onCancel: () {
-        ref.read(loadingProvider.notifier).state = false;
+        ref.read(squarePaymentSkdLoadingProvider.notifier).state = false;
       },
     );
   }
@@ -91,6 +76,7 @@ class PaymentFormMobile extends PaymentFormManager {
       },
       onCancel: () {
         ref.read(loadingProvider.notifier).state = false;
+        ref.read(squarePaymentSkdLoadingProvider.notifier).state = false;
       },
     );
   }

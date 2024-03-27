@@ -22,6 +22,7 @@ class DefaultPaymentTile extends ConsumerWidget {
           context,
           SelectCreditCardOnlySheet(
             creditCards: creditCards,
+            showApplePay: true,
           ),
         ),
       );
@@ -40,7 +41,7 @@ class DefaultPaymentTile extends ConsumerWidget {
           trailing: const ChevronRightIcon(),
           onTap: () => NavigationHelpers.navigateToPartScreenSheetOrDialog(
             context,
-            SelectCreditCardOnlySheet(creditCards: creditCards),
+            SelectCreditCardOnlySheet(creditCards: creditCards, showApplePay: true,),
           ),
         ),
       ],

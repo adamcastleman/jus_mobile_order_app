@@ -4,6 +4,7 @@ import 'package:jus_mobile_order_app/Helpers/time.dart';
 import 'package:jus_mobile_order_app/Models/location_model.dart';
 import 'package:jus_mobile_order_app/Models/payments_model.dart';
 import 'package:jus_mobile_order_app/Models/square_subscription_model.dart';
+import 'package:jus_mobile_order_app/Models/subscription_invoice_model.dart';
 import 'package:jus_mobile_order_app/Services/location_services.dart';
 import 'package:jus_mobile_order_app/Services/payment_method_database_services.dart';
 import 'package:jus_mobile_order_app/Services/subscription_services.dart';
@@ -23,9 +24,16 @@ final appVersionProvider = FutureProvider<String>((ref) async {
 });
 
 final getSubscriptionFromApiProvider =
-    FutureProvider.family<SquareSubscriptionModel, String>(
+    FutureProvider.family.autoDispose<SquareSubscriptionModel, String>(
   (ref, subscriptionId) =>
       SubscriptionServices().getSubscriptionFromApi(subscriptionId),
+);
+
+final getSubscriptionInvoiceFromApiProvider =
+    FutureProvider.family.autoDispose<List<SubscriptionInvoiceModel>, String>(
+  (ref, squareCustomerId) => SubscriptionServices().getSubscriptionInvoices(
+    squareCustomerId,
+  ),
 );
 
 final cardDetailsFromSquareCardIdProvider =

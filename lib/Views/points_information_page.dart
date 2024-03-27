@@ -7,6 +7,7 @@ import 'package:jus_mobile_order_app/Helpers/utilities.dart';
 import 'package:jus_mobile_order_app/Models/points_details_model.dart';
 import 'package:jus_mobile_order_app/Models/user_model.dart';
 import 'package:jus_mobile_order_app/Providers/ProviderWidgets/display_images_provider_widget.dart';
+import 'package:jus_mobile_order_app/Providers/order_providers.dart';
 import 'package:jus_mobile_order_app/Providers/points_providers.dart';
 import 'package:jus_mobile_order_app/Providers/stream_providers.dart';
 import 'package:jus_mobile_order_app/Providers/theme_providers.dart';
@@ -201,6 +202,13 @@ class PointsInformationPage extends ConsumerWidget {
           callToActionText:
               user.uid == null || user.uid!.isEmpty ? 'Sign Up' : 'Order Now',
           callToActionOnPressed: () {
+            if (PlatformUtils.isIOS() || PlatformUtils.isAndroid()) {
+              Navigator.pop(context);
+              if (ref.watch(isCheckOutPageProvider) == true) {
+                Navigator.pop(context);
+              }
+            }
+
             user.uid == null || user.uid!.isEmpty
                 ? NavigationHelpers.navigateToRegisterPage(context)
                 : NavigationHelpers().navigateToMenuPage(context, ref);

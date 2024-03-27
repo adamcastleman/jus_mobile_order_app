@@ -86,11 +86,12 @@ class SavedPaymentTile extends ConsumerWidget {
       // Passing the reference ensures proper updates for all payment methods
       // without destabilizing the ref.read() method that occurs when called directly
       // in async functions.
-      SelectedPaymentMethodNotifier reference =
+      SelectedPaymentMethodNotifier selectedPaymentReference =
           ref.read(selectedPaymentMethodProvider.notifier);
       ref.invalidate(applePaySelectedProvider);
+
       PaymentMethodDatabaseServices().updatePaymentMethod(
-        reference: reference,
+        reference: selectedPaymentReference,
         cardNickname: card.cardNickname,
         cardId: card.cardId,
         last4: card.last4,
@@ -99,7 +100,6 @@ class SavedPaymentTile extends ConsumerWidget {
         gan: card.gan,
         balance: card.balance,
       );
-
       Navigator.pop(context);
     } else {
       NavigationHelpers.navigateToPartScreenSheetOrDialog(

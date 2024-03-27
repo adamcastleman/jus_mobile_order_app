@@ -75,11 +75,4 @@ class UserServices {
       'email': email,
     });
   }
-
-  Future updateUserSubscriptionStatus(String subscriptionStatus) async {
-    await FirebaseFirestore.instance
-        .collection('users')
-        .doc(uid)
-        .update({'subscriptionStatus': subscriptionStatus.toUpperCase()});
-  }
 }

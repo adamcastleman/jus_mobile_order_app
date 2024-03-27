@@ -1,69 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:jus_mobile_order_app/Helpers/modal_sheets.dart';
 import 'package:jus_mobile_order_app/Helpers/utilities.dart';
 import 'package:jus_mobile_order_app/Models/AbstractModels/abstract_payment_form.dart';
 import 'package:jus_mobile_order_app/Models/payments_model.dart';
 import 'package:jus_mobile_order_app/Models/user_model.dart';
 import 'package:jus_mobile_order_app/Providers/loading_providers.dart';
 import 'package:jus_mobile_order_app/Providers/payments_providers.dart';
-import 'package:jus_mobile_order_app/Sheets/choose_payment_type_sheet.dart';
-import 'package:jus_mobile_order_app/Sheets/payments_sheet.dart';
-import 'package:jus_mobile_order_app/constants.dart';
 
 class PaymentMethodHelpers {
-  void showAddCardOrWallet(BuildContext context) {
-    PlatformUtils.isIOS() || PlatformUtils.isAndroid()
-        ? _showChoosePaymentTypeSheet(context)
-        : _showChoosePaymentTypeDialog(context);
-  }
-
-  void showPaymentMethodSheet(BuildContext context) {
-    PlatformUtils.isIOS() || PlatformUtils.isAndroid()
-        ? _showPaymentSettingsSheet(context)
-        : _showPaymentSettingsDialog(context);
-  }
-
-  void _showChoosePaymentTypeSheet(BuildContext context) {
-    ModalBottomSheet().partScreen(
-      isDismissible: true,
-      isScrollControlled: true,
-      enableDrag: true,
-      context: context,
-      builder: (context) => const ChoosePaymentTypeSheet(),
-    );
-  }
-
-  void _showChoosePaymentTypeDialog(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (context) => Dialog(
-        child: SizedBox(
-          width: AppConstants.dialogWidth,
-          child: const ChoosePaymentTypeSheet(),
-        ),
-      ),
-    );
-  }
-
-  void _showPaymentSettingsSheet(BuildContext context) {
-    ModalBottomSheet().fullScreen(
-      context: context,
-      builder: (context) => const PaymentSettingsSheet(),
-    );
-  }
-
-  void _showPaymentSettingsDialog(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (context) => Dialog(
-        child: SizedBox(
-          width: AppConstants.dialogWidth,
-          child: const PaymentSettingsSheet(),
-        ),
-      ),
-    );
-  }
 
   void addCreditCardAsSelectedPayment(
       BuildContext context, WidgetRef ref, UserModel user,
@@ -199,7 +143,7 @@ class PaymentMethodHelpers {
       case 'discoverdiners':
         return 'Diners Club';
       default:
-        return 'My Card';
+        return '';
     }
   }
 }

@@ -14,3 +14,30 @@ class PhoneNumberFormatter {
     }
   }
 }
+
+class SubscriptionStatusFormatter {
+  static String format(String subscriptionStatus) {
+    print(subscriptionStatus);
+    String result;
+    switch (subscriptionStatus) {
+      case 'active':
+        result = 'Active';
+        break;
+      case 'pendingCancel':
+        result = 'Pending Cancel';
+        break;
+      case 'paused':
+        result = 'Paused';
+        break;
+      case 'canceled':
+        result = 'Canceled';
+        break;
+      case 'none':
+        result = 'None';
+        break;
+      default:
+        result = 'None';
+    }
+    return result;
+  }
+}

@@ -23,6 +23,8 @@ SquareSubscriptionModel _$SquareSubscriptionModelFromJson(
 mixin _$SquareSubscriptionModel {
   String get subscriptionId => throw _privateConstructorUsedError;
   String get startDate => throw _privateConstructorUsedError;
+  String get chargeThruDate => throw _privateConstructorUsedError;
+  String get status => throw _privateConstructorUsedError;
   String? get canceledDate => throw _privateConstructorUsedError;
   int? get monthlyBillingAnchorDate => throw _privateConstructorUsedError;
 
@@ -41,6 +43,8 @@ abstract class $SquareSubscriptionModelCopyWith<$Res> {
   $Res call(
       {String subscriptionId,
       String startDate,
+      String chargeThruDate,
+      String status,
       String? canceledDate,
       int? monthlyBillingAnchorDate});
 }
@@ -61,6 +65,8 @@ class _$SquareSubscriptionModelCopyWithImpl<$Res,
   $Res call({
     Object? subscriptionId = null,
     Object? startDate = null,
+    Object? chargeThruDate = null,
+    Object? status = null,
     Object? canceledDate = freezed,
     Object? monthlyBillingAnchorDate = freezed,
   }) {
@@ -72,6 +78,14 @@ class _$SquareSubscriptionModelCopyWithImpl<$Res,
       startDate: null == startDate
           ? _value.startDate
           : startDate // ignore: cast_nullable_to_non_nullable
+              as String,
+      chargeThruDate: null == chargeThruDate
+          ? _value.chargeThruDate
+          : chargeThruDate // ignore: cast_nullable_to_non_nullable
+              as String,
+      status: null == status
+          ? _value.status
+          : status // ignore: cast_nullable_to_non_nullable
               as String,
       canceledDate: freezed == canceledDate
           ? _value.canceledDate
@@ -97,6 +111,8 @@ abstract class _$$SquareSubscriptionModelImplCopyWith<$Res>
   $Res call(
       {String subscriptionId,
       String startDate,
+      String chargeThruDate,
+      String status,
       String? canceledDate,
       int? monthlyBillingAnchorDate});
 }
@@ -116,6 +132,8 @@ class __$$SquareSubscriptionModelImplCopyWithImpl<$Res>
   $Res call({
     Object? subscriptionId = null,
     Object? startDate = null,
+    Object? chargeThruDate = null,
+    Object? status = null,
     Object? canceledDate = freezed,
     Object? monthlyBillingAnchorDate = freezed,
   }) {
@@ -127,6 +145,14 @@ class __$$SquareSubscriptionModelImplCopyWithImpl<$Res>
       startDate: null == startDate
           ? _value.startDate
           : startDate // ignore: cast_nullable_to_non_nullable
+              as String,
+      chargeThruDate: null == chargeThruDate
+          ? _value.chargeThruDate
+          : chargeThruDate // ignore: cast_nullable_to_non_nullable
+              as String,
+      status: null == status
+          ? _value.status
+          : status // ignore: cast_nullable_to_non_nullable
               as String,
       canceledDate: freezed == canceledDate
           ? _value.canceledDate
@@ -146,6 +172,8 @@ class _$SquareSubscriptionModelImpl implements _SquareSubscriptionModel {
   const _$SquareSubscriptionModelImpl(
       {required this.subscriptionId,
       required this.startDate,
+      required this.chargeThruDate,
+      required this.status,
       this.canceledDate,
       this.monthlyBillingAnchorDate});
 
@@ -157,13 +185,17 @@ class _$SquareSubscriptionModelImpl implements _SquareSubscriptionModel {
   @override
   final String startDate;
   @override
+  final String chargeThruDate;
+  @override
+  final String status;
+  @override
   final String? canceledDate;
   @override
   final int? monthlyBillingAnchorDate;
 
   @override
   String toString() {
-    return 'SquareSubscriptionModel(subscriptionId: $subscriptionId, startDate: $startDate, canceledDate: $canceledDate, monthlyBillingAnchorDate: $monthlyBillingAnchorDate)';
+    return 'SquareSubscriptionModel(subscriptionId: $subscriptionId, startDate: $startDate, chargeThruDate: $chargeThruDate, status: $status, canceledDate: $canceledDate, monthlyBillingAnchorDate: $monthlyBillingAnchorDate)';
   }
 
   @override
@@ -175,6 +207,9 @@ class _$SquareSubscriptionModelImpl implements _SquareSubscriptionModel {
                 other.subscriptionId == subscriptionId) &&
             (identical(other.startDate, startDate) ||
                 other.startDate == startDate) &&
+            (identical(other.chargeThruDate, chargeThruDate) ||
+                other.chargeThruDate == chargeThruDate) &&
+            (identical(other.status, status) || other.status == status) &&
             (identical(other.canceledDate, canceledDate) ||
                 other.canceledDate == canceledDate) &&
             (identical(
@@ -185,7 +220,7 @@ class _$SquareSubscriptionModelImpl implements _SquareSubscriptionModel {
   @JsonKey(ignore: true)
   @override
   int get hashCode => Object.hash(runtimeType, subscriptionId, startDate,
-      canceledDate, monthlyBillingAnchorDate);
+      chargeThruDate, status, canceledDate, monthlyBillingAnchorDate);
 
   @JsonKey(ignore: true)
   @override
@@ -206,6 +241,8 @@ abstract class _SquareSubscriptionModel implements SquareSubscriptionModel {
   const factory _SquareSubscriptionModel(
       {required final String subscriptionId,
       required final String startDate,
+      required final String chargeThruDate,
+      required final String status,
       final String? canceledDate,
       final int? monthlyBillingAnchorDate}) = _$SquareSubscriptionModelImpl;
 
@@ -216,6 +253,10 @@ abstract class _SquareSubscriptionModel implements SquareSubscriptionModel {
   String get subscriptionId;
   @override
   String get startDate;
+  @override
+  String get chargeThruDate;
+  @override
+  String get status;
   @override
   String? get canceledDate;
   @override

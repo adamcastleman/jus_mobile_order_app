@@ -1,6 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cloud_functions/cloud_functions.dart';
+import 'package:flutter/material.dart';
 import 'package:jus_mobile_order_app/Models/square_subscription_model.dart';
+import 'package:jus_mobile_order_app/Models/subscription_invoice_model.dart';
 import 'package:jus_mobile_order_app/Models/subscription_model.dart';
 
 class SubscriptionServices {
@@ -66,18 +68,21 @@ class SubscriptionServices {
     return result.data as Map;
   }
 
-  Future<HttpsCallableResult<dynamic>> createSquareSubscription({
-    required String nonce,
-    required String email,
-    required String startDate,
+  static void createSubscription({
+    required Map<String, dynamic> orderDetails,
+    required VoidCallback onPaymentSuccess,
+    required Function(String) onError,
   }) async {
-    return await FirebaseFunctions.instance
-        .httpsCallable('createSquareSubscription')
-        .call({
-      'nonce': nonce,
-      'email': email,
-      'startDate': startDate,
-    });
+    final result = await FirebaseFunctions.instance
+        .httpsCallable('createSubscription')
+        .call(orderDetails);
+
+    if (result.data['status'] == 200) {
+      onPaymentSuccess();
+    } else {
+      onError(result.data['message'] ??
+          'There was an error processing this order. Please try again later.');
+    }
   }
 
   Future<SquareSubscriptionModel> getSubscriptionFromApi(
@@ -87,12 +92,13 @@ class SubscriptionServices {
           .httpsCallable('getSubscription')
           .call({'subscriptionId': subscriptionId});
 
-      Map<String, dynamic> subscriptionData =
-          result.data['subscription'] as Map<String, dynamic>;
+      final subscriptionData = result.data['subscription'];
 
       return SquareSubscriptionModel(
         subscriptionId: subscriptionData['id'],
+        status: subscriptionData['status'],
         startDate: subscriptionData['start_date'],
+        chargeThruDate: subscriptionData['charged_through_date'],
         canceledDate: subscriptionData['canceled_date'] ?? '',
         monthlyBillingAnchorDate:
             subscriptionData['monthly_billing_anchor_date'] ?? 0,
@@ -120,30 +126,46 @@ class SubscriptionServices {
     }
   }
 
-  Future cancelSquareSubscription({
-    required firstName,
-    required lastName,
-    required email,
-    required phone,
-    required membershipId,
-    required billingPeriod,
-    required startDate,
-    required nonce,
-  }) async {
+  Future resumeSquareSubscription() async {
     HttpsCallableResult result = await FirebaseFunctions.instance
-        .httpsCallable('migrateToSquareSubscription')
-        .call({
-      'firstName': firstName,
-      'lastName': lastName,
-      'email': email,
-      'phone': phone,
-      'membershipId': membershipId,
-      'billingPeriod': billingPeriod,
-      'startDate': startDate,
-      'nonce': nonce,
-    });
+        .httpsCallable('resumeSubscription')
+        .call();
 
     // Extract the data from the HttpsCallableResult and cast it to a Map
     return result.data as Map;
+  }
+
+  Future cancelSquareSubscription() async {
+    HttpsCallableResult result = await FirebaseFunctions.instance
+        .httpsCallable('cancelSubscription')
+        .call();
+
+    // Extract the data from the HttpsCallableResult and cast it to a Map
+    return result.data as Map;
+  }
+
+  Future<List<SubscriptionInvoiceModel>> getSubscriptionInvoices(
+      String squareCustomerId) async {
+    try {
+      HttpsCallableResult result = await FirebaseFunctions.instance
+          .httpsCallable('getSquareInvoices')
+          .call({
+        'customerId': squareCustomerId,
+      });
+      List invoiceData = result.data as List;
+
+      List<SubscriptionInvoiceModel> invoices = invoiceData
+          .map(
+            (doc) => SubscriptionInvoiceModel(
+              price: doc['priceCharged'],
+              itemName: doc['itemName'],
+              paymentDate: doc['paymentDate'],
+            ),
+          )
+          .toList();
+      return invoices;
+    } catch (e) {
+      throw e.toString();
+    }
   }
 }

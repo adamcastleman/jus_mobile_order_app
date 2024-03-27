@@ -20,8 +20,7 @@ class OffersCard extends ConsumerWidget {
     final backgroundColor = ref.watch(backgroundColorProvider);
 
     if (offer.isMemberOnly &&
-        (user.uid == null ||
-            user.subscriptionStatus != SubscriptionStatus.active)) {
+        (user.uid == null || user.subscriptionStatus!.isNotActive)) {
       return const SizedBox();
     }
     return OpenContainer(

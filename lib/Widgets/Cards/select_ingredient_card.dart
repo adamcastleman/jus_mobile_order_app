@@ -79,7 +79,7 @@ class SelectIngredientCard extends ConsumerWidget {
 
     final price = (ingredient.price / 100).toStringAsFixed(2);
 
-    if (user.subscriptionStatus == SubscriptionStatus.active) {
+    if (user.subscriptionStatus!.isActive) {
       return const Text(
         'Free for members',
         style: TextStyle(

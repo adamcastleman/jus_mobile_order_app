@@ -4,6 +4,7 @@ class ModalBottomSheet {
   fullScreen({
     required BuildContext context,
     required WidgetBuilder builder,
+    VoidCallback? whenComplete,
   }) {
     return showModalBottomSheet(
       shape: const RoundedRectangleBorder(
@@ -16,7 +17,8 @@ class ModalBottomSheet {
       isDismissible: false,
       context: context,
       builder: builder,
-    );
+
+    ).whenComplete(whenComplete ?? () {});
   }
 
   partScreen(
@@ -24,7 +26,9 @@ class ModalBottomSheet {
       required WidgetBuilder builder,
       bool? enableDrag,
       bool? isDismissible,
-      bool? isScrollControlled}) {
+      bool? isScrollControlled,
+        VoidCallback? whenComplete,
+      }) {
     return showModalBottomSheet(
       elevation: 0,
       backgroundColor: Colors.white,
@@ -38,6 +42,6 @@ class ModalBottomSheet {
           top: Radius.circular(12),
         ),
       ),
-    );
+    ).whenComplete(whenComplete ?? () {});
   }
 }

@@ -13,8 +13,7 @@ class OffersGridView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isMember = user.uid != null &&
-        user.subscriptionStatus == SubscriptionStatus.active;
+    final isMember = user.uid != null && user.subscriptionStatus!.isActive;
     if (!_isUserEligibleForAnyOffer(isMember)) {
       return const Center(
         child: AutoSizeText(

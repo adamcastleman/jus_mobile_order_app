@@ -11,7 +11,7 @@ const db = admin.firestore();
 
 exports.createSubscription = functions.https.onCall(async (data, context) => {
   const { squareCustomerId, billingPeriod, startDate, cardId, sourceId } = data;
-  const userId = context.auth.uid; // Make sure `uid` is defined or use `userId` instead
+  const userId = context.auth.uid;
 
   if (!isAuthenticated(context)) {
     return { status: 'error', message: 'Authentication required.' };
@@ -26,26 +26,43 @@ exports.createSubscription = functions.https.onCall(async (data, context) => {
       sourceId
     });
 
+
     if (subscription) {
-      const subscriptionDocRef = db.collection("subscriptions").doc(subscription.id);
-      await subscriptionDocRef.set({
-        userId: userId,
-        totalSaved: 0,
-        bonusPoints: 0,
-        subscriptionId: subscription.id,
-        cardId: cardId
-      });
+      const subscriptionsRef = db.collection("subscriptions");
+      const userSubscriptionSnapshot = await subscriptionsRef.where("userId", "==", userId).limit(1).get();
+
+      if (!userSubscriptionSnapshot.empty) {
+        const userSubscriptionDoc = userSubscriptionSnapshot.docs[0];
+        try {
+          await userSubscriptionDoc.ref.update({
+            cardId: cardId,
+            subscriptionId: subscription.id
+          });
+        } catch (updateError) {
+          console.error(`Error updating subscription for user ${userId}:`, updateError);
+          return { status: 500, message: 'Failed to update subscription.' };
+        }
+      } else {
+        const subscriptionDocRef = subscriptionsRef.doc(subscription.id);
+        await subscriptionDocRef.set({
+          userId: userId,
+          totalSaved: 0,
+          bonusPoints: 0,
+          subscriptionId: subscription.id,
+          cardId: cardId
+        });
+      }
 
       await db.collection("users").doc(userId).update({
         subscriptionStatus: 'ACTIVE'
       });
 
-      return { status: 200, message: 'Successfully created subscription' };
+      return { status: 200, message: 'Successfully created or updated subscription' };
     } else {
       return { status: 400, message: 'Subscription creation failed.' };
     }
   } catch (error) {
     console.error(error);
-    return { status: 400, message: 'Failed to create subscription.' };
+    return { status: 500, message: 'Failed to create subscription.' };
   }
 });

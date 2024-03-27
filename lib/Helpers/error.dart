@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:jus_mobile_order_app/Helpers/modal_sheets.dart';
-import 'package:jus_mobile_order_app/Helpers/utilities.dart';
+import 'package:jus_mobile_order_app/Helpers/navigation.dart';
 import 'package:jus_mobile_order_app/Sheets/invalid_sheet_double_pop.dart';
 import 'package:jus_mobile_order_app/Sheets/invalid_sheet_single_pop.dart';
-import 'package:jus_mobile_order_app/constants.dart';
 
 class ShowError extends StatelessWidget {
   final String? error;
@@ -28,49 +26,21 @@ class ShowError extends StatelessWidget {
 
 class ErrorHelpers {
   static showSinglePopError(BuildContext context, {String? error}) {
-    if (PlatformUtils.isIOS() || PlatformUtils.isAndroid()) {
-      ModalBottomSheet().partScreen(
-        context: context,
-        builder: (context) => InvalidSheetSinglePop(
-          error: error ?? '',
-        ),
-      );
-    } else {
-      showDialog(
-        context: context,
-        builder: (context) => Dialog(
-          child: SizedBox(
-            height: AppConstants.dialogHeight,
-            width: AppConstants.dialogWidth,
-            child: InvalidSheetSinglePop(
-              error: error ?? '',
-            ),
-          ),
-        ),
-      );
-    }
+    return NavigationHelpers.navigateToPartScreenSheetOrDialog(
+      context,
+      InvalidSheetSinglePop(
+        error: error ?? '',
+      ),
+    );
   }
 
   static showDoublePopError(BuildContext context, {String? error}) {
-    if (ResponsiveLayout.isMobileBrowser(context)) {
-      ModalBottomSheet().partScreen(
-        context: context,
-        builder: (context) => InvalidSheetDoublePop(
-          error: error ?? '',
-        ),
-      );
-    } else {
-      showDialog(
-        context: context,
-        builder: (context) => SizedBox(
-          height: AppConstants.dialogHeight,
-          width: AppConstants.dialogWidth,
-          child: InvalidSheetDoublePop(
-            error: error ?? '',
-          ),
-        ),
-      );
-    }
+    return NavigationHelpers.navigateToPartScreenSheetOrDialog(
+      context,
+      InvalidSheetDoublePop(
+        error: error ?? '',
+      ),
+    );
   }
 }
 

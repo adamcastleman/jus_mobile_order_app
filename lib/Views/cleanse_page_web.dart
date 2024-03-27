@@ -20,7 +20,7 @@ class CleansePageWeb extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final currentUser = ref.watch(currentUserProvider).value!;
+    final user = ref.watch(currentUserProvider).value!;
     final pastelRed = ref.watch(pastelRedProvider);
     final pastelBrown = ref.watch(pastelBrownProvider);
     final pastelGreen = ref.watch(pastelGreenProvider);
@@ -115,11 +115,10 @@ class CleansePageWeb extends HookConsumerWidget {
             CallToActionBanner(
               imagePath: images['images'][5]['url'],
               backgroundColor: pastelBrown,
-              callToActionText: currentUser.uid == null ||
-                      currentUser.subscriptionStatus !=
-                          SubscriptionStatus.active
-                  ? 'Sign Up'
-                  : 'Schedule Now',
+              callToActionText:
+                  user.uid == null || user.subscriptionStatus!.isNotActive
+                      ? 'Sign Up'
+                      : 'Schedule Now',
               callToActionOnPressed: () {
                 scrollController.animateTo(0,
                     duration: const Duration(milliseconds: 300),
