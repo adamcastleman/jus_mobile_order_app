@@ -73,7 +73,7 @@ class CreateWalletButton extends ConsumerWidget {
     PaymentServices.createWalletCloudFunction(
       orderDetails,
       onSuccess: () {
-        PaymentsHelpers.onWalletActivitySuccess(context, ref,
+        PaymentsHelpers.onWalletActivitySuccess(context,
             message: 'Created Wallet');
       },
       onError: (error) {
@@ -83,6 +83,6 @@ class CreateWalletButton extends ConsumerWidget {
   }
 
   _formatLoadAmountForSubmit() {
-    return (loadAmount).floor().toString();
+    return (loadAmount * 100).floor().toString();
   }
 }

@@ -86,7 +86,7 @@ class LoadWalletWithFundsButton extends ConsumerWidget {
     PaymentServices.addFundsToWalletCloudFunction(
       orderDetails,
       onSuccess: () {
-        PaymentsHelpers.onWalletActivitySuccess(context, ref,
+        PaymentsHelpers.onWalletActivitySuccess(context,
             message: 'Funds Added to Wallet');
       },
       onError: (error) {

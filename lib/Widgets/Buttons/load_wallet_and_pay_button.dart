@@ -7,6 +7,7 @@ import 'package:jus_mobile_order_app/Helpers/wallet.dart';
 import 'package:jus_mobile_order_app/Models/payments_model.dart';
 import 'package:jus_mobile_order_app/Models/user_model.dart';
 import 'package:jus_mobile_order_app/Providers/loading_providers.dart';
+import 'package:jus_mobile_order_app/Providers/navigation_providers.dart';
 import 'package:jus_mobile_order_app/Providers/payments_providers.dart';
 import 'package:jus_mobile_order_app/Services/payment_services.dart';
 import 'package:jus_mobile_order_app/Widgets/Buttons/elevated_button_large.dart';
@@ -62,7 +63,7 @@ class LoadWalletAndPayButton extends ConsumerWidget {
           error: 'Please choose a payment method.');
       return;
     }
-
+    ref.read(isLoadWalletAndPayProvider.notifier).state = true;
     _handlePayment(context, ref, loadAmount);
   }
 
@@ -73,10 +74,11 @@ class LoadWalletAndPayButton extends ConsumerWidget {
         PaymentsHelpers().generateOrderDetails(ref, user, totals);
 
     if (applePaySelected) {
+      ref.read(isLoadWalletAndPayProvider.notifier).state = true;
       _processApplePay(context, ref, orderDetails, loadAmount);
     } else {
       orderDetails['paymentDetails']['cardId'] = creditCard.cardId;
-      _addFundsToWalletAndPay(context, ref, orderDetails, loadAmount);
+      _addFundsToWalletAndPay(ref, orderDetails, loadAmount);
     }
   }
 
@@ -88,15 +90,17 @@ class LoadWalletAndPayButton extends ConsumerWidget {
       amount: loadAmount.toString(),
       onSuccess: (cardDetails) {
         orderDetails['paymentDetails']['cardId'] = cardDetails.nonce;
-        _addFundsToWalletAndPay(context, ref, orderDetails, loadAmount);
+        _addFundsToWalletAndPay(ref, orderDetails, loadAmount);
       },
       onError: (error) =>
           PaymentsHelpers.showPaymentErrorModal(context, ref, error),
     );
   }
 
-  void _addFundsToWalletAndPay(BuildContext context, WidgetRef ref,
-      Map<String, dynamic> orderDetails, int loadAmount) {
+  void _addFundsToWalletAndPay(
+      WidgetRef ref, Map<String, dynamic> orderDetails, int loadAmount) {
+    BuildContext context = navigatorKey.currentContext!;
+
     ref.read(loadingProvider.notifier).state = true;
     Map<String, dynamic> walletDetails =
         PaymentsHelpers.generateAddFundsToWalletOrderDetails(

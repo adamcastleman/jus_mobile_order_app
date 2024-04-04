@@ -6,6 +6,7 @@ import 'package:jus_mobile_order_app/Helpers/payment_methods.dart';
 import 'package:jus_mobile_order_app/Helpers/payments.dart';
 import 'package:jus_mobile_order_app/Models/user_model.dart';
 import 'package:jus_mobile_order_app/Providers/loading_providers.dart';
+import 'package:jus_mobile_order_app/Providers/navigation_providers.dart';
 import 'package:jus_mobile_order_app/Providers/payments_providers.dart';
 import 'package:jus_mobile_order_app/Services/payment_services.dart';
 import 'package:jus_mobile_order_app/Widgets/Buttons/elevated_button_large.dart';
@@ -17,6 +18,8 @@ class ProcessCreditCardPaymentButton extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    BuildContext context = navigatorKey.currentContext!;
+
     final selectedPayment = ref.watch(selectedPaymentMethodProvider);
     final validationMessage = OrderHelpers.validateOrder(context, ref);
     final selectedPaymentText =
@@ -37,9 +40,9 @@ class ProcessCreditCardPaymentButton extends ConsumerWidget {
         PaymentServices.createOrderCloudFunction(
           orderDetails: orderDetails,
           onPaymentSuccess: () {
+            BuildContext context = navigatorKey.currentContext!;
             PaymentsHelpers.onOrderSuccess(
               context,
-              ref,
             );
           },
           onError: (error) {

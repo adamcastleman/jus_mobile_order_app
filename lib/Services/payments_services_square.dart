@@ -88,12 +88,13 @@ class SquarePaymentServices {
   }) async {
     String squareApplePayMerchantId = await _getSquareApplePayMerchantId();
     bool canUseApplePay = await InAppPayments.canUseApplePay;
+
     if (!canUseApplePay) {
       return;
     }
     await InAppPayments.initializeApplePay(squareApplePayMerchantId);
     return await InAppPayments.requestApplePayNonce(
-      price: price,
+      price: '${int.parse(price) / 100}',
       summaryLabel: 'Jus, Inc.',
       countryCode: 'US',
       currencyCode: 'USD',

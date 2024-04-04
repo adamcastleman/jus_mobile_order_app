@@ -16,6 +16,7 @@ import 'package:jus_mobile_order_app/Providers/ProviderWidgets/products_provider
 import 'package:jus_mobile_order_app/Providers/lifecyle_providers.dart';
 import 'package:jus_mobile_order_app/Providers/loading_providers.dart';
 import 'package:jus_mobile_order_app/Providers/location_providers.dart';
+import 'package:jus_mobile_order_app/Providers/navigation_providers.dart';
 import 'package:jus_mobile_order_app/Providers/payments_providers.dart';
 import 'package:jus_mobile_order_app/Providers/points_providers.dart';
 import 'package:jus_mobile_order_app/Providers/product_providers.dart';
@@ -79,53 +80,58 @@ class JusMobileOrder extends ConsumerWidget {
       ScanHelpers.handleScanAndPayPageInitializers(ref);
     });
 
-    return AbsorbPointer(
-      absorbing: loading,
-      child: MaterialApp(
-        color: Colors.white,
-        debugShowCheckedModeBanner: false,
-        theme: theme,
-        home: BreakingVersionProviderWidget(
-          builder: (isBreakingChange) {
-            if ((PlatformUtils.isIOS() || PlatformUtils.isAndroid()) &&
-                isBreakingChange) {
-              return const ForceAppUpdatePage();
-            }
-            return LocationsProviderWidget(
-              builder: (locations) => IngredientsProviderWidget(
-                builder: (ingredients) => FavoritesProviderWidget(
-                  builder: (favorites) => PointsDetailsProviderWidget(
-                    builder: (points) => ProductsProviderWidget(
-                      builder: (products) {
-                        // Update state with locations, products, and ingredients.
-                        WidgetsBinding.instance.addPostFrameCallback((_) {
-                          ref.read(allLocationsProvider.notifier).state =
-                              locations;
-                          ref.read(allProductsProvider.notifier).state =
-                              products;
-                          ref.read(allIngredientsProvider.notifier).state =
-                              ingredients;
-                          ref.read(pointsInformationProvider.notifier).state =
-                              points;
-                          if (user.uid != null) {
-                            ref.read(allFavoritesProvider.notifier).state =
-                                favorites;
-                          }
-                        });
+    return MediaQuery(
+      data: MediaQuery.of(context)
+          .copyWith(textScaler: const TextScaler.linear(1.0)),
+      child: AbsorbPointer(
+        absorbing: loading,
+        child: MaterialApp(
+          navigatorKey: navigatorKey,
+          color: Colors.white,
+          debugShowCheckedModeBanner: false,
+          theme: theme,
+          home: BreakingVersionProviderWidget(
+            builder: (isBreakingChange) {
+              if ((PlatformUtils.isIOS() || PlatformUtils.isAndroid()) &&
+                  isBreakingChange) {
+                return const ForceAppUpdatePage();
+              }
+              return LocationsProviderWidget(
+                builder: (locations) => IngredientsProviderWidget(
+                  builder: (ingredients) => FavoritesProviderWidget(
+                    builder: (favorites) => PointsDetailsProviderWidget(
+                      builder: (points) => ProductsProviderWidget(
+                        builder: (products) {
+                          // Update state with locations, products, and ingredients.
+                          WidgetsBinding.instance.addPostFrameCallback((_) {
+                            ref.read(allLocationsProvider.notifier).state =
+                                locations;
+                            ref.read(allProductsProvider.notifier).state =
+                                products;
+                            ref.read(allIngredientsProvider.notifier).state =
+                                ingredients;
+                            ref.read(pointsInformationProvider.notifier).state =
+                                points;
+                            if (user.uid != null) {
+                              ref.read(allFavoritesProvider.notifier).state =
+                                  favorites;
+                            }
+                          });
 
-                        if (PlatformUtils.isIOS() ||
-                            PlatformUtils.isAndroid()) {
-                          return const HomeScaffoldMobileApp();
-                        } else {
-                          return const HomeScaffoldWeb();
-                        }
-                      },
+                          if (PlatformUtils.isIOS() ||
+                              PlatformUtils.isAndroid()) {
+                            return const HomeScaffoldMobileApp();
+                          } else {
+                            return const HomeScaffoldWeb();
+                          }
+                        },
+                      ),
                     ),
                   ),
                 ),
-              ),
-            );
-          },
+              );
+            },
+          ),
         ),
       ),
     );

@@ -19,6 +19,8 @@ final applePaySelectedProvider = StateProvider<bool>((ref) => false);
 
 final isApplePayCompletedProvider = StateProvider<bool>((ref) => false);
 
+final isLoadWalletAndPayProvider = StateProvider<bool>((ref) => false);
+
 final physicalGiftCardBalanceProvider =
     StateProvider.autoDispose<Map>((ref) => {});
 
@@ -90,7 +92,6 @@ class SelectedPaymentMethodNotifier extends StateNotifier<PaymentsModel> {
           expirationYear: payment.expirationYear,
         );
       } else {
-
         state = PaymentsModel(
           uid: '',
           userId: user.uid ?? '',
@@ -106,8 +107,6 @@ class SelectedPaymentMethodNotifier extends StateNotifier<PaymentsModel> {
       }
     });
   }
-
-
 
   final StateNotifierProviderRef _ref;
   late AsyncValue<PaymentsModel> _defaultPaymentCardStreamProvider;

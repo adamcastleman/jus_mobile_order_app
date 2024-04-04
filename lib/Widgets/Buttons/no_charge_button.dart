@@ -5,6 +5,7 @@ import 'package:jus_mobile_order_app/Helpers/orders.dart';
 import 'package:jus_mobile_order_app/Helpers/payments.dart';
 import 'package:jus_mobile_order_app/Models/user_model.dart';
 import 'package:jus_mobile_order_app/Providers/loading_providers.dart';
+import 'package:jus_mobile_order_app/Providers/navigation_providers.dart';
 import 'package:jus_mobile_order_app/Services/payment_services.dart';
 import 'package:jus_mobile_order_app/Widgets/Buttons/elevated_button_large.dart';
 
@@ -14,6 +15,8 @@ class NoChargePaymentButton extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    BuildContext context = navigatorKey.currentContext!;
+
     return LargeElevatedButton(
       buttonText: 'No Charge - Finish Checkout',
       onPressed: () {

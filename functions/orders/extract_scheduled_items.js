@@ -5,7 +5,7 @@ const extractScheduledItems = (orderMap) => {
     firstName: orderMap.userDetails.firstName,
     lastName: orderMap.userDetails.lastName,
     phone: orderMap.userDetails.phone,
-    locationID: orderMap.locationDetails.locationID,
+    locationID: parseInt(orderMap.locationDetails.locationId, 10),
     items: orderMap.orderDetails.items,
     orderSource: orderMap.orderDetails.orderSource,
     pickupDate: orderMap.orderDetails.pickupDateMillis,

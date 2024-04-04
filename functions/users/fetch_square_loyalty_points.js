@@ -12,16 +12,20 @@ const fetchSquareLoyaltyPoints = async (squareCustomerId) => {
       },
     });
 
-    if (response.result.loyaltyAccounts.length === 0) {
-      return 0; // No loyalty account exists, so there are no points to transfer
+    console.log(response.result);
+
+    // Check if loyaltyAccounts exists and has elements
+    if (!response.result.loyaltyAccounts || response.result.loyaltyAccounts.length === 0) {
+      return 0; // No loyalty account exists, so there are no points
     } else {
       const balance = response.result.loyaltyAccounts[0].balance;
-      return balance; // Transfer the balance of the user's account
+      return balance; // Return the balance of the user's account
     }
   } catch (error) {
     console.error(error);
     return null; // Return null in case of an error
   }
 };
+
 
 module.exports = { fetchSquareLoyaltyPoints };

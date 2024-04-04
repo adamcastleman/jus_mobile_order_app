@@ -22,6 +22,7 @@ class ScanHelpers {
     int timestamp = DateTime.now().millisecondsSinceEpoch;
     ref.read(encryptedScanAndPayProvider.notifier).state =
         '$encrypted,$timestamp';
+    // ref.watch(qrLoadingProvider.notifier).state = false;
   }
 
   static Future<void> scanOnlyMap(WidgetRef ref, UserModel user) async {
@@ -36,6 +37,9 @@ class ScanHelpers {
   }
 
   static Future<void> handleScanAndPayPageInitializers(WidgetRef ref) async {
+    //Ensures that the first scan page load has a listener to the loading provider
+    //subscribed
+    ref.watch(qrLoadingProvider);
     final user = ref.watch(currentUserProvider).value ?? const UserModel();
     final selectedPayment = ref.watch(selectedPaymentMethodProvider);
     ref.read(qrLoadingProvider.notifier).state = true;
@@ -45,7 +49,7 @@ class ScanHelpers {
 
     // Encrypts static data and stores it
     await scanAndPayMap(ref, user, selectedPayment);
-
+    ref.read(qrLoadingProvider.notifier).state = false;
     ref.read(qrTimerProvider.notifier).returnEpochTimeEveryTenSeconds(
         onTimerUpdate: (time) {
       final encryptedScanAndPay = ref.watch(encryptedScanAndPayProvider);
@@ -54,7 +58,6 @@ class ScanHelpers {
       String newCode = '$encryptedData,$time';
       ref.read(encryptedScanAndPayProvider.notifier).state = newCode;
     }); // Start updating timestamp separately
-    ref.read(qrLoadingProvider.notifier).state = false;
   }
 
   static Future<void> handleScanOnlyPageInitializers(WidgetRef ref) async {

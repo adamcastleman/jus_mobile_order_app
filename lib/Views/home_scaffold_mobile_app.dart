@@ -31,12 +31,12 @@ class HomeScaffoldMobileApp extends ConsumerWidget {
               onPageChanged: (value) {
                 ref.read(bottomNavigationProvider.notifier).state = value;
               },
-              children:  [
+              children: [
                 const MobileHomePage(),
                 ScanPage(ref: ref),
-              const MenuPage(),
-               const ReviewOrderPage(),
-               const  ProfilePage(),
+                const MenuPage(),
+                const ReviewOrderPage(),
+                const ProfilePage(),
               ],
             ),
             user.subscriptionStatus == SubscriptionStatus.paused

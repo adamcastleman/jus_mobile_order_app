@@ -38,10 +38,9 @@ class ScanPage extends StatelessWidget {
     final backgroundColor = ref.watch(backgroundColorProvider);
     final categoryIndex = ref.watch(scanCategoryProvider);
     final darkGreen = ref.watch(darkGreenProvider);
-
     final isLoading = ref.watch(qrLoadingProvider);
 
-    ref.read(screenshotCallbackProvider);
+    ref.watch(screenshotCallbackProvider);
     final isScreenshotTaken = ref.watch(screenshotDetectedProvider);
 
     if (user.uid == null || user.uid!.isEmpty) {
@@ -49,9 +48,8 @@ class ScanPage extends StatelessWidget {
         showCloseButton: false,
       );
     }
-
     if ((PlatformUtils.isIOS() || PlatformUtils.isAndroid()) &&
-        (user.subscriptionStatus!.isActive && isScreenshotTaken)) {
+        (user.subscriptionStatus!.isActive == true && isScreenshotTaken)) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         showDialog(
           barrierDismissible: false,
@@ -90,10 +88,10 @@ class ScanPage extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       Spacing.vertical(15),
-                      _buildPointsRow(context, ref, user, points),
+                      _buildPointsRow(context, user, points),
                       Spacing.vertical(15),
-                      _buildScanCard(context, ref, darkGreen, categoryIndex,
-                          user, isLoading),
+                      _buildScanCard(
+                          context, darkGreen, categoryIndex, user, isLoading),
                       if (categoryIndex == 0)
                         Column(
                           children: [
@@ -120,8 +118,13 @@ class ScanPage extends StatelessWidget {
     );
   }
 
-  Widget _buildScanCard(BuildContext context, WidgetRef ref, Color darkGreen,
-      int categoryIndex, UserModel user, isLoading) {
+  Widget _buildScanCard(
+    BuildContext context,
+    Color darkGreen,
+    int categoryIndex,
+    UserModel user,
+    bool isLoading,
+  ) {
     return SizedBox(
       height: 380,
       width: double.infinity,
@@ -150,8 +153,8 @@ class ScanPage extends StatelessWidget {
     );
   }
 
-  Widget _buildPointsRow(BuildContext context, WidgetRef ref, UserModel user,
-      PointsDetailsModel points) {
+  Widget _buildPointsRow(
+      BuildContext context, UserModel user, PointsDetailsModel points) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 12.0),
       child: Row(

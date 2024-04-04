@@ -5,6 +5,7 @@ import 'package:jus_mobile_order_app/Helpers/orders.dart';
 import 'package:jus_mobile_order_app/Helpers/payments.dart';
 import 'package:jus_mobile_order_app/Models/user_model.dart';
 import 'package:jus_mobile_order_app/Providers/loading_providers.dart';
+import 'package:jus_mobile_order_app/Providers/navigation_providers.dart';
 import 'package:jus_mobile_order_app/Providers/payments_providers.dart';
 import 'package:jus_mobile_order_app/Services/payment_services.dart';
 import 'package:jus_mobile_order_app/Widgets/Buttons/large_apple_pay_button.dart';
@@ -25,6 +26,8 @@ class PayWithApplePayButton extends ConsumerWidget {
     }
     return LargeApplePayButton(
       onPressed: () async {
+        BuildContext context = navigatorKey.currentContext!;
+
         HapticFeedback.lightImpact();
         ref.read(applePaySelectedProvider.notifier).state = true;
         ref.read(applePayLoadingProvider.notifier).state = true;

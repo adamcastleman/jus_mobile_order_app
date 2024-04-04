@@ -97,7 +97,7 @@ class PointsHelper {
 
     bool isWallet = selectedPaymentMethod.userId.isEmpty &&
         selectedPaymentMethod.isWallet == true;
-    bool isActiveMember = user.subscriptionStatus!.isActive;
+    bool isActiveMember = user.uid != null && user.subscriptionStatus!.isActive;
 
     int pointsPerDollar =
         isActiveMember ? points.memberPointsPerDollar : points.pointsPerDollar;

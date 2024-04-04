@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:jus_mobile_order_app/Helpers/enums.dart';
@@ -37,15 +39,13 @@ class PaymentsHelpers {
     );
   }
 
-  static void onWalletActivitySuccess(BuildContext context, WidgetRef ref,
+  static void onWalletActivitySuccess(BuildContext context,
       {required String message}) {
-    invalidateLoadingProviders(ref);
     ToastHelper.showToast(message: message);
     Navigator.pop(context);
   }
 
-  static void onOrderSuccess(BuildContext context, WidgetRef ref) {
-    invalidateLoadingProviders(ref);
+  static void onOrderSuccess(BuildContext context) {
     showPaymentSuccessModal(context);
   }
 
@@ -452,11 +452,22 @@ class PaymentsHelpers {
           ref, added, ingredient, index, added.indexOf(addedIngredient));
       var amount = productHelpers.modifiedIngredientAmount(
           added, ingredient, added.indexOf(addedIngredient));
-      var extraChargeIngredientAmount = productHelpers
-          .extraChargeIngredientQuantity(added, added.indexOf(addedIngredient));
+      int extraChargeIngredientAmount =
+          productHelpers.calculateTotalExtraChargeQuantity(
+              added, added.indexOf(addedIngredient));
+      // Construct the name, appending the quantity if it's more than 0
+      String nameWithQuantity = '$blendedOrTopping ${ingredient.name}$amount';
+      if (extraChargeIngredientAmount > 0) {
+        nameWithQuantity += ' x$extraChargeIngredientAmount';
+      }
 
-      addedList.add(
-          '{"name": "$blendedOrTopping ${ingredient.name}$amount$extraChargeIngredientAmount", "price": "$premiumIngredientPrice"}');
+      Map<String, dynamic> ingredientData = {
+        'name': nameWithQuantity,
+        'quantity': extraChargeIngredientAmount.toString(),
+        'price': premiumIngredientPrice.toString(),
+      };
+
+      addedList.add(jsonEncode(ingredientData));
     }
 
     return addedList;

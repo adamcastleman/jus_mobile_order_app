@@ -22,8 +22,9 @@ class BottomNavBar extends HookConsumerWidget {
       selectedFontSize: 14,
       unselectedFontSize: 14,
       currentIndex: currentIndex,
-      onTap: (selected) =>
-          _handleNavigation(context, ref, selected, pageController),
+      onTap: (selected) {
+        _handleNavigation(context, ref, selected, pageController);
+      },
       items: _buildBottomNavBarItems(ref, currentIndex),
     );
   }

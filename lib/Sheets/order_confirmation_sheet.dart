@@ -42,6 +42,11 @@ class OrderConfirmationSheet extends HookConsumerWidget {
     final isTabletOrSmaller =
         MediaQuery.of(context).size.width <= AppConstants.tabletWidth;
 
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ref.read(loadingProvider.notifier).state = false;
+      ref.read(applePayLoadingProvider.notifier).state = false;
+    });
+
     if (isTabletOrSmaller) {
       _displayConfettiAnimation(controller);
     }
@@ -73,6 +78,7 @@ class OrderConfirmationSheet extends HookConsumerWidget {
                       onPressed: () {
                         HapticFeedback.lightImpact();
                         invalidateAllProviders(context, ref);
+                        _handleLoadWalletAndPayPopping(context, ref);
                         _popToHomeScreen(context);
                       },
                     ),
@@ -392,6 +398,13 @@ class OrderConfirmationSheet extends HookConsumerWidget {
     } else {
       ref.read(bottomNavigationProvider.notifier).state = 0;
       ref.read(bottomNavigationPageControllerProvider).jumpToPage(0);
+    }
+  }
+
+  _handleLoadWalletAndPayPopping(BuildContext context, WidgetRef ref) {
+    if (ref.watch(isLoadWalletAndPayProvider.notifier).state == true) {
+      Navigator.pop(context);
+      ref.read(isLoadWalletAndPayProvider.notifier).state = false;
     }
   }
 

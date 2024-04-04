@@ -118,8 +118,15 @@ class OrderTileDisplayModifications extends ConsumerWidget {
                                   added, ingredient, addedIngredientIndex)),
                           TextSpan(text: ' ${ingredient.name}'),
                           TextSpan(
-                            text: productHelpers.extraChargeIngredientQuantity(
-                                added, addedIngredientIndex),
+                            text: (() {
+                              int quantity =
+                                  productHelpers.extraChargeIngredientQuantity(
+                                      added, addedIngredientIndex);
+                              if (quantity > 1) {
+                                return ' x$quantity';
+                              }
+                              return '';
+                            })(),
                           ),
                           TextSpan(
                             text:

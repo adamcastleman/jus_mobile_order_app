@@ -21,6 +21,7 @@ exports.createDigitalGiftCard = functions.https.onCall(
     const cardId = orderMap.paymentDetails.cardId;
     orderMap.orderDetails = {};
     const amount = parseInt(orderMap.paymentDetails.amount, 10);
+    console.log(amount);
 
     if (amount > 50000) {
       return {

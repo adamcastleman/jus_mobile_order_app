@@ -42,9 +42,9 @@ const createSquareOrder = async (orderMap) => {
           const jsonMod = JSON.parse(mod);
           return {
             name: jsonMod.name,
-            quantity: "1",
+            quantity: (jsonMod.quantity || '1').toString(),
             basePriceMoney: {
-              amount: jsonMod.price.toString(),
+              amount: (jsonMod.price || '0').toString(),
               currency: currency,
             },
           };

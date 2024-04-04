@@ -219,20 +219,42 @@ class ProductHelpers {
     return description;
   }
 
-  String extraChargeIngredientQuantity(List<dynamic> added, int index) {
+  int extraChargeIngredientQuantity(List<dynamic> added, int index) {
     var item = added[index];
-    if (item['isExtraCharge'] != true) return '';
+    if (item['isExtraCharge'] != true) return 1;
+
     if (item['blended'] == null && item['topping'] == null) {
-      return ' x${item['amount']}';
+      return item['amount'] ?? 1;
     }
+
     if (item['blended'] != null && item['topping'] != null) {
       int blended = item['blended'];
       int topping = item['topping'];
-      if (blended > 1 && topping < 1) return ' x$blended';
-      if (blended < 1 && topping > 1) return ' x$topping';
-      return '';
+
+      if (blended > 1 && topping < 1) return blended;
+      if (blended < 1 && topping > 1) return topping;
     }
-    return '';
+
+    return 1;
+  }
+
+  int calculateTotalExtraChargeQuantity(List<dynamic> added, int index) {
+    var item = added[index];
+    if (item['isExtraCharge'] != true) return 1;
+
+    if (item['blended'] == null && item['topping'] == null) {
+      return item['amount'] ?? 1;
+    }
+
+    int blended = item['blended'] ?? 0;
+    int topping = item['topping'] ?? 0;
+
+    // Adjusting the logic to handle blended and topping similarly to extraChargeIngredientQuantity
+    if (blended > 0 || topping > 0) {
+      return blended + topping;
+    }
+
+    return 1; // Default return 1 if neither blended nor topping is significant
   }
 
   determineModifierPriceText(UserModel user, List<dynamic> added, int index) {
