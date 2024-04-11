@@ -131,6 +131,7 @@ class MembershipCheckoutPage extends ConsumerWidget {
           selectedMembershipPlan == MembershipPlan.values[index];
       double subscriptionPrice =
           membershipDetails.subscriptionPrice[index]['amount'] / 100;
+      bool isDailyPlan = MembershipPlan.values[index] == MembershipPlan.daily;
       bool isAnnualPlan = MembershipPlan.values[index] == MembershipPlan.annual;
       return Padding(
         padding: const EdgeInsets.only(bottom: 8.0),
@@ -155,9 +156,11 @@ class MembershipCheckoutPage extends ConsumerWidget {
                 Padding(
                   padding: const EdgeInsets.symmetric(vertical: 6.0),
                   child: Text(
-                    isAnnualPlan
-                        ? '\$${PricingHelpers.formatAsCurrency(subscriptionPrice / 12)}/mo'
-                        : '\$${PricingHelpers.formatAsCurrency(subscriptionPrice)}/mo',
+                    isDailyPlan
+                        ? '\$${PricingHelpers.formatAsCurrency(subscriptionPrice)}/day'
+                        : isAnnualPlan
+                            ? '\$${PricingHelpers.formatAsCurrency(subscriptionPrice / 12)}/mo'
+                            : '\$${PricingHelpers.formatAsCurrency(subscriptionPrice)}/mo',
                     style: TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
@@ -189,7 +192,9 @@ class MembershipCheckoutPage extends ConsumerWidget {
   }
 
   String _subscriptionDescriptionText(dynamic membershipDetails) {
-    if (membershipDetails['name'] == MembershipPlan.annual.name) {
+    if (membershipDetails['name'] == MembershipPlan.daily.name) {
+      return 'Test with this setup, as it renews daily, the shortest available cadence';
+    } else if (membershipDetails['name'] == MembershipPlan.annual.name) {
       return 'Billed at \$${PricingHelpers.formatAsCurrency(membershipDetails['amount'] / 100)} per year, and auto-renews until canceled';
     } else {
       return 'Auto-renews at \$${PricingHelpers.formatAsCurrency(membershipDetails['amount'] / 100)} per month until canceled';

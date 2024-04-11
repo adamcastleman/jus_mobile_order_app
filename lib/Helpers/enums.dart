@@ -18,6 +18,7 @@ enum PaymentType {
 enum MembershipPlan {
   annual,
   monthly,
+  daily,
 }
 
 enum SubscriptionStatus {

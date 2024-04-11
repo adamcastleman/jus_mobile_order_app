@@ -52,12 +52,7 @@ class ProductModifierPage extends StatelessWidget {
                         user: user,
                         product: product,
                         memberInfoOnTap: () {
-                          NavigationHelpers.handleMembershipNavigation(
-                            context,
-                            ref,
-                            user,
-                            showCloseButton: true,
-                          );
+                          _handleMemberOnTap(context, ref);
                         },
                       ),
                     )),
@@ -129,7 +124,7 @@ class ProductModifierPage extends StatelessWidget {
                             user: user,
                             product: product,
                             memberInfoOnTap: () {
-                              _handleMemberOnTapWeb(context, ref);
+                              _handleMemberOnTap(context, ref);
                             },
                           ),
                           Spacing.vertical(20),
@@ -175,15 +170,28 @@ class ProductModifierPage extends StatelessWidget {
     });
   }
 
-  void _handleMemberOnTapWeb(BuildContext context, WidgetRef ref) {
-    Navigator.pop(context);
-    Navigator.pop(context);
-    NavigationHelpers.handleMembershipNavigation(
-      context,
-      ref,
-      user,
-    );
+  void _handleMemberOnTap(BuildContext context, WidgetRef ref) {
+    if (ResponsiveLayout.isMobileBrowser(context)) {
+      Navigator.pop(context);
+      Navigator.pop(context);
+      NavigationHelpers.handleMembershipNavigation(
+        context,
+        ref,
+        user,
+      );
+    } else if (ResponsiveLayout.isWeb(context)) {
+      Navigator.pop(context);
+      NavigationHelpers.handleMembershipNavigation(
+        context,
+        ref,
+        user,
+      );
+    } else {
+      NavigationHelpers.handleMembershipNavigation(
+        context,
+        ref,
+        user,
+      );
+    }
   }
-
-
 }

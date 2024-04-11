@@ -25,10 +25,17 @@ class SubscribeToMembershipButton extends ConsumerWidget {
     final selectedMembershipPlan = ref.watch(selectedMembershipPlanProvider);
     final isDisclaimerBoxChecked =
         ref.watch(membershipDisclaimerCheckboxValueProvider);
-    String duration =
-        selectedMembershipPlan == MembershipPlan.annual ? 'yr' : 'mo';
-    String billingPeriod =
-        selectedMembershipPlan == MembershipPlan.annual ? 'year' : 'month';
+    String duration = selectedMembershipPlan == MembershipPlan.daily
+        ? 'day'
+        : selectedMembershipPlan == MembershipPlan.annual
+            ? 'yr'
+            : 'mo';
+
+    String billingPeriod = selectedMembershipPlan == MembershipPlan.daily
+        ? 'day'
+        : selectedMembershipPlan == MembershipPlan.annual
+            ? 'year'
+            : 'month';
 
     return LargeElevatedButton(
         buttonText:

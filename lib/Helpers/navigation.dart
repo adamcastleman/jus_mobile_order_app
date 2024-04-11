@@ -17,9 +17,9 @@ import 'package:jus_mobile_order_app/Providers/order_providers.dart';
 import 'package:jus_mobile_order_app/Providers/stream_providers.dart';
 import 'package:jus_mobile_order_app/Sheets/membership_account_page.dart';
 import 'package:jus_mobile_order_app/Sheets/us_states_picker.dart';
-import 'package:jus_mobile_order_app/Views/checkout_page_membership.dart';
 import 'package:jus_mobile_order_app/Views/forgot_password_page.dart';
 import 'package:jus_mobile_order_app/Views/login_page.dart';
+import 'package:jus_mobile_order_app/Views/membership_checkout_page.dart';
 import 'package:jus_mobile_order_app/Views/membership_information_page.dart';
 import 'package:jus_mobile_order_app/Views/membership_terms_of_service_page.dart';
 import 'package:jus_mobile_order_app/Views/points_information_page.dart';
@@ -128,9 +128,8 @@ class NavigationHelpers {
   }
 
   static navigateToHamburgerMenu(
-      WidgetRef ref, UserModel user, GlobalKey<ScaffoldState> scaffoldKey) {
-    ref.read(drawerPageProvider.notifier).state =
-        WebNavigationDrawer(user: user);
+      WidgetRef ref, GlobalKey<ScaffoldState> scaffoldKey) {
+    ref.read(drawerPageProvider.notifier).state = const WebNavigationDrawer();
     scaffoldKey.currentState?.openEndDrawer();
   }
 
@@ -141,12 +140,13 @@ class NavigationHelpers {
         .jumpToPage(AppConstants.homePage);
   }
 
-  static navigateToCleansePageWeb(WidgetRef ref) {
+  static navigateToCleansePageWeb(BuildContext context, WidgetRef ref) {
     ref.read(webNavigationProvider.notifier).state =
         AppConstants.cleansePageWeb;
     ref
         .read(webNavigationPageControllerProvider)
         .jumpToPage(AppConstants.cleansePageWeb);
+    popEndDrawer(context);
   }
 
   static handleMembershipNavigation(
@@ -215,6 +215,7 @@ class NavigationHelpers {
       ref
           .read(webNavigationPageControllerProvider)
           .jumpToPage(AppConstants.scanPageWeb);
+      popEndDrawer(context);
     } else {
       final pageController = ref.watch(bottomNavigationPageControllerProvider);
       ref.read(bottomNavigationProvider.notifier).state =
@@ -421,9 +422,10 @@ class NavigationHelpers {
   }
 
   _handleLocationNavigationPagePopping(BuildContext context, WidgetRef ref) {
-    ref.read(isInHamburgerMenuProvider) == true ? Navigator.pop(context) : null;
-    NavigationHelpers.popEndDrawer(context);
-    ref.read(isInHamburgerMenuProvider.notifier).state = false;
+    ref.read(isInHamburgerMenuProvider) == true
+        ? NavigationHelpers.popEndDrawer(context)
+        : null;
+    ref.invalidate(isInHamburgerMenuProvider);
   }
 
   static handleMembershipNavigationOnWeb(BuildContext context, WidgetRef ref) {
@@ -435,6 +437,7 @@ class NavigationHelpers {
           showCloseButton:
               PlatformUtils.isIOS() || PlatformUtils.isAndroid() ? true : false,
         );
+
         ref.invalidate(isCheckOutPageProvider);
       },
     );

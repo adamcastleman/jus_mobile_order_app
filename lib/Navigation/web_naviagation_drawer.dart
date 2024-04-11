@@ -4,6 +4,7 @@ import 'package:jus_mobile_order_app/Helpers/navigation.dart';
 import 'package:jus_mobile_order_app/Helpers/scan.dart';
 import 'package:jus_mobile_order_app/Helpers/spacing_widgets.dart';
 import 'package:jus_mobile_order_app/Models/user_model.dart';
+import 'package:jus_mobile_order_app/Providers/stream_providers.dart';
 import 'package:jus_mobile_order_app/Widgets/Buttons/cleanse_text_button.dart';
 import 'package:jus_mobile_order_app/Widgets/Buttons/locations_text_button.dart';
 import 'package:jus_mobile_order_app/Widgets/Buttons/membership_text_button.dart';
@@ -13,11 +14,11 @@ import 'package:jus_mobile_order_app/Widgets/Buttons/scan_text_button.dart';
 import 'package:jus_mobile_order_app/constants.dart';
 
 class WebNavigationDrawer extends ConsumerWidget {
-  final UserModel user;
-  const WebNavigationDrawer({required this.user, super.key});
+  const WebNavigationDrawer({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final user = ref.watch(currentUserProvider).value ?? const UserModel();
     return Container(
       color: Colors.white,
       width: AppConstants.screenWidth,
@@ -31,20 +32,12 @@ class WebNavigationDrawer extends ConsumerWidget {
             Spacing.vertical(20),
             const CleanseTextButton(fontSize: 30),
             Spacing.vertical(20),
-            user.uid != null || user.uid!.isNotEmpty
-                ? Column(
-                    children: [
-                      const ScanTextButton(fontSize: 30),
-                      Spacing.vertical(20),
-                    ],
-                  )
+            user.uid != null && user.uid!.isNotEmpty
+                ? const ScanTextButton(fontSize: 30)
                 : const RewardsTextButton(fontSize: 30),
-            Column(
-              children: [
-                const MembershipTextButton(fontSize: 30),
-                Spacing.vertical(20),
-              ],
-            ),
+            Spacing.vertical(20),
+            const MembershipTextButton(fontSize: 30),
+            Spacing.vertical(20),
             LocationsTextButton(
               fontSize: 30,
               onPressed: () {

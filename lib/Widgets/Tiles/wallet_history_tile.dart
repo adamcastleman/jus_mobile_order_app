@@ -22,7 +22,9 @@ class WalletHistoryTile extends StatelessWidget {
         style: const TextStyle(fontWeight: FontWeight.bold),
       ),
       subtitle: Text(
-        'WALLET x${wallet.gan.substring(wallet.gan.length - 4)}',
+        wallet.gan.isEmpty
+            ? 'WALLET'
+            : 'WALLET x${wallet.gan.substring(wallet.gan.length - 4)}',
         maxLines: 1,
         overflow: TextOverflow.ellipsis,
       ),

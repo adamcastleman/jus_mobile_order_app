@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:jus_mobile_order_app/Helpers/utilities.dart';
 import 'package:jus_mobile_order_app/Models/product_model.dart';
 import 'package:jus_mobile_order_app/Providers/ProviderWidgets/product_quantity_limit_provider.dart';
 import 'package:jus_mobile_order_app/Widgets/Buttons/quantity_picker_button.dart';
@@ -21,8 +22,12 @@ class SelectProductOptions extends ConsumerWidget {
           child: Column(
             children: [
               Padding(
-                padding: const EdgeInsets.only(
-                    top: 10.0, left: 20, right: 20, bottom: 40.0),
+                padding: EdgeInsets.only(
+                  top: 10.0,
+                  left: 20,
+                  right: 20,
+                  bottom: PlatformUtils.isWeb() ? 15.0 : 40.0,
+                ),
                 child: Column(
                   children: [
                     _buildQuantityRow(context),

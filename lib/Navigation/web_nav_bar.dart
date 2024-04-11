@@ -3,8 +3,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:jus_mobile_order_app/Helpers/navigation.dart';
 import 'package:jus_mobile_order_app/Helpers/scan.dart';
 import 'package:jus_mobile_order_app/Helpers/utilities.dart';
-import 'package:jus_mobile_order_app/Models/user_model.dart';
-import 'package:jus_mobile_order_app/Providers/stream_providers.dart';
+import 'package:jus_mobile_order_app/Providers/navigation_providers.dart';
 import 'package:jus_mobile_order_app/Widgets/Buttons/bag_button.dart';
 import 'package:jus_mobile_order_app/Widgets/Buttons/cleanse_text_button.dart';
 import 'package:jus_mobile_order_app/Widgets/Buttons/locations_text_button.dart';
@@ -16,10 +15,9 @@ import 'package:jus_mobile_order_app/Widgets/Buttons/rewards_text_button.dart';
 import 'package:jus_mobile_order_app/Widgets/Buttons/web_hamburger_menu_button.dart';
 
 class WebNavBar extends ConsumerWidget {
-  final UserModel user;
   final GlobalKey<ScaffoldState> scaffoldKey;
 
-  const WebNavBar({required this.user, required this.scaffoldKey, super.key});
+  const WebNavBar({required this.scaffoldKey, super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -31,14 +29,17 @@ class WebNavBar extends ConsumerWidget {
   }
 
   _mobileLayout(BuildContext context, WidgetRef ref) {
-    final user = ref.watch(currentUserProvider).value ?? const UserModel();
     return Padding(
       padding: const EdgeInsets.only(left: 30.0, right: 10.0),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          const LogoButton(),
+          const SizedBox(
+            width: 50,
+            height: 50,
+            child: LogoButton(),
+          ),
           SizedBox(
             width: 125,
             child: Row(
@@ -60,7 +61,7 @@ class WebNavBar extends ConsumerWidget {
                     NavigationHelpers.navigateToProfilePage(ref, scaffoldKey);
                   },
                 ),
-                WebHamburgerMenuButton(user: user, scaffoldKey: scaffoldKey),
+                WebHamburgerMenuButton(scaffoldKey: scaffoldKey),
               ],
             ),
           ),
@@ -84,7 +85,11 @@ class WebNavBar extends ConsumerWidget {
       children: [
         const Padding(
           padding: EdgeInsets.symmetric(horizontal: 40.0),
-          child: LogoButton(),
+          child: SizedBox(
+            height: 55,
+            width: 55,
+            child: LogoButton(),
+          ),
         ),
         Row(
           children: [
@@ -97,8 +102,9 @@ class WebNavBar extends ConsumerWidget {
               child: CleanseTextButton(),
             ),
             const Padding(
-                padding: EdgeInsets.symmetric(horizontal: 10.0),
-                child: RewardsTextButton()),
+              padding: EdgeInsets.symmetric(horizontal: 10.0),
+              child: RewardsTextButton(),
+            ),
             const Padding(
               padding: EdgeInsets.symmetric(horizontal: 10.0),
               child: MembershipTextButton(),
@@ -111,7 +117,8 @@ class WebNavBar extends ConsumerWidget {
                   NavigationHelpers().navigateToLocationPage(context, ref);
                   if (ResponsiveLayout.isMobileBrowser(context) ||
                       ResponsiveLayout.isTablet(context)) {
-                    Navigator.pop(context);
+                    NavigationHelpers.popEndDrawer(context);
+                    ref.invalidate(isInHamburgerMenuProvider);
                   }
                 },
               ),

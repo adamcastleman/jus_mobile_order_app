@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:jus_mobile_order_app/Helpers/utilities.dart';
 import 'package:jus_mobile_order_app/Models/product_model.dart';
 
 class NewIcon extends StatelessWidget {
@@ -6,9 +7,11 @@ class NewIcon extends StatelessWidget {
   const NewIcon({required this.product, super.key});
   @override
   Widget build(BuildContext context) {
+    double imageSize = ResponsiveLayout.isWeb(context) ? 75 : 50;
+
     return SizedBox(
-      height: 50,
-      width: 50,
+      height: imageSize,
+      width: imageSize,
       child: Image.asset('assets/new_icon.png'),
     );
   }

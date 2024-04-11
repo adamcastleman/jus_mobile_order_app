@@ -17,7 +17,9 @@ const createSquareSubscription = async ({
         //TODO update location Id to new subscription location
         locationId: "LPRZ3G3PWZBKF",
         planVariationId:
-          billingPeriod === "month"
+          billingPeriod === "day"
+            ? "ZQGEFSIIKUWSBSWIBXSYNFUP"
+            : billingPeriod === "month"
             ? "6EBSHQ6KWAKHYRRLKVT6OEXX"
             : "TEQZXLQPYGVZLYAHPD6NNDBY",
         customerId: squareCustomerId,

@@ -17,7 +17,6 @@ class PhoneNumberFormatter {
 
 class SubscriptionStatusFormatter {
   static String format(String subscriptionStatus) {
-    print(subscriptionStatus);
     String result;
     switch (subscriptionStatus) {
       case 'active':

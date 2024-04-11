@@ -7,7 +7,7 @@ import 'package:jus_mobile_order_app/constants.dart';
 final allLocationsProvider = StateProvider<List<LocationModel>>((ref) => []);
 
 final currentLocationLatLongProvider = StateProvider<LatLng>(
-  (ref) => AppConstants.centerOfUS,
+  (ref) => AppConstants.renoNV,
 );
 
 final locationsWithinMapBoundsProvider =

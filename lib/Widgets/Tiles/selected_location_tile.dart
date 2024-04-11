@@ -75,14 +75,14 @@ class SelectedLocationTile extends ConsumerWidget {
               title: Text(
                 'Picking up from:',
                 style: TextStyle(
-                  fontSize: 14,
+                  fontSize: ResponsiveLayout.isMobilePhone(context) ? 13 : 14,
                   color: textColor ?? Colors.black,
                 ),
               ),
               subtitle: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  _locationName(selectedLocation),
+                  _locationName(context, selectedLocation),
                 ],
               ),
               trailing:
@@ -102,13 +102,14 @@ class SelectedLocationTile extends ConsumerWidget {
     );
   }
 
-  Widget _locationName(dynamic selectedLocation) {
+  Widget _locationName(BuildContext context, dynamic selectedLocation) {
     if (selectedLocation.uid.isEmpty) {
       return Text(
         'Choose Location',
         style: TextStyle(
-          fontSize: 18,
+          fontSize: ResponsiveLayout.isMobilePhone(context) ? 15 : 18,
           color: textColor ?? Colors.black,
+          fontWeight: FontWeight.bold,
         ),
       );
     } else {

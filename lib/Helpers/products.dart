@@ -11,6 +11,7 @@ import 'package:jus_mobile_order_app/Models/points_details_model.dart';
 import 'package:jus_mobile_order_app/Models/product_model.dart';
 import 'package:jus_mobile_order_app/Models/user_model.dart';
 import 'package:jus_mobile_order_app/Providers/product_providers.dart';
+import 'package:jus_mobile_order_app/Providers/stream_providers.dart';
 import 'package:jus_mobile_order_app/constants.dart';
 
 class ProductHelpers {
@@ -48,8 +49,10 @@ class ProductHelpers {
   }
 
   currentItem(WidgetRef ref, ProductModel product, PointsDetailsModel points) {
+    final user = ref.watch(currentUserProvider).value ?? const UserModel();
     final standardIngredients = ref.watch(standardIngredientsProvider);
     final selectedIngredients = ref.watch(selectedIngredientsProvider);
+    final bool isMember = user.uid != null && user.subscriptionStatus!.isActive;
     final itemQuantity = ref.watch(itemQuantityProvider);
     final scheduledQuantity = ref.watch(scheduledQuantityProvider);
     final scheduledDescriptor = ref.watch(scheduledQuantityDescriptorProvider);
@@ -57,6 +60,17 @@ class ProductHelpers {
     final hasToppings = ref.watch(productHasToppingsProvider);
     final selectedToppings = ref.watch(selectedToppingsProvider);
     final allergies = ref.watch(selectedAllergiesProvider);
+    // Filter variations based on user type (MEMBER or CUSTOMER)
+    var filteredVariations = product.variations
+        .where((variation) =>
+            (isMember && variation['customerType'] == 'MEMBER') ||
+            (!isMember && variation['customerType'] == 'CUSTOMER'))
+        .toList();
+
+    // Select the appropriate variation based on itemSize or other criteria
+    var selectedVariation =
+        filteredVariations.isNotEmpty ? filteredVariations[itemSize] : null;
+
     return {
       'productId': product.productId,
       'productUID': product.uid,
@@ -66,8 +80,8 @@ class ProductHelpers {
       'scheduledQuantity': scheduledQuantity,
       'scheduledDescriptor': scheduledDescriptor,
       'itemSize': itemSize,
-      'itemSizeName': product.variations[itemSize]['name'],
-      'squareVariationId': product.variations[itemSize]['squareVariationId'],
+      'itemSizeName': selectedVariation?['name'],
+      'squareVariationId': selectedVariation?['squareVariationId'],
       'itemKey': ref.watch(itemKeyProvider),
       'points': PointsHelper()
           .getPointValue(product.productId, points.rewardsAmounts),

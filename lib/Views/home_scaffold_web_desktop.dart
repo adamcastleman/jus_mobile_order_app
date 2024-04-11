@@ -41,7 +41,6 @@ class HomeScaffoldWeb extends ConsumerWidget {
           child: Padding(
             padding: const EdgeInsets.symmetric(vertical: 18.0),
             child: WebNavBar(
-              user: user,
               scaffoldKey: scaffoldKey,
             ),
           ),

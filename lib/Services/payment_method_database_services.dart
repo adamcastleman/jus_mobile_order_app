@@ -151,11 +151,11 @@ class PaymentMethodDatabaseServices {
       (doc) {
         final dynamic data = doc.data();
         return WalletActivitiesModel(
-            userID: data['userDetails']['userId'],
-            orderNumber: data['orderDetails']['orderNumber'],
+            userID: data['userDetails']['userId'] ?? '',
+            orderNumber: data['orderDetails']['orderNumber'] ?? '',
             createdAt: data['paymentDetails']['createdAt'].toDate(),
-            gan: data['paymentDetails']['gan'],
-            amount: data['paymentDetails']['amount'],
+            gan: data['paymentDetails']['gan'] ?? '',
+            amount: data['paymentDetails']['amount'] ?? 0,
             activity: data['cardDetails']['activity']);
       },
     ).toList();

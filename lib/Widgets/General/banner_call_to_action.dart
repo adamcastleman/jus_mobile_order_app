@@ -100,21 +100,23 @@ class CallToActionBanner extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          Container(
-            // margin: const EdgeInsets.all(30.0),
-            padding: const EdgeInsets.symmetric(horizontal: 10.0),
-            decoration: BoxDecoration(
-              border: Border.all(color: Colors.black, width: 1.0),
-              borderRadius: BorderRadius.circular(25),
-              color: backgroundColor,
-            ),
-            height: AppConstants.screenHeight * 0.4,
-            width: 450,
-            child: _textColumn(
-              titleFontSize: 28,
-              descriptionFontSize: 18,
-              buttonHeight: AppConstants.buttonHeightPhone,
-              buttonWidth: AppConstants.buttonWidthPhone,
+          Flexible(
+            child: Container(
+              margin: const EdgeInsets.all(30.0),
+              padding: const EdgeInsets.symmetric(horizontal: 10.0),
+              decoration: BoxDecoration(
+                border: Border.all(color: Colors.black, width: 1.0),
+                borderRadius: BorderRadius.circular(25),
+                color: backgroundColor,
+              ),
+              height: AppConstants.screenHeight * 0.4,
+              width: double.infinity,
+              child: _textColumn(
+                titleFontSize: 28,
+                descriptionFontSize: 18,
+                buttonHeight: AppConstants.buttonHeightPhone,
+                buttonWidth: AppConstants.buttonWidthPhone,
+              ),
             ),
           ),
           Flexible(

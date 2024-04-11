@@ -77,7 +77,7 @@ class HomePageWeb extends ConsumerWidget {
                 backgroundColor: pastelBrown,
                 callToActionText: 'Learn More',
                 callToActionOnPressed: () {
-                  NavigationHelpers.navigateToCleansePageWeb(ref);
+                  NavigationHelpers.navigateToCleansePageWeb(context, ref);
                 },
                 titleMaxLines: 1,
                 title: 'Cleanses',

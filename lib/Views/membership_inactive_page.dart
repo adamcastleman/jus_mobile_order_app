@@ -13,7 +13,7 @@ import 'package:jus_mobile_order_app/Models/user_model.dart';
 import 'package:jus_mobile_order_app/Providers/stream_providers.dart';
 import 'package:jus_mobile_order_app/Providers/theme_providers.dart';
 import 'package:jus_mobile_order_app/Sheets/invalid_sheet_single_pop.dart';
-import 'package:jus_mobile_order_app/Views/checkout_page_membership.dart';
+import 'package:jus_mobile_order_app/Views/membership_checkout_page.dart';
 import 'package:jus_mobile_order_app/Widgets/Buttons/elevated_button_large.dart';
 import 'package:jus_mobile_order_app/Widgets/Dialogs/reactivate_membership_dialog.dart';
 import 'package:jus_mobile_order_app/Widgets/Headers/sheet_header.dart';

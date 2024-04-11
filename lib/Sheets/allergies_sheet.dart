@@ -18,7 +18,7 @@ class AllergiesSheet extends ConsumerWidget {
         .where((ingredient) => ingredient.includeInAllergiesList == true)
         .toList();
     return Container(
-      padding: ResponsiveLayout.isWeb(context)
+      padding: PlatformUtils.isWeb()
           ? EdgeInsets.zero
           : const EdgeInsets.only(top: 40.0, bottom: 20.0),
       color: backgroundColor,
@@ -40,7 +40,7 @@ class AllergiesSheet extends ConsumerWidget {
           Spacing.vertical(20),
           GridView.builder(
             padding: PlatformUtils.isWeb()
-                ? const EdgeInsets.symmetric(vertical: 12.0)
+                ? const EdgeInsets.only(bottom: 12.0)
                 : EdgeInsets.zero,
             shrinkWrap: true,
             primary: false,

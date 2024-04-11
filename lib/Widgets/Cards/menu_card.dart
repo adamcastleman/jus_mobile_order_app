@@ -113,6 +113,7 @@ class MenuCard extends ConsumerWidget {
 
   Widget determineDescriptorIcon(
       BuildContext context, WidgetRef ref, ProductModel product) {
+    double imageSize = ResponsiveLayout.isWeb(context) ? 75 : 50;
     final selectedLocation = LocationHelper().selectedLocation(ref);
     if (selectedLocation == null) {
       return product.isNew ? NewIcon(product: product) : const SizedBox();
@@ -131,7 +132,8 @@ class MenuCard extends ConsumerWidget {
         ),
       );
     } else if (!isInStock) {
-      return Image.asset('assets/sold_out.png', height: 50, width: 50);
+      return Image.asset('assets/sold_out.png',
+          height: imageSize, width: imageSize);
     } else {
       return product.isNew ? NewIcon(product: product) : const SizedBox();
     }

@@ -3,6 +3,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:jus_mobile_order_app/Helpers/navigation.dart';
 import 'package:jus_mobile_order_app/Helpers/scan.dart';
 import 'package:jus_mobile_order_app/Models/user_model.dart';
+import 'package:jus_mobile_order_app/Providers/navigation_providers.dart';
 import 'package:jus_mobile_order_app/Providers/stream_providers.dart';
 import 'package:jus_mobile_order_app/Providers/theme_providers.dart';
 import 'package:jus_mobile_order_app/constants.dart';
@@ -30,6 +31,7 @@ class MembershipTextButton extends ConsumerWidget {
           user,
         );
         isDrawerOpen ?? Navigator.pop(context);
+        ref.invalidate(isInHamburgerMenuProvider);
       },
     );
   }

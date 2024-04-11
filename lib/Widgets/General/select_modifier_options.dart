@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:jus_mobile_order_app/Helpers/navigation.dart';
 import 'package:jus_mobile_order_app/Helpers/spacing_widgets.dart';
+import 'package:jus_mobile_order_app/Helpers/utilities.dart';
 import 'package:jus_mobile_order_app/Models/ingredient_model.dart';
 import 'package:jus_mobile_order_app/Models/product_model.dart';
 import 'package:jus_mobile_order_app/Providers/controller_providers.dart';
@@ -22,8 +23,12 @@ class SelectModifierOptions extends ConsumerWidget {
       color: Colors.white,
       elevation: 50,
       child: Padding(
-        padding:
-            const EdgeInsets.only(top: 20.0, left: 20, right: 20, bottom: 40.0),
+        padding: EdgeInsets.only(
+          top: 10.0,
+          left: 20,
+          right: 20,
+          bottom: PlatformUtils.isWeb() ? 15.0 : 40.0,
+        ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [

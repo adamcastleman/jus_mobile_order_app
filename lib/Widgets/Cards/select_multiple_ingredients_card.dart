@@ -3,6 +3,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:jus_mobile_order_app/Helpers/spacing_widgets.dart';
+import 'package:jus_mobile_order_app/Helpers/utilities.dart';
 import 'package:jus_mobile_order_app/Models/product_model.dart';
 import 'package:jus_mobile_order_app/Providers/ProviderWidgets/product_quantity_limit_provider.dart';
 import 'package:jus_mobile_order_app/Providers/theme_providers.dart';
@@ -39,8 +40,8 @@ class SelectMultipleIngredientsCard extends ConsumerWidget {
               children: [
                 Flexible(
                   child: SizedBox(
-                    height: 70,
-                    width: 70,
+                    height: ResponsiveLayout.isMobileBrowser(context) ? 50 : 70,
+                    width: ResponsiveLayout.isMobileBrowser(context) ? 50 : 70,
                     child: CachedNetworkImage(
                       imageUrl: ingredient.image,
                     ),

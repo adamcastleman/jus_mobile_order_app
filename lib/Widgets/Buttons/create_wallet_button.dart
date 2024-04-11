@@ -73,10 +73,12 @@ class CreateWalletButton extends ConsumerWidget {
     PaymentServices.createWalletCloudFunction(
       orderDetails,
       onSuccess: () {
+        ref.read(loadingProvider.notifier).state = false;
         PaymentsHelpers.onWalletActivitySuccess(context,
             message: 'Created Wallet');
       },
       onError: (error) {
+        ref.read(loadingProvider.notifier).state = false;
         PaymentsHelpers.showPaymentErrorModal(context, ref, error);
       },
     );

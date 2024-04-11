@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:jus_mobile_order_app/Helpers/navigation.dart';
-import 'package:jus_mobile_order_app/Helpers/utilities.dart';
 import 'package:jus_mobile_order_app/Providers/theme_providers.dart';
 
 class ScanTextButton extends ConsumerWidget {
@@ -16,9 +15,6 @@ class ScanTextButton extends ConsumerWidget {
       child: Text('scan', style: buttonStyle),
       onPressed: () {
         NavigationHelpers.navigateToScanPage(context, ref);
-        ResponsiveLayout.isMobileBrowser(context)
-            ? Navigator.pop(context)
-            : null;
       },
     );
   }

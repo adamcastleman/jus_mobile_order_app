@@ -16,6 +16,7 @@ import 'package:jus_mobile_order_app/Widgets/General/banner_bulleted_list.dart';
 import 'package:jus_mobile_order_app/Widgets/General/banner_call_to_action.dart';
 import 'package:jus_mobile_order_app/Widgets/General/banner_rewards.dart';
 import 'package:jus_mobile_order_app/Widgets/General/banner_stepper.dart';
+import 'package:jus_mobile_order_app/Widgets/General/display_user_current_points_widget.dart';
 import 'package:jus_mobile_order_app/Widgets/General/web_footer_banner.dart';
 
 class PointsInformationPage extends ConsumerWidget {
@@ -69,6 +70,15 @@ class PointsInformationPage extends ConsumerWidget {
       child: SingleChildScrollView(
         child: Column(
           children: [
+            Container(
+              padding: const EdgeInsets.all(12.0),
+              color: pastelBrown,
+              alignment: Alignment.centerLeft,
+              child: UserCurrentPointsWidget(
+                user: user,
+                fontSize: 18,
+              ),
+            ),
             _rewardAmounts(context, ref, user, images, points, pastelBrown),
             _thePerksRewardsBanner(points),
           ],

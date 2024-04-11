@@ -20,6 +20,7 @@ class ImageCard extends StatelessWidget {
     final double aspectRatio = isSmallScreen ? 1 : 1;
 
     return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 20.0),
       color: backgroundColor,
       padding: isSmallScreen
           ? const EdgeInsets.all(12.0)
