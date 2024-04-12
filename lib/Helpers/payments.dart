@@ -23,6 +23,7 @@ import 'package:jus_mobile_order_app/Providers/payments_providers.dart';
 import 'package:jus_mobile_order_app/Providers/points_providers.dart';
 import 'package:jus_mobile_order_app/Providers/product_providers.dart';
 import 'package:jus_mobile_order_app/Sheets/order_confirmation_sheet.dart';
+import 'package:jus_mobile_order_app/Sheets/subscription_confirmation_sheet.dart';
 import 'package:jus_mobile_order_app/Widgets/Dialogs/toast.dart';
 import 'package:square_in_app_payments/models.dart';
 
@@ -53,6 +54,13 @@ class PaymentsHelpers {
     ModalBottomSheet().fullScreen(
       context: context,
       builder: (context) => const OrderConfirmationSheet(),
+    );
+  }
+
+  static void showSubscriptionSuccessModal(BuildContext context) {
+    ModalBottomSheet().fullScreen(
+      context: context,
+      builder: (context) => const SubscriptionConfirmationSheet(),
     );
   }
 

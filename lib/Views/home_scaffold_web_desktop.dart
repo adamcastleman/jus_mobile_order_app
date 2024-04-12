@@ -28,9 +28,14 @@ class HomeScaffoldWeb extends ConsumerWidget {
     final pageController = ref.watch(webNavigationPageControllerProvider);
     final drawerPage = ref.watch(drawerPageProvider);
     return Scaffold(
+      drawerEnableOpenDragGesture: false,
+      endDrawerEnableOpenDragGesture: false,
       key: scaffoldKey,
-      endDrawer: EndDrawerWeb(
-        child: drawerPage,
+      endDrawer: PopScope(
+        canPop: false,
+        child: EndDrawerWeb(
+          child: drawerPage,
+        ),
       ),
       appBar: PreferredSize(
         preferredSize: ResponsiveLayout.isMobileBrowser(context)

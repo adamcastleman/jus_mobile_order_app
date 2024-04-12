@@ -18,24 +18,36 @@ class EndDrawerWeb extends ConsumerWidget {
     final isCheckoutPage = ref.watch(isCheckOutPageProvider);
     return Container(
       height: double.infinity,
-      width: 500,
-      color: backgroundColor,
-      child: Stack(
+      width: double.infinity,
+      color: Colors.transparent,
+      child: Row(
         children: [
-          child,
-          isCheckoutPage
-              ? const SizedBox()
-              : Positioned(
-                  top: 0,
-                  right: 0,
-                  child: JusCloseButton(
-                    onPressed: () {
-                      ref.read(isInHamburgerMenuProvider.notifier).state =
-                          false;
-                      Navigator.pop(context);
-                    },
-                  ),
-                )
+          const Expanded(
+            child: SizedBox(),
+          ),
+          Container(
+            color: backgroundColor,
+            height: double.infinity,
+            width: 500,
+            child: Stack(
+              children: [
+                child,
+                isCheckoutPage
+                    ? const SizedBox()
+                    : Positioned(
+                        top: 0,
+                        right: 0,
+                        child: JusCloseButton(
+                          onPressed: () {
+                            ref.read(isInHamburgerMenuProvider.notifier).state =
+                                false;
+                            Navigator.pop(context);
+                          },
+                        ),
+                      )
+              ],
+            ),
+          ),
         ],
       ),
     );

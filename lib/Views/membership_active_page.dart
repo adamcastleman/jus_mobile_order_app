@@ -23,7 +23,7 @@ import 'package:jus_mobile_order_app/Widgets/Tiles/update_subscription_payment_m
 class MembershipActivePage extends ConsumerWidget {
   final bool isDrawerOpen;
   final DateTime startDate;
-  final DateTime chargeThruDate;
+  final DateTime? chargeThruDate;
   final SubscriptionModel subscriptionData;
   final List<SubscriptionInvoiceModel> invoices;
   final PaymentsModel cardOnFile;
@@ -31,7 +31,7 @@ class MembershipActivePage extends ConsumerWidget {
   const MembershipActivePage(
       {required this.isDrawerOpen,
       required this.startDate,
-      required this.chargeThruDate,
+      this.chargeThruDate,
       required this.subscriptionData,
       required this.invoices,
       required this.cardOnFile,
@@ -44,8 +44,9 @@ class MembershipActivePage extends ConsumerWidget {
     final backgroundColor = ref.watch(backgroundColorProvider);
     const trailingStyle = TextStyle(fontSize: 16);
     String formattedStartDate = DateFormat('M/d/yyyy').format(startDate);
-    String formattedChargeThruDate =
-        DateFormat('M/d/yyyy').format(chargeThruDate);
+    String? formattedChargeThruDate = chargeThruDate == null
+        ? ''
+        : DateFormat('M/d/yyyy').format(chargeThruDate ?? DateTime.now());
 
     return Container(
       color: backgroundColor,
@@ -77,7 +78,7 @@ class MembershipActivePage extends ConsumerWidget {
                   ),
                   _buildStartDateListTile(
                       user, formattedStartDate, trailingStyle),
-                  startDate.isBefore(DateTime.now())
+                  chargeThruDate == null || startDate.isBefore(DateTime.now())
                       ? ListTile(
                           leading: const Icon(CupertinoIcons.calendar),
                           title: user.subscriptionStatus! ==

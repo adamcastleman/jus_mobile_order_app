@@ -245,7 +245,6 @@ class MembershipCheckoutPage extends ConsumerWidget {
               ref.read(squarePaymentSkdLoadingProvider.notifier).state = false;
               if (PlatformUtils.isWeb()) {
                 Navigator.pop(context);
-                Navigator.pop(context);
               }
             },
           );

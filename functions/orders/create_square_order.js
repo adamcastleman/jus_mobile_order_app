@@ -53,7 +53,7 @@ const createSquareOrder = async (orderMap) => {
           return null; // Return null or some default value in case of error
         }
       })
-      .filter((mod) => mod !== null); // Filter out null values
+      .filter(mod => mod && mod.name && mod.name.trim() !== ''); // Filter out null values
 
     // Return line item object
     return {

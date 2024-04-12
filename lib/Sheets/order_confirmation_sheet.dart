@@ -7,6 +7,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:jus_mobile_order_app/Helpers/divider.dart';
 import 'package:jus_mobile_order_app/Helpers/launchers.dart';
+import 'package:jus_mobile_order_app/Helpers/navigation.dart';
 import 'package:jus_mobile_order_app/Helpers/orders.dart';
 import 'package:jus_mobile_order_app/Helpers/permission_handler.dart';
 import 'package:jus_mobile_order_app/Helpers/spacing_widgets.dart';
@@ -14,11 +15,9 @@ import 'package:jus_mobile_order_app/Helpers/utilities.dart';
 import 'package:jus_mobile_order_app/Hooks/confetti_controller.dart';
 import 'package:jus_mobile_order_app/Providers/ProviderWidgets/display_images_provider_widget.dart';
 import 'package:jus_mobile_order_app/Providers/auth_providers.dart';
-import 'package:jus_mobile_order_app/Providers/controller_providers.dart';
 import 'package:jus_mobile_order_app/Providers/discounts_provider.dart';
 import 'package:jus_mobile_order_app/Providers/loading_providers.dart';
 import 'package:jus_mobile_order_app/Providers/location_providers.dart';
-import 'package:jus_mobile_order_app/Providers/navigation_providers.dart';
 import 'package:jus_mobile_order_app/Providers/offers_providers.dart';
 import 'package:jus_mobile_order_app/Providers/order_providers.dart';
 import 'package:jus_mobile_order_app/Providers/payments_providers.dart';
@@ -386,19 +385,7 @@ class OrderConfirmationSheet extends HookConsumerWidget {
     ref.invalidate(selectedTipIndexProvider);
     ref.invalidate(isCheckOutPageProvider);
     ref.invalidate(locationsProvider);
-    _setPageProviders(ref);
-  }
-
-  _setPageProviders(WidgetRef ref) {
-    if (PlatformUtils.isWeb()) {
-      ref.read(webNavigationProvider.notifier).state = AppConstants.homePage;
-      ref
-          .read(webNavigationPageControllerProvider)
-          .jumpToPage(AppConstants.homePage);
-    } else {
-      ref.read(bottomNavigationProvider.notifier).state = 0;
-      ref.read(bottomNavigationPageControllerProvider).jumpToPage(0);
-    }
+    NavigationHelpers.navigateToHomePage(ref);
   }
 
   _handleLoadWalletAndPayPopping(BuildContext context, WidgetRef ref) {

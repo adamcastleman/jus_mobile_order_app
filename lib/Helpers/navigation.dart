@@ -133,11 +133,16 @@ class NavigationHelpers {
     scaffoldKey.currentState?.openEndDrawer();
   }
 
-  static navigateToHomePageWeb(WidgetRef ref) {
-    ref.read(webNavigationProvider.notifier).state = AppConstants.homePage;
-    ref
-        .read(webNavigationPageControllerProvider)
-        .jumpToPage(AppConstants.homePage);
+  static navigateToHomePage(WidgetRef ref) {
+    if (PlatformUtils.isWeb()) {
+      ref.read(webNavigationProvider.notifier).state = AppConstants.homePage;
+      ref
+          .read(webNavigationPageControllerProvider)
+          .jumpToPage(AppConstants.homePage);
+    } else {
+      ref.read(bottomNavigationProvider.notifier).state = 0;
+      ref.read(bottomNavigationPageControllerProvider).jumpToPage(0);
+    }
   }
 
   static navigateToCleansePageWeb(BuildContext context, WidgetRef ref) {

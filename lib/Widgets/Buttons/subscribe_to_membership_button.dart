@@ -60,7 +60,7 @@ class SubscribeToMembershipButton extends ConsumerWidget {
             onPaymentSuccess: () {
               HapticFeedback.lightImpact();
               invalidateLoadingProviders(ref);
-              PaymentsHelpers.showPaymentSuccessModal(context);
+              PaymentsHelpers.showSubscriptionSuccessModal(context);
             },
             onError: (error) {
               invalidateLoadingProviders(ref);

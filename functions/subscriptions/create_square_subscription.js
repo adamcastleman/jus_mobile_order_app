@@ -10,6 +10,9 @@ const createSquareSubscription = async ({
   sourceId,
 }) => {
   const client = await createSquareClient();
+  const today = new Date().toISOString().substring(0, 10);
+  startDate = startDate >= today ? startDate : today;
+
   try {
     const subscriptionResponse =
       await client.subscriptionsApi.createSubscription({
@@ -23,7 +26,7 @@ const createSquareSubscription = async ({
             ? "6EBSHQ6KWAKHYRRLKVT6OEXX"
             : "TEQZXLQPYGVZLYAHPD6NNDBY",
         customerId: squareCustomerId,
-        startDate: startDate ?? null, // Format: yyyy-MM-dd
+        startDate: startDate,
         cardId: cardId,
         sourceId: sourceId,
         timezone: "UTC",
@@ -31,11 +34,10 @@ const createSquareSubscription = async ({
 
      const subscription = JSON.parse(subscriptionResponse.body);
 
-
     return subscription;
   } catch (error) {
+    console.error('Error creating subscription:', error);
     throw error;
-    console.log(error);
   }
 };
 

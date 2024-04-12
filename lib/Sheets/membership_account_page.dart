@@ -32,8 +32,9 @@ class MembershipAccountPage extends ConsumerWidget {
               subscriptionId: subscriptionData.subscriptionId,
               builder: (subscription) {
                 DateTime startDate = DateTime.parse(subscription.startDate);
-                DateTime chargeThruDate =
-                    DateTime.parse(subscription.chargeThruDate);
+                DateTime? chargeThruDate = subscription.chargeThruDate.isEmpty
+                    ? null
+                    : DateTime.parse(subscription.chargeThruDate);
 
                 if (user.subscriptionStatus!.isActive) {
                   return MembershipActivePage(

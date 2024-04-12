@@ -94,11 +94,13 @@ class SubscriptionServices {
 
       final subscriptionData = result.data['subscription'];
 
+      print(subscriptionData);
+
       return SquareSubscriptionModel(
-        subscriptionId: subscriptionData['id'],
-        status: subscriptionData['status'],
-        startDate: subscriptionData['start_date'],
-        chargeThruDate: subscriptionData['charged_through_date'],
+        subscriptionId: subscriptionData['id'] ?? '',
+        status: subscriptionData['status'] ?? '',
+        startDate: subscriptionData['start_date'] ?? '',
+        chargeThruDate: subscriptionData['charged_through_date'] ?? '',
         canceledDate: subscriptionData['canceled_date'] ?? '',
         monthlyBillingAnchorDate:
             subscriptionData['monthly_billing_anchor_date'] ?? 0,

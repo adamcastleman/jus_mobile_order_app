@@ -19,13 +19,14 @@ class SubscriptionDataProviderWidget extends ConsumerWidget {
     final subscriptionData =
         ref.watch(subscriptionDataProvider(user.uid ?? ''));
     return subscriptionData.when(
-      error: (e, _) =>
-          error ??
-          ShowError(
-            error: e.toString(),
-          ),
-      loading: () => loading ?? const Loading(),
-      data: (subscription) => builder(subscription),
-    );
+        error: (e, _) =>
+            error ??
+            ShowError(
+              error: e.toString(),
+            ),
+        loading: () => loading ?? const Loading(),
+        data: (subscription) {
+          return builder(subscription);
+        });
   }
 }

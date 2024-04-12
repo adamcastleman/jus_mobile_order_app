@@ -14,7 +14,7 @@ class LogoButton extends ConsumerWidget {
       child: Image.asset('assets/jus_logo_splash.png'),
       onTap: () {
         ScanHelpers.cancelQrTimer(ref);
-        NavigationHelpers.navigateToHomePageWeb(ref);
+        NavigationHelpers.navigateToHomePage(ref);
       },
     );
   }
