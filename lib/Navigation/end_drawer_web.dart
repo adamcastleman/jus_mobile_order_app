@@ -28,7 +28,7 @@ class EndDrawerWeb extends ConsumerWidget {
           Container(
             color: backgroundColor,
             height: double.infinity,
-            width: 500,
+            width: 430,
             child: Stack(
               children: [
                 child,

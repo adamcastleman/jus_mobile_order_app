@@ -13,11 +13,12 @@ import 'package:jus_mobile_order_app/Widgets/Buttons/rewards_text_button.dart';
 import 'package:jus_mobile_order_app/Widgets/Buttons/scan_text_button.dart';
 import 'package:jus_mobile_order_app/constants.dart';
 
-class WebNavigationDrawer extends ConsumerWidget {
-  const WebNavigationDrawer({super.key});
+class WebNavigationDrawer extends StatelessWidget {
+  final WidgetRef ref;
+  const WebNavigationDrawer({required this.ref, super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     final user = ref.watch(currentUserProvider).value ?? const UserModel();
     return Container(
       color: Colors.white,
@@ -33,7 +34,7 @@ class WebNavigationDrawer extends ConsumerWidget {
             const CleanseTextButton(fontSize: 30),
             Spacing.vertical(20),
             user.uid != null && user.uid!.isNotEmpty
-                ? const ScanTextButton(fontSize: 30)
+                ? ScanTextButton(ref: ref, fontSize: 30)
                 : const RewardsTextButton(fontSize: 30),
             Spacing.vertical(20),
             const MembershipTextButton(fontSize: 30),

@@ -129,7 +129,7 @@ class NavigationHelpers {
 
   static navigateToHamburgerMenu(
       WidgetRef ref, GlobalKey<ScaffoldState> scaffoldKey) {
-    ref.read(drawerPageProvider.notifier).state = const WebNavigationDrawer();
+    ref.read(drawerPageProvider.notifier).state = WebNavigationDrawer(ref: ref);
     scaffoldKey.currentState?.openEndDrawer();
   }
 
@@ -213,7 +213,7 @@ class NavigationHelpers {
     scaffoldKey.currentState?.openEndDrawer();
   }
 
-  static navigateToScanPage(BuildContext context, WidgetRef ref) async {
+  static navigateToScanPage(BuildContext context, WidgetRef ref) {
     ScanHelpers.handleScanAndPayPageInitializers(ref);
     if (PlatformUtils.isWeb()) {
       ref.read(webNavigationProvider.notifier).state = AppConstants.scanPageWeb;

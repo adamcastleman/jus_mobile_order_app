@@ -94,8 +94,6 @@ class SubscriptionServices {
 
       final subscriptionData = result.data['subscription'];
 
-      print(subscriptionData);
-
       return SquareSubscriptionModel(
         subscriptionId: subscriptionData['id'] ?? '',
         status: subscriptionData['status'] ?? '',

@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:jus_mobile_order_app/Helpers/enums.dart';
 import 'package:jus_mobile_order_app/Models/payments_model.dart';
@@ -17,12 +19,13 @@ class ScanHelpers {
       'member': user.subscriptionStatus,
       'cardId': selectedPayment.cardId,
     }.toString();
+    String messageJson = jsonEncode(message);
 
-    var encrypted = await Encryption().encryptText(message);
+    var encrypted = await Encryption().encryptText(messageJson);
     int timestamp = DateTime.now().millisecondsSinceEpoch;
     ref.read(encryptedScanAndPayProvider.notifier).state =
         '$encrypted,$timestamp';
-    // ref.watch(qrLoadingProvider.notifier).state = false;
+    ref.watch(qrLoadingProvider.notifier).state = false;
   }
 
   static Future<void> scanOnlyMap(WidgetRef ref, UserModel user) async {
@@ -30,7 +33,8 @@ class ScanHelpers {
       'type': 'SUBSCRIPTION',
       'member': user.subscriptionStatus!.isActive,
     }.toString();
-    var encrypted = await Encryption().encryptText(message);
+    String messageJson = jsonEncode(message);
+    var encrypted = await Encryption().encryptText(messageJson);
     int timestamp = DateTime.now().millisecondsSinceEpoch;
     ref.read(encryptedScanOnlyProvider.notifier).state =
         '$encrypted,$timestamp';

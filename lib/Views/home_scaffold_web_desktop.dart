@@ -46,6 +46,7 @@ class HomeScaffoldWeb extends ConsumerWidget {
           child: Padding(
             padding: const EdgeInsets.symmetric(vertical: 18.0),
             child: WebNavBar(
+              ref: ref,
               scaffoldKey: scaffoldKey,
             ),
           ),
@@ -60,7 +61,7 @@ class HomeScaffoldWeb extends ConsumerWidget {
               ref.read(webNavigationProvider.notifier).state = value;
             },
             children: [
-              const HomePageWeb(),
+              HomePageWeb(ref: ref),
               const MenuPage(),
               const CleansePageWeb(),
               const MembershipInformationPage(),

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:jus_mobile_order_app/Helpers/navigation.dart';
+import 'package:jus_mobile_order_app/Helpers/scan.dart';
 import 'package:jus_mobile_order_app/Helpers/spacing_widgets.dart';
 import 'package:jus_mobile_order_app/Helpers/utilities.dart';
 import 'package:jus_mobile_order_app/Models/user_model.dart';
@@ -13,11 +14,12 @@ import 'package:jus_mobile_order_app/Widgets/Buttons/scan_floating_action_button
 import 'package:jus_mobile_order_app/Widgets/General/banner_call_to_action.dart';
 import 'package:jus_mobile_order_app/Widgets/General/web_footer_banner.dart';
 
-class HomePageWeb extends ConsumerWidget {
-  const HomePageWeb({super.key});
+class HomePageWeb extends StatelessWidget {
+  final WidgetRef ref;
+  const HomePageWeb({required this.ref, super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     final user = ref.watch(currentUserProvider).value ?? const UserModel();
     final points = ref.watch(pointsInformationProvider);
     final pastelBlue = ref.watch(pastelBlueProvider);
@@ -27,8 +29,7 @@ class HomePageWeb extends ConsumerWidget {
     return MembershipDetailsProviderWidget(
       builder: (membership) => DisplayImagesProviderWidget(
         builder: (images) => Scaffold(
-          floatingActionButton:
-              _showScanFloatingActionButton(context, ref, user),
+          floatingActionButton: _showScanFloatingActionButton(context, user),
           body: ListView(
             primary: false,
             children: [
@@ -105,8 +106,7 @@ class HomePageWeb extends ConsumerWidget {
     );
   }
 
-  _showScanFloatingActionButton(
-      BuildContext context, WidgetRef ref, UserModel user) {
+  _showScanFloatingActionButton(BuildContext context, UserModel user) {
     if (user.uid == null || user.uid!.isEmpty) {
       return const SizedBox();
     }
@@ -116,6 +116,8 @@ class HomePageWeb extends ConsumerWidget {
 
     return ScanFloatingActionButton(
       onPressed: () {
+        ScanHelpers.cancelQrTimer(ref);
+        ScanHelpers.handleScanAndPayPageInitializers(ref);
         NavigationHelpers.navigateToScanPage(context, ref);
       },
     );

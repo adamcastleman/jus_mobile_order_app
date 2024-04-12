@@ -25,7 +25,6 @@ class AuthServices {
       );
       return result.data['exists'];
     } catch (e) {
-      print('Error calling cloud function: $e');
       throw e.toString();
     }
   }

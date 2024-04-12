@@ -14,13 +14,14 @@ import 'package:jus_mobile_order_app/Widgets/Buttons/profile_icon_button.dart';
 import 'package:jus_mobile_order_app/Widgets/Buttons/rewards_text_button.dart';
 import 'package:jus_mobile_order_app/Widgets/Buttons/web_hamburger_menu_button.dart';
 
-class WebNavBar extends ConsumerWidget {
+class WebNavBar extends StatelessWidget {
+  final WidgetRef ref;
   final GlobalKey<ScaffoldState> scaffoldKey;
 
-  const WebNavBar({required this.scaffoldKey, super.key});
+  const WebNavBar({required this.ref, required this.scaffoldKey, super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     return ResponsiveLayout(
       mobileBrowser: _mobileLayout(context, ref),
       tablet: _mobileLayout(context, ref),
@@ -61,7 +62,7 @@ class WebNavBar extends ConsumerWidget {
                     NavigationHelpers.navigateToProfilePage(ref, scaffoldKey);
                   },
                 ),
-                WebHamburgerMenuButton(scaffoldKey: scaffoldKey),
+                WebHamburgerMenuButton(ref: ref, scaffoldKey: scaffoldKey),
               ],
             ),
           ),
