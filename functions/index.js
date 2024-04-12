@@ -9,6 +9,7 @@ if (admin.apps.length === 0) {
 const secrets = require('./function_exports/get_secret');
 const handleSquareWebhooks = require('./function_exports/handle_square_webhooks');
 
+const isPhoneNumberInUse = require('./function_exports/is_phone_number_in_use')
 const createUser = require('./function_exports/create_user');
 const updateUserInfo = require('./function_exports/update_user_info');
 const updatePassword = require('./function_exports/update_password');
@@ -48,6 +49,7 @@ exports.cancelSubscription = cancelSubscription.cancelSubscription;
 exports.createDigitalGiftCard = createDigitalGiftCard.createDigitalGiftCard;
 exports.createOrder = createOrder.createOrder;
 exports.createSubscription = createSubscription.createSubscription;
+exports.isPhoneNumberInUse = isPhoneNumberInUse.isPhoneNumberInUse;
 exports.createUser = createUser.createUser;
 exports.deleteAccountRequest = deleteAccountRequest.deleteAccountRequest;
 exports.deletePaymentMethod = deletePaymentMethod.deletePaymentMethod;

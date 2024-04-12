@@ -17,6 +17,7 @@ import 'package:jus_mobile_order_app/Providers/stream_providers.dart';
 import 'package:jus_mobile_order_app/Services/auth_services.dart';
 import 'package:jus_mobile_order_app/Services/subscription_services.dart';
 import 'package:jus_mobile_order_app/Services/user_services.dart';
+import 'package:jus_mobile_order_app/Sheets/invalid_sheet_single_pop.dart';
 import 'package:jus_mobile_order_app/Widgets/Buttons/close_button.dart';
 import 'package:jus_mobile_order_app/Widgets/Buttons/elevated_button_large.dart';
 import 'package:jus_mobile_order_app/Widgets/Buttons/elevated_button_large_loading.dart';
@@ -291,7 +292,7 @@ class RegisterPage extends ConsumerWidget {
   }) {
     return LargeElevatedButton(
       buttonText: 'Sign Up',
-      onPressed: () {
+      onPressed: () async {
         ref.read(loadingProvider.notifier).state = true;
         RegistrationValidators(ref: ref).validateForm(
           firstName: firstName,
@@ -301,15 +302,26 @@ class RegisterPage extends ConsumerWidget {
           password: password,
           confirmPassword: confirmPassword,
         );
-        signUpUser(
-          context: context,
-          ref: ref,
-          email: email,
-          password: password,
-          firstName: firstName,
-          lastName: lastName,
-          phone: phone,
-        );
+        final exists = await AuthServices().isPhoneNumberInUse(phone);
+        if (exists) {
+          ref.read(loadingProvider.notifier).state = false;
+          NavigationHelpers.navigateToPartScreenSheetOrDialog(
+              context,
+              const InvalidSheetSinglePop(
+                  error:
+                      'This phone number already exists. Please use a different phone number.'));
+          return;
+        } else {
+          signUpUser(
+            context: context,
+            ref: ref,
+            email: email,
+            password: password,
+            firstName: firstName,
+            lastName: lastName,
+            phone: phone,
+          );
+        }
       },
     );
   }

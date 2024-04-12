@@ -14,6 +14,22 @@ class AuthServices {
     return user != null ? UserModel(uid: user.uid) : null;
   }
 
+  Future<bool> isPhoneNumberInUse(String phoneNumber) async {
+    try {
+      final HttpsCallable callable =
+          FirebaseFunctions.instance.httpsCallable('isPhoneNumberInUse');
+      final HttpsCallableResult result = await callable.call(
+        <String, dynamic>{
+          'phone': phoneNumber,
+        },
+      );
+      return result.data['exists'];
+    } catch (e) {
+      print('Error calling cloud function: $e');
+      throw e.toString();
+    }
+  }
+
   Future registerWithEmailAndPassword(
     String email,
     String password,
