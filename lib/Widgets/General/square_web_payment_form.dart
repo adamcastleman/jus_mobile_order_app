@@ -3,6 +3,7 @@ import 'dart:ui_web' as ui_web;
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:jus_mobile_order_app/Helpers/enums.dart';
+import 'package:jus_mobile_order_app/Models/AbstractModels/abstract_payment_form.dart';
 import 'package:jus_mobile_order_app/Services/square_web_payment_services.dart';
 import 'package:universal_html/html.dart' as html;
 
@@ -32,8 +33,9 @@ class SquareWebPaymentForm extends HookWidget {
         ..style.height = '75%';
 
       // Register the div element as a platform view
-      ui_web.platformViewRegistry
-          .registerViewFactory(viewType, (int viewId) => divElement);
+      final platformView = PaymentFormPlatformViewWeb(viewType, divElement);
+      // Register the platform view factory for web
+      platformView.registerPlatformViewFactory();
 
       // Embedding the Square payment form HTML and JavaScript
       _embedSquarePaymentForm(divElement);
@@ -82,5 +84,25 @@ class SquareWebPaymentForm extends HookWidget {
               cardDetailsResult(cardDetails);
             },
           );
+  }
+}
+
+class PaymentFormPlatformViewWeb implements PaymentFormPlatformView {
+  final String viewType;
+  final html.DivElement divElement;
+
+  PaymentFormPlatformViewWeb(this.viewType, this.divElement);
+
+  @override
+  void registerPlatformViewFactory() {
+    ui_web.platformViewRegistry
+        .registerViewFactory(viewType, (int viewId) => divElement);
+  }
+}
+
+class PaymentFormPlatformViewStub implements PaymentFormPlatformView {
+  @override
+  void registerPlatformViewFactory() {
+    // No-op or throw an error because it should not be called on non-web platforms
   }
 }

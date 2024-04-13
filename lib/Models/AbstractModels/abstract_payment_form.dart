@@ -32,3 +32,7 @@ abstract class PaymentFormManager {
     required Function(String) onSuccess,
   });
 }
+
+abstract class PaymentFormPlatformView {
+  void registerPlatformViewFactory();
+}

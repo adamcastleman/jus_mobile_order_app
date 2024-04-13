@@ -12,6 +12,7 @@ import 'package:jus_mobile_order_app/Providers/payments_providers.dart';
 import 'package:jus_mobile_order_app/Providers/stream_providers.dart';
 import 'package:jus_mobile_order_app/Providers/theme_providers.dart';
 import 'package:jus_mobile_order_app/Widgets/Buttons/add_payment_method_button.dart';
+import 'package:jus_mobile_order_app/Widgets/Buttons/close_button.dart';
 import 'package:jus_mobile_order_app/Widgets/Buttons/no_charge_button.dart';
 import 'package:jus_mobile_order_app/Widgets/Buttons/open_load_money_and_pay_sheet_button.dart';
 import 'package:jus_mobile_order_app/Widgets/Buttons/pay_with_apple_pay_button.dart';
@@ -45,11 +46,21 @@ class FinalizePaymentSheet extends ConsumerWidget {
     return Container(
       padding: const EdgeInsets.all(22.0),
       height: MediaQuery.of(context).size.height,
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      child: Stack(
         children: [
-          _tippingContainer(backgroundColor),
-          _paymentSection(context, ref, user),
+          Column(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              _tippingContainer(backgroundColor),
+              Spacing.vertical(100),
+              _paymentSection(context, ref, user),
+            ],
+          ),
+          const Positioned(
+            top: 0,
+            right: 0,
+            child: JusCloseButton(),
+          )
         ],
       ),
     );

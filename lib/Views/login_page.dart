@@ -104,6 +104,7 @@ class LoginPage extends ConsumerWidget {
   }
 
   Widget _buildSignInInstructions(BuildContext context) {
+    double fontSize = ResponsiveLayout.isMobileBrowser(context) ? 10 : 14;
     return SizedBox(
       width: ResponsiveLayout.isMobileBrowser(context)
           ? double.infinity
@@ -117,6 +118,7 @@ class LoginPage extends ConsumerWidget {
           Spacing.vertical(15),
           Text(
             'Sign in to collect and redeem points, access your member code, save favorites and more.',
+            style: TextStyle(fontSize: fontSize),
             textAlign: ResponsiveLayout.isMobileBrowser(context)
                 ? TextAlign.start
                 : TextAlign.center,
@@ -124,7 +126,7 @@ class LoginPage extends ConsumerWidget {
           Spacing.vertical(10),
           Text(
             'If you belong to our legacy points or membership program, or you had an account of any kind on our legacy website, you must create a new account.',
-            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
+            style: TextStyle(fontWeight: FontWeight.bold, fontSize: fontSize),
             textAlign: ResponsiveLayout.isMobileBrowser(context)
                 ? TextAlign.start
                 : TextAlign.center,
