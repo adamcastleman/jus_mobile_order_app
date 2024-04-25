@@ -23,25 +23,27 @@ class HomeScaffoldMobileApp extends ConsumerWidget {
     return Scaffold(
       bottomNavigationBar: const BottomNavBar(),
       body: SafeArea(
-        child: Stack(
+        child: Column(
           children: [
-            PageView(
-              controller: pageController,
-              physics: const NeverScrollableScrollPhysics(),
-              onPageChanged: (value) {
-                ref.read(bottomNavigationProvider.notifier).state = value;
-              },
-              children: [
-                const MobileHomePage(),
-                ScanPage(ref: ref),
-                const MenuPage(),
-                const ReviewOrderPage(),
-                const ProfilePage(),
-              ],
-            ),
             user.subscriptionStatus == SubscriptionStatus.paused
                 ? const PausedMembershipBanner()
                 : const SizedBox(),
+            Flexible(
+              child: PageView(
+                controller: pageController,
+                physics: const NeverScrollableScrollPhysics(),
+                onPageChanged: (value) {
+                  ref.read(bottomNavigationProvider.notifier).state = value;
+                },
+                children: [
+                  const MobileHomePage(),
+                  ScanPage(ref: ref),
+                  const MenuPage(),
+                  const ReviewOrderPage(),
+                  const ProfilePage(),
+                ],
+              ),
+            ),
           ],
         ),
       ),

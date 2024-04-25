@@ -5,6 +5,7 @@ import 'package:jus_mobile_order_app/Models/ingredient_model.dart';
 import 'package:jus_mobile_order_app/Models/location_model.dart';
 import 'package:jus_mobile_order_app/Models/membership_details_model.dart';
 import 'package:jus_mobile_order_app/Models/order_model.dart';
+import 'package:jus_mobile_order_app/Models/points_activity_model.dart';
 import 'package:jus_mobile_order_app/Models/points_details_model.dart';
 import 'package:jus_mobile_order_app/Models/product_model.dart';
 import 'package:jus_mobile_order_app/Models/subscription_model.dart';
@@ -94,6 +95,10 @@ final favoritesProvider =
 
 final pointsDetailsProvider = StreamProvider<PointsDetailsModel>(
     (ref) => PointsDetailsServices().pointsDetails);
+
+final pointsActivityProvider =
+    StreamProvider.family<List<PointsActivityModel>, String>(
+        (ref, userId) => PointsDetailsServices(userId: userId).pointsActivity);
 
 final deleteAccountImageProvider =
     StreamProvider((ref) => ImageServices().deleteAccount);

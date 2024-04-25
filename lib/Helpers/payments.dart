@@ -451,11 +451,15 @@ class PaymentsHelpers {
       final selectedIngredient = order['selectedIngredients']
           .firstWhere((element) => element['id'] == ingredient.id);
 
-      int premiumIngredientPrice = double.parse(
-              user.uid == null || user.subscriptionStatus!.isNotActive
-                  ? (selectedIngredient['price'])
-                  : (selectedIngredient['memberPrice']))
-          .toInt();
+      double premiumIngredientPrice = double.parse(
+          user.uid == null || user.subscriptionStatus!.isNotActive
+              ? selectedIngredient['price'].toString()
+              : selectedIngredient['memberPrice'].toString());
+
+      int blended = selectedIngredient['blended'] ?? 0;
+      int topping = selectedIngredient['topping'] ?? 0;
+      bool isBlendedOrTopped = blended > 0 || topping > 0;
+
       String blendedOrTopping = productHelpers.blendedOrToppingDescription(
           ref, added, ingredient, index, added.indexOf(addedIngredient));
       var amount = productHelpers.modifiedIngredientAmount(
@@ -463,16 +467,18 @@ class PaymentsHelpers {
       int extraChargeIngredientAmount =
           productHelpers.calculateTotalExtraChargeQuantity(
               added, added.indexOf(addedIngredient));
-      // Construct the name, appending the quantity if it's more than 0
-      String nameWithQuantity = '$blendedOrTopping ${ingredient.name}$amount';
-      if (extraChargeIngredientAmount > 0) {
+
+      // Construct the name, appending the quantity if it's more than 1 and not solely blended or topped
+      String nameWithQuantity = '$blendedOrTopping$amount ${ingredient.name}';
+      if (extraChargeIngredientAmount > 1 &&
+          (!isBlendedOrTopped || (blended == 0 || topping == 0))) {
         nameWithQuantity += ' x$extraChargeIngredientAmount';
       }
 
       Map<String, dynamic> ingredientData = {
         'name': nameWithQuantity,
         'quantity': extraChargeIngredientAmount.toString(),
-        'price': premiumIngredientPrice.toString(),
+        'price': premiumIngredientPrice.round(),
       };
 
       addedList.add(jsonEncode(ingredientData));

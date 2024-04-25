@@ -52,29 +52,32 @@ class HomeScaffoldWeb extends ConsumerWidget {
           ),
         ),
       ),
-      body: Stack(
+      body: Column(
+        mainAxisSize: MainAxisSize.min,
         children: [
-          PageView(
-            controller: pageController,
-            physics: const NeverScrollableScrollPhysics(),
-            onPageChanged: (value) {
-              ref.read(webNavigationProvider.notifier).state = value;
-            },
-            children: [
-              HomePageWeb(ref: ref),
-              const MenuPage(),
-              const CleansePageWeb(),
-              const MembershipInformationPage(),
-              const LocationPageWeb(),
-              ScanPage(
-                ref: ref,
-              ),
-              const PointsInformationPage(showCloseButton: false),
-            ],
-          ),
           user.subscriptionStatus == SubscriptionStatus.paused
               ? const PausedMembershipBanner()
               : const SizedBox(),
+          Expanded(
+            child: PageView(
+              controller: pageController,
+              physics: const NeverScrollableScrollPhysics(),
+              onPageChanged: (value) {
+                ref.read(webNavigationProvider.notifier).state = value;
+              },
+              children: [
+                HomePageWeb(ref: ref),
+                const MenuPage(),
+                const CleansePageWeb(),
+                const MembershipInformationPage(),
+                const LocationPageWeb(),
+                ScanPage(
+                  ref: ref,
+                ),
+                const PointsInformationPage(showCloseButton: false),
+              ],
+            ),
+          ),
         ],
       ),
     );

@@ -13,6 +13,7 @@ import 'package:jus_mobile_order_app/Providers/membership_providers.dart';
 import 'package:jus_mobile_order_app/Providers/theme_providers.dart';
 import 'package:jus_mobile_order_app/Widgets/Buttons/close_button.dart';
 import 'package:jus_mobile_order_app/Widgets/General/banner_call_to_action.dart';
+import 'package:jus_mobile_order_app/Widgets/General/category_display_widget.dart';
 import 'package:jus_mobile_order_app/constants.dart';
 
 class SubscriptionConfirmationSheet extends HookConsumerWidget {
@@ -140,7 +141,9 @@ class SubscriptionConfirmationSheet extends HookConsumerWidget {
                     callToActionText: 'Close',
                     callToActionOnPressed: () {
                       _invalidateSubscriptionProviders(ref);
+
                       NavigationHelpers.navigateToHomePage(ref);
+                      Navigator.pop(context);
                     },
                   ).buildMobileLayout(context),
                 ),
@@ -172,12 +175,24 @@ class SubscriptionConfirmationSheet extends HookConsumerWidget {
 
   Widget _subscriptionTotalCostDisplay(
       double chargedAmount, String billingPeriod) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    TextStyle style =
+        const TextStyle(fontSize: 22, fontWeight: FontWeight.bold);
+    return Column(
       children: [
-        const Text('Total'),
-        Text(
-            '\$${PricingHelpers.formatAsCurrency(chargedAmount)}/$billingPeriod'),
+        const CategoryWidget(text: 'Subscription'),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              'Total',
+              style: style,
+            ),
+            Text(
+              '\$${PricingHelpers.formatAsCurrency(chargedAmount)}/$billingPeriod',
+              style: style,
+            ),
+          ],
+        ),
       ],
     );
   }

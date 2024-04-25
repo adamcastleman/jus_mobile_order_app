@@ -329,7 +329,9 @@ class NavigationHelpers {
     if (PlatformUtils.isWeb()) {
       NavigationHelpers.showDialogWeb(
         context,
-        height: AppConstants.loginDialogHeight,
+        height: ResponsiveLayout.isMobileBrowser(context)
+            ? AppConstants.loginDialogHeightMobileBrowser
+            : AppConstants.loginDialogHeight,
         const LoginPage(),
       );
     } else {

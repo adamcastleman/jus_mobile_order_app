@@ -8,6 +8,7 @@ import 'package:jus_mobile_order_app/Helpers/spacing_widgets.dart';
 import 'package:jus_mobile_order_app/Helpers/utilities.dart';
 import 'package:jus_mobile_order_app/Models/user_model.dart';
 import 'package:jus_mobile_order_app/Providers/auth_providers.dart';
+import 'package:jus_mobile_order_app/Providers/navigation_providers.dart';
 import 'package:jus_mobile_order_app/Providers/stream_providers.dart';
 import 'package:jus_mobile_order_app/Services/auth_services.dart';
 import 'package:jus_mobile_order_app/Widgets/Buttons/close_button.dart';
@@ -261,6 +262,7 @@ class LoginPage extends ConsumerWidget {
         WidgetsBinding.instance.addPostFrameCallback((_) {
           Navigator.pop(context);
           ref.read(loadingProvider.notifier).state = false;
+          ref.invalidate(bottomNavigationProvider);
         });
       } catch (e) {
         ref.read(loadingProvider.notifier).state = false;

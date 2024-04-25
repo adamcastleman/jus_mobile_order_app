@@ -26,13 +26,13 @@ class ScanTypeTabsWidget extends StatelessWidget {
                 onPressed: () {
                   ref.read(scanCategoryProvider.notifier).state = 0;
                   ScanHelpers.cancelQrTimer(ref);
-                 ScanHelpers.handleScanAndPayPageInitializers(ref);
+                  ScanHelpers.handleScanAndPayPageInitializers(ref);
                 },
               ),
               Spacing.vertical(5),
               Container(
                 height: 0.5,
-                color: categoryIndex == 0 ? Colors.black : Colors.transparent,
+                color: categoryIndex == 0 ? Colors.white : Colors.transparent,
               ),
             ],
           ),

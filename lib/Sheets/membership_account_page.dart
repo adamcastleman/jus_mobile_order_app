@@ -21,7 +21,6 @@ class MembershipAccountPage extends ConsumerWidget {
     final user = ref.watch(currentUserProvider).value ?? const UserModel();
     final bool isDrawerOpen =
         scaffoldKey.currentState?.isEndDrawerOpen ?? false;
-    if (user.subscriptionStatus!.isNotActive) {}
     return CreditCardProviderWidget(
       builder: (creditCards) => SubscriptionDataProviderWidget(
         builder: (subscriptionData) => SubscriptionInvoiceProviderWidget(
@@ -35,6 +34,10 @@ class MembershipAccountPage extends ConsumerWidget {
                 DateTime? chargeThruDate = subscription.chargeThruDate.isEmpty
                     ? null
                     : DateTime.parse(subscription.chargeThruDate);
+                int anchorDate = subscription.monthlyBillingAnchorDate == 0 ||
+                        subscription.monthlyBillingAnchorDate == null
+                    ? startDate.day
+                    : subscription.monthlyBillingAnchorDate!;
 
                 if (user.subscriptionStatus!.isActive) {
                   return MembershipActivePage(
@@ -50,8 +53,7 @@ class MembershipAccountPage extends ConsumerWidget {
                   return MembershipInactivePage(
                     isDrawerOpen: isDrawerOpen,
                     subscriptionData: subscriptionData,
-                    monthlyBillingAnchorDate:
-                        subscription.monthlyBillingAnchorDate!,
+                    monthlyBillingAnchorDate: anchorDate,
                     invoices: invoices,
                     cardOnFile: cardOnFile,
                     creditCards: creditCards,

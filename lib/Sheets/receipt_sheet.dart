@@ -154,38 +154,51 @@ class ReceiptSheet extends ConsumerWidget {
                             ? const SizedBox()
                             : Flexible(
                                 child: ListView.builder(
-                                primary: false,
-                                shrinkWrap: true,
-                                physics: const NeverScrollableScrollPhysics(),
-                                itemCount: order
-                                    .items[itemIndex]['modifications'].length,
-                                itemBuilder: (context, index) {
-                                  String formattedPrice;
-                                  // Get the modification as a JSON string
-                                  String modificationJsonString = order
-                                      .items[itemIndex]['modifications'][index];
+                                  primary: false,
+                                  shrinkWrap: true,
+                                  physics: const NeverScrollableScrollPhysics(),
+                                  itemCount: order
+                                      .items[itemIndex]['modifications'].length,
+                                  itemBuilder: (context, index) {
+                                    // Get the modification as a JSON string
+                                    String modificationJsonString =
+                                        order.items[itemIndex]['modifications']
+                                            [index];
 
-                                  // Decode the JSON
-                                  var modification =
-                                      jsonDecode(modificationJsonString);
+                                    // Decode the JSON
+                                    var modification =
+                                        jsonDecode(modificationJsonString);
 
-                                  try {
-                                    int priceInCents =
-                                        int.parse(modification['price']);
-                                    double priceInDollars = priceInCents / 100;
-                                    formattedPrice =
+                                    // Check for existence of keys and that they are not null
+                                    int quantity = modification
+                                                .containsKey('quantity') &&
+                                            modification['quantity'] != null
+                                        ? int.parse(
+                                            modification['quantity'].toString())
+                                        : 1; // Default to 1 if quantity is not provided
+
+                                    // Similarly, check for price existence and non-null
+                                    int priceInCents = modification
+                                                .containsKey('price') &&
+                                            modification['price'] != null
+                                        ? int.parse(
+                                            modification['price'].toString())
+                                        : 0; // Default to 0 if price is not provided
+
+                                    double priceInDollars =
+                                        (priceInCents * quantity) / 100;
+
+                                    // Declare formattedPrice once before its use
+                                    String formattedPrice =
                                         priceInDollars.toStringAsFixed(2);
-                                  } catch (e) {
-                                    formattedPrice =
-                                        ''; // Default value if parsing fails
-                                  }
 
-                                  return Text(
-                                    '${modification['name']} ${formattedPrice == '0.00' ? '' : '+\$$formattedPrice'}',
-                                    style: const TextStyle(fontSize: 12),
-                                  );
-                                },
-                              )),
+                                    return Text(
+                                      '${modification['name']} ${formattedPrice == '0.00' ? '' : '+\$$formattedPrice'}',
+                                      style: const TextStyle(fontSize: 12),
+                                    );
+                                  },
+                                ),
+                              ),
                         order.items[itemIndex]['allergies'].isEmpty
                             ? const SizedBox()
                             : SizedBox(
@@ -206,7 +219,7 @@ class ReceiptSheet extends ConsumerWidget {
                     ),
                   ),
                   trailing: Text(
-                      '\$${(order.items[itemIndex]['price'] / 100).toStringAsFixed(2)}${order.items[itemIndex]['itemQuantity'] == 1 ? '' : '/ea.'}'),
+                      '\$${((order.items[itemIndex]['price'] + order.items[itemIndex]['modifierPrice']) / 100).toStringAsFixed(2)}${order.items[itemIndex]['itemQuantity'] == 1 ? '' : '/ea.'}'),
                 );
               },
             ),

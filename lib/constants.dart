@@ -74,6 +74,8 @@ class AppConstants {
 
   static double loginDialogHeight = 475;
 
+  static double loginDialogHeightMobileBrowser = 600;
+
   static double dialogWidth = 400;
 
   static double buttonWidthWeb = 150;

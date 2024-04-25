@@ -67,28 +67,40 @@ module.exports = (orderMap) => {
       .join("");
   };
 
-  const renderUnscheduledItems = (unscheduledItems) => {
-    return unscheduledItems
-      .map((item, index) => {
-        // Parse and format modifications
-        const formattedModifications = item.modifications
-          .map((modString) => {
-            try {
-              const mod = JSON.parse(modString);
-              const price = parseInt(mod.price);
-              // Check if price is greater than 0 before appending price string
-              const priceString =
-                price > 0 ? ` +\$${(price / 100).toFixed(2)}` : "";
-              return `${mod.name}${priceString}`;
-            } catch (e) {
-              console.error("Error parsing modification:", e);
-              return ""; // Return an empty string or some default value in case of error
-            }
-          })
-          .join("<br>");
+ const renderUnscheduledItems = (unscheduledItems) => {
+     return unscheduledItems
+       .map((item, index) => {
+         let totalModifierPrice = 0;
+         const formattedModifications = item.modifications.map((modString) => {
+           try {
+             const mod = JSON.parse(modString);
+             const modPrice = parseInt(mod.price) * parseInt(mod.quantity);
+             if (!isNaN(modPrice)) {
+               totalModifierPrice += modPrice; // Add each modifier's price to the total
+             }
+             const priceString = modPrice > 0 ? ` +\$${(modPrice / 100).toFixed(2)}` : "";
+             return `${mod.name}${priceString}`;
+           } catch (e) {
+             console.error("Error parsing modification:", e);
+             return ""; // In case of error, return an empty string
+           }
+         }).join("<br>");
 
-        // Return the HTML for each item
-        return `
+         // Check if item.price and item.itemQuantity are numbers
+         const itemPrice = parseFloat(item.price);
+         const itemQuantity = parseInt(item.itemQuantity);
+
+         if (isNaN(itemPrice) || isNaN(itemQuantity)) {
+           console.error("Invalid item price or quantity");
+           return ""; // Skip this item if price or quantity is invalid
+         }
+
+         // Calculate total price including modifiers
+         const totalPrice = ((itemPrice * itemQuantity) + totalModifierPrice) / 100;
+         const formattedTotalPrice = isNaN(totalPrice) ? "Error" : totalPrice.toFixed(2);
+
+         // Return the HTML for each item
+         return `
            <div style="display: flex; align-items: center; margin-bottom: 10px;">
              <div style="width: 70px; height: 70px; display: flex; justify-content: center; align-items: center; margin-right: 10px; text-align: center;">
                <img src="${item.image}" alt="${item.name}" style="max-width: ${
@@ -123,7 +135,7 @@ module.exports = (orderMap) => {
                }
              </div>
              <div style="margin-left: auto;">
-               $${((item.price * item.itemQuantity) / 100).toFixed(2)}
+               \$${formattedTotalPrice}
              </div>
            </div>
            ${
@@ -139,9 +151,10 @@ module.exports = (orderMap) => {
              }
            </style>
          `;
-      })
-      .join("");
-  };
+       })
+       .join("");
+ };
+
 
   const emailBody = `
 <html lang="en">

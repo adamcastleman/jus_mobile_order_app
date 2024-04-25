@@ -109,7 +109,6 @@ class MembershipInactivePage extends ConsumerWidget {
         height: 450,
         context,
         ReactivateMembershipDialog(
-          ref: ref,
           subscriptionData: subscriptionData,
           monthlyBillingAnchorDate: monthlyBillingAnchorDate,
           invoice: invoices[0],

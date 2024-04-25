@@ -73,8 +73,7 @@ class WalletLoadAmountSelectorTile extends ConsumerWidget {
   }
 
   void _handleTileTap(WidgetRef ref, BuildContext context) {
-    final selectedLoadAmountIndex = ref.watch(selectedLoadAmountIndexProvider);
-    if (walletType != WalletType.addFunds && selectedLoadAmountIndex == null) {
+    if (walletType != WalletType.addFunds) {
       WalletHelpers.updateSelectedLoadAmountIndex(ref, user);
     }
     NavigationHelpers.navigateToPartScreenSheetOrDialog(

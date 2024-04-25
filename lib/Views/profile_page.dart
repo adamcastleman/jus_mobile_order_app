@@ -5,6 +5,7 @@ import 'package:jus_mobile_order_app/Helpers/enums.dart';
 import 'package:jus_mobile_order_app/Helpers/navigation.dart';
 import 'package:jus_mobile_order_app/Models/user_model.dart';
 import 'package:jus_mobile_order_app/Providers/auth_providers.dart';
+import 'package:jus_mobile_order_app/Providers/navigation_providers.dart';
 import 'package:jus_mobile_order_app/Providers/payments_providers.dart';
 import 'package:jus_mobile_order_app/Providers/product_providers.dart';
 import 'package:jus_mobile_order_app/Providers/stream_providers.dart';
@@ -13,6 +14,7 @@ import 'package:jus_mobile_order_app/Sheets/account_info_sheet.dart';
 import 'package:jus_mobile_order_app/Sheets/favorites_sheet.dart';
 import 'package:jus_mobile_order_app/Sheets/offers_sheet.dart';
 import 'package:jus_mobile_order_app/Sheets/payments_sheet.dart';
+import 'package:jus_mobile_order_app/Sheets/points_activity_sheet.dart';
 import 'package:jus_mobile_order_app/Sheets/transaction_history_sheet.dart';
 import 'package:jus_mobile_order_app/Views/signed_out_profile_page.dart';
 import 'package:jus_mobile_order_app/Widgets/General/version_display_widget.dart';
@@ -70,6 +72,12 @@ class ProfilePage extends ConsumerWidget {
                         context, ref, scaffoldKey),
                   ),
                   ProfilePageTile(
+                    icon: const Icon(CupertinoIcons.gift_alt_fill),
+                    title: 'Points Activity',
+                    onTap: () =>
+                        _handlePointsActivityOnTap(context, ref, scaffoldKey),
+                  ),
+                  ProfilePageTile(
                     icon: const Icon(CupertinoIcons.heart),
                     title: 'Favorites',
                     onTap: () =>
@@ -93,6 +101,7 @@ class ProfilePage extends ConsumerWidget {
                             ref.invalidate(firstNameProvider);
                             ref.invalidate(lastNameProvider);
                             ref.invalidate(phoneProvider);
+                            ref.invalidate(bottomNavigationProvider);
                             AuthServices().signOut();
                           },
                           child: const Text('Sign Out'),
@@ -142,6 +151,16 @@ class ProfilePage extends ConsumerWidget {
       ref,
       scaffoldKey,
       const TransactionHistorySheet(),
+    );
+  }
+
+  void _handlePointsActivityOnTap(BuildContext context, WidgetRef ref,
+      GlobalKey<ScaffoldState> scaffoldKey) {
+    NavigationHelpers.navigateToFullScreenSheetOrEndDrawer(
+      context,
+      ref,
+      scaffoldKey,
+      const PointsActivitySheet(),
     );
   }
 

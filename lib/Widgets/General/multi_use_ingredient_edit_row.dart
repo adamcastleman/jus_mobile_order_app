@@ -18,14 +18,21 @@ class MultiUseIngredientEditRow extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final user = ref.watch(currentUserProvider).value!;
     final selectedIngredients = ref.watch(selectedIngredientsProvider);
+
+    double pricePerUnit =
+        double.tryParse(selectedIngredients[index]['price'].toString()) ?? 0;
+    int blended = selectedIngredients[index]['blended'] ?? 0;
+    int topping = selectedIngredients[index]['topping'] ?? 0;
+    double totalPrice =
+        pricePerUnit * (blended + topping) / 100; // Price is in cents.
+
     return Padding(
       padding:
           const EdgeInsets.only(top: 8.0, right: 8.0, bottom: 8.0, left: 14.0),
       child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
         (user.uid == null || user.subscriptionStatus!.isNotActive) &&
                 selectedIngredients[index]['isExtraCharge']
-            ? Text(
-                '\$${(double.parse(selectedIngredients[index]['price']) / 100).toStringAsFixed(2)}')
+            ? Text('\$${totalPrice.toStringAsFixed(2)}')
             : const SizedBox(),
         InkWell(
           child: const CircleAvatar(

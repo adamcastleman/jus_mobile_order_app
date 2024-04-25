@@ -96,6 +96,8 @@ class ScanPage extends StatelessWidget {
                         Column(
                           children: [
                             Spacing.vertical(15),
+                            const CategoryWidget(text: 'Payment Method'),
+                            Spacing.vertical(15),
                             _buildPaymentSection(),
                           ],
                         ),
@@ -186,13 +188,8 @@ class ScanPage extends StatelessWidget {
   }
 
   Widget _buildPaymentSection() {
-    final pastelBrown = ref.watch(pastelBrownProvider);
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 4.0),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(25),
-        color: pastelBrown,
-      ),
       child: PaymentMethodSelector(
         whenComplete: () {
           ScanHelpers.cancelQrTimer(ref);

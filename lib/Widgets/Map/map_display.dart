@@ -77,10 +77,10 @@ class DisplayGoogleMap extends HookConsumerWidget {
       mapToolbarEnabled: false,
       compassEnabled: false,
       markers: markers.value,
+      style: mapStyle.value,
       onMapCreated: (controller) {
         List<LocationModel> locationsWithinBounds;
         ref.read(googleMapControllerProvider.notifier).state = controller;
-        controller.setMapStyle(mapStyle.value);
         Future.delayed(
           const Duration(milliseconds: 100),
           () async {

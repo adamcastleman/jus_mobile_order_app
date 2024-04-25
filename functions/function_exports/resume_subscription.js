@@ -1,7 +1,8 @@
 const functions = require("firebase-functions");
 const admin = require("firebase-admin");
 const isAuthenticated = require("../users/is_authenticated");
-const { createSquareClient } = require("../payments/square_client");
+const { resumeSquareSubscription } = require("../subscriptions/resume_square_subscription");
+
 if (admin.apps.length === 0) {
   admin.initializeApp();
 }
@@ -9,7 +10,8 @@ if (admin.apps.length === 0) {
 const db = admin.firestore();
 
 exports.resumeSubscription = functions.https.onCall(async (data, context) => {
-  const client = await createSquareClient();
+
+  console.log('called function');
 
   if (!isAuthenticated(context)) {
     return { status: 'error', message: 'Authentication required.' };
@@ -27,10 +29,9 @@ exports.resumeSubscription = functions.https.onCall(async (data, context) => {
     }
 
     const subscriptionDoc = querySnapshot.docs[0];
-    const subscriptionId = subscriptionDoc.data().subscriptionId; // Ensure this is the correct field
+    const subscriptionId = subscriptionDoc.data().subscriptionId;
 
-    await client.subscriptionsApi.resumeSubscription(subscriptionId);
-
+    await resumeSquareSubscription(subscriptionId);
 
     await db.collection("users").doc(userId).update({
       subscriptionStatus: 'ACTIVE'

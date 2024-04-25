@@ -30,29 +30,11 @@ class PointsInformationPage extends ConsumerWidget {
     final pastelBrown = ref.watch(pastelBrownProvider);
     final backgroundColor = ref.watch(backgroundColorProvider);
     return DisplayImagesProviderWidget(
-      builder: (images) {
-        return Scaffold(
-          extendBodyBehindAppBar: true,
-          appBar: AppBar(
-            elevation: 0.0,
-            scrolledUnderElevation: 0.0,
-            backgroundColor: Colors.transparent,
-            leading: const SizedBox(),
-            actions: [
-              showCloseButton
-                  ? const JusCloseButton(
-                      color: Colors.grey,
-                    )
-                  : const SizedBox(),
-            ],
-          ),
-          body: user.uid == null
-              ? pointsInformationGuest(
-                  context, ref, user, points, images, pastelBrown)
-              : pointsInformationUser(context, ref, user, points, images,
-                  backgroundColor, pastelBrown),
-        );
-      },
+      builder: (images) => user.uid == null
+          ? pointsInformationGuest(
+              context, ref, user, points, images, pastelBrown)
+          : pointsInformationUser(
+              context, ref, user, points, images, backgroundColor, pastelBrown),
     );
   }
 
@@ -65,23 +47,36 @@ class PointsInformationPage extends ConsumerWidget {
     Color backgroundColor,
     Color pastelBrown,
   ) {
-    return Container(
-      color: backgroundColor,
-      child: SingleChildScrollView(
-        child: Column(
-          children: [
-            Container(
-              padding: const EdgeInsets.all(12.0),
-              color: pastelBrown,
-              alignment: Alignment.centerLeft,
-              child: UserCurrentPointsWidget(
-                user: user,
-                fontSize: 18,
-              ),
-            ),
-            _rewardAmounts(context, ref, user, images, points, pastelBrown),
-            _thePerksRewardsBanner(points),
-          ],
+    return Scaffold(
+      extendBodyBehindAppBar: true,
+      appBar: AppBar(
+        elevation: 0.0,
+        scrolledUnderElevation: 0.0,
+        backgroundColor: Colors.white,
+        automaticallyImplyLeading: false,
+        centerTitle: false,
+        title: UserCurrentPointsWidget(
+          user: user,
+          fontSize: 18,
+        ),
+        actions: [
+          showCloseButton
+              ? const JusCloseButton(
+                  color: Colors.grey,
+                )
+              : const SizedBox(),
+        ],
+      ),
+      body: Container(
+        padding: const EdgeInsets.only(top: 40.0),
+        color: backgroundColor,
+        child: SingleChildScrollView(
+          child: Column(
+            children: [
+              _rewardAmounts(context, ref, user, images, points, pastelBrown),
+              _thePerksRewardsBanner(points),
+            ],
+          ),
         ),
       ),
     );

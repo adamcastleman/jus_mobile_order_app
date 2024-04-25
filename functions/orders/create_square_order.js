@@ -55,6 +55,14 @@ const createSquareOrder = async (orderMap) => {
       })
       .filter(mod => mod && mod.name && mod.name.trim() !== ''); // Filter out null values
 
+
+      const itemBasePrice = item.price;
+      const totalModifiersPrice = item.modifications.reduce((acc, mod) => {
+        const jsonMod = JSON.parse(mod);
+        return acc + (jsonMod.price * jsonMod.quantity);
+      }, 0);
+      const finalPrice = itemBasePrice + totalModifiersPrice - item.itemDiscount;
+
     // Return line item object
     return {
       //Test Refresh: BCEVYZEZO7UE5YQCOQHVT3S7

@@ -37,9 +37,11 @@ exports.createOrder = functions.https.onCall(async (data, context) => {
       await getGiftCardIDFromGan(orderMap);
     }
 
+
     if (orderMap.totals.totalAmount !== 0) {
       // Process payment and return the result.
       const paymentResult = await processPayment(orderMap);
+
 
       // Check if paymentResult is valid and the payment is successful
       if (
@@ -66,11 +68,13 @@ exports.createOrder = functions.https.onCall(async (data, context) => {
     // Add the order to the database.
     await addOrderToDatabase(db, orderMap);
 
+
     // If userId is not null, update points and member savings.
     if (userId !== null) {
       await updatePoints(db, orderMap);
       await updateMemberSavings(db, orderMap);
     }
+
 
     //     Return a 200 status code on successful completion.
     return {

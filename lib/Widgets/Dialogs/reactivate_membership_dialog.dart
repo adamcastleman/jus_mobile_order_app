@@ -9,12 +9,12 @@ import 'package:jus_mobile_order_app/Models/subscription_model.dart';
 import 'package:jus_mobile_order_app/Providers/membership_providers.dart';
 import 'package:jus_mobile_order_app/Services/subscription_services.dart';
 import 'package:jus_mobile_order_app/Widgets/Buttons/elevated_button_large.dart';
+import 'package:jus_mobile_order_app/Widgets/Buttons/elevated_button_large_loading.dart';
 import 'package:jus_mobile_order_app/Widgets/General/category_display_widget.dart';
 import 'package:jus_mobile_order_app/Widgets/Tiles/subscription_invoice_tile.dart';
 import 'package:jus_mobile_order_app/Widgets/Tiles/update_subscription_payment_method_tile.dart';
 
-class ReactivateMembershipDialog extends StatelessWidget {
-  final WidgetRef ref;
+class ReactivateMembershipDialog extends ConsumerWidget {
   final SubscriptionModel subscriptionData;
   final int monthlyBillingAnchorDate;
   final SubscriptionInvoiceModel invoice;
@@ -22,8 +22,7 @@ class ReactivateMembershipDialog extends StatelessWidget {
   final List<PaymentsModel> creditCards;
 
   const ReactivateMembershipDialog(
-      {required this.ref,
-      required this.subscriptionData,
+      {required this.subscriptionData,
       required this.monthlyBillingAnchorDate,
       required this.invoice,
       required this.cardOnFile,
@@ -31,7 +30,8 @@ class ReactivateMembershipDialog extends StatelessWidget {
       super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final loading = ref.watch(updateMembershipLoadingProvider);
     return Container(
       padding: const EdgeInsets.all(12.0),
       child: Column(
@@ -61,15 +61,19 @@ class ReactivateMembershipDialog extends StatelessWidget {
             style: const TextStyle(fontWeight: FontWeight.bold),
           ),
           Spacing.vertical(12),
-          LargeElevatedButton(
-            buttonText: 'Resume Membership',
-            onPressed: () async {
-              ref.read(updateMembershipLoadingProvider.notifier).state = true;
-              await SubscriptionServices().resumeSquareSubscription();
-              Navigator.pop(context);
-              ref.invalidate(updateMembershipLoadingProvider);
-            },
-          )
+          loading == true
+              ? const LargeElevatedLoadingButton()
+              : LargeElevatedButton(
+                  buttonText: 'Resume Membership',
+                  onPressed: () async {
+                    // ref.read(updateMembershipLoadingProvider.notifier).state =
+                    //     true;
+                    await SubscriptionServices()
+                        .resumeSquareSubscriptionCloudFunction();
+                    // Navigator.pop(context);
+                    // ref.invalidate(updateMembershipLoadingProvider);
+                  },
+                ),
         ],
       ),
     );

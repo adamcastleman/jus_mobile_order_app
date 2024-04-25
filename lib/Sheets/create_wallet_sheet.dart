@@ -30,12 +30,9 @@ class CreateWalletSheet extends ConsumerWidget {
 
     final selectedCreditCard = ref.watch(selectedCreditCardProvider);
     final loadAmounts = ref.watch(walletLoadAmountsProvider);
-    final selectedLoadAmountIndex = ref.watch(selectedLoadAmountIndexProvider);
 
-    final formattedLoadAmount = (selectedLoadAmountIndex == null
-        ? ((loadAmounts[AppConstants.defaultWalletLoadAmountIndex] / 100)
-            .round())
-        : (loadAmounts[selectedLoadAmountIndex] / 100).round());
+    final formattedLoadAmount =
+        (loadAmounts[AppConstants.defaultWalletLoadAmountIndex] / 100).round();
 
     return CreditCardProviderWidget(
       builder: (creditCards) => Padding(

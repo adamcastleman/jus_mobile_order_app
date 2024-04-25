@@ -292,11 +292,8 @@ class ListOfIngredients extends StateNotifier<List<dynamic>> {
         'id': ingredient.id,
         'amount': 1,
         'isExtraCharge': isExtraCharge,
-        'price': ((ingredient.price * ((blended ?? 1) + (topping ?? 0)))
-            .toStringAsFixed(2)),
-        'memberPrice':
-            ((ingredient.memberPrice * ((blended ?? 1) + (topping ?? 0)))
-                .toStringAsFixed(2)),
+        'price': (ingredient.price).toStringAsFixed(2),
+        'memberPrice': (ingredient.memberPrice).toStringAsFixed(2),
         'blended': blended ?? 0,
         'topping': topping ?? 0,
       }
@@ -304,6 +301,7 @@ class ListOfIngredients extends StateNotifier<List<dynamic>> {
     newList.sort((a, b) => a['id'].compareTo(b['id']));
     int newItemIndex =
         newList.indexWhere((element) => element['id'] == ingredient.id);
+
     double cardWidth = 100.0;
     if (animatedListKey.currentState != null) {
       animatedListKey.currentState!.insertItem(
@@ -461,9 +459,8 @@ class ListOfIngredients extends StateNotifier<List<dynamic>> {
         'id': selectedIngredients[index]['id'],
         'isExtraCharge': isExtraCharge,
         'amount': calculateExtraChargeAmount(),
-        'price': ((price * calculateExtraChargeAmount())).toStringAsFixed(2),
-        'memberPrice':
-            ((memberPrice * calculateExtraChargeAmount())).toStringAsFixed(2),
+        'price': price.toStringAsFixed(2),
+        'memberPrice': memberPrice.toStringAsFixed(2),
         'blended': blended,
         'topping': topping,
       };
@@ -529,9 +526,8 @@ class ListOfIngredients extends StateNotifier<List<dynamic>> {
       newElement = {
         'id': selectedIngredients[index]['id'],
         'amount': calculateChargedAmount(),
-        'price': ((price * calculateChargedAmount())).toStringAsFixed(2),
-        'memberPrice':
-            ((memberPrice * calculateChargedAmount())).toStringAsFixed(2),
+        'price': price.toStringAsFixed(2),
+        'memberPrice': memberPrice.toStringAsFixed(2),
       };
     } else {
       newElement = {

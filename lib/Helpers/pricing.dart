@@ -83,28 +83,48 @@ class PricingHelpers {
   double extraChargeIngredientOnSingleItemForNonMembers(
       List<dynamic> selectedIngredients) {
     if (selectedIngredients.isNotEmpty) {
-      return selectedIngredients
-              .where((ingredient) => ingredient.isNotEmpty)
-              .map((ingredient) => double.parse(ingredient['price']))
-              .reduce((a, b) => a + b) /
-          100;
-    } else {
-      return 0.0;
+      return selectedIngredients.fold(0.0, (double total, ingredient) {
+            if (ingredient.isNotEmpty) {
+              double price =
+                  double.tryParse(ingredient['price'].toString()) ?? 0.0;
+              double quantity =
+                  double.tryParse(ingredient['amount'].toString()) ??
+                      1.0; // Correctly handle as double
+              int blended = ingredient['blended'] ?? 0;
+              int topping = ingredient['topping'] ?? 0;
+              int modifierMultiplier =
+                  (blended + topping > 0) ? (blended + topping) : 1;
+              return total + (price * quantity * modifierMultiplier);
+            }
+            return total;
+          }) /
+          100; // Convert to dollars
     }
+    return 0.0;
   }
 
   double extraChargeIngredientOnSingleItemForMembers(
       List<dynamic> selectedIngredients) {
     if (selectedIngredients.isEmpty) {
       return 0.0;
-    } else {
-      return selectedIngredients.fold(
-              0.0,
-              (total, ingredient) => ingredient.isEmpty
-                  ? total
-                  : total + double.parse(ingredient['memberPrice'])) /
-          100;
     }
+
+    return selectedIngredients.fold(0.0, (double total, ingredient) {
+          if (ingredient.isNotEmpty) {
+            double memberPrice =
+                double.tryParse(ingredient['memberPrice'].toString()) ?? 0.0;
+            double quantity =
+                double.tryParse(ingredient['amount'].toString()) ??
+                    1.0; // Now parsing as double
+            int blended = ingredient['blended'] ?? 0;
+            int topping = ingredient['topping'] ?? 0;
+            int modifierMultiplier =
+                (blended + topping > 0) ? (blended + topping) : 1;
+            return total + (memberPrice * quantity * modifierMultiplier);
+          }
+          return total;
+        }) /
+        100; // Convert to dollars
   }
 
   double individualProductSavingsForMembers(
@@ -138,11 +158,27 @@ class PricingHelpers {
     if (selectedIngredients.isEmpty) {
       return 0.0;
     }
-    return selectedIngredients
-            .where((ingredient) => ingredient.isNotEmpty)
-            .map((ingredient) => double.parse(ingredient['price']))
-            .reduce((a, b) => a + b) /
-        100;
+
+    double total = selectedIngredients.fold(0.0, (double acc, ingredient) {
+      if (ingredient.isNotEmpty) {
+        int blended = ingredient['blended'] ?? 0;
+        int topping = ingredient['topping'] ?? 0;
+        double quantity = double.tryParse(ingredient['amount'].toString()) ??
+            1.0; // Handle double values correctly
+        double pricePerUnit =
+            double.tryParse(ingredient['price'].toString()) ?? 0.0;
+        int modifierMultiplier =
+            (blended + topping > 0) ? (blended + topping) : 1;
+        return acc +
+            (pricePerUnit *
+                quantity *
+                modifierMultiplier); // Ensure all operands are of type double
+      }
+      return acc;
+    });
+
+    return total /
+        100; // Total is stored in cents, needs to be returned in dollars
   }
 
   double totalCostForExtraChargeIngredientsForMembers(WidgetRef ref) {
@@ -152,11 +188,26 @@ class PricingHelpers {
       return 0.0;
     }
 
-    return selectedIngredients
-            .where((ingredient) => ingredient.isNotEmpty)
-            .map((ingredient) => double.parse(ingredient['memberPrice']))
-            .reduce((a, b) => a + b) /
-        100;
+    double total = selectedIngredients.fold(0.0, (double acc, ingredient) {
+      if (ingredient.isNotEmpty) {
+        double memberPrice =
+            double.tryParse(ingredient['memberPrice'].toString()) ?? 0.0;
+        double quantity = double.tryParse(ingredient['amount'].toString()) ??
+            1.0; // Handle double for quantity
+        int blended = ingredient['blended'] ?? 0;
+        int topping = ingredient['topping'] ?? 0;
+        int modifierMultiplier =
+            (blended + topping > 0) ? (blended + topping) : 1;
+        return acc +
+            (memberPrice *
+                quantity *
+                modifierMultiplier); // Ensure all operations are with doubles
+      }
+      return acc;
+    });
+
+    return total /
+        100; // Total is stored in cents, needs to be returned in dollars
   }
 
   double discountTotalForNonMembers(WidgetRef ref) {

@@ -273,7 +273,18 @@ class ProductHelpers {
 
   determineModifierPriceText(UserModel user, List<dynamic> added, int index) {
     final isExtraCharge = added[index]['isExtraCharge'] == true;
-    final price = num.tryParse(added[index]['price'])! / 100;
+    num totalAmount = 0.0;
+    final pricePerUnit = num.tryParse(added[index]['price'])!;
+    final quantity = added[index]['amount'];
+    final blended = added[index]['blended'] ?? 0;
+    final topping = added[index]['topping'] ?? 0;
+
+    if (blended == 0 && topping == 0) {
+      totalAmount = pricePerUnit * quantity;
+    } else {
+      totalAmount = pricePerUnit * (blended + topping);
+    }
+    final price = totalAmount / 100; //Total amount is in cents
     final isActiveMember =
         user.uid != null && user.subscriptionStatus!.isActive;
     return isExtraCharge

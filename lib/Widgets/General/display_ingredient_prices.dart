@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:jus_mobile_order_app/Helpers/enums.dart';
+import 'package:jus_mobile_order_app/Helpers/pricing.dart';
 import 'package:jus_mobile_order_app/Providers/product_providers.dart';
 import 'package:jus_mobile_order_app/Providers/stream_providers.dart';
 
@@ -13,10 +14,18 @@ class DisplayPremiumIngredientPrices extends ConsumerWidget {
     final user = ref.watch(currentUserProvider).value!;
     final selectedIngredients = ref.watch(selectedIngredientsProvider);
 
-    if ((user.uid == null || user.subscriptionStatus!.isNotActive) &&
-        selectedIngredients[index]['price'] != 0.toStringAsFixed(2)) {
+    double pricePerUnit =
+        double.tryParse(selectedIngredients[index]['price'].toString()) ?? 0;
+    int amount =
+        int.tryParse(selectedIngredients[index]['amount'].toString()) ?? 0;
+    double totalPrice = pricePerUnit * amount;
+
+    String formattedPrice = totalPrice.toStringAsFixed(2);
+
+    if ((user.uid == null || user.subscriptionStatus?.isNotActive == true) &&
+        totalPrice != 0) {
       return Text(
-        '\$${(double.parse(selectedIngredients[index]['price']) / 100).toStringAsFixed(2)}',
+        PricingHelpers.formatAsCurrency(double.parse(formattedPrice) / 100),
         style: const TextStyle(fontSize: 11),
       );
     } else {

@@ -293,8 +293,8 @@ class RegisterPage extends ConsumerWidget {
     return LargeElevatedButton(
       buttonText: 'Sign Up',
       onPressed: () async {
-        ref.read(loadingProvider.notifier).state = true;
-        RegistrationValidators(ref: ref).validateForm(
+        // Step 1: Validate the form
+        bool isValid = RegistrationValidators(ref: ref).validateForm(
           firstName: firstName,
           lastName: lastName,
           email: email,
@@ -302,26 +302,35 @@ class RegisterPage extends ConsumerWidget {
           password: password,
           confirmPassword: confirmPassword,
         );
+
+        if (!isValid) {
+          return; // Early return if validation fails
+        }
+
+        // Step 2: Check if the phone number exists
+        ref.read(loadingProvider.notifier).state = true;
         final exists = await AuthServices().isPhoneNumberInUse(phone);
         if (exists) {
           ref.read(loadingProvider.notifier).state = false;
           NavigationHelpers.navigateToPartScreenSheetOrDialog(
-              context,
-              const InvalidSheetSinglePop(
-                  error:
-                      'This phone number already exists. Please use a different phone number.'));
-          return;
-        } else {
-          signUpUser(
-            context: context,
-            ref: ref,
-            email: email,
-            password: password,
-            firstName: firstName,
-            lastName: lastName,
-            phone: phone,
+            context,
+            const InvalidSheetSinglePop(
+                error:
+                    'This phone number already exists. Please use a different phone number.'),
           );
+          return; // Early return if phone number exists
         }
+
+        // Step 3: If all checks pass, proceed with creating the user
+        signUpUser(
+          context: context,
+          ref: ref,
+          email: email,
+          password: password,
+          firstName: firstName,
+          lastName: lastName,
+          phone: phone,
+        );
       },
     );
   }
@@ -391,12 +400,9 @@ class RegisterPage extends ConsumerWidget {
     required String phone,
   }) async {
     Map subscription = {};
-    if (!ref.read(formValidatedProvider.notifier).state) return;
 
-    ref.read(loadingProvider.notifier).state = true;
     try {
       final membership = await getLegacyMembershipDetails(context, ref, email);
-      ref.read(loadingProvider.notifier).state = true;
       if (membership.isNotEmpty) {
         subscription =
             await SubscriptionServices().migrateLegacyWooCommerceSubscription(
@@ -413,7 +419,6 @@ class RegisterPage extends ConsumerWidget {
       final user =
           await AuthServices().registerWithEmailAndPassword(email, password);
       if (user == null) throw Exception('Account creation failed');
-
       await UserServices(uid: user.uid).createUser(
         uid: user.uid,
         email: email,

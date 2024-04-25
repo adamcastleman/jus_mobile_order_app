@@ -2,7 +2,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:jus_mobile_order_app/Providers/payments_providers.dart';
 import 'package:jus_mobile_order_app/Widgets/Buttons/confirm_button.dart';
-import 'package:jus_mobile_order_app/constants.dart';
 
 class SelectWalletLoadAmountSheet extends ConsumerWidget {
   const SelectWalletLoadAmountSheet({super.key});
@@ -12,8 +11,7 @@ class SelectWalletLoadAmountSheet extends ConsumerWidget {
     final loadAmounts = ref.watch(walletLoadAmountsProvider);
     final loadAmountsIndex = ref.watch(selectedLoadAmountIndexProvider);
     FixedExtentScrollController scrollController = FixedExtentScrollController(
-      initialItem:
-          loadAmountsIndex ?? AppConstants.defaultWalletLoadAmountIndex,
+      initialItem: loadAmountsIndex,
     );
 
     return SizedBox(

@@ -150,7 +150,7 @@ class SelectedPaymentMethodNotifier extends StateNotifier<PaymentsModel> {
   }
 }
 
-final selectedLoadAmountIndexProvider = StateProvider<int?>((ref) => null);
+final selectedLoadAmountIndexProvider = StateProvider<int>((ref) => 3);
 
 final selectedLoadAmountProvider =
     StateProvider.autoDispose<int?>((ref) => null);

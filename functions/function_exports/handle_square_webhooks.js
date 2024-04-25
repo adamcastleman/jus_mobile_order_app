@@ -50,7 +50,7 @@ async function handleFailedInitialPayment(event) {
         return;
     }
 
-    const userId = userSnapshot.docs[0].id;  // Changed from .uid to .id
+    const userId = userSnapshot.docs[0].id;
     console.log('Failed initial payment for user:', userId);
     await db.collection('users').doc(userId).update({ subscriptionStatus: 'FAILED' });
 }

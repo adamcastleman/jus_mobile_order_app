@@ -132,8 +132,8 @@ class WebBulletListBanner extends StatelessWidget {
       child: BulletedList(
         title: title,
         items: items,
-        titleFontSize: screenSize <= AppConstants.tabletWidth ? 20 : 24,
-        bulletFontSize: 18,
+        titleFontSize: screenSize <= AppConstants.tabletWidth ? 18 : 24,
+        bulletFontSize: screenSize <= AppConstants.tabletWidth ? 16 : 18,
       ),
     );
   }
