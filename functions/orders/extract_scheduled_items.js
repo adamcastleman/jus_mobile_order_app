@@ -36,7 +36,7 @@ const extractScheduledItems = (orderMap) => {
         ? item.itemQuantity.toString()
         : "1",
       cleanseQuantityProduction: item.itemQuantity ? item.itemQuantity : 1,
-      cleanseType: item.name === "Full-Day Cleanse" ? "Full" : "JTD",
+      cleanseType: item.name === "Full-Day Cleanse" ? "Full" : "Half",
       customerName: `${firstName} ${lastName}`,
       customerPhoneNumber: phone,
       delivered: false,

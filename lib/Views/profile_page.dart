@@ -72,7 +72,7 @@ class ProfilePage extends ConsumerWidget {
                         context, ref, scaffoldKey),
                   ),
                   ProfilePageTile(
-                    icon: const Icon(CupertinoIcons.gift_alt_fill),
+                    icon: const Icon(CupertinoIcons.star_circle),
                     title: 'Points Activity',
                     onTap: () =>
                         _handlePointsActivityOnTap(context, ref, scaffoldKey),

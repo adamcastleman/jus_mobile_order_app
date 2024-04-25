@@ -25,7 +25,7 @@ class DisplayPremiumIngredientPrices extends ConsumerWidget {
     if ((user.uid == null || user.subscriptionStatus?.isNotActive == true) &&
         totalPrice != 0) {
       return Text(
-        PricingHelpers.formatAsCurrency(double.parse(formattedPrice) / 100),
+        '\$${PricingHelpers.formatAsCurrency(double.parse(formattedPrice) / 100)}',
         style: const TextStyle(fontSize: 11),
       );
     } else {
