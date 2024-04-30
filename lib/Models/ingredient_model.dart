@@ -20,5 +20,6 @@ class IngredientModel with _$IngredientModel {
     required bool isTopping,
     required bool isExtraCharge,
     required bool includeInAllergiesList,
+    List? variations,
   }) = _IngredientModel;
 }

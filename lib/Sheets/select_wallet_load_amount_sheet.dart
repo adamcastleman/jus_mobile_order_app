@@ -11,7 +11,7 @@ class SelectWalletLoadAmountSheet extends ConsumerWidget {
     final loadAmounts = ref.watch(walletLoadAmountsProvider);
     final loadAmountsIndex = ref.watch(selectedLoadAmountIndexProvider);
     FixedExtentScrollController scrollController = FixedExtentScrollController(
-      initialItem: loadAmountsIndex,
+      initialItem: loadAmountsIndex ?? 3,
     );
 
     return SizedBox(

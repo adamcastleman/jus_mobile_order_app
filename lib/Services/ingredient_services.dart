@@ -32,6 +32,7 @@ class IngredientServices {
         isBlended: data['isBlended'],
         isTopping: data['isTopping'],
         includeInAllergiesList: data['includeInAllergiesList'],
+        variations: data['variations'] ?? [],
       );
     }).toList();
   }

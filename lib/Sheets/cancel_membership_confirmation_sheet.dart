@@ -77,7 +77,8 @@ class CancelMembershipConfirmationSheet extends StatelessWidget {
                     ref.read(updateMembershipLoadingProvider.notifier).state =
                         true;
                     Navigator.pop(context);
-                    await SubscriptionServices().cancelSquareSubscription();
+                    await SubscriptionServices()
+                        .cancelSquareSubscriptionCloudFunction();
                     ref.invalidate(updateMembershipLoadingProvider);
                   },
                 ),

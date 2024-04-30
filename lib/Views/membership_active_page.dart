@@ -11,8 +11,10 @@ import 'package:jus_mobile_order_app/Models/payments_model.dart';
 import 'package:jus_mobile_order_app/Models/subscription_invoice_model.dart';
 import 'package:jus_mobile_order_app/Models/subscription_model.dart';
 import 'package:jus_mobile_order_app/Models/user_model.dart';
+import 'package:jus_mobile_order_app/Providers/membership_providers.dart';
 import 'package:jus_mobile_order_app/Providers/stream_providers.dart';
 import 'package:jus_mobile_order_app/Providers/theme_providers.dart';
+import 'package:jus_mobile_order_app/Services/subscription_services.dart';
 import 'package:jus_mobile_order_app/Sheets/cancel_membership_confirmation_sheet.dart';
 import 'package:jus_mobile_order_app/Widgets/Buttons/outlined_button_square_large.dart';
 import 'package:jus_mobile_order_app/Widgets/General/category_display_widget.dart';
@@ -91,8 +93,29 @@ class MembershipActivePage extends ConsumerWidget {
                       : const SizedBox(),
                   Spacing.vertical(10),
                   user.subscriptionStatus! == SubscriptionStatus.pendingCancel
-                      ? const Text(
-                          'You can still use this membership until the end of the current billing cycle')
+                      ? Column(
+                          children: [
+                            Spacing.vertical(10),
+                            const Text(
+                              'You can still use this membership until the end of the current billing cycle',
+                              textAlign: TextAlign.center,
+                            ),
+                            Spacing.vertical(10),
+                            LargeOutlineSquareButton(
+                              buttonText: 'Reinstate Membership',
+                              onPressed: () async {
+                                ref
+                                    .read(updateMembershipLoadingProvider
+                                        .notifier)
+                                    .state = true;
+                                await SubscriptionServices()
+                                    .undoCancelSquareSubscriptionCloudFunction();
+                                ref.invalidate(updateMembershipLoadingProvider);
+                              },
+                            ),
+                            Spacing.vertical(25),
+                          ],
+                        )
                       : LargeOutlineSquareButton(
                           buttonText: 'Cancel Membership',
                           onPressed: () {

@@ -35,25 +35,37 @@ const createSquareOrder = async (orderMap) => {
       });
     }
 
-    // Process modifiers
-    const modifiers = item.modifications
-      .map((mod) => {
-        try {
-          const jsonMod = JSON.parse(mod);
-          return {
-            name: jsonMod.name,
-            quantity: (jsonMod.quantity || '1').toString(),
-            basePriceMoney: {
-              amount: (jsonMod.price || '0').toString(),
-              currency: currency,
-            },
-          };
-        } catch (e) {
-          console.error("Error parsing modification:", mod, e);
-          return null; // Return null or some default value in case of error
-        }
-      })
-      .filter(mod => mod && mod.name && mod.name.trim() !== ''); // Filter out null values
+const modifiers = item.modifications
+  .map((mod) => {
+    try {
+      const jsonMod = JSON.parse(mod);
+      // Determine if catalogObjectId is provided and valid
+      const hasCatalogObjectId = jsonMod.squareVariationId && jsonMod.squareVariationId.trim() !== '';
+
+      console.log(jsonMod);
+
+
+      // Return object conditionally based on presence of catalogObjectId
+      return hasCatalogObjectId ? {
+      catalogObjectId: jsonMod.price === null || jsonMod.price === 0 ? 'TYG4VOCY7BISP2AIX34PD42D' : jsonMod.price === 25 ? '53K3TALGZM2FR4QRNMTGH5GO' : jsonMod.price === 100 ? 'QAIZQ3XVB57E6QGRNJADFVAW' : 'Q4WIFUARW5YSUH67YMS6M66M',
+      //TODO remove hardcoded value for catalogObjectId
+//        catalogObjectId: jsonMod.squareVariationId,
+        quantity: (jsonMod.quantity || '1').toString(),
+      } : {
+        name: jsonMod.name,
+        quantity: (jsonMod.quantity || '1').toString(),
+        basePriceMoney: {
+          amount: (jsonMod.price || '0').toString(),
+          currency: currency,
+        },
+      };
+    } catch (e) {
+      console.error("Error parsing modification:", mod, e);
+      return null; // Return null or some default value in case of error
+    }
+  })
+  .filter(mod => mod && (mod.name || mod.catalogObjectId)); // Ensure filtered items have either a name or a catalogObjectId
+
 
 
       const itemBasePrice = item.price;

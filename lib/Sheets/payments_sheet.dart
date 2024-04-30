@@ -80,13 +80,14 @@ class PaymentSettingsSheet extends ConsumerWidget {
               CategoryWidget(
                   text:
                       'Wallets - Earn ${PointsHelper().pointsDisplayText(ref: ref, isWallet: true)}/\$1'),
-            ListView.separated(
-              shrinkWrap: true,
-              primary: false,
-              itemCount: wallets.isEmpty ? 0 : wallets.length,
-              separatorBuilder: (context, index) => JusDivider.thin(),
-              itemBuilder: (context, index) => SavedPaymentTile(card: wallets[index]),
-            ),
+              ListView.separated(
+                shrinkWrap: true,
+                primary: false,
+                itemCount: wallets.isEmpty ? 0 : wallets.length,
+                separatorBuilder: (context, index) => JusDivider.thin(),
+                itemBuilder: (context, index) =>
+                    SavedPaymentTile(card: wallets[index]),
+              ),
               wallets.isEmpty ? const SizedBox() : JusDivider.thin(),
               AddPaymentMethodTile(
                 tileKey: walletTileKey,
@@ -107,7 +108,8 @@ class PaymentSettingsSheet extends ConsumerWidget {
                 primary: false,
                 itemCount: creditCards.isEmpty ? 0 : creditCards.length,
                 separatorBuilder: (context, index) => JusDivider.thin(),
-                itemBuilder: (context, index) => SavedPaymentTile(card: creditCards[index]),
+                itemBuilder: (context, index) =>
+                    SavedPaymentTile(card: creditCards[index]),
               ),
               creditCards.isEmpty ? const SizedBox() : JusDivider.thin(),
               AddPaymentMethodTile(
@@ -178,6 +180,7 @@ class PaymentSettingsSheet extends ConsumerWidget {
     } else {
       ref.read(walletTypeProvider.notifier).state = WalletType.createWallet;
       ref.read(tileKeyProvider.notifier).state = walletTileKey;
+      ref.invalidate(selectedLoadAmountIndexProvider);
       if (selectedPayment.isWallet) {
         PaymentMethodHelpers()
             .setCreditCardProviderToValidPaymentMethod(ref, creditCards.first);

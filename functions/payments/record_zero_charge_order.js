@@ -17,7 +17,7 @@ const recordZeroChargeOrder = async (orderMap) => {
       throw new Error("Invalid response from payment gateway");
     }
 
-    console.log(`Response: ${response.body}`);
+
 
     return JSON.parse(response.body);
   } catch (error) {

@@ -33,10 +33,11 @@ class LoadWalletAndPaySheet extends ConsumerWidget {
     final tileKey = UniqueKey();
     final selectedCreditCard = ref.watch(selectedCreditCardProvider);
     final loadAmounts = ref.watch(walletLoadAmountsProvider);
-
-    // Determine the load amount to format based on the user's selection or the minimum load amount.
-    final formattedLoadAmount =
-        (loadAmounts[AppConstants.defaultWalletLoadAmountIndex] / 100).round();
+    final loadAmountIndex = ref.watch(selectedLoadAmountIndexProvider);
+    final formattedLoadAmount = (loadAmounts[
+                loadAmountIndex ?? AppConstants.defaultWalletLoadAmountIndex] /
+            100)
+        .round();
 
     return CreditCardProviderWidget(
       builder: (creditCards) {

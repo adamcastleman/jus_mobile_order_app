@@ -139,13 +139,25 @@ class SubscriptionServices {
     }
   }
 
-  Future cancelSquareSubscription() async {
+  Future cancelSquareSubscriptionCloudFunction() async {
     HttpsCallableResult result = await FirebaseFunctions.instance
         .httpsCallable('cancelSubscription')
         .call();
 
     // Extract the data from the HttpsCallableResult and cast it to a Map
     return result.data as Map;
+  }
+
+  Future undoCancelSquareSubscriptionCloudFunction() async {
+    try {
+      await FirebaseFunctions.instance
+          .httpsCallable('undoCancelSubscription')
+          .call();
+    } catch (e) {
+      throw (e.toString());
+    }
+
+    return 200;
   }
 
   Future<List<SubscriptionInvoiceModel>> getSubscriptionInvoices(

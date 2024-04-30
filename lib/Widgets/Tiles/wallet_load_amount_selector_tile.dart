@@ -33,7 +33,10 @@ class WalletLoadAmountSelectorTile extends ConsumerWidget {
           ],
         ),
         trailing: const ChevronRightIcon(),
-        onTap: () => _handleTileTap(ref, context),
+        onTap: () => NavigationHelpers.navigateToPartScreenSheetOrDialog(
+          context,
+          const SelectWalletLoadAmountSheet(),
+        ),
       ),
     );
   }
@@ -69,16 +72,6 @@ class WalletLoadAmountSelectorTile extends ConsumerWidget {
       style: TextStyle(
         color: Colors.red,
       ),
-    );
-  }
-
-  void _handleTileTap(WidgetRef ref, BuildContext context) {
-    if (walletType != WalletType.addFunds) {
-      WalletHelpers.updateSelectedLoadAmountIndex(ref, user);
-    }
-    NavigationHelpers.navigateToPartScreenSheetOrDialog(
-      context,
-      const SelectWalletLoadAmountSheet(),
     );
   }
 }

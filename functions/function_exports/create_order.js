@@ -3,6 +3,7 @@ const admin = require("firebase-admin");
 const processPayment = require("../payments/process_payment");
 const recordZeroChargeOrder = require("../payments/record_zero_charge_order");
 const updateOrderMapWithPaymentData = require("../payments/update_order_map_with_payment_data");
+const updateOrderMapWithPaymentDataZeroCharge = require("../payments/update_order_map_with_payment_data_zero_charge");
 const createSquareOrder = require("../orders/create_square_order");
 const addOrderToDatabase = require("../orders/add_order_to_database");
 const updatePoints = require("../users/update_user_points");
@@ -64,6 +65,10 @@ exports.createOrder = functions.https.onCall(async (data, context) => {
       await updateWalletBalanceInDatabase(db, orderMap);
       await addGiftCardActivityToDatabase(db, orderMap);
     }
+
+    if(orderMap.totals.totalAmount === 0) {
+     updateOrderMapWithPaymentDataZeroCharge(orderMap);
+     }
 
     // Add the order to the database.
     await addOrderToDatabase(db, orderMap);

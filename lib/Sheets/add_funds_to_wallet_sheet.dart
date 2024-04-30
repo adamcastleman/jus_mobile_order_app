@@ -33,9 +33,12 @@ class AddFundsToWalletSheet extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final walletType = ref.watch(walletTypeProvider)!;
     final selectedCreditCard = ref.watch(selectedCreditCardProvider);
-    final loadAmount = ref.watch(walletLoadAmountsProvider);
-    final formattedLoadAmount =
-        ((loadAmount[AppConstants.defaultWalletLoadAmountIndex] / 100).round());
+    final loadAmounts = ref.watch(walletLoadAmountsProvider);
+    final loadAmountIndex = ref.watch(selectedLoadAmountIndexProvider);
+    final formattedLoadAmount = (loadAmounts[
+                loadAmountIndex ?? AppConstants.defaultWalletLoadAmountIndex] /
+            100)
+        .round();
     final tileKey = UniqueKey();
     final isDrawerOpen = AppConstants.scaffoldKey.currentState?.isEndDrawerOpen;
 

@@ -17,11 +17,12 @@ import 'package:jus_mobile_order_app/Widgets/General/home_greeting.dart';
 import 'package:jus_mobile_order_app/Widgets/Lists/favorites_list.dart';
 import 'package:jus_mobile_order_app/Widgets/Tiles/announcement_tile.dart';
 
-class MobileHomePage extends ConsumerWidget {
-  const MobileHomePage({super.key});
+class MobileHomePage extends StatelessWidget {
+  final WidgetRef ref;
+  const MobileHomePage({required this.ref, super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     final user = ref.watch(currentUserProvider).value ?? const UserModel();
     return DisplayImagesProviderWidget(
       builder: (images) => TopBannerProviderWidget(
@@ -29,10 +30,9 @@ class MobileHomePage extends ConsumerWidget {
           builder: (announcements) {
             if (user.uid == null) {
               return _guestHomePage(
-                  context, ref, user, banner, images, announcements);
+                  context, user, banner, images, announcements);
             }
-            return _userHomePage(
-                context, ref, user, images, banner, announcements);
+            return _userHomePage(context, user, images, banner, announcements);
           },
         ),
       ),
@@ -41,7 +41,6 @@ class MobileHomePage extends ConsumerWidget {
 
   _guestHomePage(
     BuildContext context,
-    WidgetRef ref,
     UserModel user,
     TopBannerModel banner,
     dynamic images,
@@ -127,7 +126,6 @@ class MobileHomePage extends ConsumerWidget {
 
   _userHomePage(
     BuildContext context,
-    WidgetRef ref,
     UserModel user,
     dynamic images,
     TopBannerModel banner,

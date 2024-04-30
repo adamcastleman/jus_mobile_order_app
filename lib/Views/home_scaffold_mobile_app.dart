@@ -36,7 +36,7 @@ class HomeScaffoldMobileApp extends ConsumerWidget {
                   ref.read(bottomNavigationProvider.notifier).state = value;
                 },
                 children: [
-                  const MobileHomePage(),
+                  MobileHomePage(ref: ref),
                   ScanPage(ref: ref),
                   const MenuPage(),
                   const ReviewOrderPage(),

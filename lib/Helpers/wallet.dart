@@ -83,27 +83,4 @@ class WalletHelpers {
 
     return loadAmounts.last;
   }
-
-  static void updateSelectedLoadAmountIndex(
-    WidgetRef ref,
-    UserModel user,
-  ) {
-    final loadAmounts = ref.read(walletLoadAmountsProvider);
-    final selectedLoadAmount = ref.watch(selectedLoadAmountProvider);
-    final walletBalance =
-        selectedLoadAmount ?? 0; // Assuming `wallet` is accessible from `user`
-    final minimumLoadAmount =
-        WalletHelpers().getDefaultLoadAmount(ref, user, walletBalance);
-
-    // Find the index of the load amount that matches or exceeds the minimum required load amount
-    final loadAmountIndex =
-        loadAmounts.indexWhere((amount) => amount >= minimumLoadAmount);
-
-    // Ensure the index is within the list bounds and not already set to the same value
-    if (loadAmountIndex != -1 &&
-        ref.read(selectedLoadAmountIndexProvider) != loadAmountIndex) {
-      ref.read(selectedLoadAmountIndexProvider.notifier).state =
-          loadAmountIndex;
-    }
-  }
 }

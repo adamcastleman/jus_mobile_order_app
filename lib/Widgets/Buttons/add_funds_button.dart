@@ -27,6 +27,7 @@ class AddFundsButton extends ConsumerWidget {
           HapticFeedback.lightImpact();
           Navigator.pop(context);
           ref.read(walletTypeProvider.notifier).state = WalletType.addFunds;
+          ref.invalidate(selectedLoadAmountIndexProvider);
           PaymentMethodHelpers()
               .setSelectedPaymentToValidPaymentMethod(ref, user, creditCards);
           NavigationHelpers.navigateToPartScreenSheetOrDialog(

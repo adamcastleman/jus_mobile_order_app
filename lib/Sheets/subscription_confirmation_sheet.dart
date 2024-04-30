@@ -141,7 +141,7 @@ class SubscriptionConfirmationSheet extends HookConsumerWidget {
                     callToActionText: 'Close',
                     callToActionOnPressed: () {
                       _invalidateSubscriptionProviders(ref);
-
+                      NavigationHelpers.popEndDrawer(context);
                       NavigationHelpers.navigateToHomePage(ref);
                       Navigator.pop(context);
                     },

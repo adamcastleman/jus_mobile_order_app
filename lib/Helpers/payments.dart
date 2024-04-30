@@ -479,6 +479,7 @@ class PaymentsHelpers {
         'name': nameWithQuantity,
         'quantity': extraChargeIngredientAmount.toString(),
         'price': premiumIngredientPrice.round(),
+        'squareVariationId': selectedIngredient['squareVariationId'],
       };
 
       addedList.add(jsonEncode(ingredientData));

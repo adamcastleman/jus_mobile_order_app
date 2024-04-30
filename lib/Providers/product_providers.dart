@@ -2,6 +2,7 @@ import 'package:collection/collection.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:jus_mobile_order_app/Helpers/enums.dart';
 import 'package:jus_mobile_order_app/Models/favorites_model.dart';
 import 'package:jus_mobile_order_app/Models/ingredient_model.dart';
 import 'package:jus_mobile_order_app/Models/product_model.dart';
@@ -286,6 +287,8 @@ class ListOfIngredients extends StateNotifier<List<dynamic>> {
       int? topping}) {
     final animatedListKey = ref.watch(animatedListKeyProvider);
     HapticFeedback.lightImpact();
+    var isUserActiveMember =
+        user.subscriptionStatus == SubscriptionStatus.active;
     var newList = [
       ...state,
       {
@@ -294,6 +297,11 @@ class ListOfIngredients extends StateNotifier<List<dynamic>> {
         'isExtraCharge': isExtraCharge,
         'price': (ingredient.price).toStringAsFixed(2),
         'memberPrice': (ingredient.memberPrice).toStringAsFixed(2),
+        'squareVariationId': ingredient.variations!.isEmpty
+            ? null
+            : isUserActiveMember
+                ? ingredient.variations![1]['squareVariationId']
+                : ingredient.variations![0]['squareVariationId'],
         'blended': blended ?? 0,
         'topping': topping ?? 0,
       }

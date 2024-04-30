@@ -64,14 +64,14 @@ class ReactivateMembershipDialog extends ConsumerWidget {
           loading == true
               ? const LargeElevatedLoadingButton()
               : LargeElevatedButton(
-                  buttonText: 'Resume Membership',
+                  buttonText: 'Reinstate Membership',
                   onPressed: () async {
-                    // ref.read(updateMembershipLoadingProvider.notifier).state =
-                    //     true;
+                    ref.read(updateMembershipLoadingProvider.notifier).state =
+                        true;
                     await SubscriptionServices()
                         .resumeSquareSubscriptionCloudFunction();
-                    // Navigator.pop(context);
-                    // ref.invalidate(updateMembershipLoadingProvider);
+                    Navigator.pop(context);
+                    ref.invalidate(updateMembershipLoadingProvider);
                   },
                 ),
         ],

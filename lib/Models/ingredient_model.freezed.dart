@@ -31,6 +31,7 @@ mixin _$IngredientModel {
   bool get isTopping => throw _privateConstructorUsedError;
   bool get isExtraCharge => throw _privateConstructorUsedError;
   bool get includeInAllergiesList => throw _privateConstructorUsedError;
+  List<dynamic>? get variations => throw _privateConstructorUsedError;
 
   @JsonKey(ignore: true)
   $IngredientModelCopyWith<IngredientModel> get copyWith =>
@@ -58,7 +59,8 @@ abstract class $IngredientModelCopyWith<$Res> {
       bool isBlended,
       bool isTopping,
       bool isExtraCharge,
-      bool includeInAllergiesList});
+      bool includeInAllergiesList,
+      List<dynamic>? variations});
 }
 
 /// @nodoc
@@ -89,6 +91,7 @@ class _$IngredientModelCopyWithImpl<$Res, $Val extends IngredientModel>
     Object? isTopping = null,
     Object? isExtraCharge = null,
     Object? includeInAllergiesList = null,
+    Object? variations = freezed,
   }) {
     return _then(_value.copyWith(
       uid: null == uid
@@ -151,6 +154,10 @@ class _$IngredientModelCopyWithImpl<$Res, $Val extends IngredientModel>
           ? _value.includeInAllergiesList
           : includeInAllergiesList // ignore: cast_nullable_to_non_nullable
               as bool,
+      variations: freezed == variations
+          ? _value.variations
+          : variations // ignore: cast_nullable_to_non_nullable
+              as List<dynamic>?,
     ) as $Val);
   }
 }
@@ -178,7 +185,8 @@ abstract class _$$IngredientModelImplCopyWith<$Res>
       bool isBlended,
       bool isTopping,
       bool isExtraCharge,
-      bool includeInAllergiesList});
+      bool includeInAllergiesList,
+      List<dynamic>? variations});
 }
 
 /// @nodoc
@@ -207,6 +215,7 @@ class __$$IngredientModelImplCopyWithImpl<$Res>
     Object? isTopping = null,
     Object? isExtraCharge = null,
     Object? includeInAllergiesList = null,
+    Object? variations = freezed,
   }) {
     return _then(_$IngredientModelImpl(
       uid: null == uid
@@ -269,6 +278,10 @@ class __$$IngredientModelImplCopyWithImpl<$Res>
           ? _value.includeInAllergiesList
           : includeInAllergiesList // ignore: cast_nullable_to_non_nullable
               as bool,
+      variations: freezed == variations
+          ? _value._variations
+          : variations // ignore: cast_nullable_to_non_nullable
+              as List<dynamic>?,
     ));
   }
 }
@@ -291,8 +304,10 @@ class _$IngredientModelImpl implements _IngredientModel {
       required this.isBlended,
       required this.isTopping,
       required this.isExtraCharge,
-      required this.includeInAllergiesList})
-      : _allergens = allergens;
+      required this.includeInAllergiesList,
+      final List<dynamic>? variations})
+      : _allergens = allergens,
+        _variations = variations;
 
   @override
   final String uid;
@@ -330,10 +345,19 @@ class _$IngredientModelImpl implements _IngredientModel {
   final bool isExtraCharge;
   @override
   final bool includeInAllergiesList;
+  final List<dynamic>? _variations;
+  @override
+  List<dynamic>? get variations {
+    final value = _variations;
+    if (value == null) return null;
+    if (_variations is EqualUnmodifiableListView) return _variations;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(value);
+  }
 
   @override
   String toString() {
-    return 'IngredientModel(uid: $uid, name: $name, image: $image, category: $category, categoryOrder: $categoryOrder, id: $id, price: $price, memberPrice: $memberPrice, allergens: $allergens, isModifiable: $isModifiable, isStandardTopping: $isStandardTopping, isBlended: $isBlended, isTopping: $isTopping, isExtraCharge: $isExtraCharge, includeInAllergiesList: $includeInAllergiesList)';
+    return 'IngredientModel(uid: $uid, name: $name, image: $image, category: $category, categoryOrder: $categoryOrder, id: $id, price: $price, memberPrice: $memberPrice, allergens: $allergens, isModifiable: $isModifiable, isStandardTopping: $isStandardTopping, isBlended: $isBlended, isTopping: $isTopping, isExtraCharge: $isExtraCharge, includeInAllergiesList: $includeInAllergiesList, variations: $variations)';
   }
 
   @override
@@ -365,7 +389,9 @@ class _$IngredientModelImpl implements _IngredientModel {
             (identical(other.isExtraCharge, isExtraCharge) ||
                 other.isExtraCharge == isExtraCharge) &&
             (identical(other.includeInAllergiesList, includeInAllergiesList) ||
-                other.includeInAllergiesList == includeInAllergiesList));
+                other.includeInAllergiesList == includeInAllergiesList) &&
+            const DeepCollectionEquality()
+                .equals(other._variations, _variations));
   }
 
   @override
@@ -385,7 +411,8 @@ class _$IngredientModelImpl implements _IngredientModel {
       isBlended,
       isTopping,
       isExtraCharge,
-      includeInAllergiesList);
+      includeInAllergiesList,
+      const DeepCollectionEquality().hash(_variations));
 
   @JsonKey(ignore: true)
   @override
@@ -411,7 +438,8 @@ abstract class _IngredientModel implements IngredientModel {
       required final bool isBlended,
       required final bool isTopping,
       required final bool isExtraCharge,
-      required final bool includeInAllergiesList}) = _$IngredientModelImpl;
+      required final bool includeInAllergiesList,
+      final List<dynamic>? variations}) = _$IngredientModelImpl;
 
   @override
   String get uid;
@@ -443,6 +471,8 @@ abstract class _IngredientModel implements IngredientModel {
   bool get isExtraCharge;
   @override
   bool get includeInAllergiesList;
+  @override
+  List<dynamic>? get variations;
   @override
   @JsonKey(ignore: true)
   _$$IngredientModelImplCopyWith<_$IngredientModelImpl> get copyWith =>

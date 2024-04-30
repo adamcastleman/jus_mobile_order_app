@@ -38,7 +38,7 @@ class MembershipAccountPage extends ConsumerWidget {
                         subscription.monthlyBillingAnchorDate == null
                     ? startDate.day
                     : subscription.monthlyBillingAnchorDate!;
-
+                print(subscriptionData);
                 if (user.subscriptionStatus!.isActive) {
                   return MembershipActivePage(
                     isDrawerOpen: isDrawerOpen,

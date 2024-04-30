@@ -17,6 +17,7 @@ class OpenLoadMoneyAndPaySheetButton extends ConsumerWidget {
       onPressed: () {
         HapticFeedback.lightImpact();
         ref.read(walletTypeProvider.notifier).state = WalletType.loadAndPay;
+        ref.invalidate(selectedLoadAmountIndexProvider);
         ModalBottomSheet().partScreen(
           enableDrag: true,
           isDismissible: true,

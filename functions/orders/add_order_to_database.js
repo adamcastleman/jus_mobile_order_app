@@ -23,7 +23,6 @@ const addOrderToDatabase = async (db, orderMap) => {
     await newOrderRef.set(orderWithoutCardSource);
 
     const scheduledItems = extractScheduledItems(orderWithoutCardSource);
-
     if (scheduledItems.length > 0) {
       sendScheduledItems(scheduledItems);
     }
@@ -32,11 +31,7 @@ const addOrderToDatabase = async (db, orderMap) => {
 
     for (let i = 0; i < orderWithoutCardSource.orderDetails.items.length; i++) {
       const item = orderWithoutCardSource.orderDetails.items[i];
-
-      if (
-        item.name === "Full-Day Cleanse" ||
-        item.name === "Half-Day Cleanse"
-      ) {
+      if (item.name === "Full-Day Cleanse" || item.name === "Half-Day Cleanse") {
         await sendCleanseInstructionsEmail(orderWithoutCardSource);
         break;
       }
