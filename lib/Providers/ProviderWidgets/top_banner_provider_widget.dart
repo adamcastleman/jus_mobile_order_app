@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:jus_mobile_order_app/Helpers/error.dart';
 import 'package:jus_mobile_order_app/Helpers/loading.dart';
 import 'package:jus_mobile_order_app/Models/top_banner_model.dart';
 import 'package:jus_mobile_order_app/Providers/stream_providers.dart';
+import 'package:jus_mobile_order_app/Widgets/Icons/error_icon.dart';
 
 class TopBannerProviderWidget extends ConsumerWidget {
   final Widget Function(TopBannerModel topBanner) builder;
@@ -19,8 +19,8 @@ class TopBannerProviderWidget extends ConsumerWidget {
     return topBannerData.when(
       error: (e, _) =>
           error ??
-          ShowError(
-            error: e.toString(),
+          const ErrorIcon(
+            iconSize: 24,
           ),
       loading: () => loading ?? const Loading(),
       data: (banner) => builder(banner),

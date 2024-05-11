@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:jus_mobile_order_app/Helpers/error.dart';
 import 'package:jus_mobile_order_app/Helpers/loading.dart';
 import 'package:jus_mobile_order_app/Providers/stream_providers.dart';
+import 'package:jus_mobile_order_app/Widgets/Icons/error_icon.dart';
 
 class DeleteAccountProviderWidget extends ConsumerWidget {
   final Widget Function(dynamic image) builder;
@@ -15,11 +15,7 @@ class DeleteAccountProviderWidget extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final image = ref.watch(deleteAccountImageProvider);
     return image.when(
-      error: (e, _) =>
-          error ??
-          ShowError(
-            error: e.toString(),
-          ),
+      error: (e, _) => error ?? const ErrorIcon(),
       loading: () => loading ?? const Loading(),
       data: (image) => builder(image),
     );

@@ -430,6 +430,7 @@ class ListOfIngredients extends StateNotifier<List<dynamic>> {
       'memberPrice': (memberPrice * 2).toStringAsFixed(2),
       'blended': blended,
       'topping': topping,
+      'squareVariationId': selectedIngredients[index]['squareVariationId']
     };
 
     calculateExtraChargeAmount() {
@@ -471,6 +472,7 @@ class ListOfIngredients extends StateNotifier<List<dynamic>> {
         'memberPrice': memberPrice.toStringAsFixed(2),
         'blended': blended,
         'topping': topping,
+        'squareVariationId': selectedIngredients[index]['squareVariationId']
       };
     } else {
       newElement = {
@@ -481,6 +483,7 @@ class ListOfIngredients extends StateNotifier<List<dynamic>> {
         'memberPrice': 0.toStringAsFixed(2),
         'blended': blended,
         'topping': topping,
+        'squareVariationId': selectedIngredients[index]['squareVariationId']
       };
     }
     newList.add(newElement);
@@ -529,6 +532,7 @@ class ListOfIngredients extends StateNotifier<List<dynamic>> {
       'amount': 2,
       'price': (price * 2).toStringAsFixed(2),
       'memberPrice': (memberPrice * 2).toStringAsFixed(2),
+      'squareVariationId': selectedIngredients[index]['squareVariationId']
     };
     if (isExtraCharge) {
       newElement = {
@@ -536,6 +540,7 @@ class ListOfIngredients extends StateNotifier<List<dynamic>> {
         'amount': calculateChargedAmount(),
         'price': price.toStringAsFixed(2),
         'memberPrice': memberPrice.toStringAsFixed(2),
+        'squareVariationId': selectedIngredients[index]['squareVariationId']
       };
     } else {
       newElement = {
@@ -543,6 +548,7 @@ class ListOfIngredients extends StateNotifier<List<dynamic>> {
         'amount': calculateNonChargedAmount(),
         'price': 0.toStringAsFixed(2),
         'memberPrice': 0.toStringAsFixed(2),
+        'squareVariationId': selectedIngredients[index]['squareVariationId']
       };
     }
 

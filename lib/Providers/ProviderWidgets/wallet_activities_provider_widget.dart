@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:jus_mobile_order_app/Helpers/error.dart';
 import 'package:jus_mobile_order_app/Helpers/loading.dart';
 import 'package:jus_mobile_order_app/Models/wallet_activities_model.dart';
 import 'package:jus_mobile_order_app/Providers/stream_providers.dart';
+import 'package:jus_mobile_order_app/Widgets/Icons/error_icon.dart';
 
 class WalletActivitiesProviderWidget extends ConsumerWidget {
   final Widget Function(List<WalletActivitiesModel> activities) builder;
@@ -18,11 +18,7 @@ class WalletActivitiesProviderWidget extends ConsumerWidget {
     final walletActivities =
         ref.watch(walletActivitiesProvider(user.uid ?? ''));
     return walletActivities.when(
-      error: (e, _) =>
-          error ??
-          ShowError(
-            error: e.toString(),
-          ),
+      error: (e, _) => error ?? const ErrorIcon(),
       loading: () => loading ?? const Loading(),
       data: (activities) => builder(activities),
     );

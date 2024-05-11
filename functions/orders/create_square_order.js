@@ -4,6 +4,56 @@ const { customAlphabet } = require("nanoid");
 const { createSquareClient } = require("../payments/square_client");
 const recordZeroChargeOrder = require("../payments/record_zero_charge_order");
 
+const idMapping = {
+    // Mapping each production ID to its corresponding sandbox ID, including member options
+    '7FNCX5HFHQZFFEEFXXBZ2GKF': 'Q4WIFUARW5YSUH67YMS6M66M', // Whey -> Whey
+    'MLECSZ7HFNFP4KAQU4KW466N': 'TYG4VOCY7BISP2AIX34PD42D', // Whey (Members) -> Whey (Members)
+    'MXD3CGC3D4KYAJU7KGLJ65PC': 'QAIZQ3XVB57E6QGRNJADFVAW', // Hemp -> Hemp
+    'RVLHRWIJESOOFYEVSIFPM6FL': 'KJMWG2XV25DOERIW4MHJA7XL', // Hemp (Members) -> Hemp (Members)
+    'Y5FC5YWKFSWLTQSIHB7DM7QW': '53K3TALGZM2FR4QRNMTGH5GO', // Chia -> Chia Seeds
+    'V4B6WBLN64HM4AZLCAAGZMCC': 'BT3UCZMLMHSXON3HIFNOWHKH', // Chia (Members) -> Chia Seeds (Members)
+    'CY63E4I7N7KBPNRLWCCEFZGH': 'TLUSGQ7G6IPHWX7TGDPR4SWF', // Almond Butter -> Almond Button
+    'RI3XUO3NKOH7L66KDNWUKQHF': 'L2Y5TPQY7LFLM6YQSETDOL4A', // Almond Butter (Members) -> Almond Butter (Members)
+    'R4L5JRZAOFCZ76BUW27YDWQF': 'YKLB2LVSSZI4NVYDQKTDFPDU', // PB -> Peanut Butter
+    'KBJZFKTVLLF67PNFX7MGPUTX': 'CGP7XCW3LONULATXN3D5YUEE', // PB (Members) -> Peanut Butter (Members)
+    'NZCMQY6RGCCDCM4ISH6XFZJQ': 'OO3ZAH4ACXAMBSXIVOXA6DZW', // Flax -> Flax Seeds
+    'CYDQYLTLDPMBTM27IFONVFT6': 'T72LTPSUC7RGGOOTBIG52TLB', // Flax (Members) -> Flax Seeds (Members)
+    '6JWHWF2TGDMJBPW2XI4A4ZUA': 'QS2XPUIJ6K33NDY4TGKPFTFN', // Guarana -> Guarana
+    'MD7YNZR23RHPPOUCEWGOLLYI': 'Z5ZLWW3QEGDHDTVDYRZXWKAH'  // Guarana (Members) -> Guarana (Members)
+};
+
+function getSandboxId(productionId) {
+    return idMapping[productionId] || productionId; // Fallback to the original ID if no mapping found
+}
+
+function aggregateModifiers(modifications) {
+    const modifierCounts = {};
+
+    modifications.forEach(mod => {
+        try {
+            const jsonMod = JSON.parse(mod);
+            const sandboxId = getSandboxId(jsonMod.squareVariationId);
+
+            if (modifierCounts[sandboxId]) {
+                modifierCounts[sandboxId].quantity += parseInt(jsonMod.quantity || '1');
+            } else {
+                modifierCounts[sandboxId] = {
+                    catalogObjectId: sandboxId,
+                    quantity: parseInt(jsonMod.quantity || '1')
+                };
+            }
+        } catch (e) {
+            console.error("Error parsing modification:", mod, e);
+        }
+    });
+
+    // Return the modifiers array formatted correctly for the API
+    return Object.values(modifierCounts).map(mod => ({
+        catalogObjectId: mod.catalogObjectId,
+        quantity: mod.quantity.toString() // Ensure quantity is a string
+    }));
+}
+
 const createSquareOrder = async (orderMap) => {
   const client = await createSquareClient();
   const currency = orderMap.paymentDetails.currency;
@@ -11,15 +61,11 @@ const createSquareOrder = async (orderMap) => {
   const alphabet = "0123456789ABCDEF";
   const nanoid = customAlphabet(alphabet, 10);
 
-  // Create an array to hold the discounts
-  let discounts = [];
+  let discounts = []; // Array to hold the discounts
 
-  // Convert orderMap.items to Square lineItems format
   const lineItems = orderMap.orderDetails.items.map((item, index) => {
-    // Generate a unique discount UID for each item
     const discountUID = `discount-${index}-${nanoid()}`;
     if (item.itemDiscount > 0) {
-      // Add discount details to the discounts array
       discounts.push({
         uid: discountUID,
         name: item.discountName,
@@ -35,48 +81,12 @@ const createSquareOrder = async (orderMap) => {
       });
     }
 
-const modifiers = item.modifications
-  .map((mod) => {
-    try {
-      const jsonMod = JSON.parse(mod);
-      // Determine if catalogObjectId is provided and valid
-      const hasCatalogObjectId = jsonMod.squareVariationId && jsonMod.squareVariationId.trim() !== '';
+   const modifiers = aggregateModifiers(item.modifications);
 
-      console.log(jsonMod);
+   console.log(modifiers);
 
-
-      // Return object conditionally based on presence of catalogObjectId
-      return hasCatalogObjectId ? {
-      catalogObjectId: jsonMod.price === null || jsonMod.price === 0 ? 'TYG4VOCY7BISP2AIX34PD42D' : jsonMod.price === 25 ? '53K3TALGZM2FR4QRNMTGH5GO' : jsonMod.price === 100 ? 'QAIZQ3XVB57E6QGRNJADFVAW' : 'Q4WIFUARW5YSUH67YMS6M66M',
-      //TODO remove hardcoded value for catalogObjectId
-//        catalogObjectId: jsonMod.squareVariationId,
-        quantity: (jsonMod.quantity || '1').toString(),
-      } : {
-        name: jsonMod.name,
-        quantity: (jsonMod.quantity || '1').toString(),
-        basePriceMoney: {
-          amount: (jsonMod.price || '0').toString(),
-          currency: currency,
-        },
-      };
-    } catch (e) {
-      console.error("Error parsing modification:", mod, e);
-      return null; // Return null or some default value in case of error
-    }
-  })
-  .filter(mod => mod && (mod.name || mod.catalogObjectId)); // Ensure filtered items have either a name or a catalogObjectId
-
-
-
-      const itemBasePrice = item.price;
-      const totalModifiersPrice = item.modifications.reduce((acc, mod) => {
-        const jsonMod = JSON.parse(mod);
-        return acc + (jsonMod.price * jsonMod.quantity);
-      }, 0);
-      const finalPrice = itemBasePrice + totalModifiersPrice - item.itemDiscount;
-
-    // Return line item object
     return {
+  //TODO replace catelogObjectId with production id
       //Test Refresh: BCEVYZEZO7UE5YQCOQHVT3S7
       //Test Small PineBowl: CWWLFMBOBTWCRRBPDLWCFYAQ
       //Test Full Day: INYCAWPKX7HQXQH7RIUQ2X5I
@@ -88,17 +98,15 @@ const modifiers = item.modifications
           : item.name === "Full-Day Cleanse"
           ? "INYCAWPKX7HQXQH7RIUQ2X5I"
           : "CWWLFMBOBTWCRRBPDLWCFYAQ",
-      quantity: item.isScheduled
-        ? (item.itemQuantity * item.scheduledQuantity).toString()
-        : item.itemQuantity.toString(),
+      //catalogObjectId: item.catalogObjectId,
+      quantity: item.itemQuantity.toString(),
       itemType: "ITEM",
       basePriceMoney: {
         amount: item.price.toString(),
         currency: currency,
       },
       modifiers: modifiers,
-      appliedDiscounts:
-        item.itemDiscount > 0 ? [{ discountUid: discountUID }] : [],
+      appliedDiscounts: item.itemDiscount > 0 ? [{ discountUid }] : [],
     };
   });
 
@@ -112,16 +120,11 @@ const modifiers = item.modifications
         customerId: orderMap.userDetails.squareCustomerId || null,
         lineItems: lineItems,
         discounts: discounts,
-        taxes: [
-          {
-            name: "Sales Tax",
-            percentage:
-              totalAmount !== 0
-                ? (orderMap.locationDetails.locationTaxRate * 100).toString()
-                : "0",
-            scope: "ORDER",
-          },
-        ],
+        taxes: [{
+          name: "Sales Tax",
+          percentage: totalAmount !== 0 ? (orderMap.locationDetails.locationTaxRate * 100).toString() : "0",
+          scope: "ORDER",
+        }],
       },
       idempotencyKey: uuidv4(),
     });
@@ -139,3 +142,4 @@ const modifiers = item.modifications
 };
 
 module.exports = createSquareOrder;
+

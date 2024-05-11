@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:jus_mobile_order_app/Widgets/Icons/error_icon.dart';
 
 class ImageCard extends StatelessWidget {
   final String imagePath;
@@ -37,7 +38,7 @@ class ImageCard extends StatelessWidget {
               ),
             ),
             errorWidget: (context, url, error) => const Center(
-              child: Icon(Icons.error, size: 50.0, color: Colors.black),
+              child: ErrorIcon(),
             ),
             fit: boxFit ?? BoxFit.cover,
           ),

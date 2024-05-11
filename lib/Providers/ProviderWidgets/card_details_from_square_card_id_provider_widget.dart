@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:jus_mobile_order_app/Helpers/error.dart';
 import 'package:jus_mobile_order_app/Helpers/loading.dart';
 import 'package:jus_mobile_order_app/Models/payments_model.dart';
 import 'package:jus_mobile_order_app/Models/user_model.dart';
 import 'package:jus_mobile_order_app/Providers/future_providers.dart';
 import 'package:jus_mobile_order_app/Providers/stream_providers.dart';
+import 'package:jus_mobile_order_app/Widgets/Icons/error_icon.dart';
 import 'package:tuple/tuple.dart';
 
 class CardDetailsFromSquareCardIdProviderWidget extends ConsumerWidget {
@@ -26,11 +26,7 @@ class CardDetailsFromSquareCardIdProviderWidget extends ConsumerWidget {
     final cardData = ref
         .watch(cardDetailsFromSquareCardIdProvider(Tuple2(user.uid, cardId)));
     return cardData.when(
-      error: (e, _) =>
-          error ??
-          ShowError(
-            error: e.toString(),
-          ),
+      error: (e, _) => error ?? const ErrorIcon(),
       loading: () => loading ?? const Loading(),
       data: (card) => builder(card),
     );

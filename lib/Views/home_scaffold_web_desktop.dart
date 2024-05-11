@@ -31,11 +31,8 @@ class HomeScaffoldWeb extends ConsumerWidget {
       drawerEnableOpenDragGesture: false,
       endDrawerEnableOpenDragGesture: false,
       key: scaffoldKey,
-      endDrawer: PopScope(
-        canPop: false,
-        child: EndDrawerWeb(
-          child: drawerPage,
-        ),
+      endDrawer: EndDrawerWeb(
+        child: drawerPage,
       ),
       appBar: PreferredSize(
         preferredSize: ResponsiveLayout.isMobileBrowser(context)
@@ -44,7 +41,7 @@ class HomeScaffoldWeb extends ConsumerWidget {
         child: Material(
           elevation: 2,
           child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 18.0),
+            padding: const EdgeInsets.symmetric(vertical: 12.0),
             child: WebNavBar(
               ref: ref,
               scaffoldKey: scaffoldKey,

@@ -15,6 +15,7 @@ import 'package:jus_mobile_order_app/Widgets/Buttons/close_button.dart';
 import 'package:jus_mobile_order_app/Widgets/Buttons/elevated_button_large.dart';
 import 'package:jus_mobile_order_app/Widgets/Buttons/elevated_button_large_loading.dart';
 import 'package:jus_mobile_order_app/Widgets/General/text_fields.dart';
+import 'package:jus_mobile_order_app/Widgets/Headers/sheet_header.dart';
 import 'package:jus_mobile_order_app/constants.dart';
 
 class ForgotPasswordPage extends ConsumerWidget {
@@ -27,6 +28,10 @@ class ForgotPasswordPage extends ConsumerWidget {
     final emailError = ref.watch(emailErrorProvider);
     final loading = ref.watch(loadingProvider);
     final firebaseError = ref.watch(firebaseLoginError);
+    final scaffoldKey = AppConstants.scaffoldKey;
+    bool isDrawerOpen = scaffoldKey.currentState == null
+        ? false
+        : scaffoldKey.currentState!.isEndDrawerOpen;
     return Scaffold(
       backgroundColor: Colors.transparent,
       resizeToAvoidBottomInset: true,
@@ -51,7 +56,10 @@ class ForgotPasswordPage extends ConsumerWidget {
                   : MainAxisAlignment.center,
               mainAxisSize: MainAxisSize.min,
               children: [
-                _buildHeader(context),
+                SheetHeader(
+                  title: 'Reset password',
+                  showCloseButton: !isDrawerOpen,
+                ),
                 _buildForgotPasswordInstructions(context),
                 Spacing.vertical(25),
                 _buildEmailTextField(context, ref, user, emailError),
@@ -168,7 +176,7 @@ class ForgotPasswordPage extends ConsumerWidget {
         ref.read(emailErrorProvider.notifier).state = null;
         ref.read(firebaseLoginError.notifier).state = null;
         Navigator.of(context).pop();
-        NavigationHelpers.navigateToLoginPage(context);
+        NavigationHelpers.navigateToLoginPage(context, ref);
       },
     );
   }
@@ -193,7 +201,9 @@ class ForgotPasswordPage extends ConsumerWidget {
       try {
         final navigator = Navigator.of(context);
         await AuthServices().forgotPassword(email: ref.read(emailProvider));
-        navigator.pop();
+        PlatformUtils.isWeb()
+            ? NavigationHelpers.popEndDrawer(context)
+            : navigator.pop();
       } catch (e) {
         ref.read(loadingProvider.notifier).state = false;
         ref.read(firebaseLoginError.notifier).state = e.toString();

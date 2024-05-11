@@ -16,7 +16,6 @@ import 'package:jus_mobile_order_app/Sheets/invalid_sheet_single_pop.dart';
 import 'package:jus_mobile_order_app/Views/membership_checkout_page.dart';
 import 'package:jus_mobile_order_app/Widgets/Buttons/elevated_button_large.dart';
 import 'package:jus_mobile_order_app/Widgets/Dialogs/reactivate_membership_dialog.dart';
-import 'package:jus_mobile_order_app/Widgets/Headers/sheet_header.dart';
 import 'package:jus_mobile_order_app/constants.dart';
 import 'package:jus_mobile_order_app/errors.dart';
 
@@ -43,7 +42,7 @@ class MembershipInactivePage extends ConsumerWidget {
     return Container(
       color: backgroundColor,
       padding: EdgeInsets.only(
-        top: isDrawerOpen ? 8.0 : 50.0,
+        top: isDrawerOpen ? 8.0 : 0.0,
         left: 12.0,
         right: 12.0,
         bottom: 50.0,
@@ -52,37 +51,24 @@ class MembershipInactivePage extends ConsumerWidget {
         crossAxisAlignment:
             CrossAxisAlignment.stretch, // Stretch column items horizontally
         children: [
-          SheetHeader(
-            title: 'Membership',
-            showCloseButton: !isDrawerOpen,
+          Text(
+            'Your subscription is ${SubscriptionStatusFormatter.format(user.subscriptionStatus!.name).uncapitalize}.',
+            style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
           ),
-          Expanded(
-            // Expanded to center the text widgets vertically
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  'Your subscription is ${SubscriptionStatusFormatter.format(user.subscriptionStatus!.name).uncapitalize}.',
-                  style: const TextStyle(
-                      fontSize: 24, fontWeight: FontWeight.bold),
+          Spacing.vertical(4),
+          user.subscriptionStatus! == SubscriptionStatus.paused
+              ? const Text(
+                  'This typically occurs when your latest payment has failed. You may need to update your payment method.',
+                  style: TextStyle(fontSize: 14),
+                  textAlign: TextAlign.center,
+                )
+              : const Text(
+                  'You are no longer being charged.',
+                  style: TextStyle(
+                    fontSize: 16,
+                  ),
+                  textAlign: TextAlign.center,
                 ),
-                Spacing.vertical(4),
-                user.subscriptionStatus! == SubscriptionStatus.paused
-                    ? const Text(
-                        'This typically occurs when your latest payment has failed. You may need to update your payment method.',
-                        style: TextStyle(fontSize: 14),
-                        textAlign: TextAlign.center,
-                      )
-                    : const Text(
-                        'You are no longer being charged.',
-                        style: TextStyle(
-                          fontSize: 16,
-                        ),
-                        textAlign: TextAlign.center,
-                      ),
-              ],
-            ),
-          ),
           LargeElevatedButton(
             buttonText: 'Reactivate Membership',
             onPressed: () {

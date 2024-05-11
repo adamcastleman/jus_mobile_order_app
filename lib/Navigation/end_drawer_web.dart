@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:jus_mobile_order_app/Helpers/utilities.dart';
 import 'package:jus_mobile_order_app/Providers/navigation_providers.dart';
 import 'package:jus_mobile_order_app/Providers/order_providers.dart';
 import 'package:jus_mobile_order_app/Providers/theme_providers.dart';
@@ -27,8 +28,12 @@ class EndDrawerWeb extends ConsumerWidget {
           ),
           Container(
             color: backgroundColor,
-            height: double.infinity,
-            width: 430,
+            height: MediaQuery.of(context).size.height,
+            width: ResponsiveLayout.isWeb(context)
+                ? 430
+                : ResponsiveLayout.isMobileBrowser(context)
+                    ? MediaQuery.of(context).size.width
+                    : double.infinity,
             child: Stack(
               children: [
                 child,

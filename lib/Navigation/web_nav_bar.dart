@@ -42,7 +42,7 @@ class WebNavBar extends StatelessWidget {
             child: LogoButton(),
           ),
           SizedBox(
-            width: 125,
+            width: 110,
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.center,
               mainAxisAlignment: MainAxisAlignment.spaceBetween,

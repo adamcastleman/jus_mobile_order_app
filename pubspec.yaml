@@ -23,6 +23,7 @@ dependencies:
   js: ^0.6.7
   universal_html: ^2.2.4
   flutter_html: ^3.0.0-beta.2
+  url_strategy: ^0.2.0
   freezed_annotation: ^2.2.0
   package_info_plus: ^6.0.0
   flutter_in_store_app_version_checker: ^1.6.1

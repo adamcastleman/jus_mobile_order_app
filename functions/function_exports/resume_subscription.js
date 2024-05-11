@@ -31,6 +31,8 @@ exports.resumeSubscription = functions.https.onCall(async (data, context) => {
     const subscriptionDoc = querySnapshot.docs[0];
     const subscriptionId = subscriptionDoc.data().subscriptionId;
 
+    console.log(subscriptionId);
+
     await resumeSquareSubscription(subscriptionId);
 
     await db.collection("users").doc(userId).update({

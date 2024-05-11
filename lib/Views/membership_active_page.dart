@@ -18,7 +18,6 @@ import 'package:jus_mobile_order_app/Services/subscription_services.dart';
 import 'package:jus_mobile_order_app/Sheets/cancel_membership_confirmation_sheet.dart';
 import 'package:jus_mobile_order_app/Widgets/Buttons/outlined_button_square_large.dart';
 import 'package:jus_mobile_order_app/Widgets/General/category_display_widget.dart';
-import 'package:jus_mobile_order_app/Widgets/Headers/sheet_header.dart';
 import 'package:jus_mobile_order_app/Widgets/Tiles/subscription_invoice_tile.dart';
 import 'package:jus_mobile_order_app/Widgets/Tiles/update_subscription_payment_method_tile.dart';
 
@@ -50,122 +49,106 @@ class MembershipActivePage extends ConsumerWidget {
         ? ''
         : DateFormat('M/d/yyyy').format(chargeThruDate ?? DateTime.now());
 
-    return Container(
-      color: backgroundColor,
-      padding: EdgeInsets.only(
-        top: isDrawerOpen == true ? 8.0 : 50.0,
-        left: 12.0,
-        right: 12.0,
-      ),
-      child: Column(
-        children: [
-          Expanded(
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.only(bottom: 30.0),
-              child: Column(
-                children: [
-                  SheetHeader(
-                    title: 'Membership',
-                    showCloseButton: isDrawerOpen == true ? false : true,
-                  ),
-                  Spacing.vertical(15),
-                  const CategoryWidget(text: 'Subscription Details'),
-                  ListTile(
-                    leading: Icon(_displayStatusIcon(user.subscriptionStatus!)),
-                    title: const Text('Status'),
-                    trailing: Text(
-                        SubscriptionStatusFormatter.format(
-                            user.subscriptionStatus!.name),
-                        style: trailingStyle),
-                  ),
-                  _buildStartDateListTile(
-                      user, formattedStartDate, trailingStyle),
-                  chargeThruDate == null || startDate.isBefore(DateTime.now())
-                      ? ListTile(
-                          leading: const Icon(CupertinoIcons.calendar),
-                          title: user.subscriptionStatus! ==
-                                  SubscriptionStatus.pendingCancel
-                              ? const Text('Cancel date')
-                              : const Text('Next billing date'),
-                          trailing: Text(formattedChargeThruDate,
-                              style: trailingStyle),
-                        )
-                      : const SizedBox(),
-                  Spacing.vertical(10),
-                  user.subscriptionStatus! == SubscriptionStatus.pendingCancel
-                      ? Column(
-                          children: [
-                            Spacing.vertical(10),
-                            const Text(
-                              'You can still use this membership until the end of the current billing cycle',
-                              textAlign: TextAlign.center,
-                            ),
-                            Spacing.vertical(10),
-                            LargeOutlineSquareButton(
-                              buttonText: 'Reinstate Membership',
-                              onPressed: () async {
-                                ref
-                                    .read(updateMembershipLoadingProvider
-                                        .notifier)
-                                    .state = true;
-                                await SubscriptionServices()
-                                    .undoCancelSquareSubscriptionCloudFunction();
-                                ref.invalidate(updateMembershipLoadingProvider);
-                              },
-                            ),
-                            Spacing.vertical(25),
-                          ],
-                        )
-                      : LargeOutlineSquareButton(
-                          buttonText: 'Cancel Membership',
-                          onPressed: () {
-                            NavigationHelpers.navigateToPartScreenSheetOrDialog(
-                              context,
-                              CancelMembershipConfirmationSheet(
-                                ref: ref,
-                              ),
-                            );
-                          },
+    return SingleChildScrollView(
+      padding: const EdgeInsets.only(bottom: 30.0),
+      child: Container(
+        color: backgroundColor,
+        child: Column(
+          children: [
+            Spacing.vertical(15),
+            const CategoryWidget(text: 'Subscription Details'),
+            ListTile(
+              leading: Icon(_displayStatusIcon(user.subscriptionStatus!)),
+              title: const Text('Status'),
+              trailing: Text(
+                  SubscriptionStatusFormatter.format(
+                      user.subscriptionStatus!.name),
+                  style: trailingStyle),
+            ),
+            _buildStartDateListTile(user, formattedStartDate, trailingStyle),
+            chargeThruDate == null || startDate.isBefore(DateTime.now())
+                ? ListTile(
+                    leading: const Icon(CupertinoIcons.calendar),
+                    title: user.subscriptionStatus! ==
+                            SubscriptionStatus.pendingCancel
+                        ? const Text('Cancel date')
+                        : const Text('Next billing date'),
+                    trailing:
+                        Text(formattedChargeThruDate, style: trailingStyle),
+                  )
+                : const SizedBox(),
+            Spacing.vertical(10),
+            user.subscriptionStatus! == SubscriptionStatus.pendingCancel
+                ? Column(
+                    children: [
+                      Spacing.vertical(10),
+                      const Text(
+                        'You can still use this membership until the end of the current billing cycle',
+                        textAlign: TextAlign.center,
+                      ),
+                      Spacing.vertical(10),
+                      LargeOutlineSquareButton(
+                        buttonText: 'Reinstate Membership',
+                        onPressed: () async {
+                          ref
+                              .read(updateMembershipLoadingProvider.notifier)
+                              .state = true;
+                          await SubscriptionServices()
+                              .undoCancelSquareSubscriptionCloudFunction();
+                          ref.invalidate(updateMembershipLoadingProvider);
+                        },
+                      ),
+                      Spacing.vertical(25),
+                    ],
+                  )
+                : LargeOutlineSquareButton(
+                    buttonText: 'Cancel Membership',
+                    onPressed: () {
+                      NavigationHelpers.navigateToPartScreenSheetOrDialog(
+                        context,
+                        CancelMembershipConfirmationSheet(
+                          ref: ref,
                         ),
-                  Spacing.vertical(25),
-                  const CategoryWidget(text: 'Your Benefits'),
-                  ListTile(
-                    leading: const Icon(CupertinoIcons.money_dollar_circle),
-                    title: const Text('Total savings'),
-                    trailing: Text('\$${subscriptionData.totalSaved ?? 0}',
-                        style: trailingStyle),
-                  ),
-                  ListTile(
-                    leading: const Icon(CupertinoIcons.gift),
-                    title: const Text('Bonus points'),
-                    trailing: Text('${subscriptionData.bonusPoints ?? 0}',
-                        style: trailingStyle),
-                  ),
-                  Spacing.vertical(25),
-                  const CategoryWidget(text: 'Payment Method'),
-                  UpdateSubscriptionPaymentMethodTile(
-                    subscriptionData: subscriptionData,
-                    creditCards: creditCards,
-                    cardOnFile: cardOnFile,
-                  ),
-                  Spacing.vertical(25),
-                  const CategoryWidget(text: 'Subscription Payments'),
-                  ListView.separated(
-                    shrinkWrap: true,
-                    primary: false,
-                    itemCount: invoices.length,
-                    separatorBuilder: (context, index) => JusDivider.thin(),
-                    itemBuilder: (context, index) {
-                      return SubscriptionInvoiceTile(invoice: invoices[index]);
+                      );
                     },
                   ),
-                  const Text('We show up to 10 billing cycles.'),
-                  // Spacing.vertical(15),
-                ],
-              ),
+            Spacing.vertical(25),
+            const CategoryWidget(text: 'Your Benefits'),
+            ListTile(
+              leading: const Icon(CupertinoIcons.money_dollar_circle),
+              title: const Text('Total savings'),
+              trailing: Text('\$${subscriptionData.totalSaved ?? 0}',
+                  style: trailingStyle),
             ),
-          ),
-        ],
+            ListTile(
+              leading: const Icon(CupertinoIcons.gift),
+              title: const Text('Bonus points'),
+              trailing: Text('${subscriptionData.bonusPoints ?? 0}',
+                  style: trailingStyle),
+            ),
+            Spacing.vertical(25),
+            const CategoryWidget(text: 'Payment Method'),
+            UpdateSubscriptionPaymentMethodTile(
+              subscriptionData: subscriptionData,
+              creditCards: creditCards,
+              cardOnFile: cardOnFile,
+            ),
+            Spacing.vertical(25),
+            const CategoryWidget(text: 'Subscription Payments'),
+            ListView.separated(
+              shrinkWrap: true,
+              primary: false,
+              itemCount: invoices.length,
+              separatorBuilder: (context, index) => JusDivider.thin(),
+              itemBuilder: (context, index) {
+                return SubscriptionInvoiceTile(invoice: invoices[index]);
+              },
+            ),
+            Spacing.vertical(25),
+            const Text('We show up to 10 billing cycles.'),
+            // Spacing.vertical(15),
+          ],
+        ),
       ),
     );
   }

@@ -13,9 +13,11 @@ import 'package:jus_mobile_order_app/Providers/loading_providers.dart';
 import 'package:jus_mobile_order_app/Providers/payments_providers.dart';
 import 'package:jus_mobile_order_app/Providers/stream_providers.dart';
 import 'package:jus_mobile_order_app/Sheets/create_wallet_sheet.dart';
+import 'package:jus_mobile_order_app/Views/register_page.dart';
 import 'package:jus_mobile_order_app/Widgets/General/sheet_notch.dart';
 import 'package:jus_mobile_order_app/Widgets/Icons/chevron_right_with_loading_icon.dart';
 import 'package:jus_mobile_order_app/Widgets/Tiles/payment_option_tile.dart';
+import 'package:jus_mobile_order_app/constants.dart';
 
 class ChoosePaymentTypeSheet extends ConsumerWidget {
   const ChoosePaymentTypeSheet({super.key});
@@ -91,8 +93,9 @@ class ChoosePaymentTypeSheet extends ConsumerWidget {
                     PaymentMethodHelpers().validateCreateWalletSheet(
                         user: user,
                         paymentSources: creditCards,
-                        onGuest: () =>
-                            NavigationHelpers.navigateToRegisterPage(context),
+                        onGuest: () => NavigationHelpers
+                            .navigateToFullScreenSheetOrEndDrawer(context, ref,
+                                AppConstants.scaffoldKey, const RegisterPage()),
                         onEmptyPaymentSource: () =>
                             ErrorHelpers.showSinglePopError(
                               context,

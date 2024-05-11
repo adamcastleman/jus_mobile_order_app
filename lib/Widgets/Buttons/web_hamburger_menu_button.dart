@@ -14,7 +14,10 @@ class WebHamburgerMenuButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return InkWell(
       hoverColor: Colors.transparent,
-      child: const Icon(CupertinoIcons.line_horizontal_3),
+      child: const Icon(
+        CupertinoIcons.line_horizontal_3,
+        size: 26,
+      ),
       onTap: () {
         ref.read(isInHamburgerMenuProvider.notifier).state = true;
         NavigationHelpers.navigateToHamburgerMenu(ref, scaffoldKey);

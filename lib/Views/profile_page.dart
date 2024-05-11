@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:jus_mobile_order_app/Helpers/enums.dart';
 import 'package:jus_mobile_order_app/Helpers/navigation.dart';
@@ -72,7 +73,7 @@ class ProfilePage extends ConsumerWidget {
                         context, ref, scaffoldKey),
                   ),
                   ProfilePageTile(
-                    icon: const Icon(CupertinoIcons.star_circle),
+                    icon: const Icon(FontAwesomeIcons.star),
                     title: 'Points Activity',
                     onTap: () =>
                         _handlePointsActivityOnTap(context, ref, scaffoldKey),

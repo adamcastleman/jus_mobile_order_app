@@ -3,8 +3,10 @@ import 'package:flutter/services.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:jus_mobile_order_app/Helpers/navigation.dart';
 import 'package:jus_mobile_order_app/Helpers/spacing_widgets.dart';
+import 'package:jus_mobile_order_app/Views/register_page.dart';
 import 'package:jus_mobile_order_app/Widgets/Buttons/elevated_button_medium.dart';
 import 'package:jus_mobile_order_app/Widgets/Buttons/info_button.dart';
+import 'package:jus_mobile_order_app/constants.dart';
 
 class RewardsGuestCheckout extends ConsumerWidget {
   const RewardsGuestCheckout({super.key});
@@ -42,7 +44,8 @@ class RewardsGuestCheckout extends ConsumerWidget {
               buttonText: 'Join Rewards',
               onPressed: () {
                 HapticFeedback.lightImpact();
-                NavigationHelpers.navigateToRegisterPage(context);
+                NavigationHelpers.navigateToFullScreenSheetOrEndDrawer(context,
+                    ref, AppConstants.scaffoldKey, const RegisterPage());
               },
             ),
           ],

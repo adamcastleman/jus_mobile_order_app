@@ -15,7 +15,7 @@ class ProfileIconButton extends ConsumerWidget {
       onTap: onPressed,
       child: Icon(
         CupertinoIcons.person_alt_circle,
-        size: ResponsiveLayout.isMobileBrowser(context) ? 30 : 35,
+        size: ResponsiveLayout.isMobileBrowser(context) ? 28 : 35,
       ),
     );
   }

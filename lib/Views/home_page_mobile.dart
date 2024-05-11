@@ -12,10 +12,12 @@ import 'package:jus_mobile_order_app/Providers/ProviderWidgets/top_banner_provid
 import 'package:jus_mobile_order_app/Providers/product_providers.dart';
 import 'package:jus_mobile_order_app/Providers/stream_providers.dart';
 import 'package:jus_mobile_order_app/Providers/theme_providers.dart';
+import 'package:jus_mobile_order_app/Views/register_page.dart';
 import 'package:jus_mobile_order_app/Widgets/General/banner_call_to_action.dart';
 import 'package:jus_mobile_order_app/Widgets/General/home_greeting.dart';
 import 'package:jus_mobile_order_app/Widgets/Lists/favorites_list.dart';
 import 'package:jus_mobile_order_app/Widgets/Tiles/announcement_tile.dart';
+import 'package:jus_mobile_order_app/constants.dart';
 
 class MobileHomePage extends StatelessWidget {
   final WidgetRef ref;
@@ -81,7 +83,8 @@ class MobileHomePage extends StatelessWidget {
               callToActionText: 'Sign Up',
               callToActionOnPressed: () {
                 HapticFeedback.lightImpact();
-                NavigationHelpers.navigateToRegisterPage(context);
+                NavigationHelpers.navigateToFullScreenSheetOrEndDrawer(context,
+                    ref, AppConstants.scaffoldKey, const RegisterPage());
               },
               titleMaxLines: 1,
               title: 'Save Favorites',

@@ -2,13 +2,16 @@ const admin = require("firebase-admin");
 const fetchUserData = require("../users/fetch_user_data");
 
 const updateMemberSavings = async (db, orderMap) => {
+console.log('in update member savings');
   const userData = await fetchUserData(db, orderMap.userDetails.userId);
   if (!userData) {
     console.log("User document does not exist");
     return { error: "User not found" };
   }
 
-  const isMember = userData.isActiveMember;
+  const isMember = userData.subscriptionStatus === 'ACTIVE' || userData.subscriptionStatus === 'PENDING-CANCEL' || userData.subscriptionStatus === 'PENDING';
+
+  console.log(isMember);
 
   if (isMember) {
     const savedThisOrder = orderMap.userDetails.memberSavings;

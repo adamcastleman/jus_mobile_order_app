@@ -11,6 +11,7 @@ import 'package:jus_mobile_order_app/Providers/order_providers.dart';
 import 'package:jus_mobile_order_app/Providers/points_providers.dart';
 import 'package:jus_mobile_order_app/Providers/stream_providers.dart';
 import 'package:jus_mobile_order_app/Providers/theme_providers.dart';
+import 'package:jus_mobile_order_app/Views/register_page.dart';
 import 'package:jus_mobile_order_app/Widgets/Buttons/close_button.dart';
 import 'package:jus_mobile_order_app/Widgets/General/banner_bulleted_list.dart';
 import 'package:jus_mobile_order_app/Widgets/General/banner_call_to_action.dart';
@@ -18,6 +19,7 @@ import 'package:jus_mobile_order_app/Widgets/General/banner_rewards.dart';
 import 'package:jus_mobile_order_app/Widgets/General/banner_stepper.dart';
 import 'package:jus_mobile_order_app/Widgets/General/display_user_current_points_widget.dart';
 import 'package:jus_mobile_order_app/Widgets/General/web_footer_banner.dart';
+import 'package:jus_mobile_order_app/constants.dart';
 
 class PointsInformationPage extends ConsumerWidget {
   final bool showCloseButton;
@@ -112,7 +114,8 @@ class PointsInformationPage extends ConsumerWidget {
               callToActionText: 'Sign up',
               callToActionOnPressed: () {
                 HapticFeedback.lightImpact();
-                NavigationHelpers.navigateToRegisterPage(context);
+                NavigationHelpers.navigateToFullScreenSheetOrEndDrawer(context,
+                    ref, AppConstants.scaffoldKey, const RegisterPage());
               },
               titleMaxLines: 1,
               title: 'Points & Rewards',
@@ -215,7 +218,11 @@ class PointsInformationPage extends ConsumerWidget {
             }
 
             user.uid == null || user.uid!.isEmpty
-                ? NavigationHelpers.navigateToRegisterPage(context)
+                ? NavigationHelpers.navigateToFullScreenSheetOrEndDrawer(
+                    context,
+                    ref,
+                    AppConstants.scaffoldKey,
+                    const RegisterPage())
                 : NavigationHelpers().navigateToMenuPage(context, ref);
           },
         ),

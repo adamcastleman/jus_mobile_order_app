@@ -11,9 +11,7 @@ function getCurrentDateString() {
     return `${year}-${month}-${day}`;
 }
 
-const resumeSquareSubscription = async ({
-  subscriptionId
-}) => {
+const resumeSquareSubscription = async (subscriptionId) => {
   const client = await createSquareClient();
 
   // Get the current date formatted as YYYY-MM-DD

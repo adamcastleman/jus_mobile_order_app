@@ -24,7 +24,7 @@ class SignedOutProfilePage extends ConsumerWidget {
           callToActionText: PlatformUtils.isWeb() ? 'Sign in' : 'Sign up',
           callToActionOnPressed: () {
             HapticFeedback.lightImpact();
-            NavigationHelpers.authNavigation(context);
+            NavigationHelpers.authNavigation(context, ref);
           },
           titleMaxLines: 1,
           title: PlatformUtils.isWeb()

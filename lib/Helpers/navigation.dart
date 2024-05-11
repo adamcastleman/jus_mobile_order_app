@@ -306,69 +306,26 @@ class NavigationHelpers {
     scaffoldKey.currentState?.openEndDrawer();
   }
 
-  static navigateToRegisterPage(BuildContext context) {
-    if (PlatformUtils.isWeb()) {
-      NavigationHelpers.showDialogWeb(
-        context,
-        const RegisterPage(),
-      );
-    } else {
-      NavigationHelpers.navigateToFullScreenSheet(
-        context,
-        const Padding(
-          padding: EdgeInsets.only(top: 28.0),
-          child: SafeArea(
-            child: RegisterPage(),
-          ),
-        ),
-      );
-    }
+  static navigateToLoginPage(BuildContext context, WidgetRef ref) {
+    final scaffoldKey = AppConstants.scaffoldKey;
+    navigateToFullScreenSheetOrEndDrawer(
+        context, ref, scaffoldKey, const LoginPage());
   }
 
-  static navigateToLoginPage(BuildContext context) {
-    if (PlatformUtils.isWeb()) {
-      NavigationHelpers.showDialogWeb(
-        context,
-        height: ResponsiveLayout.isMobileBrowser(context)
-            ? AppConstants.loginDialogHeightMobileBrowser
-            : AppConstants.loginDialogHeight,
-        const LoginPage(),
-      );
-    } else {
-      NavigationHelpers.navigateToFullScreenSheet(
-        context,
-        const SafeArea(
-          child: LoginPage(),
-        ),
-      );
-    }
+  static navigateToForgotPasswordPage(BuildContext context, WidgetRef ref) {
+    final scaffoldKey = AppConstants.scaffoldKey;
+    navigateToPartScreenSheetOrEndDrawer(
+        context, ref, scaffoldKey, const ForgotPasswordPage());
   }
 
-  static navigateToForgotPasswordPage(BuildContext context) {
-    if (PlatformUtils.isWeb()) {
-      NavigationHelpers.showDialogWeb(
-        context,
-        const ForgotPasswordPage(),
-      );
-    } else {
-      ModalBottomSheet().partScreen(
-        isDismissible: true,
-        isScrollControlled: true,
-        enableDrag: true,
-        context: context,
-        builder: (context) => SizedBox(
-          height: MediaQuery.of(context).size.height * 0.8,
-          child: const ForgotPasswordPage(),
-        ),
-      );
-    }
-  }
-
-  static authNavigation(BuildContext context) {
+  static authNavigation(BuildContext context, WidgetRef ref) {
+    final scaffoldKey = AppConstants.scaffoldKey;
     if (PlatformUtils.isIOS() || PlatformUtils.isAndroid()) {
-      navigateToRegisterPage(context);
+      navigateToFullScreenSheetOrEndDrawer(
+          context, ref, scaffoldKey, const RegisterPage());
     } else {
-      navigateToLoginPage(context);
+      navigateToFullScreenSheetOrEndDrawer(
+          context, ref, scaffoldKey, const LoginPage());
     }
   }
 

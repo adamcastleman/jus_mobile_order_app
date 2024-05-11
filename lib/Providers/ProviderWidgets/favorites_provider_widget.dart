@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:jus_mobile_order_app/Helpers/error.dart';
 import 'package:jus_mobile_order_app/Helpers/loading.dart';
 import 'package:jus_mobile_order_app/Models/favorites_model.dart';
 import 'package:jus_mobile_order_app/Providers/stream_providers.dart';
+import 'package:jus_mobile_order_app/Widgets/Icons/error_icon.dart';
 
 class FavoritesProviderWidget extends ConsumerWidget {
   final Widget Function(List<FavoritesModel> favorites) builder;
@@ -17,10 +17,7 @@ class FavoritesProviderWidget extends ConsumerWidget {
     final favorites = ref.watch(favoritesProvider);
     return favorites.when(
       error: (e, _) {
-        return error ??
-            ShowError(
-              error: e.toString(),
-            );
+        return error ?? const ErrorIcon();
       },
       loading: () => loading ?? const Loading(),
       data: (favorites) => builder(favorites),

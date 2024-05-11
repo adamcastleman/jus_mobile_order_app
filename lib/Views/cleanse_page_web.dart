@@ -28,7 +28,7 @@ class CleansePageWeb extends HookConsumerWidget {
     final products = ref.watch(allProductsProvider);
     final cleanses =
         products.where((item) => item.category == 'Cleanses').toList();
-    double listHeight = 500;
+    double listHeight = ResponsiveLayout.isWeb(context) ? 500 : 400;
     return DisplayImagesProviderWidget(
       builder: (images) => SingleChildScrollView(
         controller: scrollController,
@@ -143,7 +143,7 @@ class CleansePageWeb extends HookConsumerWidget {
       BuildContext context, List<ProductModel> cleanses, double listHeight) {
     // Define the width of each item, including the separator
     final double itemWidth = listHeight;
-    const double separatorWidth = 30;
+    const double separatorWidth = 20;
 
     // Calculate total width of all items
     final double totalWidth =
@@ -171,7 +171,7 @@ class CleansePageWeb extends HookConsumerWidget {
         padding: const EdgeInsets.symmetric(horizontal: 22.0),
         scrollDirection: Axis.horizontal,
         itemCount: cleanses.length,
-        separatorBuilder: (context, index) => Spacing.horizontal(30),
+        separatorBuilder: (context, index) => Spacing.horizontal(15),
         itemBuilder: (context, index) => AspectRatio(
           aspectRatio: ResponsiveLayout.isMobileBrowser(context) ? 1 / 1.5 : 1,
           child: MenuCard(

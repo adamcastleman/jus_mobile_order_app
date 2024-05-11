@@ -22,6 +22,7 @@ enum MembershipPlan {
 }
 
 enum SubscriptionStatus {
+  pending,
   active,
   paused,
   canceled,
@@ -43,6 +44,8 @@ extension SubscriptionStatusExtension on SubscriptionStatus {
 
 SubscriptionStatus fromString(String status) {
   switch (status.toUpperCase()) {
+    case 'PENDING':
+      return SubscriptionStatus.active;
     case 'ACTIVE':
       return SubscriptionStatus.active;
     case 'PENDING-CANCEL':

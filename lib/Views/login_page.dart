@@ -11,10 +11,11 @@ import 'package:jus_mobile_order_app/Providers/auth_providers.dart';
 import 'package:jus_mobile_order_app/Providers/navigation_providers.dart';
 import 'package:jus_mobile_order_app/Providers/stream_providers.dart';
 import 'package:jus_mobile_order_app/Services/auth_services.dart';
-import 'package:jus_mobile_order_app/Widgets/Buttons/close_button.dart';
+import 'package:jus_mobile_order_app/Views/register_page.dart';
 import 'package:jus_mobile_order_app/Widgets/Buttons/elevated_button_large.dart';
 import 'package:jus_mobile_order_app/Widgets/Buttons/elevated_button_large_loading.dart';
 import 'package:jus_mobile_order_app/Widgets/General/text_fields.dart';
+import 'package:jus_mobile_order_app/Widgets/Headers/sheet_header.dart';
 import 'package:jus_mobile_order_app/constants.dart';
 
 import '../Providers/loading_providers.dart';
@@ -30,6 +31,10 @@ class LoginPage extends ConsumerWidget {
     final emailError = ref.watch(emailErrorProvider);
     final passwordError = ref.watch(passwordErrorProvider);
     final loginError = ref.watch(firebaseLoginError);
+    final scaffoldKey = AppConstants.scaffoldKey;
+    bool isDrawerOpen = scaffoldKey.currentState == null
+        ? false
+        : scaffoldKey.currentState!.isEndDrawerOpen;
     return Scaffold(
       backgroundColor: Colors.transparent,
       resizeToAvoidBottomInset: true,
@@ -54,7 +59,10 @@ class LoginPage extends ConsumerWidget {
                 : MainAxisAlignment.center,
             mainAxisSize: MainAxisSize.min,
             children: [
-              _buildHeader(context),
+              SheetHeader(
+                title: 'Sign In',
+                showCloseButton: !isDrawerOpen,
+              ),
               Spacing.vertical(5),
               _buildSignInInstructions(context),
               _buildEmailTextField(context, ref, user, emailError),
@@ -89,23 +97,8 @@ class LoginPage extends ConsumerWidget {
     );
   }
 
-  Widget _buildHeader(BuildContext context) {
-    return SizedBox(
-      width: ResponsiveLayout.isMobileBrowser(context)
-          ? double.infinity
-          : AppConstants.formWidthWeb,
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text('Sign in', style: Theme.of(context).textTheme.headlineSmall),
-          const JusCloseButton(removePadding: true),
-        ],
-      ),
-    );
-  }
-
   Widget _buildSignInInstructions(BuildContext context) {
-    double fontSize = ResponsiveLayout.isMobileBrowser(context) ? 10 : 14;
+    double fontSize = ResponsiveLayout.isMobileBrowser(context) ? 12 : 14;
     return SizedBox(
       width: ResponsiveLayout.isMobileBrowser(context)
           ? double.infinity
@@ -188,7 +181,7 @@ class LoginPage extends ConsumerWidget {
         ref.read(emailErrorProvider.notifier).state = null;
         ref.read(firebaseLoginError.notifier).state = null;
         Navigator.of(context).pop();
-        NavigationHelpers.navigateToForgotPasswordPage(context);
+        NavigationHelpers.navigateToForgotPasswordPage(context, ref);
       },
     );
   }
@@ -197,10 +190,16 @@ class LoginPage extends ConsumerWidget {
       BuildContext context, WidgetRef ref, String email, String password) {
     return LargeElevatedButton(
       buttonText: 'Sign In',
-      onPressed: () {
+      onPressed: () async {
         ref.read(loadingProvider.notifier).state = true;
         validateForm(ref: ref, email: email, password: password);
-        loginUser(context: context, ref: ref);
+        await loginUser(context: context, ref: ref);
+        ref.read(loadingProvider.notifier).state = false;
+        ref.invalidate(bottomNavigationProvider);
+        ref.invalidate(passwordProvider);
+        PlatformUtils.isWeb()
+            ? NavigationHelpers.popEndDrawer(context)
+            : Navigator.pop(context);
       },
     );
   }
@@ -216,7 +215,8 @@ class LoginPage extends ConsumerWidget {
         ref.read(emailErrorProvider.notifier).state = null;
         ref.read(passwordErrorProvider.notifier).state = null;
         Navigator.pop(context);
-        NavigationHelpers.navigateToRegisterPage(context);
+        NavigationHelpers.navigateToFullScreenSheetOrEndDrawer(
+            context, ref, AppConstants.scaffoldKey, const RegisterPage());
       },
     );
   }
@@ -257,13 +257,6 @@ class LoginPage extends ConsumerWidget {
         await AuthServices().loginWithEmailAndPassword(
             email: ref.read(emailProvider),
             password: ref.read(passwordProvider));
-        ref.invalidate(passwordProvider);
-
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          Navigator.pop(context);
-          ref.read(loadingProvider.notifier).state = false;
-          ref.invalidate(bottomNavigationProvider);
-        });
       } catch (e) {
         ref.read(loadingProvider.notifier).state = false;
         ref.read(firebaseLoginError.notifier).state = e.toString();

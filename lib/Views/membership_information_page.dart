@@ -133,7 +133,7 @@ class MembershipInformationPage extends ConsumerWidget {
         ),
       );
     } else if (user.uid == null || user.uid!.isEmpty) {
-      NavigationHelpers.navigateToLoginPage(context);
+      NavigationHelpers.navigateToLoginPage(context, ref);
     } else {
       NavigationHelpers.navigateToMembershipCheckoutPage(ref, scaffoldKey);
     }

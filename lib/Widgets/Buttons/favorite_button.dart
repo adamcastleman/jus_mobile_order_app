@@ -21,16 +21,16 @@ class FavoriteButton extends ConsumerWidget {
     final user = ref.watch(currentUserProvider).value!;
     final favorites = ref.watch(allFavoritesProvider);
     return user.uid == null
-        ? _guestFavoriteButton(context)
+        ? _guestFavoriteButton(context, ref)
         : _buildUserFavoriteButton(context, ref, user, favorites);
   }
 
-  Widget _guestFavoriteButton(BuildContext context) {
+  Widget _guestFavoriteButton(BuildContext context, WidgetRef ref) {
     return IconButton(
       icon: const Icon(FontAwesomeIcons.heart),
       iconSize: 22,
       onPressed: () {
-        NavigationHelpers.authNavigation(context);
+        NavigationHelpers.authNavigation(context, ref);
       },
     );
   }

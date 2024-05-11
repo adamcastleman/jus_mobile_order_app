@@ -19,11 +19,11 @@ class PointsActivityProviderWidget extends ConsumerWidget {
     return pointsActivities.when(
       error: (e, _) =>
           error ??
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: 40.0),
+          const Padding(
+            padding: EdgeInsets.symmetric(vertical: 40.0),
             child: ShowError(
-              error: e.toString(),
-              // 'We are unable to show your points activity at the moment. Please try again later',
+              error:
+                  'We are unable to show your points activity at the moment. Please try again later',
             ),
           ),
       loading: () => loading ?? const Loading(),

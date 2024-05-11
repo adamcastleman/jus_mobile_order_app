@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:jus_mobile_order_app/Helpers/enums.dart';
@@ -48,13 +49,14 @@ class FinalizePaymentSheet extends ConsumerWidget {
       height: MediaQuery.of(context).size.height,
       child: Stack(
         children: [
-          Column(
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: [
-              _tippingContainer(backgroundColor),
-              Spacing.vertical(100),
-              _paymentSection(context, ref, user),
-            ],
+          SingleChildScrollView(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                _tippingContainer(backgroundColor),
+                _paymentSection(context, ref, user),
+              ],
+            ),
           ),
           const Positioned(
             top: 0,

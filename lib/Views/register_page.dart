@@ -18,10 +18,10 @@ import 'package:jus_mobile_order_app/Services/auth_services.dart';
 import 'package:jus_mobile_order_app/Services/subscription_services.dart';
 import 'package:jus_mobile_order_app/Services/user_services.dart';
 import 'package:jus_mobile_order_app/Sheets/invalid_sheet_single_pop.dart';
-import 'package:jus_mobile_order_app/Widgets/Buttons/close_button.dart';
 import 'package:jus_mobile_order_app/Widgets/Buttons/elevated_button_large.dart';
 import 'package:jus_mobile_order_app/Widgets/Buttons/elevated_button_large_loading.dart';
 import 'package:jus_mobile_order_app/Widgets/General/text_fields.dart';
+import 'package:jus_mobile_order_app/Widgets/Headers/sheet_header.dart';
 import 'package:jus_mobile_order_app/constants.dart';
 
 class RegisterPage extends ConsumerWidget {
@@ -43,6 +43,10 @@ class RegisterPage extends ConsumerWidget {
     final phoneError = ref.watch(phoneErrorProvider);
     final firebaseError = ref.watch(firebaseErrorProvider);
     final loading = ref.watch(loadingProvider);
+    final scaffoldKey = AppConstants.scaffoldKey;
+    bool isDrawerOpen = scaffoldKey.currentState == null
+        ? false
+        : scaffoldKey.currentState!.isEndDrawerOpen;
     return Scaffold(
       backgroundColor: Colors.transparent,
       resizeToAvoidBottomInset: true,
@@ -66,7 +70,10 @@ class RegisterPage extends ConsumerWidget {
                 : MainAxisAlignment.center,
             mainAxisSize: MainAxisSize.min,
             children: [
-              _buildHeader(context),
+              SheetHeader(
+                title: 'Sign up',
+                showCloseButton: !isDrawerOpen,
+              ),
               Spacing.vertical(15),
               _buildSignUpInstructions(context),
               Spacing.vertical(25),
@@ -121,26 +128,6 @@ class RegisterPage extends ConsumerWidget {
     );
   }
 
-  Widget _buildHeader(BuildContext context) {
-    return SizedBox(
-      width: ResponsiveLayout.isMobileBrowser(context)
-          ? double.infinity
-          : AppConstants.formWidthWeb,
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text(
-            'Create Account',
-            style: Theme.of(context).textTheme.headlineSmall,
-          ),
-          const JusCloseButton(
-            removePadding: true,
-          ),
-        ],
-      ),
-    );
-  }
-
   Widget _buildSignUpInstructions(BuildContext context) {
     return SizedBox(
         width: ResponsiveLayout.isMobileBrowser(context)
@@ -163,7 +150,7 @@ class RegisterPage extends ConsumerWidget {
             Text(
               'To transfer your points or membership from our legacy programs, register with '
               'the same phone number and email, respectively. You can update your data later if needed.',
-              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 10),
+              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
               textAlign: ResponsiveLayout.isMobileBrowser(context)
                   ? TextAlign.start
                   : TextAlign.center,
@@ -346,7 +333,7 @@ class RegisterPage extends ConsumerWidget {
         Navigator.of(context).pop();
         ref.read(emailErrorProvider.notifier).state = null;
         ref.read(passwordErrorProvider.notifier).state = null;
-        NavigationHelpers.navigateToLoginPage(context);
+        NavigationHelpers.navigateToLoginPage(context, ref);
       },
     );
   }
@@ -427,11 +414,6 @@ class RegisterPage extends ConsumerWidget {
         phone: phone,
         subscription: subscription.isEmpty ? null : subscription,
       );
-
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        Navigator.pop(context);
-        ref.read(loadingProvider.notifier).state = false;
-      });
     } catch (e) {
       ref.read(firebaseErrorProvider.notifier).state =
           'There was a server error. Please try again later.';
@@ -442,6 +424,10 @@ class RegisterPage extends ConsumerWidget {
       ref.invalidate(phoneProvider);
       ref.invalidate(passwordProvider);
       ref.invalidate(confirmPasswordProvider);
+      PlatformUtils.isWeb()
+          ? NavigationHelpers.popEndDrawer(context)
+          : Navigator.pop(context);
+      ref.read(loadingProvider.notifier).state = false;
     }
   }
 }

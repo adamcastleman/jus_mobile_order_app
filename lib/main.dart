@@ -3,6 +3,7 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_web_plugins/url_strategy.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:jus_mobile_order_app/Helpers/scan.dart';
 import 'package:jus_mobile_order_app/Helpers/utilities.dart';
@@ -43,6 +44,8 @@ void main() async {
       Permission.appTrackingTransparency,
     ].request();
   }
+
+  setUrlStrategy(null);
 
   FirebaseMessaging.onBackgroundMessage(backgroundHandler);
   LicenseRegistry.addLicense(() async* {

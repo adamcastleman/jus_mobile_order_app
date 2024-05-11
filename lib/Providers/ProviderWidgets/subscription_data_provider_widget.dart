@@ -21,8 +21,9 @@ class SubscriptionDataProviderWidget extends ConsumerWidget {
     return subscriptionData.when(
         error: (e, _) =>
             error ??
-            ShowError(
-              error: e.toString(),
+            const ShowError(
+              error:
+                  'We are unable to show your subscription data at the moment. Please try again later',
             ),
         loading: () => loading ?? const Loading(),
         data: (subscription) {
