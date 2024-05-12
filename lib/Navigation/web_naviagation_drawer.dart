@@ -49,7 +49,9 @@ class WebNavigationDrawer extends StatelessWidget {
               },
             ),
             Spacing.vertical(20),
-            const ProfileTextButton(),
+            const ProfileTextButton(
+              fontSize: 24,
+            ),
             const Spacer(),
           ],
         ),

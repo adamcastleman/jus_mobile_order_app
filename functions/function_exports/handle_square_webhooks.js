@@ -1,6 +1,7 @@
 const functions = require('firebase-functions');
 const admin = require('firebase-admin');
 const { pauseSquareSubscription } = require("../subscriptions/pause_square_subscription");
+const { retrieveCardDetails } = require("../payments/retrieve_square_card_from_id");
 
 if (admin.apps.length === 0) {
     admin.initializeApp();
@@ -23,6 +24,9 @@ exports.handleSquareWebhooks = functions.https.onRequest(async (req, res) => {
            case 'payment.updated':
                await handleFailedRecurringPayment(event);
                break;
+          case 'invoice.payment_made':
+              await handleInvoicePaymentMade(event);
+              break;
            case 'subscription.updated':
                await handleSubscriptionUpdated(event);
                break;
@@ -70,7 +74,7 @@ async function handleFailedRecurringPayment(event) {
         return;
     }
 
-    const userId = userSnapshot.docs[0].uid;
+    const userId = userSnapshot.docs[0].id;
     const subscriptionSnapshot = await db.collection('subscriptions').where('userId', '==', userId).get();
     if (subscriptionSnapshot.empty) {
         console.log('No subscription detected for this user:', squareCustomerId);
@@ -114,4 +118,88 @@ async function handleSubscriptionUpdated(event) {
 
     await db.collection('users').doc(userId).update({ subscriptionStatus: updatedStatus });
     console.log('Subscription status updated for user:', userId, 'New status:', updatedStatus);
+}
+
+
+async function handleInvoicePaymentMade(event) {
+    try {
+        console.log('Handling invoice payment made event');
+
+        console.log(event);
+
+        const invoiceStatus = event.data.object.invoice.status;
+        const squareCustomerId = event.data.object.primary_recipient.customer_id;
+        const customerFirstName = event.data.object.primary_recipient.given_name;
+        const cardId = event.data.object.payment_requests[0].card_id;
+
+        if (invoiceStatus !== 'PAID') {
+            console.log('Invoice is not paid:', invoiceStatus);
+            return;
+        }
+
+        const usersRef = db.collection('users');
+        const userSnapshot = await usersRef.where('squareCustomerId', '==', squareCustomerId).get();
+        if (userSnapshot.empty) {
+            console.log('No matching user found for Square Customer ID:', squareCustomerId);
+            return;
+        }
+
+        const userId = userSnapshot.docs[0].id;
+        const userDocRef = usersRef.doc(userId);
+        await userDocRef.update({
+            subscriptionStatus: 'ACTIVE'
+        });
+        console.log('User subscription status updated to ACTIVE for user:', userId);
+
+        const paymentMethodsRef = usersRef.doc(userId).collection('squarePaymentMethods');
+        const paymentMethodSnapshot = await paymentMethodsRef.where('cardId', '==', cardId).get();
+
+        if (paymentMethodSnapshot.empty) {
+            console.log('Card ID not found, retrieving card details from Square API');
+
+            const cardDetails = await retrieveCardDetails(cardId);
+            if (cardDetails) {
+               // Generate a new document reference with an ID
+               const newPaymentMethodRef = paymentMethodsRef.doc();
+               // Get the ID from the new document reference
+               const newDocumentId = newPaymentMethodRef.id;
+               // Use .set() to create the document with this ID
+               await newPaymentMethodRef.set({
+                   balance: null,
+                   brand: cardDetails.card.card_brand,
+                   cardId: cardDetails.card.id,
+                   cardNickname: customerFirstName.trim(),
+                   defaultPayment: false,
+                   expirationMonth: cardDetails.card.exp_month,
+                   expirationYear: cardDetails.card.exp_year,
+                   gan: null,
+                   isWallet: false,
+                   last4: cardDetails.card.last_4,
+                   uid: newDocumentId,
+                   userID: userId,
+               });
+               console.log('New payment method added with UID:', newDocumentId);
+            } else {
+                console.log('Failed to retrieve card details from Square');
+                return;
+            }
+        }
+
+        const subscriptionsRef = db.collection('subscriptions');
+        const subscriptionSnapshot = await subscriptionsRef.where('userId', '==', userId).get();
+        if (subscriptionSnapshot.empty) {
+            console.log('No subscription detected for this user:', userId);
+            return;
+        }
+
+        const subscriptionId = subscriptionSnapshot.docs[0].subscriptionId;
+        const subscriptionDocRef = subscriptionsRef.doc(subscriptionId);
+        await subscriptionDocRef.update({
+            cardId: cardId
+        });
+        console.log('Subscription card ID updated for user:', userId);
+
+    } catch (error) {
+        console.error('Error handling invoice payment made:', error);
+    }
 }

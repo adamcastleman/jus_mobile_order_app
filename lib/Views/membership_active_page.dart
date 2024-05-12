@@ -50,7 +50,7 @@ class MembershipActivePage extends ConsumerWidget {
         : DateFormat('M/d/yyyy').format(chargeThruDate ?? DateTime.now());
 
     return SingleChildScrollView(
-      padding: const EdgeInsets.only(bottom: 30.0),
+      padding: const EdgeInsets.only(bottom: 30.0, left: 12.0, right: 12.0),
       child: Container(
         color: backgroundColor,
         child: Column(

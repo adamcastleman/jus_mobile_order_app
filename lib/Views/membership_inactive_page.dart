@@ -48,8 +48,10 @@ class MembershipInactivePage extends ConsumerWidget {
         bottom: 50.0,
       ),
       child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment:
-            CrossAxisAlignment.stretch, // Stretch column items horizontally
+            CrossAxisAlignment.center, // Stretch column items horizontally
+
         children: [
           Text(
             'Your subscription is ${SubscriptionStatusFormatter.format(user.subscriptionStatus!.name).uncapitalize}.',
@@ -69,6 +71,7 @@ class MembershipInactivePage extends ConsumerWidget {
                   ),
                   textAlign: TextAlign.center,
                 ),
+          Spacing.vertical(16),
           LargeElevatedButton(
             buttonText: 'Reactivate Membership',
             onPressed: () {

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:jus_mobile_order_app/Helpers/enums.dart';
+import 'package:jus_mobile_order_app/Helpers/utilities.dart';
 import 'package:jus_mobile_order_app/Models/user_model.dart';
 import 'package:jus_mobile_order_app/Providers/ProviderWidgets/card_details_from_square_card_id_provider_widget.dart';
 import 'package:jus_mobile_order_app/Providers/ProviderWidgets/credit_card_provider_widget.dart';
@@ -29,12 +30,15 @@ class MembershipAccountPage extends ConsumerWidget {
       mainAxisSize: MainAxisSize.min,
       children: [
         Container(
-          height: 40,
+          height: ResponsiveLayout.isMobileBrowser(context) ? 40 : 0,
           color: backgroundColor,
         ),
-        SheetHeader(
-          title: 'Membership',
-          showCloseButton: !isDrawerOpen,
+        Padding(
+          padding: const EdgeInsets.only(left: 12.0),
+          child: SheetHeader(
+            title: 'Membership',
+            showCloseButton: !isDrawerOpen,
+          ),
         ),
         Container(
           height: 10,
@@ -42,7 +46,7 @@ class MembershipAccountPage extends ConsumerWidget {
         ),
         Expanded(
           // Makes the below content scrollable and flexible
-          child: SingleChildScrollView(
+          child: Center(
             child: CreditCardProviderWidget(
               builder: (creditCards) => SubscriptionDataProviderWidget(
                 builder: (subscriptionData) =>
