@@ -22,37 +22,33 @@ const idMapping = {
     'MD7YNZR23RHPPOUCEWGOLLYI': 'Z5ZLWW3QEGDHDTVDYRZXWKAH'  // Guarana (Members) -> Guarana (Members)
 };
 
-function getSandboxId(productionId) {
-    return idMapping[productionId] || productionId; // Fallback to the original ID if no mapping found
+function processModifications(modifications, currency) {
+  return modifications.map(mod => {
+    try {
+      const jsonMod = JSON.parse(mod);
+
+      return jsonMod.catalogObjectId ?
+        {
+          // If catalogObjectId is present, set it and do not include name or basePriceMoney
+          catalogObjectId: jsonMod.catalogObjectId,
+          quantity: (jsonMod.quantity || '1').toString(),
+        } :
+        {
+          // If catalogObjectId is not present, include name and basePriceMoney
+          name: jsonMod.name,
+          basePriceMoney: {
+            amount: (jsonMod.price || '0').toString(),
+            currency: currency,
+          },
+          quantity: (jsonMod.quantity || '1').toString(),
+        };
+    } catch (e) {
+      console.error("Error parsing modification:", mod, e);
+      return null;  // Return null in case of parsing errors
+    }
+  }).filter(mod => mod !== null);  // Filter out any null entries resulting from parsing errors
 }
 
-function aggregateModifiers(modifications) {
-    const modifierCounts = {};
-
-    modifications.forEach(mod => {
-        try {
-            const jsonMod = JSON.parse(mod);
-            const sandboxId = getSandboxId(jsonMod.squareVariationId);
-
-            if (modifierCounts[sandboxId]) {
-                modifierCounts[sandboxId].quantity += parseInt(jsonMod.quantity || '1');
-            } else {
-                modifierCounts[sandboxId] = {
-                    catalogObjectId: sandboxId,
-                    quantity: parseInt(jsonMod.quantity || '1')
-                };
-            }
-        } catch (e) {
-            console.error("Error parsing modification:", mod, e);
-        }
-    });
-
-    // Return the modifiers array formatted correctly for the API
-    return Object.values(modifierCounts).map(mod => ({
-        catalogObjectId: mod.catalogObjectId,
-        quantity: mod.quantity.toString() // Ensure quantity is a string
-    }));
-}
 
 const createSquareOrder = async (orderMap) => {
   const client = await createSquareClient();
@@ -81,9 +77,8 @@ const createSquareOrder = async (orderMap) => {
       });
     }
 
-   const modifiers = aggregateModifiers(item.modifications);
+   const modifiers = processModifications(item.modifications || [], currency);
 
-   console.log(modifiers);
 
     return {
   //TODO replace catelogObjectId with production id

@@ -46,51 +46,60 @@ class MembershipAccountPage extends ConsumerWidget {
         ),
         Expanded(
           // Makes the below content scrollable and flexible
-          child: Center(
-            child: CreditCardProviderWidget(
-              builder: (creditCards) => SubscriptionDataProviderWidget(
-                builder: (subscriptionData) =>
-                    SubscriptionInvoiceProviderWidget(
-                  squareCustomerId: user.squareCustomerId ?? '',
-                  builder: (invoices) =>
-                      CardDetailsFromSquareCardIdProviderWidget(
-                    cardId: subscriptionData.cardId,
-                    builder: (cardOnFile) => SquareSubscriptionProviderWidget(
-                      subscriptionId: subscriptionData.subscriptionId,
-                      builder: (subscription) {
-                        DateTime startDate =
-                            DateTime.parse(subscription.startDate);
-                        DateTime? chargeThruDate =
-                            subscription.chargeThruDate.isEmpty
-                                ? null
-                                : DateTime.parse(subscription.chargeThruDate);
-                        int anchorDate =
-                            subscription.monthlyBillingAnchorDate == 0 ||
-                                    subscription.monthlyBillingAnchorDate ==
-                                        null
-                                ? startDate.day
-                                : subscription.monthlyBillingAnchorDate!;
-                        if (user.subscriptionStatus!.isActive) {
-                          return MembershipActivePage(
-                            isDrawerOpen: isDrawerOpen,
-                            startDate: startDate,
-                            chargeThruDate: chargeThruDate,
-                            subscriptionData: subscriptionData,
-                            invoices: invoices,
-                            cardOnFile: cardOnFile,
-                            creditCards: creditCards,
-                          );
-                        } else {
-                          return MembershipInactivePage(
-                            isDrawerOpen: isDrawerOpen,
-                            subscriptionData: subscriptionData,
-                            monthlyBillingAnchorDate: anchorDate,
-                            invoices: invoices,
-                            cardOnFile: cardOnFile,
-                            creditCards: creditCards,
-                          );
-                        }
-                      },
+          child: Container(
+            color: backgroundColor,
+            child: Center(
+              child: CreditCardProviderWidget(
+                builder: (creditCards) => SubscriptionDataProviderWidget(
+                  builder: (subscriptionData) =>
+                      SubscriptionInvoiceProviderWidget(
+                    squareCustomerId: user.squareCustomerId ?? '',
+                    builder: (invoices) =>
+                        CardDetailsFromSquareCardIdProviderWidget(
+                      cardId: subscriptionData.cardId,
+                      builder: (cardOnFile) => SquareSubscriptionProviderWidget(
+                        subscriptionId: subscriptionData.subscriptionId,
+                        builder: (subscription) {
+                          DateTime startDate =
+                              DateTime.parse(subscription.startDate);
+                          DateTime? chargeThruDate =
+                              subscription.chargeThruDate.isEmpty
+                                  ? null
+                                  : DateTime.parse(subscription.chargeThruDate);
+                          int anchorDate =
+                              subscription.monthlyBillingAnchorDate == 0 ||
+                                      subscription.monthlyBillingAnchorDate ==
+                                          null
+                                  ? startDate.day
+                                  : subscription.monthlyBillingAnchorDate!;
+                          if (user.subscriptionStatus!.isActive) {
+                            return Container(
+                              color: backgroundColor,
+                              child: MembershipActivePage(
+                                isDrawerOpen: isDrawerOpen,
+                                startDate: startDate,
+                                chargeThruDate: chargeThruDate,
+                                subscriptionData: subscriptionData,
+                                invoices: invoices,
+                                cardOnFile: cardOnFile,
+                                creditCards: creditCards,
+                              ),
+                            );
+                          } else {
+                            return Container(
+                              color: backgroundColor,
+                              child: MembershipInactivePage(
+                                isDrawerOpen: isDrawerOpen,
+                                subscriptionData: subscriptionData,
+                                monthlyBillingAnchorDate: anchorDate,
+                                invoices: invoices,
+                                cardOnFile: cardOnFile,
+                                creditCards: creditCards,
+                              ),
+                            );
+                          }
+                        },
+                      ),
                     ),
                   ),
                 ),

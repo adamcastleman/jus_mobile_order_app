@@ -50,8 +50,8 @@ class MembershipActivePage extends ConsumerWidget {
         : DateFormat('M/d/yyyy').format(chargeThruDate ?? DateTime.now());
 
     return SingleChildScrollView(
-      padding: const EdgeInsets.only(bottom: 30.0, left: 12.0, right: 12.0),
       child: Container(
+        padding: const EdgeInsets.only(bottom: 20.0, left: 12.0, right: 12.0),
         color: backgroundColor,
         child: Column(
           children: [
@@ -117,11 +117,12 @@ class MembershipActivePage extends ConsumerWidget {
             ListTile(
               leading: const Icon(CupertinoIcons.money_dollar_circle),
               title: const Text('Total savings'),
-              trailing: Text('\$${subscriptionData.totalSaved ?? 0}',
+              trailing: Text(
+                  '\$${((subscriptionData.totalSaved ?? 0) / 100).toStringAsFixed(2)}',
                   style: trailingStyle),
             ),
             ListTile(
-              leading: const Icon(CupertinoIcons.gift),
+              leading: const Icon(CupertinoIcons.star),
               title: const Text('Bonus points'),
               trailing: Text('${subscriptionData.bonusPoints ?? 0}',
                   style: trailingStyle),
@@ -144,8 +145,9 @@ class MembershipActivePage extends ConsumerWidget {
                 return SubscriptionInvoiceTile(invoice: invoices[index]);
               },
             ),
-            Spacing.vertical(25),
+
             const Text('We show up to 10 billing cycles.'),
+            Spacing.vertical(15),
             // Spacing.vertical(15),
           ],
         ),
