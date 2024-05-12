@@ -10,7 +10,7 @@ function generateGiftCardEmail(giftCardMap) {
   </div>
   <div class="divider"></div>
    <p style="text-align: center; font-size: 12px;">
-     You are receiving this email because you have made a purchase from jüs. You can manage notifications for marketing emails in the jüs app or at <a href="https://www.jusreno.com" style="color: blue;">www.jusreno.com</a>, but you will always receive emails regarding transactions.
+     You are receiving this email because you have made a purchase from jüs. You will always receive emails regarding transactions.
    </p>
   </div>
  </div>`;
