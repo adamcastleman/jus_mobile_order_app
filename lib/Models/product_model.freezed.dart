@@ -39,6 +39,7 @@ mixin _$ProductModel {
   int get servingsVeggie => throw _privateConstructorUsedError;
   int? get scheduledProductLimit => throw _privateConstructorUsedError;
   String? get scheduledProductType => throw _privateConstructorUsedError;
+  String? get notes => throw _privateConstructorUsedError;
 
   @JsonKey(ignore: true)
   $ProductModelCopyWith<ProductModel> get copyWith =>
@@ -74,7 +75,8 @@ abstract class $ProductModelCopyWith<$Res> {
       int servingsFruit,
       int servingsVeggie,
       int? scheduledProductLimit,
-      String? scheduledProductType});
+      String? scheduledProductType,
+      String? notes});
 }
 
 /// @nodoc
@@ -113,6 +115,7 @@ class _$ProductModelCopyWithImpl<$Res, $Val extends ProductModel>
     Object? servingsVeggie = null,
     Object? scheduledProductLimit = freezed,
     Object? scheduledProductType = freezed,
+    Object? notes = freezed,
   }) {
     return _then(_value.copyWith(
       uid: null == uid
@@ -207,6 +210,10 @@ class _$ProductModelCopyWithImpl<$Res, $Val extends ProductModel>
           ? _value.scheduledProductType
           : scheduledProductType // ignore: cast_nullable_to_non_nullable
               as String?,
+      notes: freezed == notes
+          ? _value.notes
+          : notes // ignore: cast_nullable_to_non_nullable
+              as String?,
     ) as $Val);
   }
 }
@@ -242,7 +249,8 @@ abstract class _$$ProductModelImplCopyWith<$Res>
       int servingsFruit,
       int servingsVeggie,
       int? scheduledProductLimit,
-      String? scheduledProductType});
+      String? scheduledProductType,
+      String? notes});
 }
 
 /// @nodoc
@@ -279,6 +287,7 @@ class __$$ProductModelImplCopyWithImpl<$Res>
     Object? servingsVeggie = null,
     Object? scheduledProductLimit = freezed,
     Object? scheduledProductType = freezed,
+    Object? notes = freezed,
   }) {
     return _then(_$ProductModelImpl(
       uid: null == uid
@@ -373,6 +382,10 @@ class __$$ProductModelImplCopyWithImpl<$Res>
           ? _value.scheduledProductType
           : scheduledProductType // ignore: cast_nullable_to_non_nullable
               as String?,
+      notes: freezed == notes
+          ? _value.notes
+          : notes // ignore: cast_nullable_to_non_nullable
+              as String?,
     ));
   }
 }
@@ -403,7 +416,8 @@ class _$ProductModelImpl implements _ProductModel {
       required this.servingsFruit,
       required this.servingsVeggie,
       this.scheduledProductLimit,
-      this.scheduledProductType})
+      this.scheduledProductType,
+      this.notes})
       : _ingredients = ingredients,
         _variations = variations,
         _nutrition = nutrition;
@@ -472,10 +486,12 @@ class _$ProductModelImpl implements _ProductModel {
   final int? scheduledProductLimit;
   @override
   final String? scheduledProductType;
+  @override
+  final String? notes;
 
   @override
   String toString() {
-    return 'ProductModel(uid: $uid, name: $name, category: $category, categoryOrder: $categoryOrder, productId: $productId, description: $description, ingredients: $ingredients, image: $image, isActive: $isActive, variations: $variations, taxable: $taxable, isNew: $isNew, isRecommended: $isRecommended, isFeatured: $isFeatured, isModifiable: $isModifiable, isScheduled: $isScheduled, hasToppings: $hasToppings, nutrition: $nutrition, perks: $perks, servingsFruit: $servingsFruit, servingsVeggie: $servingsVeggie, scheduledProductLimit: $scheduledProductLimit, scheduledProductType: $scheduledProductType)';
+    return 'ProductModel(uid: $uid, name: $name, category: $category, categoryOrder: $categoryOrder, productId: $productId, description: $description, ingredients: $ingredients, image: $image, isActive: $isActive, variations: $variations, taxable: $taxable, isNew: $isNew, isRecommended: $isRecommended, isFeatured: $isFeatured, isModifiable: $isModifiable, isScheduled: $isScheduled, hasToppings: $hasToppings, nutrition: $nutrition, perks: $perks, servingsFruit: $servingsFruit, servingsVeggie: $servingsVeggie, scheduledProductLimit: $scheduledProductLimit, scheduledProductType: $scheduledProductType, notes: $notes)';
   }
 
   @override
@@ -522,7 +538,8 @@ class _$ProductModelImpl implements _ProductModel {
             (identical(other.scheduledProductLimit, scheduledProductLimit) ||
                 other.scheduledProductLimit == scheduledProductLimit) &&
             (identical(other.scheduledProductType, scheduledProductType) ||
-                other.scheduledProductType == scheduledProductType));
+                other.scheduledProductType == scheduledProductType) &&
+            (identical(other.notes, notes) || other.notes == notes));
   }
 
   @override
@@ -550,7 +567,8 @@ class _$ProductModelImpl implements _ProductModel {
         servingsFruit,
         servingsVeggie,
         scheduledProductLimit,
-        scheduledProductType
+        scheduledProductType,
+        notes
       ]);
 
   @JsonKey(ignore: true)
@@ -584,7 +602,8 @@ abstract class _ProductModel implements ProductModel {
       required final int servingsFruit,
       required final int servingsVeggie,
       final int? scheduledProductLimit,
-      final String? scheduledProductType}) = _$ProductModelImpl;
+      final String? scheduledProductType,
+      final String? notes}) = _$ProductModelImpl;
 
   @override
   String get uid;
@@ -632,6 +651,8 @@ abstract class _ProductModel implements ProductModel {
   int? get scheduledProductLimit;
   @override
   String? get scheduledProductType;
+  @override
+  String? get notes;
   @override
   @JsonKey(ignore: true)
   _$$ProductModelImplCopyWith<_$ProductModelImpl> get copyWith =>

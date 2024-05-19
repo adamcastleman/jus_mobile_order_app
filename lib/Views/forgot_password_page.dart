@@ -10,6 +10,7 @@ import 'package:jus_mobile_order_app/Models/user_model.dart';
 import 'package:jus_mobile_order_app/Providers/auth_providers.dart';
 import 'package:jus_mobile_order_app/Providers/loading_providers.dart';
 import 'package:jus_mobile_order_app/Providers/stream_providers.dart';
+import 'package:jus_mobile_order_app/Providers/theme_providers.dart';
 import 'package:jus_mobile_order_app/Services/auth_services.dart';
 import 'package:jus_mobile_order_app/Widgets/Buttons/close_button.dart';
 import 'package:jus_mobile_order_app/Widgets/Buttons/elevated_button_large.dart';
@@ -24,6 +25,7 @@ class ForgotPasswordPage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final user = ref.watch(currentUserProvider).value!;
+    final backgroundColor = ref.watch(backgroundColorProvider);
     final email = ref.watch(emailProvider);
     final emailError = ref.watch(emailErrorProvider);
     final loading = ref.watch(loadingProvider);
@@ -33,7 +35,7 @@ class ForgotPasswordPage extends ConsumerWidget {
         ? false
         : scaffoldKey.currentState!.isEndDrawerOpen;
     return Scaffold(
-      backgroundColor: Colors.transparent,
+      backgroundColor: backgroundColor,
       resizeToAvoidBottomInset: true,
       body: SafeArea(
         child: Padding(

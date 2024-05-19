@@ -28,6 +28,7 @@ class ProductModel with _$ProductModel {
     required int servingsVeggie,
     int? scheduledProductLimit,
     String? scheduledProductType,
+    String? notes,
   }) = _ProductModel;
 }
 

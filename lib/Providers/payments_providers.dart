@@ -2,7 +2,6 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:jus_mobile_order_app/Helpers/enums.dart';
 import 'package:jus_mobile_order_app/Models/payments_model.dart';
 import 'package:jus_mobile_order_app/Models/user_model.dart';
-import 'package:jus_mobile_order_app/Providers/loading_providers.dart';
 import 'package:jus_mobile_order_app/Providers/stream_providers.dart';
 
 final pageTypeProvider =
@@ -181,8 +180,3 @@ final walletLoadAmountsProvider = Provider<List<int>>((ref) {
   ]); // Adds the remaining amounts in steps of 2500
   return amounts;
 });
-
-void invalidateWalletProviders(WidgetRef ref) {
-  ref.read(loadingProvider.notifier).state = false;
-  ref.read(applePayLoadingProvider.notifier).state = false;
-}

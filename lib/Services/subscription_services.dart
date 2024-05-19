@@ -126,19 +126,6 @@ class SubscriptionServices {
     }
   }
 
-  Future resumeSquareSubscriptionCloudFunction() async {
-    try {
-      HttpsCallableResult result = await FirebaseFunctions.instance
-          .httpsCallable('resumeSubscription')
-          .call();
-
-      // Extract the data from the HttpsCallableResult and cast it to a Map
-      return result.data as Map;
-    } catch (e) {
-      throw e.toString();
-    }
-  }
-
   Future cancelSquareSubscriptionCloudFunction() async {
     HttpsCallableResult result = await FirebaseFunctions.instance
         .httpsCallable('cancelSubscription')

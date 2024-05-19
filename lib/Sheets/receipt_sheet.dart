@@ -142,7 +142,8 @@ class ReceiptSheet extends ConsumerWidget {
                                   ],
                                 ),
                               )
-                            : order.items[itemIndex]['size'] == null
+                            : order.items[itemIndex]['size'] == null ||
+                                    !product.isModifiable
                                 ? const SizedBox()
                                 : Align(
                                     alignment: Alignment.centerLeft,

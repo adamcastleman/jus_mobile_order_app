@@ -14,6 +14,7 @@ import 'package:jus_mobile_order_app/Models/user_model.dart';
 import 'package:jus_mobile_order_app/Providers/auth_providers.dart';
 import 'package:jus_mobile_order_app/Providers/loading_providers.dart';
 import 'package:jus_mobile_order_app/Providers/stream_providers.dart';
+import 'package:jus_mobile_order_app/Providers/theme_providers.dart';
 import 'package:jus_mobile_order_app/Services/auth_services.dart';
 import 'package:jus_mobile_order_app/Services/subscription_services.dart';
 import 'package:jus_mobile_order_app/Services/user_services.dart';
@@ -29,6 +30,7 @@ class RegisterPage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final user = ref.watch(currentUserProvider).value!;
+    final backgroundColor = ref.watch(backgroundColorProvider);
     final email = ref.watch(emailProvider);
     final password = ref.watch(passwordProvider);
     final confirmPassword = ref.watch(confirmPasswordProvider);
@@ -48,7 +50,7 @@ class RegisterPage extends ConsumerWidget {
         ? false
         : scaffoldKey.currentState!.isEndDrawerOpen;
     return Scaffold(
-      backgroundColor: Colors.transparent,
+      backgroundColor: backgroundColor,
       resizeToAvoidBottomInset: true,
       body: Padding(
         padding: const EdgeInsets.symmetric(

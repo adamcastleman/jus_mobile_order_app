@@ -126,12 +126,12 @@ class FinalizePaymentSheet extends ConsumerWidget {
     if (PlatformUtils.isIOS()) {
       final applePaySelected = ref.watch(applePaySelectedProvider);
       return applePaySelected
-          ? PayWithApplePayButton(user: user)
+          ? PayWithApplePayButton(ref: ref, user: user)
           : Column(
               children: [
                 _determineCreditCardButton(context, ref, user),
                 Spacing.vertical(8),
-                PayWithApplePayButton(user: user),
+                PayWithApplePayButton(ref: ref, user: user),
               ],
             );
     }

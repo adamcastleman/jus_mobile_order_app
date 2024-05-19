@@ -33,7 +33,7 @@ class HomePageWeb extends StatelessWidget {
           body: ListView(
             primary: false,
             children: [
-              const Text('Web test version: 3'),
+              const Text('Web test version: 4'),
               CallToActionBanner(
                 backgroundColor: pastelBlue,
                 imagePath: images['images'][11]['url'],

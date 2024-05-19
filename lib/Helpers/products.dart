@@ -90,6 +90,7 @@ class ProductHelpers {
       'standardIngredients': standardIngredients,
       'selectedToppings': selectedToppings,
       'allergies': allergies,
+      'notes': null,
     };
   }
 

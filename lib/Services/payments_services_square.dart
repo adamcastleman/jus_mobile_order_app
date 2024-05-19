@@ -100,13 +100,10 @@ class SquarePaymentServices {
       currencyCode: 'USD',
       paymentType: ApplePayPaymentType.finalPayment,
       onApplePayNonceRequestSuccess: (result) async {
-        _completeApplePayAuthorization(
-          isSuccess: true,
-        );
         onSuccess(result);
       },
       onApplePayNonceRequestFailure: (error) async {
-        _completeApplePayAuthorization(
+        completeApplePayAuthorization(
           isSuccess: false,
           error: error.message,
         );
@@ -118,7 +115,7 @@ class SquarePaymentServices {
     );
   }
 
-  Future _completeApplePayAuthorization(
+  static Future completeApplePayAuthorization(
       {required bool isSuccess, String? error}) async {
     await InAppPayments.completeApplePayAuthorization(
         isSuccess: isSuccess, errorMessage: error ?? '');

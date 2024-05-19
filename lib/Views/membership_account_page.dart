@@ -89,6 +89,7 @@ class MembershipAccountPage extends ConsumerWidget {
                             return Container(
                               color: backgroundColor,
                               child: MembershipInactivePage(
+                                ref: ref,
                                 isDrawerOpen: isDrawerOpen,
                                 subscriptionData: subscriptionData,
                                 monthlyBillingAnchorDate: anchorDate,

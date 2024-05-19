@@ -21,9 +21,12 @@ exports.handleSquareWebhooks = functions.https.onRequest(async (req, res) => {
            case 'payment.created':
                await handleFailedInitialPayment(event);
                break;
-           case 'payment.updated':
-               await handleFailedRecurringPayment(event);
-               break;
+                case 'payment.updated':
+                 await handleFailedRecurringPayment(event);
+                  break;
+           case 'invoice.created':
+                await handleFailedRecurringPayment(event);
+                  break;
           case 'invoice.payment_made':
               await handleInvoicePaymentMade(event);
               break;
@@ -60,9 +63,9 @@ async function handleFailedInitialPayment(event) {
 }
 
 async function handleFailedRecurringPayment(event) {
-    const squareCustomerId = event.data.object.payment.customer_id;
-    const locationId = event.data.object.payment.location_id;
-    const isFailedPayment = event.data.object.payment.status === 'FAILED';
+       const squareCustomerId = event.data.object.payment.customer_id;
+       const locationId = event.data.object.payment.location_id;
+       const isFailedPayment = event.data.object.payment.status === 'FAILED';
 
     if (locationId !== 'LPRZ3G3PWZBKF' || !isFailedPayment) {
         return;
@@ -102,7 +105,7 @@ async function handleSubscriptionUpdated(event) {
         return;
     }
 
-    const userId = userSnapshot.docs[0].id;
+    const userId = userSnapshot.docs[0].uid;
     let updatedStatus = subscriptionStatus; // Initialize with current status
 
     if (canceledDateString) {
@@ -125,12 +128,11 @@ async function handleInvoicePaymentMade(event) {
     try {
         console.log('Handling invoice payment made event');
 
-        console.log(event);
 
         const invoiceStatus = event.data.object.invoice.status;
-        const squareCustomerId = event.data.object.primary_recipient.customer_id;
-        const customerFirstName = event.data.object.primary_recipient.given_name;
-        const cardId = event.data.object.payment_requests[0].card_id;
+        const squareCustomerId = event.data.object.primaryRecipient.customerId;
+        const customerFirstName = event.data.object.primaryRecipient.givenName;
+        const cardId = event.data.object.paymentRequests[0].cardId;
 
         if (invoiceStatus !== 'PAID') {
             console.log('Invoice is not paid:', invoiceStatus);
@@ -166,15 +168,15 @@ async function handleInvoicePaymentMade(event) {
                // Use .set() to create the document with this ID
                await newPaymentMethodRef.set({
                    balance: null,
-                   brand: cardDetails.card.card_brand,
+                   brand: cardDetails.card.cardBrand,
                    cardId: cardDetails.card.id,
                    cardNickname: customerFirstName.trim(),
                    defaultPayment: false,
-                   expirationMonth: cardDetails.card.exp_month,
-                   expirationYear: cardDetails.card.exp_year,
+                   expirationMonth: cardDetails.card.expMonth,
+                   expirationYear: cardDetails.card.expYear,
                    gan: null,
                    isWallet: false,
-                   last4: cardDetails.card.last_4,
+                   last4: cardDetails.card.last4,
                    uid: newDocumentId,
                    userID: userId,
                });

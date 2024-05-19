@@ -11,7 +11,6 @@ console.log('in update member savings');
 
   const isMember = userData.subscriptionStatus === 'ACTIVE' || userData.subscriptionStatus === 'PENDING-CANCEL' || userData.subscriptionStatus === 'PENDING';
 
-  console.log(isMember);
 
   if (isMember) {
     const savedThisOrder = orderMap.userDetails.memberSavings;

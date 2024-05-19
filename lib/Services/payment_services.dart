@@ -19,10 +19,10 @@ class PaymentServices {
           onSuccess(cardDetails);
         },
         onComplete: () {
-          _onApplePayNonceFunctionComplete(ref);
+          onApplePayNonceFunctionComplete(ref);
         },
         onFailure: (error) {
-          _onApplePayNonceFunctionComplete(ref);
+          onApplePayNonceFunctionComplete(ref);
           onError(error);
         },
         onError: (error) {
@@ -56,7 +56,7 @@ class PaymentServices {
     });
   }
 
-  static _onApplePayNonceFunctionComplete(WidgetRef ref) {
+  static onApplePayNonceFunctionComplete(WidgetRef ref) {
     ref.invalidate(applePayLoadingProvider);
     ref.invalidate(selectedLoadAmountProvider);
     ref.invalidate(selectedLoadAmountIndexProvider);
