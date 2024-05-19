@@ -108,6 +108,7 @@ class MembershipInactivePage extends StatelessWidget {
       var invoiceId = await SubscriptionHelpers()
           .getUnpaidInvoiceId(user.squareCustomerId!);
       ref.read(loadingProvider.notifier).state = false;
+      //TODO update url to production
       String url = 'https://squareupsandbox.com/pay-invoice/$invoiceId';
       await UrlLauncherService().payInvoice(context, url);
       NavigationHelpers.popEndDrawer(context);
