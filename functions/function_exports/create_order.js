@@ -31,6 +31,8 @@ exports.createOrder = functions.https.onCall(async (data, context) => {
   orderMap.userDetails.userId = userId;
 
   try {
+
+  console.log(orderMap.totals.totalAmount);
     var response = await createSquareOrder(orderMap);
 
     // If a GAN is provided, get the associated Gift Card ID.

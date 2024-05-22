@@ -17,122 +17,183 @@ exports.handleSquareWebhooks = functions.https.onRequest(async (req, res) => {
 
     const event = req.body;
 
-     switch (event.type) {
-           case 'payment.created':
-               await handleFailedInitialPayment(event);
-               break;
-                case 'payment.updated':
-                 await handleFailedRecurringPayment(event);
-                  break;
-           case 'invoice.created':
-                await handleFailedRecurringPayment(event);
-                  break;
-          case 'invoice.payment_made':
-              await handleInvoicePaymentMade(event);
-              break;
-           case 'subscription.updated':
-               await handleSubscriptionUpdated(event);
-               break;
-           default:
-               console.log('Unhandled event type:', event.type);
-       }
+     res.status(200).send('Event received');
 
-    res.status(200).send('Event received');
+
+    try {
+        switch (event.type) {
+            case 'payment.created':
+                await handleFailedInitialPayment(event);
+                break;
+            case 'payment.updated':
+                await handleFailedRecurringPayment(event);
+                break;
+            case 'invoice.created':
+            return 200;
+//                await handleInvoiceCreatedEvent(event);
+                break;
+            case 'invoice.payment_made':
+                await handleInvoicePaymentMade(event);
+                break;
+            case 'subscription.updated':
+                await handleSubscriptionUpdated(event);
+                break;
+            default:
+                console.log('Unhandled event type:', event.type);
+        }
+
+        res.status(200).send('Event received');
+    } catch (error) {
+        console.error('Error handling event:', error);
+        res.status(500).send('Internal Server Error');
+    }
 });
 
 async function handleFailedInitialPayment(event) {
-    console.log('Handling failed initial payment event');
-    const squareCustomerId = event.data.object.customer_id;
+    try {
+        console.log('Handling failed initial payment event');
+        const squareCustomerId = event.data.object.customer_id;
 
-    // Check if squareCustomerId is undefined
-    if (typeof squareCustomerId === 'undefined') {
-        console.log('squareCustomerId is undefined');
-        return;
+        if (typeof squareCustomerId === 'undefined') {
+            console.log('squareCustomerId is undefined');
+            return;
+        }
+
+        const usersRef = db.collection('users');
+        const userSnapshot = await usersRef.where('squareCustomerId', '==', squareCustomerId).get();
+        if (userSnapshot.empty) {
+            console.log('No matching user found for Square Customer ID:', squareCustomerId);
+            return;
+        }
+
+        const userId = userSnapshot.docs[0].id;
+        console.log('Failed initial payment for user:', userId);
+        await db.collection('users').doc(userId).update({ subscriptionStatus: 'FAILED' });
+    } catch (error) {
+        console.error('Error handling failed initial payment event:', error);
+        throw error; // Propagate the error to ensure the main handler catches it
     }
-
-    const usersRef = db.collection('users');
-    const userSnapshot = await usersRef.where('squareCustomerId', '==', squareCustomerId).get();
-    if (userSnapshot.empty) {
-        console.log('No matching user found for Square Customer ID:', squareCustomerId);
-        return;
-    }
-
-    const userId = userSnapshot.docs[0].id;
-    console.log('Failed initial payment for user:', userId);
-    await db.collection('users').doc(userId).update({ subscriptionStatus: 'FAILED' });
 }
 
 async function handleFailedRecurringPayment(event) {
-       const squareCustomerId = event.data.object.payment.customer_id;
-       const locationId = event.data.object.payment.location_id;
-       const isFailedPayment = event.data.object.payment.status === 'FAILED';
+    try {
+        const squareCustomerId = event.data.object.payment.customerId;
+        const locationId = event.data.object.payment.locationId;
+        const isFailedPayment = event.data.object.payment.status === 'FAILED';
 
-    if (locationId !== 'LPRZ3G3PWZBKF' || !isFailedPayment) {
-        return;
-    }
-
-    const userSnapshot = await db.collection('users').where('squareCustomerId', '==', squareCustomerId).get();
-    if (userSnapshot.empty) {
-        console.log('No matching user found for Square Customer ID:', squareCustomerId);
-        return;
-    }
-
-    const userId = userSnapshot.docs[0].id;
-    const subscriptionSnapshot = await db.collection('subscriptions').where('userId', '==', userId).get();
-    if (subscriptionSnapshot.empty) {
-        console.log('No subscription detected for this user:', squareCustomerId);
-        return;
-    }
-
-    const subscriptionId = subscriptionSnapshot.docs[0].data().subscriptionId;
-    const pauseResult = await pauseSquareSubscription(subscriptionId);
-    if (pauseResult === 200) {
-        await db.collection('users').doc(userId).update({ subscriptionStatus: 'PAUSED' });
-        console.log('Subscription status set to PAUSED for user:', userId);
-    } else {
-        console.log('Failed to pause subscription for user:', userId);
-    }
-    }
-
-async function handleSubscriptionUpdated(event) {
-    const subscriptionStatus = event.data.object.subscription.status;
-    const canceledDateString = event.data.object.subscription.canceled_date;
-    const squareCustomerId = event.data.object.subscription.customer_id;
-
-    const userSnapshot = await db.collection('users').where('squareCustomerId', '==', squareCustomerId).get();
-    if (userSnapshot.empty) {
-        console.log('No matching user found for Square Customer ID:', squareCustomerId);
-        return;
-    }
-
-    const userId = userSnapshot.docs[0].uid;
-    let updatedStatus = subscriptionStatus; // Initialize with current status
-
-    if (canceledDateString) {
-        const now = new Date();
-        const cancelDate = new Date(canceledDateString);
-
-        if (cancelDate > now) {
-            updatedStatus = 'PENDING-CANCEL';
-        } else {
-            updatedStatus = 'CANCELED';
+        if (locationId !== 'LPRZ3G3PWZBKF' || !isFailedPayment) {
+            return;
         }
-    }
 
-    await db.collection('users').doc(userId).update({ subscriptionStatus: updatedStatus });
-    console.log('Subscription status updated for user:', userId, 'New status:', updatedStatus);
+        const userSnapshot = await db.collection('users').where('squareCustomerId', '==', squareCustomerId).get();
+
+        if (userSnapshot.empty) {
+            console.log('No matching user found for Square Customer ID:', squareCustomerId);
+            return;
+        }
+
+        const userId = userSnapshot.docs[0].id;
+        const subscriptionSnapshot = await db.collection('subscriptions').where('userId', '==', userId).get();
+        if (subscriptionSnapshot.empty) {
+            console.log('No subscription detected for this user:', squareCustomerId);
+            return;
+        }
+
+        const subscriptionId = subscriptionSnapshot.docs[0].data().subscriptionId;
+        const pauseResult = await pauseSquareSubscription({ subscriptionId });
+        if (pauseResult === 200) {
+            await db.collection('users').doc(userId).update({ subscriptionStatus: 'PAUSED' });
+            console.log('Subscription status set to PAUSED for user:', userId);
+        } else {
+            console.log('Failed to pause subscription for user:', userId);
+        }
+    } catch (error) {
+        console.error('Error handling failed recurring payment event:', error);
+        throw error; // Propagate the error to ensure the main handler catches it
+    }
 }
 
+async function handleInvoiceCreatedEvent(event) {
+    try {
+        const squareCustomerId = event.data.object.invoice.primary_recipient.customer_id;
+        const locationId = event.data.object.invoice.location_id;
+
+        if (locationId !== 'LPRZ3G3PWZBKF') {
+            return;
+        }
+
+        const userSnapshot = await db.collection('users').where('squareCustomerId', '==', squareCustomerId).get();
+        if (userSnapshot.empty) {
+            console.log('No matching user found for Square Customer ID:', squareCustomerId);
+            return;
+        }
+
+        const userId = userSnapshot.docs[0].id;
+        console.log(userId);
+        const subscriptionSnapshot = await db.collection('subscriptions').where('userId', '==', userId).get();
+        if (subscriptionSnapshot.empty) {
+            console.log('No subscription detected for this user:', squareCustomerId);
+            return;
+        }
+
+        console.log(subscriptionSnapshot.docs[0].data());
+
+        const subscriptionId = subscriptionSnapshot.docs[0].data().subscriptionId;
+        const pauseResult = await pauseSquareSubscription({ subscriptionId });
+        if (pauseResult === 200) {
+            await db.collection('users').doc(userId).update({ subscriptionStatus: 'PAUSED' });
+            console.log('Subscription status set to PAUSED for user:', userId);
+        } else {
+            console.log('Failed to pause subscription for user:', userId);
+        }
+    } catch (error) {
+        console.error('Error handling invoice created event:', error);
+        throw error; // Propagate the error to ensure the main handler catches it
+    }
+}
+
+async function handleSubscriptionUpdated(event) {
+    try {
+        const subscriptionStatus = event.data.object.subscription.status;
+        const canceledDateString = event.data.object.subscription.canceled_date;
+        const squareCustomerId = event.data.object.subscription.customer_id;
+
+        const userSnapshot = await db.collection('users').where('squareCustomerId', '==', squareCustomerId).get();
+        if (userSnapshot.empty) {
+            console.log('No matching user found for Square Customer ID:', squareCustomerId);
+            return;
+        }
+
+        const userId = userSnapshot.docs[0].id;
+        let updatedStatus = subscriptionStatus;
+
+        if (canceledDateString) {
+            const now = new Date();
+            const cancelDate = new Date(canceledDateString);
+
+            if (cancelDate > now) {
+                updatedStatus = 'PENDING-CANCEL';
+            } else {
+                updatedStatus = 'CANCELED';
+            }
+        }
+
+        await db.collection('users').doc(userId).update({ subscriptionStatus: updatedStatus });
+        console.log('Subscription status updated for user:', userId, 'New status:', updatedStatus);
+    } catch (error) {
+        console.error('Error handling subscription updated event:', error);
+        throw error; // Propagate the error to ensure the main handler catches it
+    }
+}
 
 async function handleInvoicePaymentMade(event) {
     try {
         console.log('Handling invoice payment made event');
 
-
         const invoiceStatus = event.data.object.invoice.status;
-        const squareCustomerId = event.data.object.primaryRecipient.customerId;
-        const customerFirstName = event.data.object.primaryRecipient.givenName;
-        const cardId = event.data.object.paymentRequests[0].cardId;
+        const squareCustomerId = event.data.object.invoice.primary_recipient.customer_id;
+        const customerFirstName = event.data.object.invoice.primary_recipient.given_name;
+        const cardId = event.data.object.invoice.payment_requests[0].card_id;
 
         if (invoiceStatus !== 'PAID') {
             console.log('Invoice is not paid:', invoiceStatus);
@@ -161,26 +222,23 @@ async function handleInvoicePaymentMade(event) {
 
             const cardDetails = await retrieveCardDetails(cardId);
             if (cardDetails) {
-               // Generate a new document reference with an ID
-               const newPaymentMethodRef = paymentMethodsRef.doc();
-               // Get the ID from the new document reference
-               const newDocumentId = newPaymentMethodRef.id;
-               // Use .set() to create the document with this ID
-               await newPaymentMethodRef.set({
-                   balance: null,
-                   brand: cardDetails.card.cardBrand,
-                   cardId: cardDetails.card.id,
-                   cardNickname: customerFirstName.trim(),
-                   defaultPayment: false,
-                   expirationMonth: cardDetails.card.expMonth,
-                   expirationYear: cardDetails.card.expYear,
-                   gan: null,
-                   isWallet: false,
-                   last4: cardDetails.card.last4,
-                   uid: newDocumentId,
-                   userID: userId,
-               });
-               console.log('New payment method added with UID:', newDocumentId);
+                const newPaymentMethodRef = paymentMethodsRef.doc();
+                const newDocumentId = newPaymentMethodRef.id;
+                await newPaymentMethodRef.set({
+                    balance: null,
+                    brand: cardDetails.card.cardBrand,
+                    cardId: cardDetails.card.id,
+                    cardNickname: customerFirstName.trim(),
+                    defaultPayment: false,
+                    expirationMonth: cardDetails.card.expMonth,
+                    expirationYear: cardDetails.card.expYear,
+                    gan: null,
+                    isWallet: false,
+                    last4: cardDetails.card.last4,
+                    uid: newDocumentId,
+                    userID: userId,
+                });
+                console.log('New payment method added with UID:', newDocumentId);
             } else {
                 console.log('Failed to retrieve card details from Square');
                 return;
@@ -190,18 +248,17 @@ async function handleInvoicePaymentMade(event) {
         const subscriptionsRef = db.collection('subscriptions');
         const subscriptionSnapshot = await subscriptionsRef.where('userId', '==', userId).get();
         if (subscriptionSnapshot.empty) {
-            console.log('No subscription detected for this user:', userId);
-            return;
-        }
-
-        const subscriptionId = subscriptionSnapshot.docs[0].subscriptionId;
-        const subscriptionDocRef = subscriptionsRef.doc(subscriptionId);
-        await subscriptionDocRef.update({
-            cardId: cardId
-        });
-        console.log('Subscription card ID updated for user:', userId);
-
-    } catch (error) {
-        console.error('Error handling invoice payment made:', error);
-    }
-}
+            console.log('No subscription detected for this user:’, userId');
+             return;
+          }
+              const subscriptionId = subscriptionSnapshot.docs[0].data().subscriptionId;
+              const subscriptionDocRef = subscriptionsRef.doc(subscriptionId);
+              await subscriptionDocRef.update({
+                  cardId: cardId
+              });
+              console.log('Subscription card ID updated for user:', userId);
+          } catch (error) {
+              console.error('Error handling invoice payment made:', error);
+              throw error; // Propagate the error to ensure the main handler catches it
+          }
+          }

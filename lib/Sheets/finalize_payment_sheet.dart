@@ -49,20 +49,19 @@ class FinalizePaymentSheet extends ConsumerWidget {
       height: MediaQuery.of(context).size.height,
       child: Stack(
         children: [
-          SingleChildScrollView(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                _tippingContainer(backgroundColor),
-                _paymentSection(context, ref, user),
-              ],
-            ),
-          ),
           const Positioned(
             top: 0,
             right: 0,
             child: JusCloseButton(),
-          )
+          ),
+          Column(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Spacing.vertical(60),
+              _tippingContainer(backgroundColor),
+              _paymentSection(context, ref, user),
+            ],
+          ),
         ],
       ),
     );
@@ -104,8 +103,7 @@ class FinalizePaymentSheet extends ConsumerWidget {
         borderRadius: BorderRadius.circular(15),
         color: backgroundColor,
       ),
-      padding: const EdgeInsets.only(
-          top: 20.0, bottom: 40.0, left: 12.0, right: 12.0),
+      padding: const EdgeInsets.only(left: 12.0, right: 12.0),
       child: const Column(
         children: [
           Padding(

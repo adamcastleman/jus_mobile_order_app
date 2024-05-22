@@ -53,8 +53,8 @@ class RegisterPage extends ConsumerWidget {
       backgroundColor: backgroundColor,
       resizeToAvoidBottomInset: true,
       body: Padding(
-        padding: const EdgeInsets.symmetric(
-          horizontal: 22.0,
+        padding: const EdgeInsets.all(
+          22,
         ),
         child: SingleChildScrollView(
           primary: false,

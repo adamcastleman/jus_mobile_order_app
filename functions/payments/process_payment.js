@@ -5,6 +5,8 @@ const { createSquareClient } = require("../payments/square_client");
 const processPayment = async (orderMap) => {
   const client = await createSquareClient();
 
+  console.log('Entered process payment');
+
   try {
     const response = await client.paymentsApi.createPayment({
       sourceId: orderMap.paymentDetails.cardId,
@@ -25,12 +27,17 @@ const processPayment = async (orderMap) => {
       },
     });
 
+console.log(JSON.parse(response.body));
+
+
     if (!response || !response.body) {
       throw new Error("Invalid response from payment gateway");
     }
 
+
     return JSON.parse(response.body);
   } catch (error) {
+  console.log(error);
     return { status: 500, message: error.errors[0].detail };
   }
 };

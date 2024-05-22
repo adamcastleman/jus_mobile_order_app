@@ -10,6 +10,7 @@ import 'package:jus_mobile_order_app/Helpers/utilities.dart';
 import 'package:jus_mobile_order_app/Models/user_model.dart';
 import 'package:jus_mobile_order_app/Providers/auth_providers.dart';
 import 'package:jus_mobile_order_app/Providers/discounts_provider.dart';
+import 'package:jus_mobile_order_app/Providers/navigation_providers.dart';
 import 'package:jus_mobile_order_app/Providers/offers_providers.dart';
 import 'package:jus_mobile_order_app/Providers/order_providers.dart';
 import 'package:jus_mobile_order_app/Providers/payments_providers.dart';
@@ -160,7 +161,7 @@ class CheckoutPage extends HookConsumerWidget {
     } else {
       return Column(
         children: [
-           const PaymentMethodSelector(),
+          const PaymentMethodSelector(),
           JusDivider.thin(),
           PlatformUtils.isIOS()
               ? Column(
@@ -177,6 +178,7 @@ class CheckoutPage extends HookConsumerWidget {
 
   void _handleProvidersOnCancel(WidgetRef ref) {
     ref.read(isCheckOutPageProvider.notifier).state = false;
+    ref.invalidate(drawerPageProvider);
     ref.invalidate(rewardQuantityProvider);
     ref.invalidate(totalPointsProvider);
     ref.invalidate(pointsInUseProvider);
@@ -187,5 +189,8 @@ class CheckoutPage extends HookConsumerWidget {
     ref.invalidate(selectedTipPercentageProvider);
     ref.invalidate(pointsMultiplierProvider);
     ref.invalidate(applePaySelectedProvider);
+    ref.invalidate(offersQuantityProvider);
+    ref.invalidate(pointsMultiplierProvider);
+    ref.invalidate(rewardQuantityProvider);
   }
 }
