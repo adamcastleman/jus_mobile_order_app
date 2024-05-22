@@ -67,10 +67,21 @@ class MembershipInactivePage extends StatelessWidget {
           ),
           Spacing.vertical(8),
           user.subscriptionStatus! == SubscriptionStatus.paused
-              ? const Text(
-                  'This typically occurs when your latest payment has failed. You may need to update your payment method.',
-                  style: TextStyle(fontSize: 14),
-                  textAlign: TextAlign.center,
+              ? Column(
+                  children: [
+                    const Text(
+                      'This typically occurs when your latest payment has failed. You may need to update your payment method.',
+                      style: TextStyle(fontSize: 14),
+                      textAlign: TextAlign.center,
+                    ),
+                    PlatformUtils.isWeb()
+                        ? const Text(
+                            'Note: Your popup blocker may block this action. Please enable popups for this website',
+                            style: TextStyle(
+                                fontSize: 10, fontWeight: FontWeight.bold),
+                          )
+                        : const SizedBox(),
+                  ],
                 )
               : const Text(
                   'You are no longer being charged.',
