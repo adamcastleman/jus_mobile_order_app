@@ -75,10 +75,13 @@ class MembershipInactivePage extends StatelessWidget {
                       textAlign: TextAlign.center,
                     ),
                     PlatformUtils.isWeb()
-                        ? const Text(
-                            'Note: Your popup blocker may block this action. Please enable popups for this website',
-                            style: TextStyle(
-                                fontSize: 10, fontWeight: FontWeight.bold),
+                        ? const Padding(
+                            padding: EdgeInsets.only(top: 12.0),
+                            child: Text(
+                              'Note: Your popup blocker may block this action. Please enable popups for this website',
+                              style: TextStyle(
+                                  fontSize: 10, fontWeight: FontWeight.bold),
+                            ),
                           )
                         : const SizedBox(),
                   ],
