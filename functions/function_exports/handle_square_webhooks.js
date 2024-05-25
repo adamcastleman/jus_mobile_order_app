@@ -195,6 +195,10 @@ async function handleInvoicePaymentMade(event) {
         const customerFirstName = event.data.object.invoice.primary_recipient.given_name;
         const cardId = event.data.object.invoice.payment_requests[0].card_id;
 
+        console.log(squareCustomerId);
+        console.log(customerFirstName);
+        console.log(cardId);
+
         if (invoiceStatus !== 'PAID') {
             console.log('Invoice is not paid:', invoiceStatus);
             return;
@@ -206,6 +210,8 @@ async function handleInvoicePaymentMade(event) {
             console.log('No matching user found for Square Customer ID:', squareCustomerId);
             return;
         }
+
+        console.log('Got user');
 
         const userId = userSnapshot.docs[0].id;
         const userDocRef = usersRef.doc(userId);

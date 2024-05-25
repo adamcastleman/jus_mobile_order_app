@@ -49,56 +49,6 @@ function processModifications(modifications, currency) {
   }).filter(mod => mod !== null);  // Filter out any null entries resulting from parsing errors
 }
 
-function calculateTotalPrice(lineItems) {
-  return lineItems.reduce((total, item) => {
-    let itemTotal = parseInt(item.basePriceMoney.amount) * (parseInt(item.quantity));
-
-    if (item.modifiers) {
-      item.modifiers.forEach(mod => {
-        itemTotal += parseInt(mod.basePriceMoney.amount) * parseInt(mod.quantity);
-      });
-    }
-
-    if (item.appliedDiscounts) {
-      item.appliedDiscounts.forEach(discount => {
-        total -= discount.amountMoney.amount; // Subtract the discount amount
-      });
-    }
-
-    return total + itemTotal;
-  }, 0);
-}
-
-function showLineItemPrices(lineItems) {
-  lineItems.forEach(item => {
-    let itemTotal = parseInt(item.basePriceMoney.amount) * parseInt(item.quantity);
-    console.log(`Item: ${item.catalogObjectId || item.name}`);
-    console.log(`Base Price: ${item.basePriceMoney.amount} ${item.basePriceMoney.currency}`);
-    console.log(`Quantity: ${item.quantity}`);
-
-    if (item.modifiers) {
-      item.modifiers.forEach(mod => {
-        const modTotal = parseInt(mod.basePriceMoney.amount) * parseInt(mod.quantity);
-        itemTotal += modTotal;
-        console.log(`  Modifier: ${mod.name || mod.catalogObjectId}`);
-        console.log(`  Modifier Price: ${mod.basePriceMoney.amount} ${mod.basePriceMoney.currency}`);
-        console.log(`  Modifier Quantity: ${mod.quantity}`);
-      });
-    }
-
-    if (item.appliedDiscounts) {
-      item.appliedDiscounts.forEach(discount => {
-        console.log(`  Discount UID: ${discount.discountUid}`);
-        console.log(`  Discount Amount: ${discount.amountMoney.amount} ${discount.amountMoney.currency}`);
-        itemTotal -= discount.amountMoney.amount; // Subtract the discount amount
-      });
-    }
-
-    console.log(`Total Price for this item: ${itemTotal / 100} ${item.basePriceMoney.currency}`);
-  });
-}
-
-
 const createSquareOrder = async (orderMap) => {
   const client = await createSquareClient();
   const currency = orderMap.paymentDetails.currency;
@@ -150,7 +100,33 @@ const createSquareOrder = async (orderMap) => {
     };
   });
 
-  showLineItemPrices(lineItems);
+  function findDiscountByUid(uid) {
+    return discounts.find(discount => discount.uid === uid);
+  }
+
+  function calculateTotalPrice(lineItems) {
+    return lineItems.reduce((total, item) => {
+      let itemTotal = parseInt(item.basePriceMoney.amount) * parseInt(item.quantity);
+
+      if (item.modifiers) {
+        item.modifiers.forEach(mod => {
+          itemTotal += parseInt(mod.basePriceMoney.amount) * parseInt(mod.quantity);
+        });
+      }
+
+      if (item.appliedDiscounts) {
+        item.appliedDiscounts.forEach(discountRef => {
+          const discount = findDiscountByUid(discountRef.discountUid);
+          if (discount) {
+            itemTotal -= discount.amountMoney.amount; // Subtract the discount amount
+          }
+        });
+      }
+
+      return total + itemTotal;
+    }, 0);
+  }
+
   const totalPrice = calculateTotalPrice(lineItems);
   console.log(`Total price of line items: ${totalPrice / 100} ${currency}`); // Convert to proper currency format
 
@@ -175,7 +151,6 @@ const createSquareOrder = async (orderMap) => {
 
     const orderResponseJson = JSON.parse(orderResponse.body);
     orderMap.orderDetails.orderNumber = orderResponseJson.order.id;
-
 
     if (totalAmount === 0 || totalAmount === 0.0) {
       await recordZeroChargeOrder(orderMap);
