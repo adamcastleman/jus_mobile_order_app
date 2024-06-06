@@ -62,17 +62,23 @@ class UserServices {
     });
   }
 
-  Future<void> updateUser({
+  Future<Map<String, dynamic>> updateUser({
     required String firstName,
     required String lastName,
     required String phone,
     required String email,
+    required String squareCustomerId,
   }) async {
-    await FirebaseFunctions.instance.httpsCallable('updateUserInfo').call({
+    final response =
+        await FirebaseFunctions.instance.httpsCallable('updateUserInfo').call({
+      'uid': uid,
       'firstName': firstName,
       'lastName': lastName,
       'phone': phone,
       'email': email,
+      'squareCustomerId': squareCustomerId,
     });
+
+    return response.data as Map<String, dynamic>;
   }
 }

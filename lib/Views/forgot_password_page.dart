@@ -12,7 +12,6 @@ import 'package:jus_mobile_order_app/Providers/loading_providers.dart';
 import 'package:jus_mobile_order_app/Providers/stream_providers.dart';
 import 'package:jus_mobile_order_app/Providers/theme_providers.dart';
 import 'package:jus_mobile_order_app/Services/auth_services.dart';
-import 'package:jus_mobile_order_app/Widgets/Buttons/close_button.dart';
 import 'package:jus_mobile_order_app/Widgets/Buttons/elevated_button_large.dart';
 import 'package:jus_mobile_order_app/Widgets/Buttons/elevated_button_large_loading.dart';
 import 'package:jus_mobile_order_app/Widgets/General/text_fields.dart';
@@ -96,26 +95,6 @@ class ForgotPasswordPage extends ConsumerWidget {
             ),
           ),
         ),
-      ),
-    );
-  }
-
-  Widget _buildHeader(BuildContext context) {
-    return SizedBox(
-      width: ResponsiveLayout.isMobileBrowser(context)
-          ? double.infinity
-          : AppConstants.formWidthWeb,
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text(
-            'Reset Password',
-            style: ResponsiveLayout.isMobileBrowser(context)
-                ? Theme.of(context).textTheme.headlineSmall
-                : Theme.of(context).textTheme.headlineMedium,
-          ),
-          const JusCloseButton(removePadding: true),
-        ],
       ),
     );
   }

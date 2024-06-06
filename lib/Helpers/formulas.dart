@@ -49,7 +49,7 @@ class Formulas {
     }
   }
 
-  String idGenerator() {
+  static String idGenerator() {
     final now = DateTime.now();
     return now.microsecondsSinceEpoch.toString();
   }

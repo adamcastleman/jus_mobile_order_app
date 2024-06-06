@@ -145,8 +145,6 @@ class AccountInfoUpdater {
       if (!passwordUpdated) {
         await _updateUser(ref, user);
       }
-
-      ToastHelper.showToast(message: 'Account info updated');
     }
 
     ref.read(loadingProvider.notifier).state = false;
@@ -169,16 +167,26 @@ class AccountInfoUpdater {
   ) async {
     if (ref.read(formValidatedProvider.notifier).state == true) {
       try {
-        await UserServices(uid: user.uid).updateUser(
+        final data = await UserServices(uid: user.uid).updateUser(
           firstName: ref.read(firstNameProvider),
           lastName: ref.read(lastNameProvider),
           phone: ref.read(phoneProvider),
           email: ref.read(emailProvider),
+          squareCustomerId: user.squareCustomerId ?? '',
         );
+
+        if (data['status'] == 'success') {
+          ToastHelper.showToast(message: data['message']);
+        } else {
+          ref.read(firebaseErrorProvider.notifier).state = data['message'];
+        }
       } catch (e) {
         ref.read(loadingProvider.notifier).state = false;
-        ref.read(firebaseErrorProvider.notifier).state = e.toString();
+        ref.read(firebaseErrorProvider.notifier).state =
+            'An error occurred while updating the user.';
       }
-    } else {}
+    } else {
+      return;
+    }
   }
 }

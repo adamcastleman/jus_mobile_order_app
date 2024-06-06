@@ -1,3 +1,4 @@
+import 'package:collection/collection.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:jus_mobile_order_app/Helpers/enums.dart';
 import 'package:jus_mobile_order_app/Helpers/formulas.dart';
@@ -24,7 +25,6 @@ class ProductHelpers {
     product.isScheduled
         ? StandardItems(ref: ref).set(product)
         : StandardIngredients(ref: ref).set(product);
-    ref.read(itemKeyProvider.notifier).state = Formulas().idGenerator();
   }
 
   setFavoritesProviders(
@@ -41,11 +41,37 @@ class ProductHelpers {
     ref
         .read(selectedToppingsProvider.notifier)
         .addMultipleToppings(favorite.toppings);
-    ref.read(itemKeyProvider.notifier).state = Formulas().idGenerator();
+    ref.read(itemKeyProvider.notifier).state = Formulas.idGenerator();
     ref.read(itemSizeProvider.notifier).state = favorite.size;
     ref
         .read(selectedAllergiesProvider.notifier)
         .addListOfAllergies(favorite.allergies);
+  }
+
+  String matchedItemKey(
+      List<Map<String, dynamic>> listOfItems, Map<String, dynamic> item) {
+    var matchedItems = listOfItems.where((element) {
+      final selectedIngredientsEqual = const DeepCollectionEquality.unordered()
+          .equals(element['selectedIngredients'], item['selectedIngredients']);
+      final selectedToppingsEqual = const DeepCollectionEquality.unordered()
+          .equals(element['selectedToppings'], item['selectedToppings']);
+      final selectedAllergiesEqual = const DeepCollectionEquality.unordered()
+          .equals(element['allergies'], item['allergies']);
+
+      return element['productId'] == item['productId'] &&
+          element['itemSize'] == item['itemSize'] &&
+          element['scheduledQuantity'] == item['scheduledQuantity'] &&
+          (item['selectedIngredients'].isEmpty || selectedIngredientsEqual) &&
+          (item['selectedToppings'].isEmpty || selectedToppingsEqual) &&
+          selectedAllergiesEqual;
+    }).toList();
+
+    if (matchedItems.isEmpty) {
+      return '';
+    } else {
+      return listOfItems.firstWhere((element) =>
+          element['itemKey'] == matchedItems.first['itemKey'])['itemKey'];
+    }
   }
 
   currentItem(WidgetRef ref, ProductModel product, PointsDetailsModel points) {
@@ -82,7 +108,7 @@ class ProductHelpers {
       'itemSize': itemSize,
       'itemSizeName': selectedVariation?['name'],
       'squareVariationId': selectedVariation?['squareVariationId'],
-      'itemKey': ref.watch(itemKeyProvider),
+      'itemKey': Formulas.idGenerator(),
       'points': PointsHelper()
           .getPointValue(product.productId, points.rewardsAmounts),
       'hasToppings': hasToppings,
@@ -96,12 +122,23 @@ class ProductHelpers {
 
   addToBag(
     WidgetRef ref,
+    Map<String, dynamic> currentItem,
     ProductModel product,
     PointsDetailsModel points,
   ) {
+    ref.read(currentOrderItemsProvider.notifier).addItem(currentItem);
+  }
+
+  updateDuplicateItemInBag(
+    WidgetRef ref,
+    Map<String, dynamic> currentItem,
+    ProductModel product,
+    PointsDetailsModel points,
+    String itemKey,
+  ) {
     ref
         .read(currentOrderItemsProvider.notifier)
-        .addItem(currentItem(ref, product, points));
+        .updateDuplicateItem(currentItem, itemKey);
   }
 
   editItemInBag(
@@ -114,7 +151,8 @@ class ProductHelpers {
         .editItem(ref, currentItem(ref, product, points));
   }
 
-  addCost(WidgetRef ref, ProductModel product, PointsDetailsModel points) {
+  addCost(WidgetRef ref, Map<String, dynamic> currentItem, ProductModel product,
+      PointsDetailsModel points) {
     final itemQuantity = ref.watch(itemQuantityProvider);
     final scheduledQuantity = ref.watch(scheduledQuantityProvider);
     final itemSize = ref.watch(itemSizeProvider);
@@ -140,7 +178,7 @@ class ProductHelpers {
       'points': PointsHelper()
           .getPointValue(product.productId, points.rewardsAmounts),
       'productId': product.productId,
-      'itemKey': ref.watch(itemKeyProvider),
+      'itemKey': currentItem['itemKey'],
       'itemQuantity': itemQuantity,
       'scheduledQuantity': scheduledQuantity,
     });

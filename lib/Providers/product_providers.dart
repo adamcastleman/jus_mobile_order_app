@@ -1,4 +1,3 @@
-import 'package:collection/collection.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -561,36 +560,20 @@ class ListOfIngredients extends StateNotifier<List<dynamic>> {
 class CurrentOrderItems extends StateNotifier<List<Map<String, dynamic>>> {
   CurrentOrderItems() : super([]);
 
-  addItem(Map<String, dynamic> item) {
+  void addItem(Map<String, dynamic> item) {
     HapticFeedback.mediumImpact();
-    var product = state.where((element) {
-      final selectedIngredientsEqual = const DeepCollectionEquality.unordered()
-          .equals(element['selectedIngredients'], item['selectedIngredients']);
-      final selectedToppingsEqual = const DeepCollectionEquality.unordered()
-          .equals(element['selectedToppings'], item['selectedToppings']);
-      final selectedAllergiesEqual = const DeepCollectionEquality.unordered()
-          .equals(element['allergies'], item['allergies']);
+    state = [...state, item];
+  }
 
-      return element['productId'] == item['productId'] &&
-          element['itemSize'] == item['itemSize'] &&
-          element['scheduledQuantity'] == item['scheduledQuantity'] &&
-          (item['selectedIngredients'].isEmpty || selectedIngredientsEqual) &&
-          (item['selectedToppings'].isEmpty || selectedToppingsEqual) &&
-          selectedAllergiesEqual;
-    });
-
-    if (state.isEmpty || product.isEmpty) {
-      state = [...state, item];
-    } else {
-      product.first['itemQuantity'] =
-          product.first['itemQuantity'] + item['itemQuantity'];
-      product.first['scheduledQuantity'] =
-          product.first['isScheduled'] ? item['scheduledQuantity'] : 1;
-      product.first['scheduledDescriptor'] = item['scheduledDescriptor'];
-      product.first['itemSize'] = item['itemSize'];
-      product.first['itemSizeName'] = item['itemSizeName'];
-      product.first['squareVariationId'] = item['squareVariationId'];
-      state = [...state];
+  void updateDuplicateItem(Map<String, dynamic> item, String itemKey) {
+    List<Map<String, dynamic>> newList = List.from(state);
+    var matchedItemIndex =
+        newList.indexWhere((element) => element['itemKey'] == itemKey);
+    if (matchedItemIndex != -1) {
+      var matchedItem = newList[matchedItemIndex];
+      matchedItem['itemQuantity'] +=
+          item['itemQuantity']; // Update the quantity
+      state = newList; // Update the state with the modified list
     }
   }
 
@@ -678,6 +661,18 @@ class CurrentOrderCost extends StateNotifier<List<Map<String, dynamic>>> {
             });
 
     state = [...state, ...maps];
+  }
+
+  updateDuplicateItemInBagCost(Map<String, dynamic> item, String itemKey) {
+    List<Map<String, dynamic>> newList = List.from(state);
+    var matchedItemIndex =
+        newList.indexWhere((element) => element['itemKey'] == itemKey);
+    if (matchedItemIndex != -1) {
+      var matchedItem = newList[matchedItemIndex];
+      matchedItem['itemQuantity'] +=
+          item['itemQuantity']; // Update the quantity
+      state = newList; // Update the state with the modified list
+    }
   }
 
   removeSingleCost(String itemKey) {

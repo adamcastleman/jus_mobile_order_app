@@ -246,10 +246,10 @@ class PricingHelpers {
     var subtotal = 0.0;
     final totalCost = ref.watch(currentOrderCostProvider);
     for (var price in totalCost) {
-      var totalItemPrice =
-          price['itemPriceNonMember'] + (price['modifierPriceNonMember'] ?? 0);
-
-      subtotal = subtotal + totalItemPrice;
+      var totalItemPrice = (price['itemPriceNonMember'] +
+              (price['modifierPriceNonMember'] ?? 0)) *
+          price['itemQuantity'];
+      subtotal += totalItemPrice;
     }
 
     return subtotal / 100;
@@ -260,8 +260,9 @@ class PricingHelpers {
     final totalCost = ref.watch(currentOrderCostProvider);
     for (var price in totalCost) {
       var totalItemPrice =
-          price['itemPriceMember'] + (price['modifierPriceMember'] ?? 0);
-      subtotal = subtotal + totalItemPrice;
+          (price['itemPriceMember'] + (price['modifierPriceMember'] ?? 0)) *
+              price['itemQuantity'];
+      subtotal += totalItemPrice;
     }
 
     return subtotal / 100;

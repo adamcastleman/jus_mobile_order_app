@@ -121,16 +121,30 @@ class AddToBagRow extends ConsumerWidget {
     PointsDetailsModel points,
     ProductQuantityModel quantityLimit,
   ) {
-    final editOrder = ref.watch(editOrderProvider);
     final ProductHelpers productHelpers = ProductHelpers();
+    final editOrder = ref.watch(editOrderProvider);
+    final itemsInOrder = ref.watch(currentOrderItemsProvider);
+    final currentItem = productHelpers.currentItem(ref, product, points);
+    String matchedItemKey =
+        productHelpers.matchedItemKey(itemsInOrder, currentItem);
+
     if (product.isScheduled) {
       OrderHelpers.setScheduledLimitProviders(ref, quantityLimit);
     }
+
     if (editOrder) {
       productHelpers.editItemInBag(ref, product, points);
     } else {
-      productHelpers.addToBag(ref, product, points);
+      if (matchedItemKey.isEmpty) {
+        productHelpers.addToBag(ref, currentItem, product, points);
+        productHelpers.addCost(ref, currentItem, product, points);
+      } else {
+        productHelpers.updateDuplicateItemInBag(
+            ref, currentItem, product, points, matchedItemKey);
+        ref
+            .read(currentOrderCostProvider.notifier)
+            .updateDuplicateItemInBagCost(currentItem, matchedItemKey);
+      }
     }
-    productHelpers.addCost(ref, product, points);
   }
 }

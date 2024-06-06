@@ -2,6 +2,8 @@ const functions = require('firebase-functions');
 const admin = require('firebase-admin');
 const { pauseSquareSubscription } = require("../subscriptions/pause_square_subscription");
 const { retrieveCardDetails } = require("../payments/retrieve_square_card_from_id");
+const { resumeSquareSubscription } = require('../subscriptions/resume_square_subscription');
+
 
 if (admin.apps.length === 0) {
     admin.initializeApp();
@@ -29,8 +31,7 @@ exports.handleSquareWebhooks = functions.https.onRequest(async (req, res) => {
                 await handleFailedRecurringPayment(event);
                 break;
             case 'invoice.created':
-            return 200;
-//                await handleInvoiceCreatedEvent(event);
+                await handleInvoiceCreatedEvent(event);
                 break;
             case 'invoice.payment_made':
                 await handleInvoicePaymentMade(event);
@@ -263,6 +264,8 @@ async function handleInvoicePaymentMade(event) {
                   cardId: cardId
               });
               console.log('Subscription card ID updated for user:', userId);
+              await resumeSquareSubscription(subscriptionId);
+              console.log('Square subscription resumed');
           } catch (error) {
               console.error('Error handling invoice payment made:', error);
               throw error; // Propagate the error to ensure the main handler catches it
